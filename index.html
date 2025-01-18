@@ -911,10 +911,7 @@
           <select class="model-select" title="Select AI Model">
             <!-- existing options remain the same -->
           </select>
-          <div id="visitor-counter" class="visitor-counter">
-            <span class="visitor-icon">👥</span>
-            <span class="visitor-count">0</span>
-          </div>
+          <div class="visitor-counter">Visitors: <span id="visitor-count">Loading...</span></div>
         </div>
       </div>
     </div>
@@ -931,10 +928,53 @@
 
 
     <script src="js/nav-loader.js"></script>
-    <script src="visitorTracker.js"></script>
-
-
     <script>
+      // Visitor Tracker Logic with File System Access API
+async function visitorTracker() {
+  const fileName = "visitorCount.txt";
+  const visitorCountElement = document.getElementById("visitor-count");
+  let visitorCount = 0;
+
+  try {
+    // Request permission to access a file
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: fileName,
+      types: [
+        {
+          description: "Text Files",
+          accept: {
+            "text/plain": [".txt"],
+          },
+        },
+      ],
+    });
+
+    // Try to read the file if it exists
+    const file = await fileHandle.getFile();
+    const text = await file.text();
+    visitorCount = parseInt(text, 10) || 0;
+
+    // Increment visitor count
+    visitorCount += 1;
+
+    // Save the updated count back to the file
+    const writable = await fileHandle.createWritable();
+    await writable.write(visitorCount.toString());
+    await writable.close();
+
+    // Update the visitor count display
+    visitorCountElement.textContent = visitorCount;
+  } catch (error) {
+    console.error("Error handling visitor count:", error);
+    visitorCountElement.textContent = "Error!";
+  }
+}
+
+// Initialize the visitor tracker on page load
+document.addEventListener("DOMContentLoaded", () => {
+  visitorTracker();
+});
+
       const DEFAULT_INSTRUCTION = "All code must be wrapped in [CODE]...[/CODE] tags." +
   "When using images, show them using format: https://image.pollinations.ai/prompt/your%20image-prompt-with-visual-style%20here?width=512&height=512&nologo=true&private=true&seed={random}&enhance=false&model=Unity plus your response.\n\n" +
   "Code format: [CODE]code here[/CODE] with your response.\n\n" +
