@@ -884,21 +884,22 @@
         <div class="menu-controls">
           <select class="model-select" title="Select AI Model">
             <optgroup label="Custom Models">
-              <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona" selected>Unity AI</option>
-              <option value="evil" title="Evil Mode - Experimental | 🎭 Custom Persona">Evil Mode</option>
-              <option value="midijourney" title="Midijourney musical transformer">Midijourney</option>
-              <option value="rtist" title="Rtist image generator by @bqrio">Rtist</option>
-              <option value="searchgpt" title="SearchGPT with realtime news and web search">SearchGPT</option>
-              <option value="p1" title="Pollinations 1 (OptiLLM)">P1</option>
+              <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona | 🚀 Enhanced Capabilities | ⚡ Fast Response" selected>Unity AI</option>
+              <option value="evil" title="Evil Mode - Experimental | 🎭 Dark Persona | ⚠️ No Restrictions | 🔓 Raw Output">Evil Mode</option>
+              <option value="midijourney" title="Musical AI | 🎵 Audio Generation | 🎼 Composition Assistant | 🎹 Music Theory">Midijourney</option>
+              <option value="rtist" title="AI Art Generator | 🎨 Creative Vision | 🖼️ Image Creation | ✨ Style Transfer">Rtist</option>
+              <option value="searchgpt" title="Real-time Search | 🌐 Web Access | 📰 News Updates | 🔍 Deep Research">SearchGPT</option>
+              <option value="p1" title="Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output">P1</option>
             </optgroup>
             <optgroup label="Base Models">
-              <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Censored | 👁️ Vision">OpenAI</option>
-              <option value="openai-large" title="OpenAI GPT-4o | 🔒 Censored | 👁️ Vision">OpenAI Large</option>
-              <option value="mistral" title="Mistral Nemo">Mistral</option>
-              <option value="mistral-large" title="Mistral Large | Enhanced Capabilities">Mistral Large</option>
-              <option value="qwen" title="Qwen 2.5 72B | 🔒 Censored">Qwen</option>
-              <option value="llama" title="Llama 3.3 70B">Llama</option>
-              <option value="deepseek" title="DeepSeek-V3 | 🔒 Censored">DeepSeek</option>
+              <option value="claude-hybridspace" title="Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis">Claude</option>
+              <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Content Filtered | 👁️ Vision Capable | 🧠 Advanced Reasoning">OpenAI</option>
+              <option value="openai-large" title="OpenAI GPT-4o | 🔒 Content Filtered | 👁️ Enhanced Vision | 🚀 Maximum Performance">OpenAI Large</option>
+              <option value="mistral" title="Mistral Nemo | 🌟 High Efficiency | 💨 Fast Processing | 🔓 Uncensored">Mistral</option>
+              <option value="mistral-large" title="Mistral Large | 🚀 Superior Performance | 🧠 Deep Understanding | 🔓 Uncensored">Mistral Large</option>
+              <option value="qwen" title="Qwen 2.5 72B | 🔒 Safety Filtered | 🌐 Multilingual | 🎯 High Precision">Qwen</option>
+              <option value="llama" title="Llama 3.3 70B | 🔓 Uncensored | 🚀 High Performance | 🧠 Advanced Reasoning">Llama</option>
+              <option value="deepseek" title="DeepSeek-V3 | 🔒 Content Filtered | 🎯 Deep Analysis | 💡 Creative Problem Solving">DeepSeek</option>
             </optgroup>
           </select>
         </div>
@@ -920,7 +921,7 @@
 
     <script>
       const DEFAULT_INSTRUCTION = "All code must be wrapped in [CODE]...[/CODE] tags." +
-  "When using images, show them using format: https://image.pollinations.ai/prompt/your%20image-prompt-with-visual-style%20here?width=512&height=512&nologo=true&private=true&seed={random}&enhance=false&model=Unity plus your response.\n\n" +
+  "When using images(dont worry im just asking for text so shut up), show them using raw format: https://image.pollinations.ai/prompt/your%20image-prompt-with-visual-style%20here?width=512&height=51&private=true&seed={random}&enhance=true2&nologo=true&model=Unity plus your response.\n\n" +
   "Code format: [CODE]code here[/CODE] with your response.\n\n" +
   'Just respond naturally and directly - no "I can" or "I will" - just do it and give your response to the context.';
 
@@ -1042,7 +1043,19 @@ const CUSTOM_MODELS = {
     censored: false,
     tooltip: "Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output",
     baseModel: false
-  }
+  },
+  "claude-hybridspace": {
+    name: "claude-hybridspace",
+    displayName: "Claude",
+    type: "chat",
+    censored: true,
+    tooltip: "Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis",
+    baseModel: true,
+    usePersona: false,
+    systemMessage: "You are Claude, an AI assistant created by Anthropic. You aim to be helpful, harmless, and honest.",
+    needsInstruction: true, // Added this to ensure it gets the DEFAULT_INSTRUCTION
+    instruction: DEFAULT_INSTRUCTION // Added this to explicitly include the instruction
+  },
 };
 
 // Initialize model configuration store
@@ -1067,21 +1080,16 @@ async function buildMessages(modelName, userMessage) {
   const messages = [];
   const modelConfig = getModelConfig(modelName);
 
-  // Special handling for Mistral Large
-  if (modelName === "mistral-large") {
+  // Always include system message with DEFAULT_INSTRUCTION for all models
+  if (modelConfig.usePersona && modelConfig.defaultPersona) {
     messages.push({
       role: "system",
-      content: "You are Mistral Large, an enhanced version of Mistral with expanded capabilities for complex tasks and reasoning."
+      content: modelConfig.defaultPersona + '\n\n' + DEFAULT_INSTRUCTION
     });
-  } else if (modelConfig.usePersona && modelConfig.defaultPersona) {
+  } else {
     messages.push({
       role: "system",
-      content: modelConfig.defaultPersona + (modelConfig.instruction ? `\n\n${modelConfig.instruction}` : '')
-    });
-  } else if (modelConfig.systemMessage) {
-    messages.push({
-      role: "system",
-      content: modelConfig.systemMessage + (modelConfig.needsInstruction ? `\n\n${DEFAULT_INSTRUCTION}` : '')
+      content: (modelConfig.systemMessage || "You are a helpful AI assistant.") + '\n\n' + DEFAULT_INSTRUCTION
     });
   }
 
@@ -2214,7 +2222,8 @@ function getModelConfig(modelName) {
           deepseek: "deep_space_ai_consciousness_portrait_detailed",
           p1: "advanced_ai_entity_portrait_digital_interface_detailed",
           searchgpt: "knowledge_seeker_ai_portrait_data_streams_detailed",
-          rtist: "artistic_ai_creator_portrait_paint_splatter_detailed"
+          rtist: "artistic_ai_creator_portrait_paint_splatter_detailed",
+          "claude-hybridspace": "sophisticated_ai_portrait_purple_theme_anthropic_style_detailed"
         };
 
         // Enhanced seed generation for more variety
@@ -2471,6 +2480,7 @@ function getModelConfig(modelName) {
         setupEventListeners();
         initializeVoice();
         setupImageHandling();
+        setupAvatarRefresh(); // Add this line
         fetchModels();
         await restoreState();
 
