@@ -1390,18 +1390,6 @@ let MODEL_CONFIG = {
   models: { ...CUSTOM_MODELS }
 };
 
-// Helper function to get model configuration
-function getModelConfig(modelName) {
-  return MODEL_CONFIG.models[modelName] || {
-    baseModel: true,
-    type: "chat",
-    jsonMode: false,
-    censored: true,
-    systemMessage: `You are a helpful AI assistant based on ${modelName}.`,
-    needsInstruction: true
-  };
-}
-
 // Build messages function with improved configuration handling
 async function buildMessages(modelName, userMessage) {
   const messages = [];
@@ -1938,24 +1926,6 @@ function getModelConfig(modelName) {
   };
 }
 
-
-async function handleModelChange(e) {
-    const selectedModel = e.target.value;
-    localStorage.removeItem(`${selectedModel}Avatar`);
-    fadeOutAndClear();
-    conversationHistory = [];
-    localStorage.removeItem("conversationHistory");
-    
-    if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-    }
-    stopTTS();
-    
-    // Add this line:
-    updateScreensaverForModel(selectedModel);
-}
-
-
       function extractPromptPart(url) {
         const match = url.match(/\/prompt\/([^?]+)/);
         return match ? match[1] : null;
@@ -2425,18 +2395,22 @@ function restoreScreensaverState() {
       }
 
 
-      function createMessage(type, content) {
-        const div = document.createElement("div");
-        div.className = `message ${type}-message`;
-        div.style.opacity = "0";
+      function getUnityAvatar() {
+  return "https://image.pollinations.ai/prompt/close_portrait_black_hair_emo_goth_female_age_25_detailed_face?width=512&height=512&seed=9999&enhance=true&quality=high&nologo=true&model=flux";
+}
 
+    // The rest of your code remains the same, now the call to getUnityAvatar() works:
+    function createMessage(type, content) {
+      const div = document.createElement("div");
+      div.className = `message ${type}-message`;
+      div.style.opacity = "0";
 
-        if (type === "ai") {
-          const avatar = document.createElement("div");
-          avatar.className = "message-avatar";
-          avatar.innerHTML = `<img src="${getUnityAvatar()}" alt="Unity">`;
-          div.appendChild(avatar);
-        }
+      if (type === "ai") {
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.innerHTML = `<img src="${getUnityAvatar()}" alt="Unity">`;
+        div.appendChild(avatar);
+      }
 
 
         const contentDiv = document.createElement("div");
@@ -2823,12 +2797,7 @@ modelSelect.addEventListener('change', () => {
             stopScreensaver();
         }
     });
-    function handleCodePanelToggles(view) {
-    if (screensaverActive && view === 'code') {
-        stopScreensaver();
-        localStorage.setItem('screensaver-resume', 'true');
-    }
-}
+    
 
     // Double-click to exit
     container.addEventListener('dblclick', () => {
@@ -2837,7 +2806,12 @@ modelSelect.addEventListener('change', () => {
         }
     });
 }
-
+    function handleCodePanelToggles(view) {
+      if (screensaverActive && view === 'code') {
+        stopScreensaver();
+        localStorage.setItem('screensaver-resume', 'true');
+        }
+}
       async function copyImageToClipboard(imgId) {
         try {
           const imgElement = document.getElementById(imgId);
