@@ -288,22 +288,73 @@ async function copyImageToClipboard() {
       showError('No image to copy');
       return;
     }
+
+    const tempImage = new Image();
+    tempImage.crossOrigin = 'anonymous';
     
-    // Fetch the image and create a clipboard item
-    const response = await fetch(img.src);
-    const blob = await response.blob();
-    const data = [new ClipboardItem({ [blob.type]: blob })];
-    await navigator.clipboard.write(data);
+    await new Promise((resolve, reject) => {
+      tempImage.onload = resolve;
+      tempImage.onerror = reject;
+      tempImage.src = img.src + '?t=' + new Date().getTime();
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = tempImage.naturalWidth;
+    canvas.height = tempImage.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(tempImage, 0, 0);
     
-    // Show success feedback
+    try {
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+      const clipboardItem = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([clipboardItem]);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        try {
+          localStorage.setItem('lastScreensaverImage', base64data);
+        } catch (e) {
+          console.warn('Failed to save to localStorage:', e);
+        }
+      };
+      reader.readAsDataURL(blob);
+
+      const feedback = document.createElement('div');
+      feedback.className = 'image-upload-feedback';
+      feedback.textContent = 'Image copied! ✓';
+      img.parentElement.appendChild(feedback);
+      setTimeout(() => feedback.remove(), 2000);
+      
+    } catch (clipboardError) {
+      console.error('Clipboard write failed:', clipboardError);
+      const link = document.createElement('a');
+      const imgUrl = canvas.toDataURL('image/png');
+      link.href = imgUrl;
+      link.download = `screensaver-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      const feedback = document.createElement('div');
+      feedback.className = 'image-upload-feedback';
+      feedback.textContent = 'Clipboard failed - Image downloaded instead';
+      img.parentElement.appendChild(feedback);
+      setTimeout(() => feedback.remove(), 2000);
+    }
+  } catch (error) {
+    console.error('Error copying image:', error);
+    showError('Failed to copy image - CORS or network error');
+    
     const feedback = document.createElement('div');
     feedback.className = 'image-upload-feedback';
-    feedback.textContent = 'Image copied to clipboard! ✓';
-    img.parentElement.appendChild(feedback);
-    setTimeout(() => feedback.remove(), 2000);
-  } catch (error) {
-    console.error('Failed to copy image:', error);
-    showError('Failed to copy image to clipboard');
+    feedback.style.backgroundColor = '#ef4444';
+    feedback.textContent = 'Failed to copy image';
+    const img = document.getElementById('screensaver-image');
+    if (img && img.parentElement) {
+      img.parentElement.appendChild(feedback);
+      setTimeout(() => feedback.remove(), 2000);
+    }
   }
 }
 
@@ -364,7 +415,9 @@ function buildScreensaverImageUrl(prompt) {
     nologo: 'true',
     model: modelSelect.value || 'unity',
     enhance: enhanceCheck.checked.toString(),
-    private: privateCheck.checked.toString()
+    private: privateCheck.checked.toString(),
+    t: Date.now(),
+    cors: 'true'
   });
 
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
@@ -574,7 +627,14 @@ function initializeScreensaver() {
 
   const copyBtn = document.getElementById('screensaver-copy');
   if (copyBtn) {
-    copyBtn.addEventListener('click', copyImageToClipboard);
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await copyImageToClipboard();
+      } catch (error) {
+        console.error('Failed to copy image:', error);
+        showError('Failed to copy image');
+      }
+    });
   }
 
   const downloadBtn = document.getElementById('screensaver-download');
