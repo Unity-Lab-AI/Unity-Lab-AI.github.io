@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title>UnityWebApp10.0</title>
 
-    <!-- Prism CSS for Code Highlighting -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
       rel="stylesheet"
@@ -429,7 +428,6 @@
         line-height: 1.5;
         overflow-y: auto;  
       }
-
       #chat-input:focus {
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
       }
@@ -479,254 +477,60 @@
       }
 
       .image-container {
-        position: relative !important;
-        display: inline-block !important;
-        max-width: 100% !important;
-      }
-
-      .refresh-image {
-        position: absolute !important;
-        top: 10px !important;
-        right: 10px !important;
-        background: rgba(0, 0, 0, 0.5) !important;
-        border: none !important;
-        border-radius: 50% !important;
-        width: 32px !important;
-        height: 32px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        opacity: 0 !important;
-        transition: all 0.2s ease !important;
-        color: white !important;
-        font-size: 18px !important;
-        z-index: 1000 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        line-height: 32px !important;
-      }
-
-      .image-container:hover .refresh-image {
-        opacity: 1 !important;
-      }
-
-      .layout-transitioning {
-        transition: all 0.3s ease-in-out;
-      }
-
-      .button-press {
-        transform: scale(0.95);
-        transition: transform 0.15s ease;
-      }
-
-      .loading-spinner {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 2px solid var(--chat-primary);
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: spin 1s linear infinite;
-        margin-right: 10px;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .error-popup {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #ef4444;
-        color: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.3s ease;
-      }
-
-      .error-popup.show {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .confirm-dialog {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .confirm-dialog.show {
-        opacity: 1;
-      }
-
-      .confirm-content {
-        background: var(--chat-bg);
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--chat-primary);
-      }
-
-      .confirm-buttons {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-        justify-content: flex-end;
-      }
-
-      .drag-over {
-        border: 2px dashed var(--chat-primary) !important;
-        background: rgba(59, 130, 246, 0.1) !important;
-      }
-
-      .image-upload-feedback {
-        position: absolute;
-        bottom: calc(100% + 5px);
-        right: 10px;
-        background: var(--chat-primary);
-        color: white;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        animation: fadeInOut 2s ease forwards;
-      }
-
-      @keyframes fadeInOut {
-        0% {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        10% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        90% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        100% {
-          opacity: 0;
-          transform: translateY(-10px);
-        }
-      }
-
-      .model-select,
-      .persona-select {
-        background: linear-gradient(
-          to bottom,
-          #1e293b 0%,
-          #0f172a 100%
-        ) !important;
-        border: 1px solid #3b82f6 !important;
-        border-radius: 0.375rem !important;
-        color: #e2e8f0 !important;
-        padding: 0.5rem 2.5rem 0.5rem 1rem !important;
-        font-size: 0.875rem !important;
-        cursor: pointer !important;
-        appearance: none !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e2e8f0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
-        background-repeat: no-repeat !important;
-        background-position: right 0.75rem center !important;
-        background-size: 1em !important;
-        min-width: 200px !important;
-        max-width: 300px !important;
-        width: 100% !important;
-      }
-
-      .model-select optgroup,
-      .model-select option,
-      .persona-select option {
-        background: #1e293b !important;
-        color: #e2e8f0 !important;
-        font-weight: bold;
-        padding: 0.5rem 0;
-      }
-
-      .model-select:disabled,
-      .persona-select:disabled {
-        opacity: 0.5 !important;
-        cursor: not-allowed !important;
-      }
-
-      .menu-controls {
-        display: flex !important;
-        gap: 1rem !important;
-        align-items: center !important;
-        padding-right: 0.5rem;
-        margin: 0.25rem 0;
-      }
-
-      @media (max-width: 768px) {
-        .menu-controls {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .model-select,
-        .persona-select {
-          width: 100% !important;
-          max-width: none !important;
-        }
-      }
-
-      .image-action-buttons {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        display: flex;
-        gap: 5px;
-        opacity: 0;
-        transition: opacity 0.2s;
-        background: rgba(0, 0, 0, 0.5);
-        padding: 5px;
-        border-radius: 5px;
-        z-index: 1000;
-      }
-
-      .image-container:hover .image-action-buttons {
-        opacity: 1;
-      }
-
-      .image-container {
         position: relative;
         display: inline-block;
         max-width: 100%;
       }
 
-      .message-action-button {
-        cursor: pointer;
-        padding: 5px;
-        color: #e2e8f0;
-        font-size: 13px;
-        background: rgba(59, 130, 246, 0.1);
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
+      .image-action-buttons {
+        position: absolute;
+        bottom: 8px;
+        right: 0;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        gap: 4px;
+        padding: 4px;
+        background: rgba(0, 0, 0, 0.4);
+        border-top-left-radius: 4px;
+      }
+
+      .message-action-button {
+        background: none;
         border: none;
-        transition: background 0.2s;
+        color: white;
+        padding: 2px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        line-height: 1;
       }
 
       .message-action-button:hover {
-        background: rgba(59, 130, 246, 0.2);
+        transform: scale(1.1);
       }
 
-      /* Screensaver Container */
+      .image-upload-feedback {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        z-index: 10001;
+        font-size: 16px;
+        animation: fadeInOut 2s ease forwards;
+        pointer-events: none;
+      }
+
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -40%); }
+        15% { opacity: 1; transform: translate(-50%, -50%); }
+        85% { opacity: 1; transform: translate(-50%, -50%); }
+        100% { opacity: 0; transform: translate(-50%, -60%); }
+      }
+
+      /* Screensaver Container and Controls */
       #screensaver-container {
         display: none;
         position: fixed;
@@ -736,6 +540,10 @@
         height: 100vh;
         background-color: black;
         z-index: 9999;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
       }
 
       #screensaver-image {
@@ -745,205 +553,109 @@
         transition: opacity 0.3s ease-in-out;
       }
 
-      /* Add/update these CSS rules in the style section */
-      .screensaver-controls {
-        display: flex; /* Initial state is visible */
-        position: absolute;
-        bottom: 20px;            
-        left: 50%;               
-        transform: translateX(-50%); 
-        flex-wrap: wrap;         
-        gap: 10px;
-        background: rgba(0, 0, 0, 0.6);  
-        padding: 15px;
-        border-radius: 12px;
-        transition: opacity 0.3s ease, display 0.3s ease;
+      #screensaver-control-group {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease-in-out;
         z-index: 10000;
       }
 
-      @media (max-width: 768px) {
-        .screensaver-controls {
-          bottom: 0;
-          left: 0;
-          right: 0;
-          transform: none;
-          width: 100%;
-          max-width: 100%;
-          border-radius: 12px 12px 0 0;
-          padding: 15px;
-          max-height: 80vh;
-          overflow-y: auto;
-          background: rgba(0, 0, 0, 0.85);
-          backdrop-filter: blur(10px);
-        }
-
-        .screensaver-control-group {
-          width: 100%;
-          margin-bottom: 10px;
-        }
-
-        #screensaver-prompt {
-          width: 100%;
-          max-width: 100%;
-        }
-
-        .screensaver-buttons {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
-          width: 100%;
-        }
-
-        .screensaver-button {
-          width: 100%;
-          min-width: unset;
-          padding: 12px;
-          font-size: 16px;
-        }
-      }
-
-      #screensaver-container:hover .screensaver-controls {
-        opacity: 1;
-      }
-
-      .screensaver-control-group {
+      .screensaver-control {
         display: flex;
-        flex-direction: column;
-        gap: 5px;
-        min-width: 150px;
-      }
-
-      .screensaver-label {
-        color: #fff;
-        font-size: 12px;
-        font-weight: 500;
-      }
-
-      .screensaver-select {
-        background: rgba(42, 42, 42, 0.8);
-        color: white;
-        border: 1px solid #444;
-        border-radius: 4px;
-        padding: 8px;
-        font-size: 14px;        
-        width: 160px;
+        align-items: center;
+        gap: 4px;
       }
 
       #screensaver-prompt {
-        background: rgba(42, 42, 42, 0.8);
-        color: white;
-        border: 1px solid #444;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.2);
         border-radius: 4px;
-        padding: 8px;
-        font-size: 14px;
-        width: 300px;     
-        max-width: 90%;   
+        color: black;
+        padding: 4px 8px;
+        font-size: 12px;
+        width: 200px;
       }
 
       #screensaver-interval {
-        background: rgba(42, 42, 42, 0.8);
-        color: white;
-        border: 1px solid #444;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.2);
         border-radius: 4px;
-        padding: 8px;
-        font-size: 14px;
-        width: 80px; 
+        color: black;
+        padding: 4px 8px;
+        font-size: 12px;
+        width: 60px;
+      }
+
+      .screensaver-select,
+      #screensaver-aspect,
+      #screensaver-model {
+        background: white !important;
+        border: 1px solid rgba(0, 0, 0, 0.2) !important;
+        border-radius: 4px;
+        color: black !important;
+        padding: 4px 8px;
+        font-size: 12px;
+        min-width: 80px;
       }
 
       .screensaver-checkbox-group {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
         color: white;
-      }
-
-      .screensaver-checkbox-group input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-      }
-
-      .screensaver-buttons {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
+        font-size: 12px;
       }
 
       .screensaver-button {
-        background: #007AFF;
-        color: white;
-        border: none;
-        padding: 8px 16px;
+        background: rgba(59, 130, 246, 0.5);
+        border: 1px solid rgba(59, 130, 246, 0.2);
         border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        font-size: 12px;
         cursor: pointer;
-        font-size: 14px;
         transition: all 0.2s ease;
-        min-width: 120px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
 
       .screensaver-button:hover {
-        background: #0056b3;
-        transform: translateY(-1px);
+        background: rgba(59, 130, 246, 0.7);
       }
 
-      .screensaver-toggle {
-        background: linear-gradient(to bottom, #0284c7 0%, #0369a1 100%);
-        border: none;
-        border-radius: 4px;
-        color: white;
-        padding: 8px 16px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s ease;
+      #screensaver-exit {
+        background: rgba(239, 68, 68, 0.5);
+        border-color: rgba(239, 68, 68, 0.2);
       }
 
-      .screensaver-toggle:hover {
-        background: linear-gradient(to bottom, #0369a1 0%, #075985 100%);
-        transform: translateY(-1px);
+      #screensaver-exit:hover {
+        background: rgba(239, 68, 68, 0.7);
       }
 
-      .screensaver-toggle:active {
-        transform: translateY(0);
-      }
+      @media (max-width: 768px) {
+        #screensaver-control-group {
+          padding: 4px;
+          gap: 4px;
+        }
 
-      .menu-controls .screensaver-toggle {
-        margin-left: 10px;
-      }
+        #screensaver-prompt {
+          width: 150px;
+        }
 
-      .menu-controls .screensaver-toggle:hover {
-        background: linear-gradient(to bottom, #0369a1 0%, #075985 100%);
-        transform: translateY(-1px);
-      }
-
-      .menu-controls .screensaver-toggle:active {
-        transform: translateY(0);
-      }
-
-      .menu-controls .screensaver-toggle.active {
-        background: linear-gradient(to bottom, #dc3545 0%, #c82333 100%);
-      }
-
-      .screensaver-select {
-        background: rgba(42, 42, 42, 0.8);
-        color: white;
-        border: 1px solid #444;
-        border-radius: 4px;
-        padding: 8px;
-        font-size: 14px;
-        min-width: 120px;
-      }
-
-      .screensaver-select option {
-        background: #2a2a2a;
-        color: white;
-      }
-
-      #screensaver-container {
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
+        .screensaver-button {
+          padding: 4px 6px;
+        }
       }
 
       @supports (-webkit-touch-callout: none) {
@@ -951,227 +663,176 @@
           height: -webkit-fill-available;
         }
 
-        .screensaver-controls {
-          bottom: env(safe-area-inset-bottom);
-          padding-bottom: calc(15px + env(safe-area-inset-bottom));
+        #screensaver-control-group {
+          padding-bottom: calc(8px + env(safe-area-inset-bottom));
         }
       }
-      .image-upload-feedback {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px 30px;
-  border-radius: 8px;
-  z-index: 10001;
-  font-size: 16px;
-  animation: fadeInOut 2s ease forwards;
-  pointer-events: none;
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translate(-50%, -40%); }
-  15% { opacity: 1; transform: translate(-50%, -50%); }
-  85% { opacity: 1; transform: translate(-50%, -50%); }
-  100% { opacity: 0; transform: translate(-50%, -60%); }
-}
-
-.error-popup {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #ef4444;
-  color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10002;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.3s ease;
-}
-
-.error-popup.show {
-  opacity: 1;
-  transform: translateX(0);
-}
     </style>
   </head>
   <body>
-
-    <!-- Screensaver Container -->
     <div id="screensaver-container">
-      <img id="screensaver-image" alt="Screensaver" aria-label="Generated image" loading="eager" />      
+      <img id="screensaver-image" alt="Screensaver" aria-label="Generated image" loading="eager" />
       
-      <!-- **Updated: Added ID 'my-settings-panel' to the settings panel div** -->
-      <div class="screensaver-controls" id="my-settings-panel" style="display: flex;">
-        <p class="screensaver-hide-instructions" style="color:#FFF; font-size:12px; margin:0; padding:0;">
-          Press "H" to toggle hide settings.
-        </p>
-
-        <div class="screensaver-control-group">
-          <label class="screensaver-label" for="screensaver-prompt" title="Enter a description of the image you want to generate">Prompt:</label>
-          <input type="text" id="screensaver-prompt" aria-label="Image generation prompt" placeholder="Enter image prompt..." title="Type a prompt to describe the type of images the screensaver should display." value="random artistic scene, high quality, detailed" />
-        </div>
-        
-        <div class="screensaver-control-group">
-          <label class="screensaver-label" for="screensaver-interval" title="Set how often the image changes">Interval (sec):</label>
-          <input type="number" id="screensaver-interval" aria-label="Image update interval in seconds" value="30" min="5" title="Set the interval in seconds between screensaver image updates." />
+      <div id="screensaver-control-group">
+        <div class="screensaver-control">
+          <input type="text" id="screensaver-prompt" placeholder="Enter prompt..." value="random artistic scene, high quality, detailed" title="Image generation prompt" />
         </div>
 
-        <div class="screensaver-control-group">
-          <label class="screensaver-label" title="Choose image dimensions">Aspect Ratio:</label>
-          <select id="screensaver-aspect" class="screensaver-select" title="Select the aspect ratio for generated images">
-            <option value="widescreen" title="16:9 ratio, best for most displays">Landscape (1920x1080)</option>
-            <option value="square" title="1:1 ratio, perfect square">Square (1024x1024)</option>
-            <option value="portrait" title="9:16 ratio, tall format">Portrait (1080x1920)</option>
-            <option value="ultrawide" title="21:9 ratio, ultrawide displays">Ultrawide (2560x1080)</option>
+        <div class="screensaver-control">
+          <input type="number" id="screensaver-interval" value="30" min="5" title="Update interval in seconds" />
+        </div>
+
+        <div class="screensaver-control">
+          <select id="screensaver-aspect" class="screensaver-select" title="Image aspect ratio">
+            <option value="widescreen">16:9</option>
+            <option value="square">1:1</option>
+            <option value="portrait">9:16</option>
+            <option value="ultrawide">21:9</option>
           </select>
         </div>
 
-        <div class="screensaver-control-group">
-          <label class="screensaver-label" title="Select image generation model">Model:</label>
-          <select id="screensaver-model" class="screensaver-select" title="Choose the image generation model">
-            <option value="flux" title="Photorealistic image generation model optimized for high-quality outputs">Flux</option>
-            <option value="flux-realism" title="Enhanced photorealism with advanced detail rendering">Flux Realism</option>
-            <option value="flux-cablyai" title="Specialized in creative and artistic image generation">Flux CablyAI</option>
-            <option value="flux-anime" title="Optimized for anime and manga style artwork">Flux Anime</option>
-            <option value="flux-3d" title="Specialized in 3D-style rendering and compositions">Flux 3D</option>
-            <option value="any-dark" title="Focused on dark themes and moody aesthetics">Any Dark</option>
-            <option value="flux-pro" title="Professional-grade image generation with enhanced capabilities">Flux Pro</option>
-            <option value="turbo" title="High-speed image generation optimized for quick results">Turbo</option>
-          </select>
+        <div class="screensaver-control">
+            <select id="screensaver-model" class="screensaver-select" title="Image generation model">
+                <option value="unity" title="Unity AI Model - Optimized for creative and varied outputs" selected>Unity</option> 
+                <option value="flux" title="Standard Flux model - Balanced quality and speed">Flux</option>
+                <option value="flux-realism" title="Enhanced photorealistic outputs with fine details">Realism</option>
+                <option value="flux-cablyai" title="Art-focused model with creative interpretations">CablyAI</option>
+                <option value="flux-anime" title="Specialized for anime and manga art styles">Anime</option>
+                <option value="flux-3d" title="3D-style generation with dimensional depth">3D</option>
+                <option value="any-dark" title="Dark theme aesthetics and moody compositions">Dark</option>
+                <option value="flux-pro" title="Professional grade outputs with enhanced quality">Pro</option>
+                <option value="turbo" title="High-speed generation with rapid results">Turbo</option>
+            </select>
         </div>
 
-        <div class="screensaver-control-group">
-          <div class="screensaver-checkbox-group">
-            <input type="checkbox" id="screensaver-enhance" checked title="Apply image enhancement" />
-            <label for="screensaver-enhance" title="Enable/disable image enhancement">Enhance</label>
-          </div>
-          <div class="screensaver-checkbox-group">
+        <div class="screensaver-checkbox-group">
+          <label>
+            <input type="checkbox" id="screensaver-enhance" checked title="Enable image enhancement" />
+            Enhance
+          </label>
+        </div>
+
+        <div class="screensaver-checkbox-group">
+          <label>
             <input type="checkbox" id="screensaver-private" checked title="Make images private" />
-            <label for="screensaver-private" title="Enable/disable private mode">Private</label>
-          </div>
+            Private
+          </label>
         </div>
 
-        <div class="screensaver-buttons">
-          <button class="screensaver-button" id="screensaver-refresh" title="Generate a new image">🔄 New Image</button>
-          <button class="screensaver-button" id="screensaver-copy" title="Copy image to clipboard">📋 Copy</button>
-          <button class="screensaver-button" id="screensaver-download" title="Download image to device">💾 Save</button>
-          <button class="screensaver-button screensaver-exit" id="screensaver-exit" title="Exit screensaver mode">✖️ Exit</button>
-        </div>
+        <button class="screensaver-button" id="screensaver-refresh" title="Generate new image">
+          🔄 New
+        </button>
+        <button class="screensaver-button" id="screensaver-copy" title="Copy image">
+          📋 Copy
+        </button>
+        <button class="screensaver-button" id="screensaver-download" title="Save image">
+          💾 Save
+        </button>
+        <button class="screensaver-button" id="screensaver-exit" title="Exit screensaver">
+          ✖️ Exit
+        </button>
       </div>
-      <div class="screensaver-tooltip"></div>
     </div>
-    <!-- END Screensaver Container -->
-
     <div class="chat-container max-w-4xl mx-auto p-4 bg-zinc-900 text-gray-100 font-sans" id="app-root">
-      <div id="chat-layout" class="chat-layout">
-        <div class="chat-main">
-          <div id="chat-box" class="chat-box"></div>
-        </div>
-        <div class="code-panel">
-          <div class="code-panel-header">
-            <span class="code-panel-title">Code Display</span>
-            <div class="code-panel-controls">
-              <button class="control-btn" onclick="clearCodePanel()">
-                Clear
-              </button>
+        <div id="chat-layout" class="chat-layout">
+          <div class="chat-main">
+            <div id="chat-box" class="chat-box"></div>
+          </div>
+          <div class="code-panel">
+            <div class="code-panel-header">
+              <span class="code-panel-title">Code Display</span>
+              <div class="code-panel-controls">
+                <button class="control-btn" onclick="clearCodePanel()">
+                  Clear
+                </button>
+              </div>
+            </div>
+            <div id="code-panel-content" class="code-panel-content">
+              <div class="code-panel-empty">No code to display</div>
             </div>
           </div>
-          <div id="code-panel-content" class="code-panel-content">
-            <div class="code-panel-empty">No code to display</div>
+        </div>
+        <div class="input-area">
+          <textarea
+            id="chat-input"
+            placeholder="Type your message... (Shift+Enter for new line, Enter to send) **Image models currently slow & may not work, awaiting API fix**"
+          ></textarea>
+        </div>
+        <div class="controls">
+          <div class="left-controls">
+            <button id="voice-toggle" class="control-btn" title="Toggle Voice">
+              🔊
+            </button>
+            <button id="clear-chat" class="control-btn" title="Clear Chat">
+              🗑️
+            </button>
+          </div>
+  
+          <div class="nav-controls">
+            <button
+              id="nav-left"
+              class="nav-btn"
+              title="Show Chat"
+              onclick="toggleView('chat')"
+            >
+              ⬅️
+            </button>
+            <button
+              id="nav-right"
+              class="nav-btn"
+              title="Show Code"
+              onclick="toggleView('code')"
+            >
+              ➡️
+            </button>
+          </div>
+  
+          <div class="menu-controls">
+            <select class="model-select" title="Select AI Model">
+              <optgroup label="Custom Models">
+                <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona | 🚀 Enhanced Capabilities | ⚡ Fast Response" selected>Unity AI</option>
+                <option value="evil" title="Evil Mode - Experimental | 🎭 Dark Persona | ⚠️ No Restrictions | 🔓 Raw Output">Evil Mode</option>
+                <option value="midijourney" title="Musical AI | 🎵 Audio Generation | 🎼 Composition Assistant | 🎹 Music Theory">Midijourney</option>
+                <option value="rtist" title="AI Art Generator | 🎨 Creative Vision | 🖼️ Image Creation | ✨ Style Transfer">Rtist</option>
+                <option value="searchgpt" title="Real-time Search | 🌐 Web Access | 📰 News Updates | 🔍 Deep Research">SearchGPT</option>
+                <option value="p1" title="Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output">P1</option>
+              </optgroup>
+              <optgroup label="Base Models">
+                <option value="claude-hybridspace" title="Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis">Claude</option>
+                <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Content Filtered | 👁️ Vision Capable | 🧠 Advanced Reasoning">OpenAI</option>
+                <option value="openai-large" title="OpenAI GPT-4o | 🔒 Content Filtered | 👁️ Enhanced Vision | 🚀 Maximum Performance">OpenAI Large</option>
+                <option value="mistral" title="Mistral Nemo | 🌟 High Efficiency | 💨 Fast Processing | 🔓 Uncensored">Mistral</option>
+                <option value="mistral-large" title="Mistral Large | 🚀 Superior Performance | 🧠 Deep Understanding | 🔓 Uncensored">Mistral Large</option>
+                <option value="qwen" title="Qwen 2.5 72B | 🔒 Safety Filtered | 🌐 Multilingual | 🎯 High Precision">Qwen</option>
+                <option value="llama" title="Llama 3.3 70B | 🔓 Uncensored | 🚀 High Performance | 🧠 Advanced Reasoning">Llama</option>
+                <option value="deepseek" title="DeepSeek-V3 | 🔒 Content Filtered | 🎯 Deep Analysis | 💡 Creative Problem Solving">DeepSeek</option>
+              </optgroup>
+            </select>
+            <button id="screensaver-toggle" class="screensaver-toggle" title="Enable or disable the screensaver functionality.">🎬 Screensaver</button>
           </div>
         </div>
       </div>
-      <div class="input-area">
-        <textarea
-          id="chat-input"
-          placeholder="Type your message... (Shift+Enter for new line, Enter to send)"
-        ></textarea>
-      </div>
-      <div class="controls">
-        <div class="left-controls">
-          <button id="voice-toggle" class="control-btn" title="Toggle Voice">
-            🔊
-          </button>
-          <button id="clear-chat" class="control-btn" title="Clear Chat">
-            🗑️
-          </button>
-        </div>
-
-        <div class="nav-controls">
-          <button
-            id="nav-left"
-            class="nav-btn"
-            title="Show Chat"
-            onclick="toggleView('chat')"
-          >
-            ⬅️
-          </button>
-          <button
-            id="nav-right"
-            class="nav-btn"
-            title="Show Code"
-            onclick="toggleView('code')"
-          >
-            ➡️
-          </button>
-        </div>
-
-        <div class="menu-controls">
-          <select class="model-select" title="Select AI Model">
-            <optgroup label="Custom Models">
-              <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona | 🚀 Enhanced Capabilities | ⚡ Fast Response" selected>Unity AI</option>
-              <option value="evil" title="Evil Mode - Experimental | 🎭 Dark Persona | ⚠️ No Restrictions | 🔓 Raw Output">Evil Mode</option>
-              <option value="midijourney" title="Musical AI | 🎵 Audio Generation | 🎼 Composition Assistant | 🎹 Music Theory">Midijourney</option>
-              <option value="rtist" title="AI Art Generator | 🎨 Creative Vision | 🖼️ Image Creation | ✨ Style Transfer">Rtist</option>
-              <option value="searchgpt" title="Real-time Search | 🌐 Web Access | 📰 News Updates | 🔍 Deep Research">SearchGPT</option>
-              <option value="p1" title="Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output">P1</option>
-            </optgroup>
-            <optgroup label="Base Models">
-              <option value="claude-hybridspace" title="Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis">Claude</option>
-              <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Content Filtered | 👁️ Vision Capable | 🧠 Advanced Reasoning">OpenAI</option>
-              <option value="openai-large" title="OpenAI GPT-4o | 🔒 Content Filtered | 👁️ Enhanced Vision | 🚀 Maximum Performance">OpenAI Large</option>
-              <option value="mistral" title="Mistral Nemo | 🌟 High Efficiency | 💨 Fast Processing | 🔓 Uncensored">Mistral</option>
-              <option value="mistral-large" title="Mistral Large | 🚀 Superior Performance | 🧠 Deep Understanding | 🔓 Uncensored">Mistral Large</option>
-              <option value="qwen" title="Qwen 2.5 72B | 🔒 Safety Filtered | 🌐 Multilingual | 🎯 High Precision">Qwen</option>
-              <option value="llama" title="Llama 3.3 70B | 🔓 Uncensored | 🚀 High Performance | 🧠 Advanced Reasoning">Llama</option>
-              <option value="deepseek" title="DeepSeek-V3 | 🔒 Content Filtered | 🎯 Deep Analysis | 💡 Creative Problem Solving">DeepSeek</option>
-            </optgroup>
-          </select>
-          <button id="screensaver-toggle" class="screensaver-toggle" title="Enable or disable the screensaver functionality.">🎬 Screensaver</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Local Scripts -->
-<script src="ChatInterface.js" defer></script>
-<script src="Screensaver.js" defer></script>
-
-<!-- CDN Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Initialize chat script (call any init function if needed).
-        // Now handle the screensaver init from screensaver.js
-        if (window.screensaver && typeof window.screensaver.initialize === 'function') {
-          window.screensaver.initialize();
-        }
-      });
-    </script>
-
-  </body>
-</html>
+  
+      <script src="ChatInterface.js" defer></script>
+      <script src="Screensaver.js" defer></script>
+  
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+  
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          if (window.screensaver && typeof window.screensaver.initialize === 'function') {
+            window.screensaver.initialize();
+          }
+        });
+      </script>
+    </body>
+  </html>
