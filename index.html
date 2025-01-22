@@ -755,7 +755,7 @@
         <div class="input-area">
           <textarea
             id="chat-input"
-            placeholder="Type your message... (Shift+Enter for new line, Enter to send) **Image models currently slow & may not work, awaiting API fix**"
+            placeholder="Type your message... (Shift+Enter for new line, Enter to send) Want to buy us a coffee? Scroll down."
           ></textarea>
         </div>
         <div class="controls">
@@ -833,6 +833,22 @@
             window.screensaver.initialize();
           }
         });
+
+        function copyToClipboard(text) {
+          navigator.clipboard.writeText(text).then(() => {
+            alert('Address copied to clipboard');
+          }).catch(err => {
+            console.error('Failed to copy: ', err);
+          });
+        }
       </script>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
+        <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
+        <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
+        <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
+        <button class="copy-address-button">Wanna Donate? Thx!</button>
+      </div>
     </body>
   </html>
