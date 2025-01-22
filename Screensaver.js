@@ -14,101 +14,45 @@ let touchStartY = 0;
 =============================== */
 const SCREENSAVER_CONFIG = {
   models: {
-    unity: {
-      name: 'unity',
-      displayName: 'Unity (Default)',
-      defaultPrompt: 'artistic scene, unity style, highly detailed, 8k uhd',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Best for artistic and creative scenes',
-      enhanceDefault: true
-    },
     flux: {
       name: 'flux',
       displayName: 'Flux',
-      defaultPrompt: 'photorealistic scene, highly detailed, professional photography',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Excellent for photorealistic images',
-      enhanceDefault: true
+      tooltip: 'Photorealistic image generation model optimized for high-quality outputs'
     },
     'flux-realism': {
       name: 'flux-realism',
       displayName: 'Flux Realism',
-      defaultPrompt: 'hyperrealistic photograph, ultra detailed, professional quality',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Specialized in hyperrealistic imagery',
-      enhanceDefault: true
+      tooltip: 'Enhanced photorealism with advanced detail rendering'
     },
     'flux-cablyai': {
       name: 'flux-cablyai',
       displayName: 'Flux CablyAI',
-      defaultPrompt: 'vibrant digital art, detailed illustration, modern style',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Optimized for digital art and illustrations',
-      enhanceDefault: true
+      tooltip: 'Specialized in creative and artistic image generation'
     },
     'flux-anime': {
       name: 'flux-anime',
       displayName: 'Flux Anime',
-      defaultPrompt: 'anime style artwork, detailed, vibrant colors',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Specialized in anime and manga style',
-      enhanceDefault: true
+      tooltip: 'Optimized for anime and manga style artwork'
     },
     'flux-3d': {
       name: 'flux-3d',
       displayName: 'Flux 3D',
-      defaultPrompt: '3d rendered scene, high quality, detailed textures',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Best for 3D-style renderings',
-      enhanceDefault: true
+      tooltip: 'Specialized in 3D-style rendering and compositions'
     },
     'any-dark': {
       name: 'any-dark',
       displayName: 'Any Dark',
-      defaultPrompt: 'dark themed artwork, moody atmosphere, detailed shadows',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Specialized in dark and moody themes',
-      enhanceDefault: true
-    },
-    'any-nightly': {
-      name: 'any-nightly',
-      displayName: 'Any Nightly',
-      defaultPrompt: 'nighttime scene, atmospheric lighting, detailed',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Optimized for night scenes',
-      enhanceDefault: true
+      tooltip: 'Focused on dark themes and moody aesthetics'
     },
     'flux-pro': {
       name: 'flux-pro',
       displayName: 'Flux Pro',
-      defaultPrompt: 'professional grade artwork, ultra detailed, masterful composition',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Premium quality for professional use',
-      enhanceDefault: true
+      tooltip: 'Professional-grade image generation with enhanced capabilities'
     },
-    turbo: {
+    'turbo': {
       name: 'turbo',
       displayName: 'Turbo',
-      defaultPrompt: 'fast-rendered detailed scene, quality artwork',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Quick generation with good quality',
-      enhanceDefault: false
-    },
-    lcm: {
-      name: 'lcm',
-      displayName: 'LCM',
-      defaultPrompt: 'artistic composition, balanced detail, quality rendering',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'Balanced performance and quality',
-      enhanceDefault: true
-    },
-    sdxl: {
-      name: 'sdxl',
-      displayName: 'SDXL',
-      defaultPrompt: 'high resolution artwork, exceptional detail, professional quality',
-      dimensions: { width: 1920, height: 1080 },
-      capabilities: 'High-resolution detailed images',
-      enhanceDefault: true
+      tooltip: 'High-speed image generation optimized for quick results'
     }
   },
   aspectRatios: {
