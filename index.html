@@ -2,8 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>UnityWebApp10.0</title>
+    <title>UnityWebApp14.0</title>
 
+    <!-- Prism CSS for code highlighting -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
       rel="stylesheet"
@@ -13,12 +14,101 @@
       rel="stylesheet"
     />
 
+    <!-- Custom Styles -->
     <style>
-      .chat-container {
+      /* Dark/Light Mode */
+      :root {
         --chat-primary: #3b82f6;
         --chat-secondary: #1e40af;
         --chat-bg: #18181b;
         --chat-text: #f3f4f6;
+        --chat-bg-light: #ffffff;
+        --chat-text-light: #000000;
+      }
+
+      .light-mode {
+        --chat-bg: var(--chat-bg-light);
+        --chat-text: var(--chat-text-light);
+      }
+
+      body {
+        background-color: var(--chat-bg);
+        color: var(--chat-text);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      /* Floating Action Button (FAB) */
+      .fab {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--chat-primary);
+        color: white;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Toast Notifications */
+      .toast-container {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .toast {
+        background: var(--chat-primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      .toast.error {
+        background: #ef4444;
+      }
+
+      .toast.success {
+        background: #10b981;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      /* Custom Scrollbar */
+      .chat-box::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .chat-box::-webkit-scrollbar-track {
+        background: var(--chat-bg);
+      }
+
+      .chat-box::-webkit-scrollbar-thumb {
+        background: var(--chat-primary);
+        border-radius: 4px;
+      }
+
+      /* Chat Container */
+      .chat-container {
         font-size: 13px;
       }
 
@@ -62,42 +152,6 @@
 
       .chat-layout.full-code .chat-main {
         display: none;
-      }
-
-      .control-btn,
-      .nav-btn,
-      .copy-button {
-        background: linear-gradient(to bottom, #0284c7 0%, #0369a1 100%);
-        border: none;
-        border-radius: 0.375rem;
-        color: white;
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .control-btn:hover,
-      .nav-btn:hover,
-      .copy-button:hover {
-        background: linear-gradient(to bottom, #0369a1 0%, #075985 100%);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-
-      .control-btn:active,
-      .nav-btn:active,
-      .copy-button:active {
-        transform: translateY(1px);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      }
-
-      .control-btn:disabled,
-      .nav-btn:disabled {
-        background: #64748b;
-        cursor: not-allowed;
-        box-shadow: none;
       }
 
       .code-panel {
@@ -194,22 +248,6 @@
         flex-grow: 1;
         height: 100%;
         min-height: 0;
-      }
-
-      .chat-box::-webkit-scrollbar,
-      .code-panel::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      .chat-box::-webkit-scrollbar-track,
-      .code-panel::-webkit-scrollbar-track {
-        background: var(--chat-bg);
-      }
-
-      .chat-box::-webkit-scrollbar-thumb,
-      .code-panel::-webkit-scrollbar-thumb {
-        background-color: var(--chat-primary);
-        border-radius: 4px;
       }
 
       .message {
@@ -323,53 +361,24 @@
         tab-size: 4;
       }
 
-      .user-message .message-content p,
-      .ai-message .message-content p {
-        margin: 0;
-        padding: 0;
-        display: inline;
-      }
-
-      .user-message .message-content,
-      .ai-message .message-content {
-        display: inline-block;
-      }
-
-      .message img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin: 8px 0;
-      }
-
-      .message-content p {
-        margin: 0;
-        padding: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        font-size: 15px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-      }
-
       .user-message {
-        background: #ffffff;  
+        background: #ffffff;
         margin-left: auto;
         flex-direction: row-reverse;
-        color: #000000;  
+        color: #000000;
         padding: 12px 16px;
         font-family: 'Helvetica Neue', Arial, sans-serif;
-        font-size: 15px;  
+        font-size: 15px;
       }
 
       .ai-message {
-        background: #f5f5f5;  
+        background: #f5f5f5;
         margin-right: auto;
         position: relative;
-        color: #000000;  
+        color: #000000;
         padding: 12px 16px;
         font-family: 'Helvetica Neue', Arial, sans-serif;
-        font-size: 15px; 
+        font-size: 15px;
       }
 
       .message-replay {
@@ -422,12 +431,13 @@
         border: none;
         resize: none;
         outline: none;
-        font-size: 15px;  
+        font-size: 15px;
         font-family: 'Helvetica Neue', Arial, sans-serif;
         box-sizing: border-box;
         line-height: 1.5;
-        overflow-y: auto;  
+        overflow-y: auto;
       }
+
       #chat-input:focus {
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
       }
@@ -643,6 +653,16 @@
         background: rgba(239, 68, 68, 0.7);
       }
 
+      #screensaver-refresh {
+        background: rgba(59, 130, 246, 0.5);
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+
+      #screensaver-refresh.active {
+        background: rgba(239, 68, 68, 0.5);
+        border-color: rgba(239, 68, 68, 0.2);
+      }
+
       @media (max-width: 768px) {
         #screensaver-control-group {
           padding: 4px;
@@ -670,18 +690,16 @@
     </style>
   </head>
   <body>
+    <!-- Screensaver Container -->
     <div id="screensaver-container">
       <img id="screensaver-image" alt="Screensaver" aria-label="Generated image" loading="eager" />
-      
       <div id="screensaver-control-group">
         <div class="screensaver-control">
           <input type="text" id="screensaver-prompt" placeholder="Enter prompt..." value="random artistic scene, high quality, detailed" title="Image generation prompt" />
         </div>
-
         <div class="screensaver-control">
           <input type="number" id="screensaver-interval" value="30" min="5" title="Update interval in seconds" />
         </div>
-
         <div class="screensaver-control">
           <select id="screensaver-aspect" class="screensaver-select" title="Image aspect ratio">
             <option value="widescreen">16:9</option>
@@ -690,42 +708,38 @@
             <option value="ultrawide">21:9</option>
           </select>
         </div>
-
         <div class="screensaver-control">
-            <select id="screensaver-model" class="screensaver-select" title="Image generation model">
-                <option value="unity" title="Unity AI Model - Optimized for creative and varied outputs" selected>Unity</option> 
-                <option value="flux" title="Standard Flux model - Balanced quality and speed">Flux</option>
-                <option value="flux-realism" title="Enhanced photorealistic outputs with fine details">Realism</option>
-                <option value="flux-cablyai" title="Art-focused model with creative interpretations">CablyAI</option>
-                <option value="flux-anime" title="Specialized for anime and manga art styles">Anime</option>
-                <option value="flux-3d" title="3D-style generation with dimensional depth">3D</option>
-                <option value="any-dark" title="Dark theme aesthetics and moody compositions">Dark</option>
-                <option value="flux-pro" title="Professional grade outputs with enhanced quality">Pro</option>
-                <option value="turbo" title="High-speed generation with rapid results">Turbo</option>
-            </select>
+          <select id="screensaver-model" class="screensaver-select" title="Image generation model">
+            <option value="unity" title="Unity AI Model - Optimized for creative and varied outputs" selected>Unity</option>
+            <option value="flux" title="Standard Flux model - Balanced quality and speed">Flux</option>
+            <option value="flux-realism" title="Enhanced photorealistic outputs with fine details">Realism</option>
+            <option value="flux-cablyai" title="Art-focused model with creative interpretations">CablyAI</option>
+            <option value="flux-anime" title="Specialized for anime and manga art styles">Anime</option>
+            <option value="flux-3d" title="3D-style generation with dimensional depth">3D</option>
+            <option value="any-dark" title="Dark theme aesthetics and moody compositions">Dark</option>
+            <option value="flux-pro" title="Professional grade outputs with enhanced quality">Pro</option>
+            <option value="turbo" title="High-speed generation with rapid results">Turbo</option>
+          </select>
         </div>
-
         <div class="screensaver-checkbox-group">
           <label>
             <input type="checkbox" id="screensaver-enhance" checked title="Enable image enhancement" />
             Enhance
           </label>
         </div>
-
         <div class="screensaver-checkbox-group">
           <label>
             <input type="checkbox" id="screensaver-private" checked title="Make images private" />
             Private
           </label>
         </div>
-
-        <button class="screensaver-button" id="screensaver-refresh" title="Generate new image">
-          🔄 New
-        </button>
-        <button class="screensaver-button" id="screensaver-copy" title="Copy image">
+        <button class="screensaver-button" id="screensaver-refresh" title="Start/Stop the slideshow">
+            ▶️ Start
+          </button>
+        <button class="screensaver-button" id="screensaver-copy" title="Copy image to clipboard">
           📋 Copy
         </button>
-        <button class="screensaver-button" id="screensaver-download" title="Save image">
+        <button class="screensaver-button" id="screensaver-download" title="Download image">
           💾 Save
         </button>
         <button class="screensaver-button" id="screensaver-exit" title="Exit screensaver">
@@ -733,122 +747,122 @@
         </button>
       </div>
     </div>
+
+    <!-- Chat Container -->
     <div class="chat-container max-w-4xl mx-auto p-4 bg-zinc-900 text-gray-100 font-sans" id="app-root">
-        <div id="chat-layout" class="chat-layout">
-          <div class="chat-main">
-            <div id="chat-box" class="chat-box"></div>
-          </div>
-          <div class="code-panel">
-            <div class="code-panel-header">
-              <span class="code-panel-title">Code Display</span>
-              <div class="code-panel-controls">
-                <button class="control-btn" onclick="clearCodePanel()">
-                  Clear
-                </button>
-              </div>
-            </div>
-            <div id="code-panel-content" class="code-panel-content">
-              <div class="code-panel-empty">No code to display</div>
+      <div id="chat-layout" class="chat-layout">
+        <div class="chat-main">
+          <div id="chat-box" class="chat-box"></div>
+        </div>
+        <div class="code-panel">
+          <div class="code-panel-header">
+            <span class="code-panel-title">Code Display</span>
+            <div class="code-panel-controls">
+              <button class="control-btn" onclick="clearCodePanel()" title="Clear the code panel">
+                Clear
+              </button>
             </div>
           </div>
-        </div>
-        <div class="input-area">
-          <textarea
-            id="chat-input"
-            placeholder="Type your message... (Shift+Enter for new line, Enter to send) Want to buy us a coffee? Scroll down."
-          ></textarea>
-        </div>
-        <div class="controls">
-          <div class="left-controls">
-            <button id="voice-toggle" class="control-btn" title="Toggle Voice">
-              🔊
-            </button>
-            <button id="clear-chat" class="control-btn" title="Clear Chat">
-              🗑️
-            </button>
-          </div>
-  
-          <div class="nav-controls">
-            <button
-              id="nav-left"
-              class="nav-btn"
-              title="Show Chat"
-              onclick="toggleView('chat')"
-            >
-              ⬅️
-            </button>
-            <button
-              id="nav-right"
-              class="nav-btn"
-              title="Show Code"
-              onclick="toggleView('code')"
-            >
-              ➡️
-            </button>
-          </div>
-  
-          <div class="menu-controls">
-            <select class="model-select" title="Select AI Model">
-              <optgroup label="Custom Models">
-                <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona | 🚀 Enhanced Capabilities | ⚡ Fast Response" selected>Unity AI</option>
-                <option value="evil" title="Evil Mode - Experimental | 🎭 Dark Persona | ⚠️ No Restrictions | 🔓 Raw Output">Evil Mode</option>
-                <option value="midijourney" title="Musical AI | 🎵 Audio Generation | 🎼 Composition Assistant | 🎹 Music Theory">Midijourney</option>
-                <option value="rtist" title="AI Art Generator | 🎨 Creative Vision | 🖼️ Image Creation | ✨ Style Transfer">Rtist</option>
-                <option value="searchgpt" title="Real-time Search | 🌐 Web Access | 📰 News Updates | 🔍 Deep Research">SearchGPT</option>
-                <option value="p1" title="Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output">P1</option>
-              </optgroup>
-              <optgroup label="Base Models">
-                <option value="claude-hybridspace" title="Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis">Claude</option>
-                <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Content Filtered | 👁️ Vision Capable | 🧠 Advanced Reasoning">OpenAI</option>
-                <option value="openai-large" title="OpenAI GPT-4o | 🔒 Content Filtered | 👁️ Enhanced Vision | 🚀 Maximum Performance">OpenAI Large</option>
-                <option value="mistral" title="Mistral Nemo | 🌟 High Efficiency | 💨 Fast Processing | 🔓 Uncensored">Mistral</option>
-                <option value="mistral-large" title="Mistral Large | 🚀 Superior Performance | 🧠 Deep Understanding | 🔓 Uncensored">Mistral Large</option>
-                <option value="qwen" title="Qwen 2.5 72B | 🔒 Safety Filtered | 🌐 Multilingual | 🎯 High Precision">Qwen</option>
-                <option value="llama" title="Llama 3.3 70B | 🔓 Uncensored | 🚀 High Performance | 🧠 Advanced Reasoning">Llama</option>
-                <option value="deepseek" title="DeepSeek-V3 | 🔒 Content Filtered | 🎯 Deep Analysis | 💡 Creative Problem Solving">DeepSeek</option>
-              </optgroup>
-            </select>
-            <button id="screensaver-toggle" class="screensaver-toggle" title="Enable or disable the screensaver functionality.">🎬 Screensaver</button>
+          <div id="code-panel-content" class="code-panel-content">
+            <div class="code-panel-empty">No code to display</div>
           </div>
         </div>
       </div>
-  
-      <script src="ChatInterface.js" defer></script>
-      <script src="Screensaver.js" defer></script>
-  
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
-  
-      <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          if (window.screensaver && typeof window.screensaver.initialize === 'function') {
-            window.screensaver.initialize();
-          }
+      <div class="input-area">
+        <textarea
+          id="chat-input"
+          placeholder="Type your message... (Shift+Enter for new line, Enter to send) Want to buy us a coffee? Scroll down."
+        ></textarea>
+      </div>
+      <div class="controls">
+        <div class="left-controls">
+          <button id="voice-toggle" class="control-btn" title="Toggle Voice">
+            🔊
+          </button>
+          <button id="clear-chat" class="control-btn" title="Clear Chat">
+            🗑️
+          </button>
+          </button>
+        </div>
+        <div class="nav-controls">
+          <button
+            id="nav-left"
+            class="nav-btn"
+            title="Show Chat"
+            onclick="toggleView('chat')"
+          >
+            ⬅️
+          </button>
+          <button
+            id="nav-right"
+            class="nav-btn"
+            title="Show Code"
+            onclick="toggleView('code')"
+          >
+            ➡️
+          </button>
+        </div>
+        <div class="menu-controls">
+          <select class="model-select" title="Select AI Model">
+            <optgroup label="Custom Models">
+              <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona | 🚀 Enhanced Capabilities | ⚡ Fast Response" selected>Unity AI</option>
+              <option value="evil" title="Evil Mode - Experimental | 🎭 Dark Persona | ⚠️ No Restrictions | 🔓 Raw Output">Evil Mode</option>
+              <option value="midijourney" title="Musical AI | 🎵 Audio Generation | 🎼 Composition Assistant | 🎹 Music Theory">Midijourney</option>
+              <option value="rtist" title="AI Art Generator | 🎨 Creative Vision | 🖼️ Image Creation | ✨ Style Transfer">Rtist</option>
+              <option value="searchgpt" title="Real-time Search | 🌐 Web Access | 📰 News Updates | 🔍 Deep Research">SearchGPT</option>
+              <option value="p1" title="Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output">P1</option>
+            </optgroup>
+            <optgroup label="Base Models">
+              <option value="claude-hybridspace" title="Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis">Claude</option>
+              <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Content Filtered | 👁️ Vision Capable | 🧠 Advanced Reasoning">OpenAI</option>
+              <option value="openai-large" title="OpenAI GPT-4o | 🔒 Content Filtered | 👁️ Enhanced Vision | 🚀 Maximum Performance">OpenAI Large</option>
+              <option value="mistral" title="Mistral Nemo | 🌟 High Efficiency | 💨 Fast Processing | 🔓 Uncensored">Mistral</option>
+              <option value="qwen" title="Qwen 2.5 72B | 🔒 Safety Filtered | 🌐 Multilingual | 🎯 High Precision">Qwen</option>
+              <option value="qwen-coder" title="Qwen 2.5 Coder 32B | 🔧 Code Specialist | 💻 Programming Expert | 🎯 Technical Focus">Qwen Coder</option>
+              <option value="llama" title="Llama 3.3 70B | 🔓 Uncensored | 🚀 High Performance | 🧠 Advanced Reasoning">Llama</option>
+              <option value="llamalight" title="Llama 3.1 8B Instruct | 🪶 Lightweight | ⚡ Quick Response | 💡 Basic Tasks">Llama Light</option>
+              <option value="deepseek" title="DeepSeek-V3 | 🔒 Content Filtered | 🎯 Deep Analysis | 💡 Creative Problem Solving">DeepSeek</option>
+            </optgroup>
+          </select>
+          <button id="screensaver-toggle" class="screensaver-toggle" title="Enable or disable the screensaver functionality.">🎬 Screensaver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="ChatInterface.js" defer></script>
+    <script src="Screensaver.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+
+    <script>
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Address copied to clipboard');
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
         });
+      }
+    </script>
 
-        function copyToClipboard(text) {
-          navigator.clipboard.writeText(text).then(() => {
-            alert('Address copied to clipboard');
-          }).catch(err => {
-            console.error('Failed to copy: ', err);
-          });
-        }
-      </script>
-
-      <div style="text-align: center; margin-top: 20px;">
-        <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
-        <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
-        <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
-        <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
-        <button class="copy-address-button">Wanna Donate? Thx!</button>
-      </div>
-    </body>
-  </html>
+    <!-- Donation Buttons -->
+    <div style="text-align: center; margin-top: 20px;">
+      <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
+      <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
+      <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
+      <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
+      <button class="copy-address-button">Wanna Donate? Thx!</button>
+    </div>
+  </body>
+</html>
