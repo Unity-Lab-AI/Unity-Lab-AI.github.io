@@ -223,7 +223,55 @@ body.dark-mode {
 .toast.error {
     background-color: var(--toast-error);
 }
-
+.input-area {
+    position: relative;
+    border: 1px solid var(--chat-primary);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    background: var(--chat-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-end;
+  }
+  
+  #chat-input {
+    width: 100%;
+    min-height: 85px;
+    max-height: 150px;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    background: var(--chat-bg);
+    color: var(--chat-text);
+    border: none;
+    resize: none;
+    outline: none;
+    font-size: 15px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    box-sizing: border-box;
+    line-height: 1.5;
+    overflow-y: auto;
+  }
+  
+  #send-button {
+    margin: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #6b7280; /* Greyed out color */
+    color: #fff;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: not-allowed;
+    transition: background-color 0.2s;
+  }
+  
+  #send-button:not(:disabled) {
+    background-color: var(--chat-primary); /* Active color */
+    cursor: pointer;
+  }
+  
+  #send-button:not(:disabled):hover {
+    background-color: var(--chat-secondary); /* Hover color */
+  }
 @keyframes fadeIn {
     to {
         opacity: 1;
