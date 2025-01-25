@@ -964,7 +964,11 @@ async function buildMessages(modelName, userMessage) {
       this.style.height = newHeight + "px";
   
       // Enable/disable send button
-      sendButton.disabled = !this.value.trim();
+      const updateButtonState = () => {
+        sendButton.disabled = !input.value.trim();
+      }
+      input.addEventListener("input", updateButtonState);
+      updateButtonState(); // Initial state
     });
   
     // Send message on button click

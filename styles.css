@@ -256,22 +256,23 @@ body.dark-mode {
   #send-button {
     margin: 0.75rem 1rem;
     padding: 0.5rem 1rem;
-    background-color: #6b7280; /* Greyed out color */
+    background-color: var(--chat-primary);
     color: #fff;
     border: none;
     border-radius: 0.375rem;
-    cursor: not-allowed;
-    transition: background-color 0.2s;
-  }
-  
-  #send-button:not(:disabled) {
-    background-color: var(--chat-primary); /* Active color */
     cursor: pointer;
-  }
-  
-  #send-button:not(:disabled):hover {
-    background-color: var(--chat-secondary); /* Hover color */
-  }
+    transition: background-color 0.2s;
+}
+
+#send-button:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#send-button:not(:disabled):hover {
+    background-color: var(--chat-secondary);
+}
 @keyframes fadeIn {
     to {
         opacity: 1;
