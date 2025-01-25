@@ -954,6 +954,31 @@ async function buildMessages(modelName, userMessage) {
   }
 
   function setupEventListeners() {
+    const input = document.getElementById("chat-input");
+    const sendButton = document.getElementById("send-button");
+  
+    // Enable/disable send button based on input
+    input.addEventListener("input", function () {
+      this.style.height = "auto";
+      const newHeight = Math.min(this.scrollHeight, 150);
+      this.style.height = newHeight + "px";
+  
+      // Enable/disable send button
+      sendButton.disabled = !this.value.trim();
+    });
+  
+    // Send message on button click
+    sendButton.addEventListener("click", () => {
+      const message = input.value.trim();
+      if (message) {
+        sendMessage(message).catch(console.error);
+        input.value = "";
+        input.style.height = "auto";
+        sendButton.disabled = true; // Disable button after sending
+      }
+    });
+  
+    // Existing code for Enter key
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -962,16 +987,12 @@ async function buildMessages(modelName, userMessage) {
           sendMessage(message).catch(console.error);
           input.value = "";
           input.style.height = "auto";
+          sendButton.disabled = true; // Disable button after sending
         }
       }
     });
   
-    input.addEventListener("input", function () {
-      this.style.height = "auto";
-      const newHeight = Math.min(this.scrollHeight, 150);
-      this.style.height = newHeight + "px";
-    });
-  
+    // Existing code for voice toggle
     voiceToggle.addEventListener("click", () => {
       voiceEnabled = !voiceEnabled;
       voiceToggle.classList.add("button-press");
@@ -988,6 +1009,7 @@ async function buildMessages(modelName, userMessage) {
       }, 150);
     });
   
+    // Existing code for clear chat
     clearChat.addEventListener("click", () => {
       fadeOutAndClear();
       conversationHistory = [];
@@ -995,6 +1017,7 @@ async function buildMessages(modelName, userMessage) {
       stopTTS();
     });
   
+    // Existing code for window resize
     let resizeTimeout;
     window.addEventListener("resize", () => {
       clearTimeout(resizeTimeout);
@@ -1005,12 +1028,16 @@ async function buildMessages(modelName, userMessage) {
       }, 250);
     });
   
+    // Existing code for beforeunload
     window.addEventListener("beforeunload", () => {
       if (window.speechSynthesis) {
         synth.cancel();
       }
     });
-}
+  
+    // Existing code for image handling
+    setupImageHandling();
+  }
   
   function setupImageHandling() {
     chatBox.addEventListener("dragenter", (e) => {
