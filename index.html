@@ -1,852 +1,119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>UnityWebApp17.0</title>
-
-    <!-- Prism CSS for code highlighting -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css"
-      rel="stylesheet"
-    />
-
+    <title>Unity Chat U1 5.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Prism CSS for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
     <!-- Custom Styles -->
-    <style>
-      /* Dark/Light Mode */
-      :root {
-        --chat-primary: #3b82f6;
-        --chat-secondary: #1e40af;
-        --chat-bg: #18181b;
-        --chat-text: #f3f4f6;
-        --chat-bg-light: #ffffff;
-        --chat-text-light: #000000;
-      }
-
-      .light-mode {
-        --chat-bg: var(--chat-bg-light);
-        --chat-text: var(--chat-text-light);
-      }
-
-      body {
-        background-color: var(--chat-bg);
-        color: var(--chat-text);
-        transition: background-color 0.3s, color 0.3s;
-      }
-
-      /* Floating Action Button (FAB) */
-      .fab {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--chat-primary);
-        color: white;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
-
-      .fab:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      /* Toast Notifications */
-      .toast-container {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        z-index: 1000;
-      }
-
-      .toast {
-        background: var(--chat-primary);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        animation: slideIn 0.3s ease-out;
-      }
-
-      .toast.error {
-        background: #ef4444;
-      }
-
-      .toast.success {
-        background: #10b981;
-      }
-
-      @keyframes slideIn {
-        from {
-          transform: translateX(100%);
-        }
-        to {
-          transform: translateX(0);
-        }
-      }
-
-      /* Custom Scrollbar */
-      .chat-box::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      .chat-box::-webkit-scrollbar-track {
-        background: var(--chat-bg);
-      }
-
-      .chat-box::-webkit-scrollbar-thumb {
-        background: var(--chat-primary);
-        border-radius: 4px;
-      }
-
-      /* Chat Container */
-      .chat-container {
-        font-size: 13px;
-      }
-
-      .chat-layout {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        height: calc(100vh - 200px);
-        transition: all 0.3s ease;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .chat-layout.full-chat {
-        display: block;
-      }
-
-      .chat-layout.full-code {
-        display: block;
-      }
-
-      .chat-main {
-        flex: 3;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.3s ease;
-        min-height: 0;
-        overflow: hidden;
-      }
-
-      .chat-layout.full-chat .chat-main {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .chat-layout.full-code .chat-main {
-        display: none;
-      }
-
-      .code-panel {
-        flex: 2;
-        background: var(--chat-bg);
-        border: 1px solid var(--chat-primary);
-        border-radius: 1rem;
-        overflow: hidden;
-        min-height: 400px;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.3s ease;
-      }
-
-      .code-panel pre[class*="language-"] {
-        margin: 0;
-        border-radius: 0;
-        padding: 1rem;
-        background: #1e1e1e !important;
-      }
-
-      .code-panel pre[class*="language-"].line-numbers {
-        padding-left: 3.8em;
-      }
-
-      .chat-layout.full-chat .code-panel {
-        display: none;
-      }
-
-      .chat-layout.full-code .code-panel {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .code-panel-header {
-        background: #1a202c;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--chat-primary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-
-      .code-panel-title {
-        font-size: 14px;
-        font-weight: bold;
-        color: var(--chat-text);
-      }
-
-      .code-panel-controls {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .code-panel-content {
-        padding: 1rem;
-        overflow-y: auto;
-        flex-grow: 1;
-        min-height: 0;
-        background: #1e1e1e;
-      }
-
-      .code-panel-empty {
-        color: #6b7280;
-        text-align: center;
-        padding: 2rem;
-        font-style: italic;
-      }
-
-      .nav-controls {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .chat-box {
-        background: var(--chat-bg);
-        border: 1px solid var(--chat-primary);
-        border-radius: 1rem;
-        padding: 1rem;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--chat-primary) var(--chat-bg);
-        flex-grow: 1;
-        height: 100%;
-        min-height: 0;
-      }
-
-      .message {
-        margin: 8px 0;
-        padding: 10px 12px;
-        border-radius: 12px;
-        max-width: 85%;
-        width: fit-content;
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        animation: messageAppear 0.3s ease;
-        overflow: visible;
-      }
-
-      @keyframes messageAppear {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .message-avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        overflow: hidden;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #1a202c;
-      }
-
-      .message-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-
-      .message-content {
-        flex: 1;
-        font-size: 15px;
-        line-height: 1.5;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        min-width: 0;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-      }
-
-      .code-reference {
-        display: inline-block;
-        background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%);
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        color: #e2e8f0;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        font-size: 0.9em;
-        cursor: pointer;
-        margin: 0.25rem 0;
-        border: 1px solid #3b82f6;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .code-reference:hover {
-        background: linear-gradient(to bottom, #334155 0%, #1e293b 100%);
-        border-color: #60a5fa;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-
-      .code-block-container {
-        margin: 0.5rem 0;
-        border: 1px solid #3b82f6;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        background: #1e1e1e;
-      }
-
-      .code-block-header {
-        background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%);
-        padding: 0.75rem 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #3b82f6;
-      }
-
-      .code-block-language {
-        color: #e2e8f0;
-        font-size: 0.875rem;
-        font-weight: 500;
-      }
-
-      .code-block {
-        background: #1e1e1e;
-        padding: 1rem;
-        border-radius: 0;
-        font-family: "Fira Code", Consolas, Monaco, "Courier New", monospace;
-        white-space: pre;
-        overflow-x: auto;
-        margin: 0;
-        width: 100%;
-        font-size: 12px;
-        tab-size: 4;
-      }
-
-      .user-message {
-        background: #ffffff;
-        margin-left: auto;
-        flex-direction: row-reverse;
-        color: #000000;
-        padding: 12px 16px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        font-size: 15px;
-      }
-
-      .ai-message {
-        background: #f5f5f5;
-        margin-right: auto;
-        position: relative;
-        color: #000000;
-        padding: 12px 16px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        font-size: 15px;
-      }
-
-      .message-replay {
-        opacity: 0;
-        transition: opacity 0.2s;
-        cursor: pointer;
-        padding: 5px;
-        margin-left: 10px;
-        color: #e2e8f0;
-        font-size: 13px;
-        position: absolute;
-        right: -30px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(59, 130, 246, 0.1);
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .ai-message:hover .message-replay {
-        opacity: 1;
-      }
-
-      .message-replay:hover {
-        background: rgba(59, 130, 246, 0.2);
-      }
-
-      .input-area {
-        position: relative;
-        border: 1px solid var(--chat-primary);
-        border-radius: 0.5rem;
-        overflow: hidden;
-        margin-bottom: 0.5rem;
-        background: var(--chat-bg);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      #chat-input {
-        width: 100%;
-        min-height: 85px;
-        max-height: 150px;
-        padding: 0.75rem 1rem;
-        margin: 0;
-        background: var(--chat-bg);
-        color: var(--chat-text);
-        border: none;
-        resize: none;
-        outline: none;
-        font-size: 15px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        box-sizing: border-box;
-        line-height: 1.5;
-        overflow-y: auto;
-      }
-
-      #chat-input:focus {
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-      }
-
-      .controls {
-        position: sticky;
-        bottom: 0;
-        background: var(--chat-bg);
-        padding: 0.75rem 1rem;
-        z-index: 100;
-        margin-top: 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid rgba(59, 130, 246, 0.2);
-      }
-
-      .left-controls {
-        display: flex;
-        gap: 0.5rem;
-        padding-left: 0.5rem;
-      }
-
-      .persona-select {
-        background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%);
-        border: 1px solid #3b82f6;
-        border-radius: 0.375rem;
-        color: #e2e8f0;
-        padding: 0.5rem 2.5rem 0.5rem 1rem;
-        font-size: 0.875rem;
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e2e8f0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 1em;
-      }
-
-      .persona-select:hover {
-        border-color: #60a5fa;
-      }
-
-      .persona-select:focus {
-        outline: none;
-        border-color: #60a5fa;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-      }
-
-      .image-container {
-        position: relative;
-        display: inline-block;
-        max-width: 100%;
-      }
-
-      .image-action-buttons {
-        position: absolute;
-        bottom: 8px;
-        right: 0;
-        display: flex;
-        gap: 4px;
-        padding: 4px;
-        background: rgba(0, 0, 0, 0.4);
-        border-top-left-radius: 4px;
-      }
-
-      .message-action-button {
-        background: none;
-        border: none;
-        color: white;
-        padding: 2px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.2s ease;
-        line-height: 1;
-      }
-
-      .message-action-button:hover {
-        transform: scale(1.1);
-      }
-
-      .image-upload-feedback {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 15px 30px;
-        border-radius: 8px;
-        z-index: 10001;
-        font-size: 16px;
-        animation: fadeInOut 2s ease forwards;
-        pointer-events: none;
-      }
-
-      @keyframes fadeInOut {
-        0% { opacity: 0; transform: translate(-50%, -40%); }
-        15% { opacity: 1; transform: translate(-50%, -50%); }
-        85% { opacity: 1; transform: translate(-50%, -50%); }
-        100% { opacity: 0; transform: translate(-50%, -60%); }
-      }
-
-      /* Screensaver Container and Controls */
-      #screensaver-container {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: black;
-        z-index: 9999;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-      }
-
-      #screensaver-image {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        transition: opacity 0.3s ease-in-out;
-      }
-
-      #screensaver-control-group {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(10px);
-        padding: 8px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.3s ease-in-out;
-        z-index: 10000;
-      }
-
-      .screensaver-control {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      #screensaver-prompt {
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-        color: black;
-        padding: 4px 8px;
-        font-size: 12px;
-        width: 200px;
-      }
-
-      #screensaver-interval {
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-        color: black;
-        padding: 4px 8px;
-        font-size: 12px;
-        width: 60px;
-      }
-
-      .screensaver-select,
-      #screensaver-aspect,
-      #screensaver-model {
-        background: white !important;
-        border: 1px solid rgba(0, 0, 0, 0.2) !important;
-        border-radius: 4px;
-        color: black !important;
-        padding: 4px 8px;
-        font-size: 12px;
-        min-width: 80px;
-      }
-
-      .screensaver-checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        color: white;
-        font-size: 12px;
-      }
-
-      .screensaver-button {
-        background: rgba(59, 130, 246, 0.5);
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        border-radius: 4px;
-        color: white;
-        padding: 4px 8px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .screensaver-button:hover {
-        background: rgba(59, 130, 246, 0.7);
-      }
-
-      #screensaver-exit {
-        background: rgba(239, 68, 68, 0.5);
-        border-color: rgba(239, 68, 68, 0.2);
-      }
-
-      #screensaver-exit:hover {
-        background: rgba(239, 68, 68, 0.7);
-      }
-
-      #screensaver-refresh {
-        background: rgba(59, 130, 246, 0.5);
-        border-color: rgba(59, 130, 246, 0.2);
-      }
-
-      #screensaver-refresh.active {
-        background: rgba(239, 68, 68, 0.5);
-        border-color: rgba(239, 68, 68, 0.2);
-      }
-
-      @media (max-width: 768px) {
-        #screensaver-control-group {
-          padding: 4px;
-          gap: 4px;
-        }
-
-        #screensaver-prompt {
-          width: 150px;
-        }
-
-        .screensaver-button {
-          padding: 4px 6px;
-        }
-      }
-
-      @supports (-webkit-touch-callout: none) {
-        #screensaver-container {
-          height: -webkit-fill-available;
-        }
-
-        #screensaver-control-group {
-          padding-bottom: calc(8px + env(safe-area-inset-bottom));
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <!-- Screensaver Container -->
-    <div id="screensaver-container">
-      <img id="screensaver-image" alt="Screensaver" aria-label="Generated image" loading="eager" />
-      <div id="screensaver-control-group">
-        <div class="screensaver-control">
-          <input type="text" id="screensaver-prompt" placeholder="Enter prompt..." value="random artistic scene, high quality, detailed" title="Image generation prompt" />
-        </div>
-        <div class="screensaver-control">
-          <input type="number" id="screensaver-interval" value="30" min="5" title="Update interval in seconds" />
-        </div>
-        <div class="screensaver-control">
-          <select id="screensaver-aspect" class="screensaver-select" title="Image aspect ratio">
-            <option value="widescreen">16:9</option>
-            <option value="square">1:1</option>
-            <option value="portrait">9:16</option>
-            <option value="ultrawide">21:9</option>
-          </select>
-        </div>
-        <div class="screensaver-control">
-          <select id="screensaver-model" class="screensaver-select" title="Image generation model">
-            <option value="unity" title="Unity AI Model - Optimized for creative and varied outputs" selected>Unity</option>
-            <option value="flux" title="Standard Flux model - Balanced quality and speed">Flux</option>
-            <option value="flux-realism" title="Enhanced photorealistic outputs with fine details">Realism</option>
-            <option value="flux-cablyai" title="Art-focused model with creative interpretations">CablyAI</option>
-            <option value="flux-anime" title="Specialized for anime and manga art styles">Anime</option>
-            <option value="flux-3d" title="3D-style generation with dimensional depth">3D</option>
-            <option value="any-dark" title="Dark theme aesthetics and moody compositions">Dark</option>
-            <option value="flux-pro" title="Professional grade outputs with enhanced quality">Pro</option>
-            <option value="turbo" title="High-speed generation with rapid results">Turbo</option>
-          </select>
-        </div>
-        <div class="screensaver-checkbox-group">
+  <body class="dark-mode">
+    <!-- Extended Screensaver Container -->
+    <div id="screensaver-container" class="screensaver hidden">
+      <img id="screensaver-image" alt="Screensaver Image" />
+      <div class="screensaver-controls">
+        <div class="screensaver-settings">
+          <label>Prompt:
+            <input type="text" id="screensaver-prompt" value="random artistic scene, high quality, detailed" />
+          </label>
+          <label>Timer (sec):
+            <input type="number" id="screensaver-timer" value="30" min="5" />
+          </label>
+          <label>Aspect Ratio:
+            <select id="screensaver-aspect">
+              <option value="widescreen">16:9</option>
+              <option value="square">1:1</option>
+              <option value="portrait">9:16</option>
+            </select>
+          </label>
+          <label>Image Model:
+            <select id="screensaver-model">
+              <!-- Only two models allowed -->
+              <option value="flux" selected>Flux</option>
+              <option value="turbo">Turbo</option>
+            </select>
+          </label>
           <label>
-            <input type="checkbox" id="screensaver-enhance" checked title="Enable image enhancement" />
-            Enhance
+            <input type="checkbox" id="screensaver-enhance" checked /> Enhance
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-private" checked /> Private
           </label>
         </div>
-        <div class="screensaver-checkbox-group">
-          <label>
-            <input type="checkbox" id="screensaver-private" checked title="Make images private" />
-            Private
-          </label>
+        <div class="screensaver-btn-group">
+          <button id="screensaver-playpause" class="screensaver-btn">⏸️</button>
+          <button id="fullscreen-screensaver" class="screensaver-btn">⛶</button>
+          <button id="screensaver-save" class="screensaver-btn">💾 Save</button>
+          <button id="screensaver-copy" class="screensaver-btn">📋 Copy</button>
+          <button id="screensaver-exit" class="screensaver-btn">❌ Exit</button>
         </div>
-        <button class="screensaver-button" id="screensaver-refresh" title="Start/Stop the slideshow">
-            ▶️ Start
-          </button>
-        <button class="screensaver-button" id="screensaver-copy" title="Copy image to clipboard">
-          📋 Copy
-        </button>
-        <button class="screensaver-button" id="screensaver-download" title="Download image">
-          💾 Save
-        </button>
-        <button class="screensaver-button" id="screensaver-exit" title="Exit screensaver">
-          ✖️ Exit
-        </button>
       </div>
     </div>
 
-    <!-- Chat Container -->
-    <div class="chat-container max-w-4xl mx-auto p-4 bg-zinc-900 text-gray-100 font-sans" id="app-root">
-      <div id="chat-layout" class="chat-layout">
+    <!-- Main App Container -->
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2>Sessions</h2>
+          <button id="new-session-btn" class="sidebar-btn">+ New Chat</button>
+        </div>
+        <ul id="session-list" class="session-list"></ul>
+        <hr class="divider" />
+        <label for="model-select" class="sidebar-label">Model:</label>
+        <select id="model-select" class="sidebar-select"></select>
+        <hr class="divider" />
+        <label class="switch-label">
+          <input type="checkbox" id="theme-toggle" />
+          <span>Light Mode</span>
+        </label>
+        <button id="toggle-screensaver" class="sidebar-btn">🎨 Screensaver</button>
+      </div>
+
+      <!-- Chat Layout -->
+      <div class="chat-layout">
+        <!-- Chat Window -->
         <div class="chat-main">
           <div id="chat-box" class="chat-box"></div>
-        </div>
-        <div class="code-panel">
-          <div class="code-panel-header">
-            <span class="code-panel-title">Code Display</span>
-            <div class="code-panel-controls">
-              <button class="control-btn" onclick="clearCodePanel()" title="Clear the code panel">
-                Clear
-              </button>
-            </div>
+          <div class="chat-input-container">
+            <textarea id="chat-input" placeholder="Type your message... (Shift+Enter for new line, Enter to send)" rows="1"></textarea>
+            <button id="send-button" disabled>Send</button>
           </div>
-          <div id="code-panel-content" class="code-panel-content">
-            <div class="code-panel-empty">No code to display</div>
+          <div class="chat-controls">
+            <button id="clear-chat" class="control-btn">Clear Chat</button>
+            <button id="voice-toggle" class="control-btn">🔊 Voice</button>
           </div>
-        </div>
-      </div>
-      <div class="input-area">
-        <textarea
-          id="chat-input"
-          placeholder="Type your message... (Shift+Enter for new line, Enter to send) Want to buy us a coffee? Scroll down."
-        ></textarea>
-        <button id="send-button" class="control-btn" disabled>Send</button>
-      </div>
-      <div class="controls">
-        <div class="left-controls">
-          <button id="voice-toggle" class="control-btn" title="Toggle Voice">
-            🔊
-          </button>
-          <button id="clear-chat" class="control-btn" title="Clear Chat">
-            🗑️
-          </button>
-          </button>
-        </div>
-        <div class="nav-controls">
-          <button
-            id="nav-left"
-            class="nav-btn"
-            title="Show Chat"
-            onclick="toggleView('chat')"
-          >
-            ⬅️
-          </button>
-          <button
-            id="nav-right"
-            class="nav-btn"
-            title="Show Code"
-            onclick="toggleView('code')"
-          >
-            ➡️
-          </button>
-        </div>
-        <div class="menu-controls">
-          <select class="model-select" title="Select AI Model">
-            <optgroup label="Custom Models">
-              <option value="unity" title="Unity with Mistral Large by Unity AI Lab | 🎭 Custom Persona | 🚀 Enhanced Capabilities | ⚡ Fast Response" selected>Unity AI</option>
-              <option value="evil" title="Evil Mode - Experimental | 🎭 Dark Persona | ⚠️ No Restrictions | 🔓 Raw Output">Evil Mode</option>
-              <option value="midijourney" title="Musical AI | 🎵 Audio Generation | 🎼 Composition Assistant | 🎹 Music Theory">Midijourney</option>
-              <option value="rtist" title="AI Art Generator | 🎨 Creative Vision | 🖼️ Image Creation | ✨ Style Transfer">Rtist</option>
-              <option value="searchgpt" title="Real-time Search | 🌐 Web Access | 📰 News Updates | 🔍 Deep Research">SearchGPT</option>
-              <option value="p1" title="Pollinations OptiLLM | ⚡ Optimized Performance | 🔓 Uncensored | 🎯 Precise Output">P1</option>
-            </optgroup>
-            <optgroup label="Base Models">
-              <option value="claude-hybridspace" title="Claude Hybridspace | 🧠 Advanced Reasoning | 🎯 Precise Responses | 🔒 Safety Aligned | 📝 Detailed Analysis">Claude</option>
-              <option value="openai" title="OpenAI GPT-4o-mini | 🔒 Content Filtered | 👁️ Vision Capable | 🧠 Advanced Reasoning">OpenAI</option>
-              <option value="openai-large" title="OpenAI GPT-4o | 🔒 Content Filtered | 👁️ Enhanced Vision | 🚀 Maximum Performance">OpenAI Large</option>
-              <option value="mistral" title="Mistral Nemo | 🌟 High Efficiency | 💨 Fast Processing | 🔓 Uncensored">Mistral</option>
-              <option value="qwen" title="Qwen 2.5 72B | 🔒 Safety Filtered | 🌐 Multilingual | 🎯 High Precision">Qwen</option>
-              <option value="qwen-coder" title="Qwen 2.5 Coder 32B | 🔧 Code Specialist | 💻 Programming Expert | 🎯 Technical Focus">Qwen Coder</option>
-              <option value="llama" title="Llama 3.3 70B | 🔓 Uncensored | 🚀 High Performance | 🧠 Advanced Reasoning">Llama</option>
-              <option value="llamalight" title="Llama 3.1 8B Instruct | 🪶 Lightweight | ⚡ Quick Response | 💡 Basic Tasks">Llama Light</option>
-              <option value="deepseek" title="DeepSeek-V3 | 🔒 Content Filtered | 🎯 Deep Analysis | 💡 Creative Problem Solving">DeepSeek</option>
-            </optgroup>
-          </select>
-          <button id="screensaver-toggle" class="screensaver-toggle" title="Enable or disable the screensaver functionality.">🎬 Screensaver</button>
         </div>
       </div>
     </div>
 
-    <!-- Toast Notifications Container -->
-    <div class="toast-container"></div>
+    <!-- Donation Modal -->
+    <div id="donation-modal" class="donation-modal hidden">
+      <div class="donation-modal-content">
+        <div class="donation-modal-header">
+          <button id="donation-modal-close" class="close-btn">X</button>
+        </div>
+        <div class="donation-modal-body">
+          <h3>Support Us</h3>
+          <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
+          <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
+          <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
+          <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Scripts -->
-    <script src="ChatInterface.js" defer></script>
-    <script src="Screensaver.js" defer></script>
+    <script defer src="storage.js"></script>
+    <script defer src="screensaver.js"></script>
+    <script defer src="ui.js"></script>
+    <!-- Load Prism before chat.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
-
+    <script defer src="chat.js"></script>
     <script>
       function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
@@ -856,14 +123,5 @@
         });
       }
     </script>
-
-    <!-- Donation Buttons -->
-    <div style="text-align: center; margin-top: 20px;">
-      <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
-      <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
-      <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
-      <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
-      <button class="copy-address-button">Wanna Donate? Thx!</button>
-    </div>
   </body>
 </html>
