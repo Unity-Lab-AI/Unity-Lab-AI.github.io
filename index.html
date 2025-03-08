@@ -1,185 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Unity Chat with Pollinations</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Favicon (Add a favicon.ico file in your project directory or update the path accordingly) -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-</head>
-<body class="dark-mode">
-  <!-- Extended Screensaver Container -->
-  <div id="screensaver-container" class="screensaver hidden">
-    <img id="screensaver-image" alt="Screensaver Image">
-    <div class="screensaver-controls">
-      <div class="screensaver-settings">
-        <label>Prompt:
-          <input type="text" id="screensaver-prompt" value="random artistic scene, high quality, detailed">
-        </label>
-        <label>Timer (sec):
-          <input type="number" id="screensaver-timer" value="30" min="5">
-        </label>
-        <label>Aspect Ratio:
-          <select id="screensaver-aspect">
-            <option value="widescreen">16:9</option>
-            <option value="square">1:1</option>
-            <option value="portrait">9:16</option>
-            <option value="ultrawide">21:9</option>
-          </select>
-        </label>
-        <label>Image Model:
-          <select id="screensaver-model">
-            <!-- Options will be dynamically populated from the image models API -->
-          </select>
-        </label>
-        <label>
-          <input type="checkbox" id="screensaver-enhance" checked> Enhance
-        </label>
-        <label>
-          <input type="checkbox" id="screensaver-private" checked> Private
-        </label>
-      </div>
-      <div class="screensaver-btn-group">
-        <button id="screensaver-playpause" class="screensaver-btn">⏸️</button>
-        <button id="fullscreen-screensaver" class="screensaver-btn">⛶</button>
-        <button id="screensaver-save" class="screensaver-btn">💾 Save</button>
-        <button id="screensaver-copy" class="screensaver-btn">📋 Copy</button>
-        <button id="screensaver-exit" class="screensaver-btn">❌ Exit</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main App Container -->
-  <div class="app-container">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <h2>Sessions</h2>
-        <button id="new-session-btn" class="sidebar-btn">+ New Chat</button>
-      </div>
-      <ul id="session-list" class="session-list"></ul>
-      <hr class="divider">
-      <label for="model-select" class="sidebar-label">Model:</label>
-      <select id="model-select" class="sidebar-select">
-        <!-- Options for text models will be dynamically populated -->
-      </select>
-      <hr class="divider">
-      <label class="switch-label">
-        <input type="checkbox" id="theme-toggle">
-        <span>Light Mode</span>
-      </label>
-      <button id="toggle-screensaver" class="sidebar-btn">🎨 Screensaver</button>
-    </div>
-
-    <!-- Chat & Code Layout -->
-    <div class="chat-layout">
-      <!-- Chat Window -->
-      <div class="chat-main">
-        <div id="chat-box" class="chat-box"></div>
-        <div class="chat-input-container">
-          <textarea id="chat-input" placeholder="Type your message... (Shift+Enter for new line, Enter to send)" rows="1"></textarea>
-          <button id="send-button" disabled>Send</button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Unity Chat U1 5.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Prism CSS for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="dark-mode">
+    <!-- Extended Screensaver Container -->
+    <div id="screensaver-container" class="screensaver hidden">
+      <img id="screensaver-image" alt="Screensaver Image" />
+      <div class="screensaver-controls">
+        <div class="screensaver-settings">
+          <label>Prompt:
+            <input type="text" id="screensaver-prompt" value="random artistic scene, high quality, detailed" />
+          </label>
+          <label>Timer (sec):
+            <input type="number" id="screensaver-timer" value="30" min="5" />
+          </label>
+          <label>Aspect Ratio:
+            <select id="screensaver-aspect">
+              <option value="widescreen">16:9</option>
+              <option value="square">1:1</option>
+              <option value="portrait">9:16</option>
+            </select>
+          </label>
+          <label>Image Model:
+            <select id="screensaver-model">
+              <!-- Only two models allowed -->
+              <option value="flux" selected>Flux</option>
+              <option value="turbo">Turbo</option>
+            </select>
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-enhance" checked /> Enhance
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-private" checked /> Private
+          </label>
         </div>
-        <div class="chat-controls">
-          <button id="clear-chat" class="control-btn">Clear Current Chat</button>
-          <button id="voice-toggle" class="control-btn">🔊 Voice</button>
-          <!-- Donate button moved here -->
-          <button id="donation-btn" class="control-btn">Donate</button>
+        <div class="screensaver-btn-group">
+          <button id="screensaver-playpause" class="screensaver-btn">⏸️</button>
+          <button id="fullscreen-screensaver" class="screensaver-btn">⛶</button>
+          <button id="screensaver-save" class="screensaver-btn">💾 Save</button>
+          <button id="screensaver-copy" class="screensaver-btn">📋 Copy</button>
+          <button id="screensaver-exit" class="screensaver-btn">❌ Exit</button>
         </div>
       </div>
-      <!-- Code Panel -->
-      <div id="code-panel" class="code-panel">
-        <div class="code-panel-header">
-          <span class="code-panel-title">Code Display</span>
-          <button id="full-chat-btn" class="chevron-btn">Chat Only</button>
-          <button id="full-code-btn" class="chevron-btn">Code Only</button>
-          <button id="split-view-btn" class="chevron-btn">Split View</button>
-          <button id="toggle-code" class="chevron-btn">Close Code Panel</button>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2>Sessions</h2>
+          <button id="new-session-btn" class="sidebar-btn">+ New Chat</button>
         </div>
-        <div id="code-content" class="code-panel-content"></div>
+        <ul id="session-list" class="session-list"></ul>
+        <hr class="divider" />
+        <label for="model-select" class="sidebar-label">Model:</label>
+        <select id="model-select" class="sidebar-select"></select>
+        <hr class="divider" />
+        <label class="switch-label">
+          <input type="checkbox" id="theme-toggle" />
+          <span>Light Mode</span>
+        </label>
+        <button id="toggle-screensaver" class="sidebar-btn">🎨 Screensaver</button>
+      </div>
+
+      <!-- Chat Layout -->
+      <div class="chat-layout">
+        <!-- Chat Window -->
+        <div class="chat-main">
+          <div id="chat-box" class="chat-box"></div>
+          <div class="chat-input-container">
+            <textarea id="chat-input" placeholder="Type your message... (Shift+Enter for new line, Enter to send)" rows="1"></textarea>
+            <button id="send-button" disabled>Send</button>
+          </div>
+          <div class="chat-controls">
+            <button id="clear-chat" class="control-btn">Clear Chat</button>
+            <button id="voice-toggle" class="control-btn">🔊 Voice</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Donation Modal -->
-  <div id="donation-modal" class="donation-modal hidden">
-    <div class="donation-modal-content">
-      <div class="donation-modal-header">
-        <button id="donation-modal-close" class="close-btn">X</button>
-      </div>
-      <div class="donation-modal-body">
-        <h3>Support Us</h3>
-        <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
-        <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
-        <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
-        <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
+    <!-- Donation Modal -->
+    <div id="donation-modal" class="donation-modal hidden">
+      <div class="donation-modal-content">
+        <div class="donation-modal-header">
+          <button id="donation-modal-close" class="close-btn">X</button>
+        </div>
+        <div class="donation-modal-body">
+          <h3>Support Us</h3>
+          <button class="copy-address-button" onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')">Copy Bitcoin Address</button>
+          <button class="copy-address-button" onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')">Copy Dogecoin Address</button>
+          <button class="copy-address-button" onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')">Copy Ethereum Address</button>
+          <button class="copy-address-button" onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')">Copy Monero Address</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Scripts -->
-  <script defer src="storage.js"></script>
-  <script defer src="screensaver.js"></script>
-  <script defer src="ui.js"></script>
-  <script defer src="chat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script>
-    // Copy to Clipboard Functionality
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Address copied to clipboard');
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-      });
-    }
-  </script>
-  <script>
-    // Donation Modal Functionality
-    const donationBtn = document.getElementById("donation-btn");
-    const donationModal = document.getElementById("donation-modal");
-    const donationModalClose = document.getElementById("donation-modal-close");
-
-    donationBtn.addEventListener("click", () => {
-      donationModal.classList.remove("hidden");
-    });
-
-    donationModalClose.addEventListener("click", () => {
-      donationModal.classList.add("hidden");
-    });
-
-    // View Toggle Functionality for Chat and Code Panels
-    const chatLayout = document.querySelector('.chat-layout');
-    const fullChatBtn = document.getElementById("full-chat-btn");
-    const fullCodeBtn = document.getElementById("full-code-btn");
-    const splitViewBtn = document.getElementById("split-view-btn");
-    const toggleCodeBtn = document.getElementById("toggle-code");
-
-    fullChatBtn.addEventListener("click", () => {
-      chatLayout.classList.remove("code-only", "split-view");
-      chatLayout.classList.add("chat-only");
-    });
-
-    fullCodeBtn.addEventListener("click", () => {
-      chatLayout.classList.remove("chat-only", "split-view");
-      chatLayout.classList.add("code-only");
-    });
-
-    splitViewBtn.addEventListener("click", () => {
-      chatLayout.classList.remove("chat-only", "code-only");
-      chatLayout.classList.add("split-view");
-    });
-
-    // Toggle code panel visibility
-    toggleCodeBtn.addEventListener("click", () => {
-      if (chatLayout.classList.contains("chat-only") || chatLayout.classList.contains("code-only") || chatLayout.classList.contains("split-view")) {
-        chatLayout.classList.remove("chat-only", "code-only", "split-view");
-      } else {
-        chatLayout.classList.add("split-view");
+    <!-- Scripts -->
+    <script defer src="storage.js"></script>
+    <script defer src="screensaver.js"></script>
+    <script defer src="ui.js"></script>
+    <!-- Load Prism before chat.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script defer src="chat.js"></script>
+    <script>
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Address copied to clipboard');
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
+        });
       }
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
