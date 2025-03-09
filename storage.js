@@ -58,25 +58,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renameSession(sessionId, newName) {
-    const session = sessions.find(s => s.id === sessionId);
-    if (session) {
-      let cleanName = newName;
-      if (typeof newName === "object") {
-        cleanName = JSON.stringify(newName);
-      } else if (newName && newName.startsWith("{") && newName.endsWith("}")) {
-        try {
-          const parsed = JSON.parse(newName);
-          cleanName = parsed.response || parsed.chatTitle || newName;
-        } catch (e) {
-          console.error("Error parsing session name JSON:", e);
-        }
+  const session = sessions.find(s => s.id === sessionId);
+  if (session) {
+    let cleanName = newName;
+    
+    // Handle if newName is an object
+    if (typeof newName === "object") {
+      cleanName = "New Chat"; // Default fallback
+      // Try to extract a title from the object
+      if (newName.response) cleanName = newName.response;
+      else if (newName.chatTitle) cleanName = newName.chatTitle;
+      else if (newName.title) cleanName = newName.title;
+      else cleanName = "Chat " + new Date().toLocaleString();
+    } 
+    // Handle if newName looks like JSON
+    else if (typeof newName === "string" && 
+             newName.trim().startsWith("{") && 
+             newName.trim().endsWith("}")) {
+      try {
+        const parsed = JSON.parse(newName);
+        cleanName = parsed.response || parsed.chatTitle || parsed.title || 
+                   "Chat " + new Date().toLocaleString();
+      } catch (e) {
+        console.error("Error parsing session name JSON:", e);
+        // If parsing fails, use the string as is but limit length
+        cleanName = newName.substring(0, 30);
       }
-      session.name = cleanName;
-      session.lastUpdated = Date.now();
-      saveSessions();
-      renderSessions();
     }
+    
+    // Ensure name isn't too long
+    if (cleanName.length > 30) {
+      cleanName = cleanName.substring(0, 27) + "...";
+    }
+    
+    session.name = cleanName;
+    session.lastUpdated = Date.now();
+    saveSessions();
+    renderSessions();
   }
+}
 
   // FIXED: Ensure a valid session is always returned.
   function getCurrentSession() {
