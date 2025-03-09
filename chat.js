@@ -310,48 +310,161 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Generate chat title.
-  function generateChatTitle(initialInput) {
-    const prompt = `Generate a creative, 3-8 word chat title based on this conversation:\nUser: ${initialInput}`;
-    const body = {
-      messages: [
-        {
-          role: "system",
-          content: "You are yourself, interact and conversate with the user as yourself. Any code you create shall be wrapped in [CODE] and [/CODE] tags containing all the code. You can generate images using: https://image.pollinations.ai/prompt/your_prompt_here\n\n" + initialInput
-        }
-      ],
-      model: "flux",
-      seed: randomSeed(),
-      jsonMode: true,
-      private: true
-    };
+  // Replace the entire generateChatTitle function with this improved version
+function generateChatTitle(initialInput) {
+  const trimmedInput = initialInput.length > 50 
+    ? initialInput.substring(0, 47) + "..."
+    : initialInput;
+    
+  // Create a more direct prompt that explicitly asks for plain text
+  const body = {
+    messages: [
+      {
+        role: "system",
+        content: "You are a helpful assistant that creates short, descriptive titles. When asked to create a title, respond with ONLY 3-4 words that capture the essence of the conversation. Do not include any formatting, quotes, JSON, or explanations."
+      },
+      {
+        role: "user",
+        content: "Create a title for this conversation: " + trimmedInput
+      }
+    ],
+    model: "flux", // or whatever model you're using
+    seed: randomSeed(),
+    private: true
+  };
 
-    console.debug("Generating chat title with payload:", body);
-    fetch("https://text.pollinations.ai/openai", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+  console.debug("Generating chat title with payload:", body);
+  
+  // Set a loading title while waiting for the AI response
+  const tempTitle = "Creating title...";
+  Storage.renameSession(currentSession.id, tempTitle);
+  
+  fetch("https://text.pollinations.ai/openai", { // Using /openai endpoint instead of /unity for more reliable plain text
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+      return res.text(); // Get raw text instead of parsing as JSON
     })
-      .then(res => res.json())
-      .then(data => {
-        console.debug("Raw title generation response:", data);
-        let title = "Untitled Chat";
-        if (data?.choices && data.choices.length > 0) {
-          const titleJSON = data.choices[0].message.content.trim();
-          try {
-            const parsedTitle = JSON.parse(titleJSON);
-            title = parsedTitle.response || parsedTitle.chatTitle || titleJSON;
-          } catch (e) {
-            console.error("Error parsing chat title JSON:", e);
-            title = titleJSON;
-          }
+    .then(rawData => {
+      console.debug("Raw title generation response:", rawData);
+      
+      let title = "Untitled Chat";
+      
+      // Try to extract a clean title from various formats
+      try {
+        // First check if it's parseable as JSON
+        const data = JSON.parse(rawData);
+        
+        // Try to get from choices[0].message.content (OpenAI format)
+        if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
+          title = data.choices[0].message.content.trim();
+        } 
+        // Try to get from common response fields
+        else if (data.response) {
+          title = data.response;
         }
-        console.debug("Extracted chat title:", title);
-        Storage.renameSession(currentSession.id, title);
-        currentSession = Storage.getCurrentSession();
-      })
-      .catch(err => {
-        console.error("Error generating chat title:", err);
-      });
+        else if (data.message) {
+          title = data.message;
+        }
+        else if (data.content) {
+          title = data.content;
+        }
+        // If it's just a string in the JSON
+        else if (typeof data === "string") {
+          title = data;
+        }
+        // If we got here but couldn't find a recognizable field, try stringifying
+        else {
+          const str = JSON.stringify(data);
+          if (str.length < 50) title = str;
+        }
+      } catch (e) {
+        // Not valid JSON, so treat the raw response as plain text
+        // This should be the most common case with our improved prompt
+        if (rawData && rawData.length < 100) {
+          title = rawData.trim();
+        }
+      }
+      
+      // Clean up title
+      title = title
+        .replace(/["""]/g, '') // Remove all types of quotes
+        .replace(/^Title: /i, '') // Remove "Title:" prefix if present
+        .replace(/[\{\}]/g, '') // Remove curly braces
+        .replace(/^title:?\s*/i, '') // Remove "title:" prefix
+        .replace(/^chat title:?\s*/i, '') // Remove "chat title:" prefix
+        .replace(/^conversation title:?\s*/i, '') // Remove "conversation title:" prefix
+        .trim();
+      
+      // If title is still too long or empty, create a default
+      if (title.length > 30) {
+        title = title.substring(0, 27) + "...";
+      } else if (!title || title.length < 2) {
+        // Generate a simple topic-based title from the user's input
+        const words = trimmedInput.split(/\s+/).filter(w => w.length > 3);
+        if (words.length >= 2) {
+          title = words.slice(0, 2).join(" ");
+        } else {
+          title = "Chat about " + (words[0] || "topic");
+        }
+      }
+      
+      console.debug("Final chat title:", title);
+      Storage.renameSession(currentSession.id, title);
+      currentSession = Storage.getCurrentSession();
+    })
+    .catch(err => {
+      console.error("Error generating chat title:", err);
+      // Extract meaningful words from the user's input as a fallback
+      const words = trimmedInput.split(/\s+/).filter(word => 
+        word.length > 3 && !["what", "when", "where", "which", "this", "that", "with", "your"].includes(word.toLowerCase())
+      );
+      
+      let defaultTitle;
+      if (words.length >= 2) {
+        defaultTitle = words.slice(0, 3).join(" ");
+        if (defaultTitle.length > 30) {
+          defaultTitle = defaultTitle.substring(0, 27) + "...";
+        }
+      } else {
+        defaultTitle = "Chat " + new Date().toLocaleTimeString();
+      }
+      
+      Storage.renameSession(currentSession.id, defaultTitle);
+      currentSession = Storage.getCurrentSession();
+    });
+}
+  
+  // 5. Improvements to renderSessions in storage.js
+  // Add this to clean up session titles in renderSessions:
+  
+  // Inside the renderSessions function, replace the code that sets displayName:
+  let displayName = session.name;
+  if (typeof displayName === "object") {
+    // Handle object names
+    displayName = "Chat " + new Date(session.lastUpdated).toLocaleString();
+  } else if (typeof displayName === "string") {
+    // Handle JSON-looking strings
+    if (displayName.startsWith("{") && displayName.endsWith("}")) {
+      try {
+        const parsed = JSON.parse(displayName);
+        displayName = parsed.response || parsed.chatTitle || parsed.title || 
+                     "Chat " + new Date(session.lastUpdated).toLocaleString();
+      } catch (e) {
+        // If parsing fails, truncate the string
+        displayName = displayName.length > 20 
+          ? displayName.substring(0, 17) + "..."
+          : displayName;
+      }
+    }
+    
+    // Remove quotes if present
+    displayName = displayName.replace(/^"(.*)"$/, "$1");
   }
 
   // Send message to Pollinations API.
@@ -365,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const systemPrompt = {
       role: "system",
       content: "You are yourself, interact and conversate with the user as yourself using plain text only. " +
-               "Do not format your responses in JSON" +
+               "Do not format your responses in JSON. " +
                "When providing code, you MUST wrap it in one of these formats:\n" +
                "1. [CODE] and [/CODE] tags (e.g., [CODE]console.log('hello')[/CODE])\n" +
                "2. Markdown code blocks with language specification (preferred):\n" +
@@ -375,9 +488,9 @@ document.addEventListener("DOMContentLoaded", () => {
                "Always specify the language in markdown code blocks for proper syntax highlighting. " +
                "Never use both formats for the same code block. " +
                "For multi-file responses, use separate code blocks for each file, each with appropriate language specification. " +
-               "You can generate images using this: https://image.pollinations.ai/prompt/your_prompt_here&width=1080&height=1920&enhance=true&private=true&seed=497283&nologo=true&model=flux"
-    };         "You use %20 for spaces when creating 'your_prompt_here', use a random generated 6 digit number for seed, and use standard height witdh for aspect ratios or user specified. You can use this method to generate likness' or anything you and/or the user come up with. respect the user's wishes and requests. these generations can be called an image, pic, photo, art and any variation there-in and more."
-    
+               "You can generate images using this: https://image.pollinations.ai/prompt/your_prompt_here&width=1080&height=1920&enhance=true&private=true&seed=497283&nologo=true&model=flux. " +
+               "You use %20 for spaces when creating 'your_prompt_here', use a random generated 6 digit number for seed, and use standard height width for aspect ratios or user specified. You can use this method to generate likeness' or anything you and/or the user come up with. respect the user's wishes and requests. these generations can be called an image, pic, photo, art and any variation there-in and more."
+    };
     const body = {
       messages: [systemPrompt, ...normalizedMessages],
       model: modelName,
@@ -410,40 +523,52 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   // Format AI response.
   function formatAIResponse(data) {
-    let rawResponse;
+    // Case 1: If it's already a string, try to extract JSON from it
     if (typeof data === "string") {
-      rawResponse = extractJSON(data);
-      console.debug("Extracted JSON from raw response:", rawResponse);
       try {
-        data = JSON.parse(rawResponse);
+        // Try to parse it as JSON
+        const jsonData = JSON.parse(data);
+        // If successful, extract the content
+        return extractContentFromJSON(jsonData);
       } catch (e) {
-        console.error("Failed to parse JSON from response:", e);
-        return rawResponse;
+        // If not valid JSON, just return the string
+        return data;
       }
     }
-    console.debug("Parsed JSON response:", data);
-
-    let content = "No response available";
-    if (data?.response) {
-      content = data.response;
-    } else if (data?.message) {
-      content = data.message;
-    } else if (data?.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
-      const messageContent = data.choices[0].message.content.trim();
-      try {
-        const parsedContent = JSON.parse(messageContent);
-        content = parsedContent.response || messageContent;
-      } catch (e) {
-        content = messageContent;
+    
+    // Case 2: It's already a JSON object
+    return extractContentFromJSON(data);
+  
+    // Helper function to extract content from various JSON formats
+    function extractContentFromJSON(json) {
+      if (!json) return "No response available";
+      
+      // Check various common formats
+      if (typeof json.response === "string") return json.response;
+      if (typeof json.message === "string") return json.message;
+      if (typeof json.content === "string") return json.content;
+      if (json.choices && json.choices.length > 0) {
+        const choice = json.choices[0];
+        if (typeof choice === "string") return choice;
+        if (choice.message && typeof choice.message.content === "string") {
+          try {
+            // Sometimes content is a JSON string itself
+            const nestedJson = JSON.parse(choice.message.content);
+            if (typeof nestedJson.response === "string") return nestedJson.response;
+            if (typeof nestedJson.content === "string") return nestedJson.content;
+            if (typeof nestedJson.message === "string") return nestedJson.message;
+            // If nested JSON has no recognizable fields, stringify it nicely
+            return JSON.stringify(nestedJson, null, 2);
+          } catch (e) {
+            // If not valid nested JSON, just return the content
+            return choice.message.content;
+          }
+        }
       }
-    } else if (typeof data === "string") {
-      content = data;
-    } else {
-      console.debug("No valid content field in response, returning full JSON.");
-      return JSON.stringify(data, null, 2);
+      
+      // If we couldn't extract content in a recognizable format, stringify the whole object
+      return JSON.stringify(json, null, 2);
     }
-
-    return content;
   }
 
   // Additional event listeners.
