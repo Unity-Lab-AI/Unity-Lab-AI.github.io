@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Unity Chat UI 9.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Prism CSS for syntax highlighting -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+    />
+
+    <!-- Custom Styles (Main) -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body>
+    <!-- We'll let JavaScript dynamically decide which theme .css to load,
+         based on the user's selection in the drop-down or localStorage. -->
+
+    <!-- Extended Screensaver Container -->
+    <div id="screensaver-container" class="screensaver hidden">
+      <img id="screensaver-image" alt="Screensaver Image" />
+      <div class="screensaver-controls">
+        <div class="screensaver-settings">
+          <label>Prompt:
+            <input
+              type="text"
+              id="screensaver-prompt"
+              value="random artistic scene, high quality, detailed"
+            />
+          </label>
+          <label>Timer (sec):
+            <input type="number" id="screensaver-timer" value="30" min="5" />
+          </label>
+          <label>Aspect Ratio:
+            <select id="screensaver-aspect">
+              <option value="widescreen">16:9</option>
+              <option value="square">1:1</option>
+              <option value="portrait">9:16</option>
+            </select>
+          </label>
+          <label>Image Model:
+            <select id="screensaver-model">
+              <!-- Only two models allowed -->
+              <option value="flux" selected>Flux</option>
+              <option value="turbo">Turbo</option>
+            </select>
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-enhance" checked />
+            Enhance
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-private" checked />
+            Private
+          </label>
+        </div>
+        <div class="screensaver-btn-group">
+          <button id="screensaver-playpause" class="screensaver-btn">⏸️</button>
+          <button id="fullscreen-screensaver" class="screensaver-btn">⛶</button>
+          <button id="screensaver-save" class="screensaver-btn">💾 Save</button>
+          <button id="screensaver-copy" class="screensaver-btn">📋 Copy</button>
+          <button id="screensaver-exit" class="screensaver-btn">❌ Exit</button>
+        </div>
+      </div>
+    </div>
+    <!-- End Extended Screensaver Container -->
+
+    <!-- Main App Container -->
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2>Sessions</h2>
+          <button
+            id="new-session-btn"
+            class="sidebar-btn"
+            title="Start a new chat session."
+          >
+            <i class="fas fa-plus"></i> New Chat
+          </button>
+        </div>
+
+        <!-- Unique Visitor Counter (live) -->
+        <div id="visitor-counter">
+          <span><i class="fas fa-users"></i> Unique Visitors:</span>
+          <span id="visitor-count-display">...</span>
+        </div>
+
+        <ul id="session-list" class="session-list"></ul>
+
+        <hr class="divider" />
+
+        <!-- Model selection -->
+        <label for="model-select" class="sidebar-label">
+          <i class="fas fa-robot"></i> Model:
+        </label>
+        <select
+          id="model-select"
+          class="sidebar-select"
+          title="Pick your AI model"
+        ></select>
+
+        <hr class="divider" />
+
+        <!-- Theme selection (dropdown) - moved to settings -->
+        <label for="theme-select" class="sidebar-label">
+          <i class="fas fa-palette"></i> Theme:
+        </label>
+        <select
+          id="theme-select"
+          class="sidebar-select"
+          title="Pick a theme for the entire interface"
+        ></select>
+
+        <!-- Screensaver Button -->
+        <button
+          id="toggle-screensaver"
+          class="sidebar-btn"
+          title="Toggle the screensaver"
+        >
+          <i class="fas fa-tv"></i> Screensaver
+        </button>
+
+        <!-- Personalization button -->
+        <button
+          id="open-personalization-btn"
+          class="sidebar-btn"
+          title="Personalize your chat experience"
+        >
+          <i class="fas fa-user-cog"></i> Personalization
+        </button>
+
+        <!-- Gear (Settings) button -->
+        <button
+          id="open-settings-btn"
+          class="sidebar-btn"
+          title="Open Settings Panel"
+        >
+          <i class="fas fa-cog"></i> Settings
+        </button>
+
+        <!-- Donation button at bottom -->
+        <div class="flex-one"></div>
+
+        <button
+          id="donation-open-btn"
+          class="sidebar-btn"
+          title="Buy me a coffee"
+        >
+          <i class="fas fa-mug-hot"></i> Buy Me a Coffee
+        </button>
+      </div>
+      <!-- End Sidebar -->
+
+      <!-- Chat Layout -->
+      <div class="chat-layout">
+        <!-- Chat Window -->
+        <div class="chat-main">
+          <div id="chat-box" class="chat-box"></div>
+          <div class="chat-input-container">
+            <textarea
+              id="chat-input"
+              placeholder="Type your message... (Shift+Enter for new line, Enter to send)"
+              rows="1"
+            ></textarea>
+            <div class="input-buttons-container">
+              <button id="send-button" disabled title="Send message">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+          <div class="chat-controls">
+            <div>
+              <button
+                id="voice-toggle"
+                class="control-btn"
+                title="Toggle automatic voice responses"
+              >
+                <i class="fas fa-volume-mute"></i> Voice Off
+              </button>
+              <!-- Our newly added Voice Chat button! -->
+              <button
+                id="open-voice-chat-modal"
+                class="control-btn"
+                title="Open the full Voice Chat modal"
+              >
+                <i class="fas fa-headset"></i> Voice Chat
+              </button>
+            </div>
+            <div>
+              <button
+                id="clear-chat"
+                class="control-btn"
+                title="Clear current chat conversation"
+              >
+                <i class="fas fa-trash-alt"></i> Clear Chat
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- End Chat Window -->
+      </div>
+      <!-- End Chat Layout -->
+    </div>
+    <!-- End Main App Container -->
+
+    <!-- Donation Modal -->
+    <div id="donation-modal" class="modal-backdrop hidden">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title">Support Us</h3>
+          <button
+            id="donation-modal-close"
+            class="close-btn"
+            title="Close Donation Window"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>If you enjoy using Unity Chat, consider supporting our work:</p>
+          <button
+            class="btn btn-primary w-100 mb-2"
+            title="Copy Bitcoin Address"
+            onclick="copyToClipboard('1P3fD566rkni6HTPvg72DUshNMK4Wn3i4M')"
+          >
+            <i class="fab fa-bitcoin"></i> Copy BTC Address
+          </button>
+          <button
+            class="btn btn-warning w-100 mb-2"
+            title="Copy Dogecoin Address"
+            onclick="copyToClipboard('DTBkkL2kAAgzdHdzfG6amF3JFV3MsMyy7x')"
+          >
+            <i class="fab fa-dog"></i> Copy DOGE Address
+          </button>
+          <button
+            class="btn btn-info w-100 mb-2"
+            title="Copy Ethereum Address"
+            onclick="copyToClipboard('0xf9c9b79a3a9c89c57180aec642e4aaf4b088d7a8')"
+          >
+            <i class="fab fa-ethereum"></i> Copy ETH Address
+          </button>
+          <button
+            class="btn btn-secondary w-100"
+            title="Copy Monero Address"
+            onclick="copyToClipboard('4AdRa7hXC8J6i4Kokf82NzdeQBkuanmFe5tWHHEPDaMae8W1ZTihQ4x4PDk1rUHidtT2zF5bgQU8bEhpkiZ2ubaxE5TCtLs')"
+          >
+            <i class="fas fa-coins"></i> Copy XMR Address
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End Donation Modal -->
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-backdrop hidden">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title">Settings</h3>
+          <button
+            id="settings-modal-close"
+            class="close-btn"
+            title="Close Settings Window"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label for="theme-select-settings" class="form-label"
+              ><i class="fas fa-palette"></i> Theme:</label
+            >
+            <select id="theme-select-settings" class="form-control">
+              <!-- Will be populated by JS -->
+            </select>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button
+              id="open-memory-manager"
+              class="btn btn-outline-primary"
+              title="View saved memories"
+            >
+              <i class="fas fa-brain"></i> Manage Memories
+            </button>
+
+            <button
+              id="open-personalization-settings"
+              class="btn btn-outline-info"
+              title="Personalize your chat experience"
+            >
+              <i class="fas fa-user-cog"></i> Personalization Settings
+            </button>
+
+            <button
+              id="clear-chat-sessions-btn"
+              class="btn btn-outline-danger"
+              title="Clear all chat sessions"
+            >
+              <i class="fas fa-trash-alt"></i> Clear All Chat Sessions
+            </button>
+
+            <button
+              id="clear-user-data-btn"
+              class="btn btn-danger"
+              title="Delete ALL user data"
+            >
+              <i class="fas fa-exclamation-triangle"></i> Delete All User Data
+            </button>
+          </div>
+
+          <div class="alert alert-warning mt-3" role="alert">
+            <i class="fas fa-exclamation-circle"></i> Warning: "Delete All User
+            Data" will permanently remove all your chat history, settings, and
+            preferences.
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Settings Modal -->
+
+    <!-- Manage Memories Modal -->
+    <div id="memory-modal" class="modal-backdrop hidden">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="fas fa-brain"></i> Memory Entries</h3>
+          <button
+            id="memory-modal-close"
+            class="close-btn"
+            title="Close Memories Window"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="memory-list-container">
+            <ul id="memory-list"></ul>
+          </div>
+
+          <div class="d-grid gap-2 mt-3">
+            <button
+              id="add-memory-btn"
+              class="btn btn-primary"
+              title="Add a new memory entry"
+            >
+              <i class="fas fa-plus"></i> Add Memory
+            </button>
+            <button
+              id="clear-all-memory-btn"
+              class="btn btn-danger"
+              title="Clear all memory entries"
+            >
+              <i class="fas fa-trash-alt"></i> Clear All Memories
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Manage Memories Modal -->
+
+    <!-- Add Memory Modal -->
+    <div id="add-memory-modal" class="modal-backdrop hidden">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title">New Memory Entry</h3>
+          <button
+            id="add-memory-modal-close"
+            class="close-btn"
+            title="Close Add Memory Window"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="new-memory-text" class="form-label"
+              >Memory Content:</label
+            >
+            <textarea
+              id="new-memory-text"
+              class="form-control"
+              rows="4"
+              placeholder="Enter memory text here..."
+            ></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button
+              id="cancel-new-memory-btn"
+              class="btn btn-secondary"
+              title="Cancel Creation"
+            >
+              Cancel
+            </button>
+            <button
+              id="save-new-memory-btn"
+              class="btn btn-primary"
+              title="Save New Memory"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Add Memory Modal -->
+
+    <!-- Personalization Modal -->
+    <div id="personalization-modal" class="modal-backdrop hidden">
+      <div class="modal-container personalization-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i class="fas fa-user-cog"></i> Chat Personalization
+          </h3>
+          <button id="personalization-close" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="personalization-form" class="personalization-form">
+            <div class="form-group mb-3">
+              <label class="form-label" for="user-name"
+                ><i class="fas fa-user"></i> Your Name</label
+              >
+              <input
+                type="text"
+                id="user-name"
+                class="form-control"
+                placeholder="How should the AI address you?"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label class="form-label" for="user-interests"
+                ><i class="fas fa-heart"></i> Your Interests</label
+              >
+              <input
+                type="text"
+                id="user-interests"
+                class="form-control"
+                placeholder="Topics you're interested in (comma separated)"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label class="form-label" for="ai-traits"
+                ><i class="fas fa-robot"></i> AI Traits</label
+              >
+              <input
+                type="text"
+                id="ai-traits"
+                class="form-control"
+                placeholder="How should the AI behave? (e.g., friendly, professional)"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label class="form-label" for="additional-info"
+                ><i class="fas fa-info-circle"></i> Additional
+                Information</label
+              >
+              <textarea
+                id="additional-info"
+                class="form-control"
+                rows="3"
+                placeholder="Anything else the AI should know about you"
+              ></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-personalization" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button id="save-personalization" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+    <!-- End Personalization Modal -->
+
+    <!-- First Launch Modal -->
+    <div id="first-launch-modal" class="modal-backdrop hidden">
+      <div class="modal-container first-launch-modal">
+        <div class="modal-header">
+          <h2 class="welcome-heading">Welcome to Unity Chat!</h2>
+          <button id="first-launch-close" class="close-btn">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="welcome-text">
+            Thank you for trying Unity Chat! This application lets you interact
+            with AI models in a clean, intuitive interface. Let's set up a few
+            things to get started.
+          </p>
+          <div class="setup-options">
+            <button id="setup-theme" class="setup-btn">
+              <span class="setup-btn-icon">🎨</span>
+              <div class="setup-btn-content">
+                <div class="setup-btn-title">Choose a Theme</div>
+                <div class="setup-btn-desc">
+                  Select a visual theme that suits your style
+                </div>
+              </div>
+            </button>
+            <button id="setup-personalization" class="setup-btn">
+              <span class="setup-btn-icon">👤</span>
+              <div class="setup-btn-content">
+                <div class="setup-btn-title">Personalize Your Experience</div>
+                <div class="setup-btn-desc">
+                  Tell the AI about yourself for better responses
+                </div>
+              </div>
+            </button>
+            <button id="setup-model" class="setup-btn">
+              <span class="setup-btn-icon">🧠</span>
+              <div class="setup-btn-content">
+                <div class="setup-btn-title">Select Your AI Model</div>
+                <div class="setup-btn-desc">
+                  Choose which AI model you'd like to chat with
+                </div>
+              </div>
+            </button>
+          </div>
+          <p class="text-center">
+            You can access these settings anytime from the sidebar.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button id="first-launch-complete" class="sidebar-btn">
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End First Launch Modal -->
+
+    <!-- Scripts -->
+    <script>
+      // For copying crypto addresses
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          // Show a quick ephemeral popup
+          const popup = document.createElement("div");
+          popup.textContent = "Address copied. Thank you!";
+          popup.style.position = "fixed";
+          popup.style.bottom = "20px";
+          popup.style.left = "50%";
+          popup.style.transform = "translateX(-50%)";
+          popup.style.backgroundColor = "rgba(0,0,0,0.8)";
+          popup.style.color = "#fff";
+          popup.style.padding = "10px 20px";
+          popup.style.borderRadius = "5px";
+          popup.style.zIndex = "9999";
+          document.body.appendChild(popup);
+          setTimeout(() => {
+            popup.style.opacity = "0";
+            setTimeout(() => popup.remove(), 500);
+          }, 2000);
+        }).catch((err) => {
+          console.error("Failed to copy: ", err);
+        });
+      }
+    </script>
+
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      defer
+    ></script>
+
+    <!-- Core app scripts -->
+    <script defer src="storage.js"></script>
+    <script defer src="memory-api.js"></script>
+    <script defer src="screensaver.js"></script>
+    <script defer src="ui.js"></script>
+
+    <!-- Load Prism before the chat scripts for code highlighting -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"
+      defer
+    ></script>
+
+    <!-- Our chunked chat scripts to replace chat.js -->
+    <script defer src="chat-part1.js"></script>
+    <script defer src="chat-part2.js"></script>
+    <script defer src="chat-part3.js"></script>
+  </body>
+</html>

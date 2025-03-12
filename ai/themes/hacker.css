@@ -1,0 +1,510 @@
+/* HACKER THEME OVERRIDES */
+/* This file overrides the neutral defaults in styles.css */
+body {
+  background-color: #000000;
+  color: #00ff00;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #001100; /* Dark greenish black */
+  border-right: 2px solid #005500;
+}
+.sidebar-header h2 {
+  color: #00ff00;
+}
+#visitor-counter {
+  color: #00ff00;
+}
+#visitor-count-display {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+/* Session list */
+.session-list {
+  color: #00ff00;
+}
+.session-item {
+  background-color: #000000;
+  color: #00ff00;
+}
+.session-item:hover {
+  background-color: #002200;
+}
+.session-item.active {
+  background-color: #005500;
+  color: #00ff00;
+}
+.session-title {
+  color: inherit;
+}
+.session-edit-btn,
+.session-delete-btn {
+  color: #00ff00;
+}
+.session-edit-btn:hover,
+.session-delete-btn:hover {
+  color: #00ff00;
+}
+
+/* Sidebar buttons and controls */
+.sidebar-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+.sidebar-btn:hover {
+  background-color: #003300;
+}
+.sidebar-label {
+  color: #00ff00;
+}
+.sidebar-select {
+  background-color: #001100;
+  color: #00ff00;
+  border: 1px solid #005500;
+}
+.divider {
+  border-bottom: 1px solid #005500;
+}
+
+/* Chat area */
+.chat-main {
+  background-color: #000000;
+  color: #00ff00;
+}
+
+/* Message bubbles */
+.user-message {
+  background-color: #003300; /* Dark green bubble */
+  color: #00ff00;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.ai-message {
+  background-color: #001100; /* Even darker bubble */
+  color: #00ff00;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Message action buttons */
+.message-action-btn {
+  background-color: rgba(0, 255, 0, 0.05);
+  color: #00ff00;
+}
+.message-action-btn:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #00ff00;
+}
+
+/* Input area */
+.chat-input-container {
+  background-color: #001100;
+  border-top: 1px solid #005500;
+}
+#chat-input {
+  background-color: #000000;
+  color: #00ff00;
+  border: 1px solid #005500;
+}
+#chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3);
+}
+
+/* Send and voice buttons */
+#send-button,
+#voice-input-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+#send-button:hover,
+#voice-input-btn:hover {
+  background-color: #003300;
+}
+#send-button:disabled {
+  background-color: #004400;
+  color: #00ff00;
+  opacity: 0.7;
+}
+
+/* Chat controls */
+.chat-controls {
+  background-color: #001100;
+  border-top: 1px solid #005500;
+}
+.control-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+.control-btn:hover {
+  background-color: #003300;
+  color: #00ff00;
+}
+
+/* Voice chat controls */
+#voice-toggle.active {
+  background-color: #003300;
+  color: #00ff00;
+}
+#headset-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+#headset-btn:hover {
+  background-color: #003300;
+}
+
+/* Code blocks */
+.code-block-container {
+  background-color: #000000;
+  border: 1px solid #005500;
+}
+.code-block-header {
+  background-color: #002200;
+  border-bottom: 1px solid #00ff00;
+  color: #00ff00;
+}
+.code-language {
+  color: #00ff00;
+}
+.copy-code-btn,
+.expand-code-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+.copy-code-btn:hover,
+.expand-code-btn:hover {
+  background-color: #003300;
+  color: #00ff00;
+}
+.code-block {
+  background-color: #000000;
+  color: #00ff00;
+}
+
+/* Images */
+.ai-image-loading {
+  background-color: #000000;
+}
+.loading-spinner {
+  border: 4px solid rgba(0, 255, 0, 0.05);
+  border-top: 4px solid #00ff00;
+}
+.image-button {
+  background-color: rgba(0, 255, 0, 0.05);
+  color: #00ff00;
+}
+.image-button:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #00ff00;
+}
+
+/* Modals */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.modal-container {
+  background-color: #000000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+.modal-header {
+  border-bottom: 1px solid #005500;
+}
+.modal-title {
+  color: #00ff00;
+}
+.close-btn {
+  color: #00ff00;
+}
+.modal-body {
+  color: #00ff00;
+}
+.modal-footer {
+  border-top: 1px solid #005500;
+}
+
+/* Form controls */
+.form-label {
+  color: #00ff00;
+}
+.form-control {
+  background-color: #001100;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+.form-control:focus {
+  border-color: #003300;
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.25);
+}
+
+/* Button styles */
+.btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background-color: #002200;
+  border-color: #002200;
+  color: #00ff00;
+}
+.btn-primary:hover {
+  background-color: #003300;
+  border-color: #003300;
+}
+.btn-secondary {
+  background-color: #004400;
+  border-color: #004400;
+  color: #00ff00;
+}
+.btn-secondary:hover {
+  background-color: #005500;
+  border-color: #005500;
+}
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-danger:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+.btn-outline-primary {
+  color: #002200;
+  border-color: #002200;
+}
+.btn-outline-primary:hover {
+  background-color: #002200;
+  color: #00ff00;
+}
+.btn-outline-danger {
+  color: #f44336;
+  border-color: #f44336;
+}
+.btn-outline-danger:hover {
+  background-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-outline-info {
+  color: #00bcd4;
+  border-color: #00bcd4;
+}
+.btn-outline-info:hover {
+  background-color: #00bcd4;
+  color: #FFFFFF;
+}
+
+/* Voice chat modal */
+.voice-chat-modal {
+  background-color: #001100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+.voice-status {
+  background-color: #002200;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+.voice-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+.voice-btn:hover {
+  background-color: #003300;
+}
+.voice-btn:disabled {
+  background-color: #004400;
+  color: #00ff00;
+}
+.voice-btn.listening {
+  background-color: #f44336;
+}
+.transcript {
+  background-color: #001100;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+
+/* Personalization modal */
+.personalization-form .form-group {
+  margin-bottom: 15px;
+}
+.personalization-form .form-label i {
+  color: #002200;
+  margin-right: 5px;
+}
+
+/* First launch modal */
+.first-launch-modal {
+  background-color: #001100;
+}
+.welcome-heading {
+  color: #002200;
+}
+.welcome-text {
+  color: #00ff00;
+}
+.setup-btn {
+  background-color: #002200;
+  color: #00ff00;
+  border: 1px solid #002200;
+}
+.setup-btn:hover {
+  background-color: #003300;
+}
+.setup-btn-icon {
+  color: #002200;
+}
+.setup-btn-title {
+  color: #00ff00;
+}
+.setup-btn-desc {
+  color: #00ff00;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+.alert-warning {
+  background-color: #003300;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+.alert-info {
+  background-color: #001100;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+.alert-danger {
+  background-color: #5C1F1F;
+  border: 1px solid #00ff00;
+  color: #ffb3b3;
+}
+.alert-success {
+  background-color: #1C3A1C;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+
+/* Toast notification */
+#toast-notification {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #00ff00;
+}
+
+/* Memory list items */
+#memory-list li {
+  background-color: #001100 !important;
+  border: 1px solid #005500;
+}
+#memory-list .text-muted {
+  color: #00ff00 !important;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #002200 !important;
+}
+.text-secondary {
+  color: #00ff00 !important;
+}
+.text-success {
+  color: #4caf50 !important;
+}
+.text-danger {
+  color: #f44336 !important;
+}
+.text-warning {
+  color: #ff9800 !important;
+}
+.text-info {
+  color: #00bcd4 !important;
+}
+.bg-light {
+  background-color: #001100 !important;
+}
+.bg-white {
+  background-color: #000000 !important;
+}
+.border {
+  border: 1px solid #005500 !important;
+}
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* Bootstrap components */
+.dropdown-menu {
+  background-color: #001100;
+  border: 1px solid #005500;
+}
+.dropdown-item {
+  color: #00ff00;
+}
+.dropdown-item:hover {
+  background-color: #002200;
+}
+.dropdown-divider {
+  border-top: 1px solid #005500;
+}
+
+/* Screensaver styles for hacker theme */
+/* Background stays dark for better image viewing */
+.screensaver {
+  background-color: #000000;
+}
+/* Controls in hacker theme */
+.screensaver-controls {
+  background: rgba(0, 16, 0, 0.7);
+}
+/* Labels in hacker theme */
+.screensaver-settings label {
+  color: #00ff00;
+}
+/* Form elements in hacker theme */
+.screensaver-settings input[type="text"],
+.screensaver-settings input[type="number"],
+.screensaver-settings select {
+  background-color: #001100;
+  border-color: #005500;
+  color: #00ff00;
+}
+.screensaver-settings input[type="checkbox"] {
+  accent-color: #00ff00;
+}
+/* Buttons in hacker theme */
+.screensaver-btn {
+  background-color: #002200;
+  color: #00ff00;
+}
+.screensaver-btn:hover {
+  background-color: #003300;
+}
+/* Specific buttons */
+#screensaver-exit {
+  background-color: #f44336;
+}
+#screensaver-exit:hover {
+  background-color: #d32f2f;
+}
+#screensaver-save,
+#screensaver-copy {
+  background-color: #4caf50;
+}
+#screensaver-save:hover,
+#screensaver-copy:hover {
+  background-color: #388e3c;
+}
+#screensaver-playpause,
+#fullscreen-screensaver {
+  background-color: #ff9800;
+}
+#screensaver-playpause:hover,
+#fullscreen-screensaver:hover {
+  background-color: #f57c00;
+}
