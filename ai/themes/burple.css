@@ -1,0 +1,507 @@
+/* BURPLE THEME OVERRIDES */
+/* This file overrides the neutral defaults in styles.css */
+body {
+  background-color: #1E1B33;
+  color: #FFFFFF;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #241E42;
+  border-right: 2px solid #3C3272;
+}
+.sidebar-header h2 {
+  color: #FFFFFF;
+}
+#visitor-counter {
+  color: #CCCCFF;
+}
+#visitor-count-display {
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* Session list */
+.session-list {
+  color: #FFFFFF;
+}
+.session-item {
+  background-color: #2B2342;
+  color: #FFFFFF;
+}
+.session-item:hover {
+  background-color: #3C3272;
+}
+.session-item.active {
+  background-color: #524696;
+  color: #FFFFFF;
+}
+.session-title {
+  color: inherit;
+}
+.session-edit-btn,
+.session-delete-btn {
+  color: #CCCCFF;
+}
+.session-edit-btn:hover,
+.session-delete-btn:hover {
+  color: #FFFFFF;
+}
+
+/* Sidebar buttons and controls */
+.sidebar-btn {
+  background-color: #3C3272;
+  color: #FFFFFF;
+}
+.sidebar-btn:hover {
+  background-color: #524696;
+}
+.sidebar-label {
+  color: #CCCCFF;
+}
+.sidebar-select {
+  background-color: #241E42;
+  color: #FFFFFF;
+  border: 1px solid #3C3272;
+}
+.divider {
+  border-bottom: 1px solid #3C3272;
+}
+
+/* Chat area */
+.chat-main {
+  background-color: #1E1B33;
+  color: #FFFFFF;
+}
+
+/* Message bubbles */
+.user-message {
+  background-color: #3C3272;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.ai-message {
+  background-color: #2D2760;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Message action buttons */
+.message-action-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #CCCCFF;
+}
+.message-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+/* Input area */
+.chat-input-container {
+  background-color: #241E42;
+  border-top: 1px solid #3C3272;
+}
+#chat-input {
+  background-color: #1E1B33;
+  color: #FFFFFF;
+  border: 1px solid #3C3272;
+}
+#chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(60, 50, 114, 0.3);
+}
+
+/* Send and voice buttons */
+#send-button, #voice-input-btn {
+  background-color: #3C3272;
+  color: #FFFFFF;
+}
+#send-button:hover, #voice-input-btn:hover {
+  background-color: #524696;
+}
+#send-button:disabled {
+  background-color: #564DA3;
+  color: #FFFFFF;
+  opacity: 0.7;
+}
+
+/* Chat controls */
+.chat-controls {
+  background-color: #241E42;
+  border-top: 1px solid #3C3272;
+}
+.control-btn {
+  background-color: #3C3272;
+  color: #CCCCFF;
+}
+.control-btn:hover {
+  background-color: #524696;
+  color: #FFFFFF;
+}
+
+/* Voice chat controls */
+#voice-toggle.active {
+  background-color: #524696;
+  color: #FFFFFF;
+}
+#headset-btn {
+  background-color: #2D2760;
+  color: #FFFFFF;
+}
+#headset-btn:hover {
+  background-color: #3C3272;
+}
+
+/* Code blocks */
+.code-block-container {
+  background-color: #1E1B33;
+  border: 1px solid #3C3272;
+}
+.code-block-header {
+  background-color: #2D2760;
+  border-bottom: 1px solid #3C3272;
+  color: #CCCCFF;
+}
+.code-language {
+  color: #DDDDFF;
+}
+.copy-code-btn, .expand-code-btn {
+  background-color: #3C3272;
+  color: #CCCCFF;
+}
+.copy-code-btn:hover, .expand-code-btn:hover {
+  background-color: #524696;
+  color: #FFFFFF;
+}
+.code-block {
+  background-color: #241E42;
+  color: #FFFFFF;
+}
+
+/* Images */
+.ai-image-loading {
+  background-color: #1E1B33;
+}
+.loading-spinner {
+  border: 4px solid rgba(255,255,255,0.05);
+  border-top: 4px solid #3C3272;
+}
+.image-button {
+  background-color: rgba(255,255,255,0.05);
+  color: #CCCCFF;
+}
+.image-button:hover {
+  background-color: rgba(255,255,255,0.1);
+  color: #FFFFFF;
+}
+
+/* Modals */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.modal-container {
+  background-color: #241E42;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  border: 1px solid #3C3272;
+  color: #FFFFFF;
+}
+.modal-header {
+  border-bottom: 1px solid #3C3272;
+}
+.modal-title {
+  color: #FFFFFF;
+}
+.close-btn {
+  color: #FFFFFF;
+}
+.modal-body {
+  color: #FFFFFF;
+}
+.modal-footer {
+  border-top: 1px solid #3C3272;
+}
+
+/* Form controls */
+.form-label {
+  color: #CCCCFF;
+}
+.form-control {
+  background-color: #241E42;
+  border: 1px solid #3C3272;
+  color: #FFFFFF;
+}
+.form-control:focus {
+  border-color: #524696;
+  box-shadow: 0 0 0 2px rgba(60, 50, 114, 0.25);
+}
+
+/* Button styles */
+.btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background-color: #3C3272;
+  border-color: #3C3272;
+  color: #FFFFFF;
+}
+.btn-primary:hover {
+  background-color: #524696;
+  border-color: #524696;
+}
+.btn-secondary {
+  background-color: #564DA3;
+  border-color: #564DA3;
+  color: #FFFFFF;
+}
+.btn-secondary:hover {
+  background-color: #6652B0;
+  border-color: #6652B0;
+}
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-danger:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+.btn-outline-primary {
+  color: #3C3272;
+  border-color: #3C3272;
+}
+.btn-outline-primary:hover {
+  background-color: #3C3272;
+  color: #FFFFFF;
+}
+.btn-outline-danger {
+  color: #f44336;
+  border-color: #f44336;
+}
+.btn-outline-danger:hover {
+  background-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-outline-info {
+  color: #00bcd4;
+  border-color: #00bcd4;
+}
+.btn-outline-info:hover {
+  background-color: #00bcd4;
+  color: #FFFFFF;
+}
+
+/* Voice chat modal */
+.voice-chat-modal {
+  background-color: #241E42;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+}
+.voice-status {
+  background-color: #2B2342;
+  border: 1px solid #3C3272;
+  color: #CCCCFF;
+}
+.voice-btn {
+  background-color: #3C3272;
+  color: #FFFFFF;
+}
+.voice-btn:hover {
+  background-color: #524696;
+}
+.voice-btn:disabled {
+  background-color: #564DA3;
+  color: #FFFFFF;
+}
+.voice-btn.listening {
+  background-color: #f44336;
+}
+.transcript {
+  background-color: #241E42;
+  border: 1px solid #3C3272;
+  color: #FFFFFF;
+}
+
+/* Personalization modal */
+.personalization-form .form-group {
+  margin-bottom: 15px;
+}
+.personalization-form .form-label i {
+  color: #3C3272;
+  margin-right: 5px;
+}
+
+/* First launch modal */
+.first-launch-modal {
+  background-color: #241E42;
+}
+.welcome-heading {
+  color: #3C3272;
+}
+.welcome-text {
+  color: #CCCCFF;
+}
+.setup-btn {
+  background-color: #3C3272;
+  color: #FFFFFF;
+  border: 1px solid #3C3272;
+}
+.setup-btn:hover {
+  background-color: #524696;
+}
+.setup-btn-icon {
+  color: #3C3272;
+}
+.setup-btn-title {
+  color: #FFFFFF;
+}
+.setup-btn-desc {
+  color: #CCCCFF;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+.alert-warning {
+  background-color: #3E2B00;
+  border: 1px solid #5C4A00;
+  color: #FFDD88;
+}
+.alert-info {
+  background-color: #223344;
+  border: 1px solid #334455;
+  color: #AABBCC;
+}
+.alert-danger {
+  background-color: #5C1F1F;
+  border: 1px solid #7A2A2A;
+  color: #FFB3B3;
+}
+.alert-success {
+  background-color: #1C3A1C;
+  border: 1px solid #2A4A2A;
+  color: #B3FFB3;
+}
+
+/* Toast notification */
+#toast-notification {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #FFFFFF;
+}
+
+/* Memory list items */
+#memory-list li {
+  background-color: #241E42 !important;
+  border: 1px solid #3C3272;
+}
+#memory-list .text-muted {
+  color: #CCCCFF !important;
+}
+
+/* Make sure all icons have proper contrast */
+.fas, .fab, .far {
+  color: inherit;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #3C3272 !important;
+}
+.text-secondary {
+  color: #CCCCFF !important;
+}
+.text-success {
+  color: #4caf50 !important;
+}
+.text-danger {
+  color: #f44336 !important;
+}
+.text-warning {
+  color: #ff9800 !important;
+}
+.text-info {
+  color: #00bcd4 !important;
+}
+.bg-light {
+  background-color: #241E42 !important;
+}
+.bg-white {
+  background-color: #1E1B33 !important;
+}
+.border {
+  border: 1px solid #3C3272 !important;
+}
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* Make sure Bootstrap components have proper colors */
+.dropdown-menu {
+  background-color: #241E42;
+  border: 1px solid #3C3272;
+}
+.dropdown-item {
+  color: #FFFFFF;
+}
+.dropdown-item:hover {
+  background-color: #3C3272;
+}
+.dropdown-divider {
+  border-top: 1px solid #3C3272;
+}
+
+/* Screensaver styles for burple theme */
+/* Background stays dark for better image viewing */
+.screensaver {
+  background-color: #1E1B33;
+}
+/* Controls in burple theme */
+.screensaver-controls {
+  background: rgba(36, 30, 66, 0.8);
+}
+/* Labels in burple theme */
+.screensaver-settings label {
+  color: #FFFFFF;
+}
+/* Form elements in burple theme */
+.screensaver-settings input[type="text"],
+.screensaver-settings input[type="number"],
+.screensaver-settings select {
+  background-color: #241E42;
+  border-color: #3C3272;
+  color: #FFFFFF;
+}
+.screensaver-settings input[type="checkbox"] {
+  accent-color: #3C3272;
+}
+/* Buttons in burple theme */
+.screensaver-btn {
+  background-color: #3C3272;
+  color: #FFFFFF;
+}
+.screensaver-btn:hover {
+  background-color: #524696;
+}
+/* Specific buttons */
+#screensaver-exit {
+  background-color: #f44336;
+}
+#screensaver-exit:hover {
+  background-color: #d32f2f;
+}
+#screensaver-save, #screensaver-copy {
+  background-color: #4caf50;
+}
+#screensaver-save:hover, #screensaver-copy:hover {
+  background-color: #388e3c;
+}
+#screensaver-playpause, #fullscreen-screensaver {
+  background-color: #ff9800;
+}
+#screensaver-playpause:hover, #fullscreen-screensaver:hover {
+  background-color: #f57c00;
+}

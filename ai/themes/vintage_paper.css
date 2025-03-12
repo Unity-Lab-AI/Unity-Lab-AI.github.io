@@ -1,0 +1,457 @@
+/* VINTAGE PAPER THEME OVERRIDES */
+/* This file overrides the neutral defaults in styles.css */
+body {
+  background-color: #F5F1E3; /* Aged parchment */
+  color: #5A4632;           /* Dark brown text */
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #EBE4D2;
+  border-right: 2px solid #C9BEA5;
+}
+.sidebar-header h2 {
+  color: #5A4632;
+}
+#visitor-counter {
+  color: #C9BEA5;
+}
+#visitor-count-display {
+  color: #5A4632;
+  font-weight: bold;
+}
+
+/* Session list */
+.session-list {
+  color: #5A4632;
+}
+.session-item {
+  background-color: #EBE4D2;
+  color: #5A4632;
+}
+.session-item:hover {
+  background-color: #E8DEC3;
+}
+.session-item.active {
+  background-color: #DCCBA6;
+  color: #4A3726;
+}
+.session-title {
+  color: inherit;
+}
+.session-edit-btn,
+.session-delete-btn {
+  color: #C9BEA5;
+}
+.session-edit-btn:hover,
+.session-delete-btn:hover {
+  color: #5A4632;
+}
+
+/* Sidebar buttons and controls */
+.sidebar-btn {
+  background-color: #C9BEA5;
+  color: #4A3726;
+}
+.sidebar-btn:hover {
+  background-color: #DCCBA6;
+  color: #4A3726;
+}
+.sidebar-label {
+  color: #C9BEA5;
+}
+.sidebar-select {
+  background-color: #EBE4D2;
+  color: #5A4632;
+  border: 1px solid #C9BEA5;
+}
+.divider {
+  border-bottom: 1px solid #C9BEA5;
+}
+
+/* Chat area */
+.chat-main {
+  background-color: #F5F1E3;
+  color: #5A4632;
+}
+
+/* Message bubbles */
+.user-message {
+  background-color: #DCCBA6;
+  color: #4A3726;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.ai-message {
+  background-color: #E8DEC3;
+  color: #4A3726;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Message action buttons */
+.message-action-btn {
+  background-color: rgba(90, 70, 50, 0.05);
+  color: #C9BEA5;
+}
+.message-action-btn:hover {
+  background-color: rgba(90, 70, 50, 0.1);
+  color: #5A4632;
+}
+
+/* Input area */
+.chat-input-container {
+  background-color: #EBE4D2;
+  border-top: 1px solid #C9BEA5;
+}
+#chat-input {
+  background-color: #F5F1E3;
+  color: #5A4632;
+  border: 1px solid #C9BEA5;
+}
+#chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(201,190,165,0.3);
+}
+
+/* Send and voice buttons */
+#send-button,
+#voice-input-btn {
+  background-color: #C9BEA5;
+  color: #4A3726;
+}
+#send-button:hover,
+#voice-input-btn:hover {
+  background-color: #DCCBA6;
+  color: #4A3726;
+}
+#send-button:disabled {
+  background-color: #B5ADA5;
+  color: #5A4632;
+  opacity: 0.7;
+}
+
+/* Chat controls */
+.chat-controls {
+  background-color: #EBE4D2;
+  border-top: 1px solid #C9BEA5;
+}
+.control-btn {
+  background-color: #C9BEA5;
+  color: #5A4632;
+}
+.control-btn:hover {
+  background-color: #DCCBA6;
+  color: #5A4632;
+}
+
+/* Voice chat controls */
+#voice-toggle.active {
+  background-color: #DCCBA6;
+  color: #4A3726;
+}
+#headset-btn {
+  background-color: #C9BEA5;
+  color: #5A4632;
+}
+#headset-btn:hover {
+  background-color: #DCCBA6;
+}
+
+/* Code blocks */
+.code-block-container {
+  background-color: #F5F1E3;
+  border: 1px solid #C9BEA5;
+}
+.code-block-header {
+  background-color: #E8DEC3;
+  border-bottom: 1px solid #C9BEA5;
+  color: #C9BEA5;
+}
+.code-language {
+  color: #5A4632;
+}
+.copy-code-btn,
+.expand-code-btn {
+  background-color: #C9BEA5;
+  color: #4A3726;
+}
+.copy-code-btn:hover,
+.expand-code-btn:hover {
+  background-color: #DCCBA6;
+  color: #5A4632;
+}
+.code-block {
+  background-color: #EBE4D2;
+  color: #5A4632;
+}
+
+/* Modals */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.modal-container {
+  background-color: #EBE4D2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+.modal-header {
+  border-bottom: 1px solid #C9BEA5;
+}
+.modal-title {
+  color: #5A4632;
+}
+.close-btn {
+  color: #5A4632;
+}
+.modal-body {
+  color: #5A4632;
+}
+.modal-footer {
+  border-top: 1px solid #C9BEA5;
+}
+
+/* Form controls */
+.form-label {
+  color: #C9BEA5;
+}
+.form-control {
+  background-color: #EBE4D2;
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+.form-control:focus {
+  border-color: #DCCBA6;
+  box-shadow: 0 0 0 2px rgba(201,190,165,0.25);
+}
+
+/* Button styles */
+.btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background-color: #C9BEA5;
+  border-color: #C9BEA5;
+  color: #5A4632;
+}
+.btn-primary:hover {
+  background-color: #DCCBA6;
+  border-color: #DCCBA6;
+}
+.btn-secondary {
+  background-color: #CCC3B0;
+  border-color: #CCC3B0;
+  color: #5A4632;
+}
+.btn-secondary:hover {
+  background-color: #B5ADA5;
+  border-color: #B5ADA5;
+}
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-danger:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+.btn-outline-primary {
+  color: #C9BEA5;
+  border-color: #C9BEA5;
+}
+.btn-outline-primary:hover {
+  background-color: #C9BEA5;
+  color: #5A4632;
+}
+.btn-outline-danger {
+  color: #f44336;
+  border-color: #f44336;
+}
+.btn-outline-danger:hover {
+  background-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-outline-info {
+  color: #00bcd4;
+  border-color: #00bcd4;
+}
+.btn-outline-info:hover {
+  background-color: #00bcd4;
+  color: #FFFFFF;
+}
+
+/* Voice chat modal */
+.voice-chat-modal {
+  background-color: #EBE4D2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+.voice-status {
+  background-color: #EBE4D2;
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+.voice-btn {
+  background-color: #C9BEA5;
+  color: #5A4632;
+}
+.voice-btn:hover {
+  background-color: #DCCBA6;
+  color: #5A4632;
+}
+.voice-btn:disabled {
+  background-color: #B5ADA5;
+  color: #5A4632;
+}
+.voice-btn.listening {
+  background-color: #f44336;
+}
+.transcript {
+  background-color: #EBE4D2;
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+
+/* Personalization modal */
+.personalization-form .form-group {
+  margin-bottom: 15px;
+}
+.personalization-form .form-label i {
+  color: #C9BEA5;
+  margin-right: 5px;
+}
+
+/* First launch modal */
+.first-launch-modal {
+  background-color: #EBE4D2;
+}
+.welcome-heading {
+  color: #C9BEA5;
+}
+.welcome-text {
+  color: #5A4632;
+}
+.setup-btn {
+  background-color: #C9BEA5;
+  color: #5A4632;
+  border: 1px solid #C9BEA5;
+}
+.setup-btn:hover {
+  background-color: #DCCBA6;
+}
+.setup-btn-icon {
+  color: #C9BEA5;
+}
+.setup-btn-title {
+  color: #5A4632;
+}
+.setup-btn-desc {
+  color: #C9BEA5;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+.alert-warning {
+  background-color: #DCCBA6;
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+.alert-info {
+  background-color: #EBE4D2;
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+.alert-danger {
+  background-color: #f44336;
+  border: 1px solid #f44336;
+  color: #ffb3b3;
+}
+.alert-success {
+  background-color: #DCCBA6;
+  border: 1px solid #C9BEA5;
+  color: #5A4632;
+}
+
+/* Toast notification */
+#toast-notification {
+  background-color: rgba(245,241,227,0.9);
+  color: #5A4632;
+}
+
+/* Memory list items */
+#memory-list li {
+  background-color: #F0EDE8 !important;
+  border: 1px solid #CCC8C0;
+}
+#memory-list .text-muted {
+  color: #CCC8C0 !important;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #C9BEA5 !important;
+}
+.text-secondary {
+  color: #CCC8C0 !important;
+}
+.text-success {
+  color: #DCCBA6 !important;
+}
+.text-danger {
+  color: #f44336 !important;
+}
+.text-warning {
+  color: #ff9800 !important;
+}
+.text-info {
+  color: #00bcd4 !important;
+}
+.bg-light {
+  background-color: #F0EDE8 !important;
+}
+.bg-white {
+  background-color: #F8F6F1 !important;
+}
+.border {
+  border: 1px solid #CCC8C0 !important;
+}
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* Bootstrap components */
+.dropdown-menu {
+  background-color: #F0EDE8;
+  border: 1px solid #CCC8C0;
+}
+.dropdown-item {
+  color: #2C2C2C;
+}
+.dropdown-item:hover {
+  background-color: #E8E3DC;
+}
+.dropdown-divider {
+  border-top: 1px solid #CCC8C0;
+}
+
+/* Screensaver styles for subtle light theme */
+/* Background stays light for gentle viewing */
+.screensaver {
+  background-color: #F8F6F1;
+}
+.screensaver-controls {
+  background: rgba(248,246,241,0.85);
+}
+.screensaver-settings label {
+  color: #2C2C2C;
+}
+.screensaver-btn {
+  background: #D7D2C7;
+  color: #2C2C2C;
+  border: 1px solid #C8C3B8;
+}

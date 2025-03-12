@@ -1,0 +1,512 @@
+/* DRACULA THEME OVERRIDES */
+/* This file overrides the neutral defaults in styles.css */
+body {
+  background-color: #282A36;
+  color: #F8F8F2;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #44475A;
+  border-right: 2px solid #6272A4;
+}
+.sidebar-header h2 {
+  color: #F8F8F2;
+}
+#visitor-counter {
+  color: #BD93F9;
+}
+#visitor-count-display {
+  color: #F8F8F2;
+  font-weight: bold;
+}
+
+/* Session list */
+.session-list {
+  color: #F8F8F2;
+}
+.session-item {
+  background-color: #343746;
+  color: #F8F8F2;
+}
+.session-item:hover {
+  background-color: #4B4F63;
+}
+.session-item.active {
+  background-color: #6272A4;
+  color: #282A36;
+}
+.session-title {
+  color: inherit;
+}
+.session-edit-btn,
+.session-delete-btn {
+  color: #BD93F9;
+}
+.session-edit-btn:hover,
+.session-delete-btn:hover {
+  color: #F8F8F2;
+}
+
+/* Sidebar buttons and controls */
+.sidebar-btn {
+  background-color: #6272A4;
+  color: #F8F8F2;
+}
+.sidebar-btn:hover {
+  background-color: #BD93F9;
+  color: #282A36;
+}
+.sidebar-label {
+  color: #BD93F9;
+}
+.sidebar-select {
+  background-color: #44475A;
+  color: #F8F8F2;
+  border: 1px solid #6272A4;
+}
+.divider {
+  border-bottom: 1px solid #6272A4;
+}
+
+/* Chat area */
+.chat-main {
+  background-color: #282A36;
+  color: #F8F8F2;
+}
+
+/* Message bubbles */
+.user-message {
+  background-color: #BD93F9; /* Purple highlight */
+  color: #282A36;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.ai-message {
+  background-color: #6272A4;
+  color: #F8F8F2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Message action buttons */
+.message-action-btn {
+  background-color: rgba(248, 248, 242, 0.05);
+  color: #BD93F9;
+}
+.message-action-btn:hover {
+  background-color: rgba(248, 248, 242, 0.1);
+  color: #F8F8F2;
+}
+
+/* Input area */
+.chat-input-container {
+  background-color: #44475A;
+  border-top: 1px solid #6272A4;
+}
+#chat-input {
+  background-color: #282A36;
+  color: #F8F8F2;
+  border: 1px solid #6272A4;
+}
+#chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(98, 114, 164, 0.3);
+}
+
+/* Send and voice buttons */
+#send-button,
+#voice-input-btn {
+  background-color: #6272A4;
+  color: #F8F8F2;
+}
+#send-button:hover,
+#voice-input-btn:hover {
+  background-color: #BD93F9;
+  color: #282A36;
+}
+#send-button:disabled {
+  background-color: #6C757D;
+  color: #F8F8F2;
+  opacity: 0.7;
+}
+
+/* Chat controls */
+.chat-controls {
+  background-color: #44475A;
+  border-top: 1px solid #6272A4;
+}
+.control-btn {
+  background-color: #6272A4;
+  color: #BD93F9;
+}
+.control-btn:hover {
+  background-color: #BD93F9;
+  color: #282A36;
+}
+
+/* Voice chat controls */
+#voice-toggle.active {
+  background-color: #BD93F9;
+  color: #282A36;
+}
+#headset-btn {
+  background-color: #6272A4;
+  color: #F8F8F2;
+}
+#headset-btn:hover {
+  background-color: #BD93F9;
+}
+
+/* Code blocks */
+.code-block-container {
+  background-color: #282A36;
+  border: 1px solid #6272A4;
+}
+.code-block-header {
+  background-color: #44475A;
+  border-bottom: 1px solid #6272A4;
+  color: #BD93F9;
+}
+.code-language {
+  color: #E6E6FA;
+}
+.copy-code-btn,
+.expand-code-btn {
+  background-color: #6272A4;
+  color: #BD93F9;
+}
+.copy-code-btn:hover,
+.expand-code-btn:hover {
+  background-color: #BD93F9;
+  color: #282A36;
+}
+.code-block {
+  background-color: #282A36;
+  color: #F8F8F2;
+}
+
+/* Images */
+.ai-image-loading {
+  background-color: #282A36;
+}
+.loading-spinner {
+  border: 4px solid rgba(248,248,242,0.05);
+  border-top: 4px solid #6272A4;
+}
+.image-button {
+  background-color: rgba(248,248,242,0.05);
+  color: #BD93F9;
+}
+.image-button:hover {
+  background-color: rgba(248,248,242,0.1);
+  color: #F8F8F2;
+}
+
+/* Modals */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.modal-container {
+  background-color: #44475A;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  border: 1px solid #6272A4;
+  color: #F8F8F2;
+}
+.modal-header {
+  border-bottom: 1px solid #6272A4;
+}
+.modal-title {
+  color: #F8F8F2;
+}
+.close-btn {
+  color: #F8F8F2;
+}
+.modal-body {
+  color: #F8F8F2;
+}
+.modal-footer {
+  border-top: 1px solid #6272A4;
+}
+
+/* Form controls */
+.form-label {
+  color: #BD93F9;
+}
+.form-control {
+  background-color: #44475A;
+  border: 1px solid #6272A4;
+  color: #F8F8F2;
+}
+.form-control:focus {
+  border-color: #BD93F9;
+  box-shadow: 0 0 0 2px rgba(98, 114, 164, 0.25);
+}
+
+/* Button styles */
+.btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background-color: #6272A4;
+  border-color: #6272A4;
+  color: #F8F8F2;
+}
+.btn-primary:hover {
+  background-color: #BD93F9;
+  border-color: #BD93F9;
+}
+.btn-secondary {
+  background-color: #6C757D;
+  border-color: #6C757D;
+  color: #F8F8F2;
+}
+.btn-secondary:hover {
+  background-color: #7A869A;
+  border-color: #7A869A;
+}
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-danger:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+.btn-outline-primary {
+  color: #6272A4;
+  border-color: #6272A4;
+}
+.btn-outline-primary:hover {
+  background-color: #6272A4;
+  color: #F8F8F2;
+}
+.btn-outline-danger {
+  color: #f44336;
+  border-color: #f44336;
+}
+.btn-outline-danger:hover {
+  background-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-outline-info {
+  color: #00bcd4;
+  border-color: #00bcd4;
+}
+.btn-outline-info:hover {
+  background-color: #00bcd4;
+  color: #FFFFFF;
+}
+
+/* Voice chat modal */
+.voice-chat-modal {
+  background-color: #44475A;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+}
+.voice-status {
+  background-color: #343746;
+  border: 1px solid #6272A4;
+  color: #BD93F9;
+}
+.voice-btn {
+  background-color: #6272A4;
+  color: #F8F8F2;
+}
+.voice-btn:hover {
+  background-color: #BD93F9;
+}
+.voice-btn:disabled {
+  background-color: #6C757D;
+  color: #F8F8F2;
+}
+.voice-btn.listening {
+  background-color: #f44336;
+}
+.transcript {
+  background-color: #44475A;
+  border: 1px solid #6272A4;
+  color: #F8F8F2;
+}
+
+/* Personalization modal */
+.personalization-form .form-group {
+  margin-bottom: 15px;
+}
+.personalization-form .form-label i {
+  color: #6272A4;
+  margin-right: 5px;
+}
+
+/* First launch modal */
+.first-launch-modal {
+  background-color: #44475A;
+}
+.welcome-heading {
+  color: #6272A4;
+}
+.welcome-text {
+  color: #BD93F9;
+}
+.setup-btn {
+  background-color: #6272A4;
+  color: #F8F8F2;
+  border: 1px solid #6272A4;
+}
+.setup-btn:hover {
+  background-color: #BD93F9;
+}
+.setup-btn-icon {
+  color: #6272A4;
+}
+.setup-btn-title {
+  color: #F8F8F2;
+}
+.setup-btn-desc {
+  color: #BD93F9;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+.alert-warning {
+  background-color: #4B4F63;
+  border: 1px solid #6272A4;
+  color: #F8F8F2;
+}
+.alert-info {
+  background-color: #343746;
+  border: 1px solid #6272A4;
+  color: #F8F8F2;
+}
+.alert-danger {
+  background-color: #5C1F1F;
+  border: 1px solid #f44336;
+  color: #ffb3b3;
+}
+.alert-success {
+  background-color: #1C3A1C;
+  border: 1px solid #6272A4;
+  color: #00ff00;
+}
+
+/* Toast notification */
+#toast-notification {
+  background-color: rgba(33, 33, 33, 0.9);
+  color: #F8F8F2;
+}
+
+/* Memory list items */
+#memory-list li {
+  background-color: #44475A !important;
+  border: 1px solid #6272A4;
+}
+#memory-list .text-muted {
+  color: #BD93F9 !important;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #6272A4 !important;
+}
+.text-secondary {
+  color: #BD93F9 !important;
+}
+.text-success {
+  color: #4caf50 !important;
+}
+.text-danger {
+  color: #f44336 !important;
+}
+.text-warning {
+  color: #ff9800 !important;
+}
+.text-info {
+  color: #00bcd4 !important;
+}
+.bg-light {
+  background-color: #44475A !important;
+}
+.bg-white {
+  background-color: #282A36 !important;
+}
+.border {
+  border: 1px solid #6272A4 !important;
+}
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* Bootstrap components */
+.dropdown-menu {
+  background-color: #44475A;
+  border: 1px solid #6272A4;
+}
+.dropdown-item {
+  color: #F8F8F2;
+}
+.dropdown-item:hover {
+  background-color: #6272A4;
+}
+.dropdown-divider {
+  border-top: 1px solid #6272A4;
+}
+
+/* Screensaver styles for dracula theme */
+/* Background stays dark for better image viewing */
+.screensaver {
+  background-color: #282A36;
+}
+/* Controls in dracula theme */
+.screensaver-controls {
+  background: rgba(40, 42, 54, 0.8);
+}
+/* Labels in dracula theme */
+.screensaver-settings label {
+  color: #F8F8F2;
+}
+/* Form elements in dracula theme */
+.screensaver-settings input[type="text"],
+.screensaver-settings input[type="number"],
+.screensaver-settings select {
+  background-color: #44475A;
+  border-color: #6272A4;
+  color: #F8F8F2;
+}
+.screensaver-settings input[type="checkbox"] {
+  accent-color: #6272A4;
+}
+/* Buttons in dracula theme */
+.screensaver-btn {
+  background-color: #6272A4;
+  color: #F8F8F2;
+}
+.screensaver-btn:hover {
+  background-color: #BD93F9;
+}
+/* Specific buttons */
+#screensaver-exit {
+  background-color: #f44336;
+}
+#screensaver-exit:hover {
+  background-color: #d32f2f;
+}
+#screensaver-save,
+#screensaver-copy {
+  background-color: #4caf50;
+}
+#screensaver-save:hover,
+#screensaver-copy:hover {
+  background-color: #388e3c;
+}
+#screensaver-playpause,
+#fullscreen-screensaver {
+  background-color: #ff9800;
+}
+#screensaver-playpause:hover,
+#fullscreen-screensaver:hover {
+  background-color: #f57c00;
+}
