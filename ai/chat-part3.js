@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const { chatBox, chatInput, clearChatBtn, voiceToggleBtn, modelSelect, currentSession, synth, autoSpeakEnabled, speakMessage, stopSpeaking, showToast, toggleSpeechRecognition, initSpeechRecognition } = window._chatInternals;
+  const { chatBox, chatInput, clearChatBtn, voiceToggleBtn, modelSelect, synth, autoSpeakEnabled, speakMessage, stopSpeaking, showToast, toggleSpeechRecognition, initSpeechRecognition } = window._chatInternals;
+
+  // No static currentSession; we'll fetch it fresh each time
   function randomSeed() {
     return Math.floor(Math.random() * 1000000).toString();
   }
+
   function generateSessionTitle(messages) {
     let title = "";
     for (let i = 0; i < messages.length; i++) {
@@ -15,19 +18,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (title.length > 50) title = title.substring(0, 50) + "...";
     return title;
   }
+
   function checkAndUpdateSessionTitle() {
-    const current = Storage.getCurrentSession();
-    if (!current.name || current.name === "New Chat") {
-      const newTitle = generateSessionTitle(current.messages);
-      if (newTitle && newTitle !== current.name) {
-        Storage.renameSession(current.id, newTitle);
+    const currentSession = Storage.getCurrentSession();
+    if (!currentSession.name || currentSession.name === "New Chat") {
+      const newTitle = generateSessionTitle(currentSession.messages);
+      if (newTitle && newTitle !== currentSession.name) {
+        Storage.renameSession(currentSession.id, newTitle);
       }
     }
   }
+
   function waitForPrism(callback) {
     if (window.Prism) callback();
     else setTimeout(() => waitForPrism(callback), 100);
   }
+
   function appendMessage({ role, content, index }) {
     const container = document.createElement("div");
     container.classList.add("message");
@@ -127,7 +133,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     chatBox.appendChild(container);
     waitForPrism(() => {
-      container.querySelectorAll("pre code").forEach((block) => Prism.highlightElement(block));
+      const codeBlocks = container.querySelectorAll("pre code");
+      codeBlocks.forEach((block) => {
+        Prism.highlightElement(block);
+        const buttonContainer = document.createElement("div");
+        buttonContainer.style.display = "flex";
+        buttonContainer.style.gap = "5px";
+        buttonContainer.style.marginTop = "5px";
+        const codeContent = block.textContent.trim();
+        const language = block.className.match(/language-(\w+)/)?.[1] || "text";
+        const copyCodeBtn = document.createElement("button");
+        copyCodeBtn.className = "message-action-btn";
+        copyCodeBtn.textContent = "Copy Code";
+        copyCodeBtn.style.fontSize = "12px";
+        copyCodeBtn.addEventListener("click", () => {
+          navigator.clipboard.writeText(codeContent).then(() => {
+            showToast("Code copied to clipboard");
+          }).catch(() => {
+            showToast("Failed to copy code");
+          });
+        });
+        buttonContainer.appendChild(copyCodeBtn);
+        const downloadCodeBtn = document.createElement("button");
+        downloadCodeBtn.className = "message-action-btn";
+        downloadCodeBtn.textContent = "Download";
+        downloadCodeBtn.style.fontSize = "12px";
+        downloadCodeBtn.addEventListener("click", () => {
+          downloadCodeAsTxt(codeContent, language);
+        });
+        buttonContainer.appendChild(downloadCodeBtn);
+        block.parentNode.parentNode.insertBefore(buttonContainer, block.parentNode.nextSibling);
+      });
     });
     chatBox.scrollTop = chatBox.scrollHeight;
     if (autoSpeakEnabled && role === "ai") {
@@ -135,6 +171,20 @@ document.addEventListener("DOMContentLoaded", () => {
       speakMessage(content);
     }
   }
+
+  function downloadCodeAsTxt(codeContent, language) {
+    const blob = new Blob([codeContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `code-${language}-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Code downloaded as .txt");
+  }
+
   function createImageElement(url) {
     const imageContainer = document.createElement("div");
     imageContainer.className = "ai-image-container";
@@ -177,6 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
     imageContainer.appendChild(buttonContainer);
     return imageContainer;
   }
+
   function renderMarkdown(mdText) {
     if (window.marked) {
       marked.setOptions({
@@ -186,25 +237,31 @@ document.addEventListener("DOMContentLoaded", () => {
           return code;
         }
       });
-      return marked.parse(mdText.replace(/\[CODE\](.*?)\n([\s\S]*?)\[\/CODE\]/g, "```$1\n$2```"));
+      return marked.parse(mdText.replace(/\$\$ CODE \$\$(.*?)\n([\s\S]*?)\$\$ \/CODE \$\$/g, "```$1\n$2```"));
     } else {
       return mdText.replace(/\n/g, "<br>");
     }
   }
+
   function escapeHTML(html) {
     return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
+
   function renderStoredMessages(messages) {
     chatBox.innerHTML = "";
     messages.forEach((msg, idx) => appendMessage({ role: msg.role, content: msg.content, index: idx }));
   }
+
   window.addNewMessage = function ({ role, content }) {
+    const currentSession = Storage.getCurrentSession();
     currentSession.messages.push({ role, content });
     Storage.updateSessionMessages(currentSession.id, currentSession.messages);
     appendMessage({ role, content, index: currentSession.messages.length - 1 });
     if (role === "ai") checkAndUpdateSessionTitle();
   };
+
   function editMessage(msgIndex) {
+    const currentSession = Storage.getCurrentSession();
     const oldMessage = currentSession.messages[msgIndex];
     if (!oldMessage) return;
     const newContent = prompt("Edit this message:", oldMessage.content);
@@ -237,16 +294,21 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("AI message updated");
     }
   }
+
   function reGenerateAIResponse(aiIndex) {
+    const currentSession = Storage.getCurrentSession();
     if (aiIndex < 0 || aiIndex >= currentSession.messages.length) return;
     let userIndex = -1;
-    for (let i = aiIndex; i >= 0; i--) {
+    for (let i = aiIndex - 1; i >= 0; i--) {
       if (currentSession.messages[i].role === "user") {
         userIndex = i;
         break;
       }
     }
-    if (userIndex === -1) return;
+    if (userIndex === -1) {
+      showToast("No preceding user message found to regenerate from.");
+      return;
+    }
     currentSession.messages = currentSession.messages.slice(0, userIndex + 1);
     Storage.updateSessionMessages(currentSession.id, currentSession.messages);
     renderStoredMessages(currentSession.messages);
@@ -261,13 +323,16 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingDiv.textContent = "Regenerating response...";
     chatBox.appendChild(loadingDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
-    const userMessage = currentSession.messages[userIndex];
+    const userMessage = currentSession.messages[userIndex].content;
     sendToPollinations(() => {
       const loadingMsg = document.getElementById(loadingMsgId);
       if (loadingMsg) loadingMsg.remove();
-    }, userMessage.content);
+      showToast("Response regenerated successfully");
+    }, userMessage);
   }
+
   window.sendToPollinations = function (callback = null, overrideContent = null) {
+    const currentSession = Storage.getCurrentSession();
     const loadingMsgId = "loading-" + Date.now();
     const loadingDiv = document.createElement("div");
     loadingDiv.id = loadingMsgId;
@@ -310,6 +375,28 @@ document.addEventListener("DOMContentLoaded", () => {
         const loadingMsg = document.getElementById(loadingMsgId);
         if (loadingMsg) loadingMsg.remove();
         let aiContent = extractAIContent(data);
+        
+        // Check if the user's prompt is requesting an image
+        const lastUserMsg = messages[messages.length - 1].content.toLowerCase();
+        const isImageRequest = lastUserMsg.includes("image") || lastUserMsg.includes("picture") || lastUserMsg.includes("show me") || lastUserMsg.includes("generate an image");
+        
+        // If the prompt suggests an image request but no image URL is in the response, generate one
+        if (aiContent && isImageRequest && !aiContent.includes("https://image.pollinations.ai")) {
+          let imagePrompt = lastUserMsg
+            .replace(/show me|generate|image of|picture of|image|picture/gi, "")
+            .trim();
+          
+          if (imagePrompt.length < 5 && aiContent.toLowerCase().includes("image")) {
+            imagePrompt = aiContent
+              .toLowerCase()
+              .replace(/here's an image of|image|to enjoy visually/gi, "")
+              .trim();
+          }
+          
+          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=512&height=512&seed=${randomSeed()}`;
+          aiContent += `\n\n**Generated Image:**\n${imageUrl}`;
+        }
+        
         if (aiContent) {
           const foundMemories = parseMemoryBlocks(aiContent);
           foundMemories.forEach((m) => Memory.addMemoryEntry(m));
@@ -328,6 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
   };
+
   function extractAIContent(response) {
     if (response.choices && response.choices.length > 0) {
       if (response.choices[0].message && response.choices[0].message.content) return response.choices[0].message.content;
@@ -336,6 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (typeof response === "string") return response;
     return "Sorry, I couldn't process that response.";
   }
+
   function parseMemoryBlocks(text) {
     const memRegex = /\[memory\]([\s\S]*?)\[\/memory\]/gi;
     const found = [];
@@ -343,9 +432,11 @@ document.addEventListener("DOMContentLoaded", () => {
     while ((match = memRegex.exec(text)) !== null) found.push(match[1].trim());
     return found;
   }
+
   function removeMemoryBlocks(text) {
     return text.replace(/\[memory\][\s\S]*?\[\/memory\]/gi, "");
   }
+
   if (voiceToggleBtn) {
     voiceToggleBtn.addEventListener("click", window._chatInternals.toggleAutoSpeak);
     window._chatInternals.updateVoiceToggleUI();
@@ -364,8 +455,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, 2000);
   }
+
   if (clearChatBtn) {
     clearChatBtn.addEventListener("click", () => {
+      const currentSession = Storage.getCurrentSession();
       if (confirm("Are you sure you want to clear this chat?")) {
         currentSession.messages = [];
         Storage.updateSessionMessages(currentSession.id, currentSession.messages);
@@ -374,6 +467,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
   function checkFirstLaunch() {
     const firstLaunch = localStorage.getItem("firstLaunch") === "0";
     if (firstLaunch) {
@@ -404,6 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   checkFirstLaunch();
+
   function setupVoiceInputButton() {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
       const inputButtonsContainer = document.querySelector(".input-buttons-container");
@@ -419,6 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   setupVoiceInputButton();
+
   const sendButton = document.getElementById("send-button");
   function handleSendMessage() {
     const message = chatInput.value.trim();
@@ -429,21 +525,26 @@ document.addEventListener("DOMContentLoaded", () => {
     window.sendToPollinations();
     sendButton.disabled = true;
   }
+
   chatInput.addEventListener("input", () => {
     sendButton.disabled = chatInput.value.trim() === "";
     chatInput.style.height = "auto";
     chatInput.style.height = chatInput.scrollHeight + "px";
   });
+
   chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   });
+
   sendButton.addEventListener("click", () => {
     handleSendMessage();
   });
-  if (currentSession.messages && currentSession.messages.length > 0) {
-    renderStoredMessages(currentSession.messages);
+
+  const initialSession = Storage.getCurrentSession();
+  if (initialSession.messages && initialSession.messages.length > 0) {
+    renderStoredMessages(initialSession.messages);
   }
 });
