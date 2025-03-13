@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Screensaver Elements
   const screensaverContainer = document.getElementById("screensaver-container");
   const toggleScreensaverButton = document.getElementById("toggle-screensaver");
   const fullscreenButton = document.getElementById("fullscreen-screensaver");
@@ -9,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const copyButton = document.getElementById("screensaver-copy");
   const screensaverImage = document.getElementById("screensaver-image");
 
-  // Extended controls
   const promptInput = document.getElementById("screensaver-prompt");
   const timerInput = document.getElementById("screensaver-timer");
   const aspectSelect = document.getElementById("screensaver-aspect");
@@ -17,13 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const privateCheckbox = document.getElementById("screensaver-private");
   const modelSelect = document.getElementById("screensaver-model");
 
-  // Internal state
   let screensaverActive = false;
   let imageInterval = null;
   let paused = false;
   let isFullscreen = false;
 
-  // ========== TOOLTIP SETUP ==========
   toggleScreensaverButton.title = "Toggle the screensaver on/off.";
   fullscreenButton.title = "Go full screen (or exit it).";
   stopButton.title = "Stop the screensaver.";
@@ -37,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
   enhanceCheckbox.title = "If enabled, the prompt is 'enhanced' via an LLM.";
   privateCheckbox.title = "If enabled, the image won't appear on the public feed.";
 
-  // ========== LOCAL STORAGE HELPERS ==========
   function saveScreensaverSettings() {
     const settings = {
       prompt: promptInput.value,
@@ -68,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadScreensaverSettings();
 
-  // Generate a random seed for pollinations
   function generateSeed() {
     const length = Math.floor(Math.random() * 8) + 1;
     let seed = "";
@@ -78,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return seed;
   }
 
-  // Figure out width/height from the aspect ratio
   function getDimensions(aspect) {
     switch (aspect) {
       case "widescreen": return { width: 1280, height: 720 };
@@ -88,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Fetch a new image from pollinations
   function fetchNewImage() {
     saveScreensaverSettings();
     const prompt = promptInput.value || "random artistic scene, high quality, detailed";
@@ -105,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     screensaverImage.src = url;
   }
 
-  // Set or reset the interval for fetching new images
   function setOrResetInterval() {
     clearInterval(imageInterval);
     const intervalSeconds = parseInt(timerInput.value) || 30;
@@ -115,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.imageInterval = imageInterval;
   }
 
-  // Start screensaver
   function startScreensaver() {
     screensaverActive = true;
     paused = false;
@@ -142,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.screensaverActive = true;
   }
 
-  // Stop screensaver
   function stopScreensaver() {
     screensaverActive = false;
     paused = false;
@@ -166,7 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Toggle pause
   function togglePause() {
     paused = !paused;
     playPauseButton.innerHTML = paused ? "▶️" : "⏸️";
@@ -175,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.showToast(paused ? "Screensaver paused" : "Screensaver resumed");
   }
 
-  // Save image to disk
   function saveImage() {
     if (!screensaverImage.src) {
       window.showToast("No image to save");
@@ -200,7 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Copy image to clipboard
   function copyImage() {
     if (!screensaverImage.src) {
       window.showToast("No image to copy");
@@ -257,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Toggle fullscreen
   function toggleFullscreen() {
     if (!screensaverActive) {
       window.showToast("Start the screensaver first!");
@@ -282,7 +267,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Event listeners
   toggleScreensaverButton.addEventListener("click", () => {
     screensaverActive ? stopScreensaver() : startScreensaver();
   });
@@ -332,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Toast notification
   window.showToast = function(message, duration = 3000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
@@ -347,7 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.timeout = setTimeout(() => toast.style.opacity = '0', duration);
   };
 
-  // Global functions
   window.startScreensaver = startScreensaver;
   window.stopScreensaver = stopScreensaver;
   window.togglePause = togglePause;
