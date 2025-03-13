@@ -1,5 +1,3 @@
-// chat-part2.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const {
     recognition,
@@ -11,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let isRecording = false;
   let slideshowInterval = null;
 
-  // ========== VOICE CHAT MODAL SETUP ==========
   function createVoiceChatModal() {
     const modalHTML = `
       <div id="voice-chat-modal" class="modal-backdrop hidden">
@@ -42,12 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
     modalContainer.innerHTML = modalHTML;
     document.body.appendChild(modalContainer.firstElementChild);
 
-    // Modal close button
     document.getElementById("voice-chat-close").addEventListener("click", () => {
       closeVoiceChatModal();
     });
 
-    // Start & Stop listening buttons
     document.getElementById("start-voice-chat").addEventListener("click", () => {
       startVoiceChat();
       startSlideshow();
@@ -59,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function openVoiceChatModal() {
-    // If the modal doesn't exist in the DOM yet, create it
     if (!document.getElementById("voice-chat-modal")) {
       createVoiceChatModal();
     }
@@ -75,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== HOOK UP THE NEW BUTTON IN INDEX.HTML ==========
   const openVoiceChatModalBtn = document.getElementById("open-voice-chat-modal");
   if (openVoiceChatModalBtn) {
     openVoiceChatModalBtn.addEventListener("click", () => {
@@ -83,14 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ========== START / STOP VOICE CHAT ==========
   function startVoiceChat() {
     const { synth, selectedVoice } = window._chatInternals;
-    // Force auto-speak ON during voice chat
     window._chatInternals.autoSpeakEnabled = true;
     localStorage.setItem("autoSpeakEnabled", "true");
 
-    // If we never inited recognition, do it now
     if (!recognition) {
       window._chatInternals.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       window._chatInternals.recognition.continuous = true;
@@ -114,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
         if (finalTranscript.trim()) {
-          // Show the transcript
           document.getElementById("voice-transcript").textContent = finalTranscript;
           sendVoiceMessage(finalTranscript);
         }
@@ -161,10 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (voiceStatus) voiceStatus.textContent = "Voice chat stopped";
   }
 
-  // ========== SENDING VOICE MESSAGE ==========
   function sendVoiceMessage(text) {
-    // We'll rely on chat-part3's window.addNewMessage() and sendToPollinations()
-    // to handle user -> AI flow
     window.addNewMessage({ role: "user", content: text });
     window.sendToPollinations(() => {
       const { currentSession, autoSpeakEnabled } = window._chatInternals;
@@ -176,13 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ========== SLIDESHOW: REFRESH IMAGES EVERY 30s ==========
-  /**
-   * Build and set the correct Pollinations image URL based on the AI's response.
-   */
   function updateSlideshow(aiResponse) {
-    // example approach: "Generate an image: {aiResponse}"
-    // then set width/height/seed so the URL is correct.
     const baseUrl = "https://image.pollinations.ai/prompt/";
     const prompt = `Generate an image based on this conversation: ${aiResponse}`;
     const width = 512;
@@ -214,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startSlideshow() {
-    stopSlideshow(); // Clear existing
+    stopSlideshow();
     slideshowInterval = setInterval(() => {
       const { currentSession } = window._chatInternals;
       const lastMsg = currentSession.messages[currentSession.messages.length - 1];
@@ -228,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
     clearInterval(slideshowInterval);
   }
 
-  // Expose the methods globally (for convenience)
   window.openVoiceChatModal = openVoiceChatModal;
   window.closeVoiceChatModal = closeVoiceChatModal;
   window.startVoiceChat = startVoiceChat;
