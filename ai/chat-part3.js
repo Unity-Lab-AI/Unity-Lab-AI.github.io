@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const bubbleContent = document.createElement("div");
     bubbleContent.classList.add("message-text");
 
-    // If AI message, parse images
+    // If AI message, parse images and render markdown
     if (role === "ai") {
       const imgRegex = /(https:\/\/image\.pollinations\.ai\/prompt\/[^\s)"'<>]+)/g;
       let htmlContent = renderMarkdown(content);
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (imgMatches && imgMatches.length > 0) {
         bubbleContent.innerHTML = htmlContent;
-        // Replace any raw image URLs with actual <img> elements
+        // Replace raw image URLs with proper <img> elements
         imgMatches.forEach((url) => {
           const textNodes = [];
           const walk = document.createTreeWalker(
@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
       } else {
-        // No image matches, just set the parsed HTML
         bubbleContent.innerHTML = htmlContent;
       }
     } else {
@@ -143,7 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
       actionsDiv.appendChild(editAIBtn);
 
       container.appendChild(actionsDiv);
-
     } else {
       // User message => user actions
       const userActionsDiv = document.createElement("div");
@@ -170,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // TTS auto-speak if enabled
     if (autoSpeakEnabled && role === "ai") {
       stopSpeaking();
-      // FIX: No setTimeout, speak fully
       speakMessage(content);
     }
   }
@@ -184,7 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
     spinner.className = "loading-spinner";
     loadingDiv.appendChild(spinner);
 
-    // If you want consistent widths:
     const defaultWidth = 512;
     const defaultHeight = 512;
     loadingDiv.style.width = `${defaultWidth}px`;
@@ -219,13 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     imageContainer.appendChild(img);
-
-    // Buttons for refresh, copy, download, etc. (same as your existing code).
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "image-button-container";
-
-    // Example: if you had a refresh button
-    // ...
     imageContainer.appendChild(buttonContainer);
 
     return imageContainer;
@@ -244,8 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return marked.parse(mdText);
     } else {
       let processedText = mdText;
-      // simple replacement for code blocks if marked isn't loaded
-      // ...
       return processedText.replace(/\n/g, "<br>");
     }
   }
@@ -348,21 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBox.appendChild(loadingDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    const userContent =
-      overrideContent ||
-      currentSession.messages[currentSession.messages.length - 1].content;
-
-    // Gather memory from memory-api
-    const memories = Memory.getMemories();
-    let contextStr = "";
-    if (memories && memories.length > 0) {
-      contextStr =
-        "User Context/Memory:\n" +
-        memories.join("\n") +
-        "\n\nWith the above context in mind, respond to this message:";
-    }
-
-    // Example memory instructions
+    // --- Fixed Memory and Code Block Instructions ---
     const memoryInstructions = `
     "You are the user's , be yourself, the 'you' and name and gender you know is you the AI do not get ur name and gneder mixed up with the user." +
         "When sharing code, always use [CODE]your_code_here[/CODE], " +
@@ -373,14 +348,20 @@ document.addEventListener("DOMContentLoaded", () => {
 [memory]your_text_memory[/memory]." +
 Any text inside [memory]...[/memory] will be used by the user as a memory for future user replies. (You shall also write an additional copy of the memory as text without the opening and closing in your same respose)`;
 
+    // Build message history
     const messages = [];
-    if (memoryInstructions.trim()) {
-      messages.push({ role: "system", content: memoryInstructions.trim() });
-    }
-    if (contextStr) {
-      messages.push({ role: "system", content: contextStr });
+    if (memoryInstructions) {
+      messages.push({ role: "system", content: memoryInstructions });
     }
 
+    // Append any stored memory context as a user message, if available
+    const memories = Memory.getMemories();
+    if (memories && memories.length > 0) {
+      const memoryMessage = "Here is my relevant memory:\n" + memories.join("\n") + "\nPlease use it in your next response.";
+      messages.push({ role: "user", content: memoryMessage });
+    }
+
+    // Add recent conversation history (max 10 messages)
     const maxHistory = 10;
     const startIdx = Math.max(0, currentSession.messages.length - maxHistory);
     for (let i = startIdx; i < currentSession.messages.length; i++) {
@@ -391,10 +372,7 @@ Any text inside [memory]...[/memory] will be used by the user as a memory for fu
       });
     }
 
-    if (
-      overrideContent &&
-      messages[messages.length - 1].content !== overrideContent
-    ) {
+    if (overrideContent && messages[messages.length - 1].content !== overrideContent) {
       messages.push({ role: "user", content: overrideContent });
     }
 
@@ -424,14 +402,13 @@ Any text inside [memory]...[/memory] will be used by the user as a memory for fu
 
         let aiContent = extractAIContent(data);
         if (aiContent) {
-          // parse out [memory] blocks
+          // Parse out memory blocks
           const foundMemories = parseMemoryBlocks(aiContent);
           foundMemories.forEach((m) => {
             Memory.addMemoryEntry(m);
           });
-          // remove those blocks from displayed text
+          // Remove memory blocks from displayed text
           const cleanedAiContent = removeMemoryBlocks(aiContent).trim();
-
           addNewMessage({ role: "ai", content: cleanedAiContent });
           if (callback) callback();
         }
