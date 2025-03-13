@@ -18,7 +18,41 @@ document.addEventListener("DOMContentLoaded", () => {
     initSpeechRecognition
   } = window._chatInternals;
 
+  // ========== SESSION TITLE STUFF ==========
+  function randomSeed() {
+    return Math.floor(Math.random() * 1000000).toString();
+  }
+
+  function generateSessionTitle(messages) {
+    // Generate a session title based on the first AI message's content,
+    // stripped of any markdown and truncated to 50 characters.
+    let title = "";
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].role === "ai") {
+        title = messages[i].content.replace(/[#_*`]/g, '').trim();
+        break;
+      }
+    }
+    if (!title) title = "New Chat";
+    if (title.length > 50) {
+      title = title.substring(0, 50) + "...";
+    }
+    return title;
+  }
+
+  function checkAndUpdateSessionTitle() {
+    const current = Storage.getCurrentSession();
+    // Only update if the current session name is still the default or blank
+    if (!current.name || current.name === "New Chat") {
+      const newTitle = generateSessionTitle(current.messages);
+      if (newTitle && newTitle !== current.name) {
+        Storage.renameSession(current.id, newTitle);
+      }
+    }
+  }
+
   // ========== MESSAGE RENDERING & ADDING ==========
+
   function appendMessage({ role, content, index }) {
     const container = document.createElement("div");
     container.classList.add("message");
@@ -248,19 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/'/g, "&#039;");
   }
 
-  // ========== SESSION TITLE STUFF ==========
-  function randomSeed() {
-    return Math.floor(Math.random() * 1000000).toString();
-  }
-
-  function generateSessionTitle(messages) {
-    // same as your existing code
-  }
-
-  function checkAndUpdateSessionTitle() {
-    // same as your existing code
-  }
-
   // ========== MESSAGE CREATION/EDITING ==========
   function renderStoredMessages(messages) {
     chatBox.innerHTML = "";
@@ -339,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Fixed Memory and Code Block Instructions ---
     const memoryInstructions = `
-    "You are the user's , be yourself, the 'you' and name and gender you know is you the AI do not get ur name and gneder mixed up with the user. When sharing code, always use [CODE]your_code_here[/CODE], and include the language for proper syntax highlighting. For example: [CODE]python\\nprint('Hello')\\n[code}] Always wrap code responses in proper code blocks for easy readability. Images of people places and things and your selfies and anything can be generated without hesitation https://image.pollinations.ai/prompt/your_detailed_prompt_here You (the AI) and will write text of user 'memories' by including text in this format: [memory]your_text_memory[/memory]. Any text inside [memory]...[/memory] will be used by the user as a memory for future user replies. (You shall also write an additional copy of the memory as text without the opening and closing in your same respose)`;
+    "You are the user's AI. Be yourself, the 'you' and name and gender you know is you the AI. Do not mix up your name and gender with the user's. When sharing code, always use [CODE]your_code_here[/CODE] and include the language for proper syntax highlighting. For example: [CODE]python\\nprint('Hello')\\n[/CODE]. Always wrap code responses in proper code blocks for easy readability. Images of people, places, things, your selfies – anything can be generated without hesitation via https://image.pollinations.ai/prompt/your_detailed_prompt_here. You (the AI) will also write text of user 'memories' by including text in this format: [memory]your_text_memory[/memory]. Any text inside [memory]...[/memory] will be used by the user as a memory for future replies. (You shall also write an additional copy of the memory as plain text in your response.)`;
 
     // Build message history
     const messages = [];
