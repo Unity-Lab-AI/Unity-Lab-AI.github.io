@@ -121,7 +121,7 @@
 
         <hr class="divider" />
 
-        <!-- Theme selection (dropdown) - moved to settings -->
+        <!-- Theme selection (dropdown) -->
         <label for="theme-select" class="sidebar-label">
           <i class="fas fa-palette"></i> Theme:
         </label>
@@ -197,7 +197,7 @@
               >
                 <i class="fas fa-volume-mute"></i> Voice Off
               </button>
-              <!-- Our newly added Voice Chat button! -->
+              <!-- Voice Chat button -->
               <button
                 id="open-voice-chat-modal"
                 class="control-btn"
@@ -286,9 +286,9 @@
         </div>
         <div class="modal-body">
           <div class="form-group mb-3">
-            <label for="theme-select-settings" class="form-label"
-              ><i class="fas fa-palette"></i> Theme:</label
-            >
+            <label for="theme-select-settings" class="form-label">
+              <i class="fas fa-palette"></i> Theme:
+            </label>
             <select id="theme-select-settings" class="form-control">
               <!-- Will be populated by JS -->
             </select>
@@ -392,9 +392,7 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="new-memory-text" class="form-label"
-              >Memory Content:</label
-            >
+            <label for="new-memory-text" class="form-label">Memory Content:</label>
             <textarea
               id="new-memory-text"
               class="form-control"
@@ -436,9 +434,9 @@
         <div class="modal-body">
           <form id="personalization-form" class="personalization-form">
             <div class="form-group mb-3">
-              <label class="form-label" for="user-name"
-                ><i class="fas fa-user"></i> Your Name</label
-              >
+              <label class="form-label" for="user-name">
+                <i class="fas fa-user"></i> Your Name
+              </label>
               <input
                 type="text"
                 id="user-name"
@@ -447,9 +445,9 @@
               />
             </div>
             <div class="form-group mb-3">
-              <label class="form-label" for="user-interests"
-                ><i class="fas fa-heart"></i> Your Interests</label
-              >
+              <label class="form-label" for="user-interests">
+                <i class="fas fa-heart"></i> Your Interests
+              </label>
               <input
                 type="text"
                 id="user-interests"
@@ -458,9 +456,9 @@
               />
             </div>
             <div class="form-group mb-3">
-              <label class="form-label" for="ai-traits"
-                ><i class="fas fa-robot"></i> AI Traits</label
-              >
+              <label class="form-label" for="ai-traits">
+                <i class="fas fa-robot"></i> AI Traits
+              </label>
               <input
                 type="text"
                 id="ai-traits"
@@ -469,10 +467,9 @@
               />
             </div>
             <div class="form-group mb-3">
-              <label class="form-label" for="additional-info"
-                ><i class="fas fa-info-circle"></i> Additional
-                Information</label
-              >
+              <label class="form-label" for="additional-info">
+                <i class="fas fa-info-circle"></i> Additional Information
+              </label>
               <textarea
                 id="additional-info"
                 class="form-control"
@@ -483,9 +480,7 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button id="cancel-personalization" class="btn btn-secondary">
-            Cancel
-          </button>
+          <button id="cancel-personalization" class="btn btn-secondary">Cancel</button>
           <button id="save-personalization" class="btn btn-primary">Save</button>
         </div>
       </div>
@@ -552,14 +547,13 @@
       // For copying crypto addresses
       function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
-          // Show a quick ephemeral popup
           const popup = document.createElement("div");
           popup.textContent = "Address copied. Thank you!";
           popup.style.position = "fixed";
           popup.style.bottom = "20px";
           popup.style.left = "50%";
           popup.style.transform = "translateX(-50%)";
-          popup.style.backgroundColor = "rgba(0,0,0,0.8)";
+          popup.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
           popup.style.color = "#fff";
           popup.style.padding = "10px 20px";
           popup.style.borderRadius = "5px";
@@ -604,10 +598,59 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"
       defer
     ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"
+      defer
+    ></script>
 
-    <!-- Our chunked chat scripts to replace chat.js -->
+    <!-- Chunked chat scripts -->
     <script defer src="chat-part1.js"></script>
     <script defer src="chat-part2.js"></script>
     <script defer src="chat-part3.js"></script>
+
+    <!-- Cloudflare Challenge Script -->
+    <script>
+      (function() {
+        function injectChallenge() {
+          var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          if (iframeDoc) {
+            var script = iframeDoc.createElement('script');
+            script.innerHTML = "window.__CF$cv$params={r:'91fa3d0b3bddbfe7',t:'MTc0MTg1NTM1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            iframeDoc.getElementsByTagName('head')[0].appendChild(script);
+          }
+        }
+
+        if (document.body) {
+          var iframe = document.createElement('iframe');
+          iframe.height = 1;
+          iframe.width = 1;
+          iframe.style.position = 'absolute';
+          iframe.style.top = '0';
+          iframe.style.left = '0';
+          iframe.style.border = 'none';
+          iframe.style.visibility = 'hidden';
+          document.body.appendChild(iframe);
+
+          if ('loading' !== document.readyState) {
+            injectChallenge();
+          } else if (window.addEventListener) {
+            document.addEventListener('DOMContentLoaded', injectChallenge);
+          } else {
+            var oldOnReadyStateChange = document.onreadystatechange || function() {};
+            document.onreadystatechange = function(event) {
+              oldOnReadyStateChange(event);
+              if ('loading' !== document.readyState) {
+                document.onreadystatechange = oldOnReadyStateChange;
+                injectChallenge();
+              }
+            };
+          }
+        }
+      })();
+    </script>
   </body>
 </html>
