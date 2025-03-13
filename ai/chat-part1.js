@@ -1,8 +1,4 @@
-// chat-part1.js
-// Fix: remove concurrency check that led to partial TTS, allow full reading
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Grab essential DOM elements
   const chatBox = document.getElementById("chat-box");
   const chatInput = document.getElementById("chat-input");
   const sendButton = document.getElementById("send-button");
@@ -10,14 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const voiceToggleBtn = document.getElementById("voice-toggle");
   const modelSelect = document.getElementById("model-select");
 
-  // Current session from Storage
   let currentSession = Storage.getCurrentSession();
   if (!currentSession) {
     currentSession = Storage.createSession("New Chat");
     localStorage.setItem("currentSessionId", currentSession.id);
   }
 
-  // Browser speech synthesis / voices
   const synth = window.speechSynthesis;
   let voices = [];
   let selectedVoice = null;
@@ -25,13 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let autoSpeakEnabled = localStorage.getItem("autoSpeakEnabled") === "true";
   let currentlySpeakingMessage = null;
 
-  // Speech recognition
   let recognition = null;
   let isListening = false;
-  let voiceInputBtn = null; // We'll create it if needed
+  let voiceInputBtn = null;
   let slideshowInterval = null;
 
-  // ========== LOAD VOICES ==========
   function loadVoices() {
     return new Promise((resolve) => {
       let voicesLoaded = false;
@@ -54,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }
           if (!selectedVoice) {
-            // fallback to the first female voice or just the first available
             selectedVoice =
               voices.find((v) => v.name.toLowerCase().includes("female")) ||
               voices[0];
@@ -64,10 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Try immediate
       setVoices();
 
-      // If not loaded, wait for onvoiceschanged or a fallback
       if (!voicesLoaded && synth.onvoiceschanged !== undefined) {
         synth.onvoiceschanged = () => {
           setVoices();
@@ -87,11 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateVoiceToggleUI();
   });
 
-  // ========== TOGGLES / SPEECH SYNTHESIS ==========
-
-  /**
-   * Toggle the 'autoSpeakEnabled' state. If enabling, speak a short message.
-   */
   function toggleAutoSpeak() {
     autoSpeakEnabled = !autoSpeakEnabled;
     localStorage.setItem("autoSpeakEnabled", autoSpeakEnabled.toString());
@@ -111,11 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Speak the entire text. 
-   * We removed the concurrency logic that cut off if the same text is triggered again,
-   * so it won't skip reading the rest anymore.
-   */
   function speakMessage(text, onEnd = null) {
     if (!synth || !window.SpeechSynthesisUtterance) {
       console.error("Speech synthesis not supported in this browser");
@@ -123,12 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // If something is currently speaking, forcibly stop it before starting again.
     if (isSpeaking) {
       synth.cancel();
     }
 
-    // (Optional) sanitize or remove code blocks / links from spoken text
     let cleanText = text
       .replace(/```[\s\S]*?```/g, "code block omitted.")
       .replace(/`[\s\S]*?`/g, "inline code omitted.")
@@ -138,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (selectedVoice) {
       utterance.voice = selectedVoice;
     } else {
-      // If we don't have a voice yet, force load
       loadVoices().then((voice) => {
         if (voice) {
           utterance.voice = voice;
@@ -184,7 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== SPEECH RECOGNITION ==========
   function initSpeechRecognition() {
     if ("webkitSpeechRecognition" in window) {
       recognition = new webkitSpeechRecognition();
@@ -259,7 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== UTILITY TOAST ==========
   function showToast(message, duration = 3000) {
     let toast = document.getElementById("toast-notification");
     if (!toast) {
@@ -285,30 +259,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }, duration);
   }
 
-  // Put everything we need on a global object for chat-part2.js & chat-part3.js
   window._chatInternals = {
-    // DOM
     chatBox,
     chatInput,
     sendButton,
     clearChatBtn,
     voiceToggleBtn,
     modelSelect,
-    // Session state
     currentSession,
-    // Synthesis
     synth,
     voices,
     selectedVoice,
     isSpeaking,
     autoSpeakEnabled,
     currentlySpeakingMessage,
-    // Recognition
     recognition,
     isListening,
     voiceInputBtn,
     slideshowInterval,
-    // Functions
     toggleAutoSpeak,
     updateVoiceToggleUI,
     speakMessage,
