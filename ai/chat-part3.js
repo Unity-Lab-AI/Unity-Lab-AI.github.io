@@ -411,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (imagePrompt.length > 100) {
             imagePrompt = imagePrompt.substring(0, 100);
           }
-          imagePrompt += ", photographic";
+          imagePrompt += ", digital art, high quality";
           
           const seed = Math.floor(Math.random() * 1000000);
           const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=512&height=512&seed=${seed}&${safeParam}&nolog=true`;
