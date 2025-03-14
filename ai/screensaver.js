@@ -1,3 +1,7 @@
+// screensaver.js
+// Handles screensaver functionality with Pollinations API integration
+// Updated with safe=false for uncensored content and cross-browser/device support
+
 document.addEventListener("DOMContentLoaded", () => {
   const screensaverContainer = document.getElementById("screensaver-container");
   const toggleScreensaverButton = document.getElementById("toggle-screensaver");
@@ -20,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let paused = false;
   let isFullscreen = false;
 
+  // Set tooltips
   toggleScreensaverButton.title = "Toggle the screensaver on/off.";
   fullscreenButton.title = "Go full screen (or exit it).";
   stopButton.title = "Stop the screensaver.";
@@ -33,6 +38,60 @@ document.addEventListener("DOMContentLoaded", () => {
   enhanceCheckbox.title = "If enabled, the prompt is 'enhanced' via an LLM.";
   privateCheckbox.title = "If enabled, the image won't appear on the public feed.";
 
+  // Utility to detect browser for compatibility adjustments
+  const getBrowserInfo = () => {
+    const ua = navigator.userAgent.toLowerCase();
+    return {
+      isChrome: ua.includes("chrome") && !ua.includes("edge"),
+      isFirefox: ua.includes("firefox"),
+      isSafari: ua.includes("safari") && !ua.includes("chrome"),
+      isEdge: ua.includes("edg"),
+      isMobile: /mobile|android|iphone|ipad|tablet/i.test(ua),
+    };
+  };
+
+  // Utility to create audio context for cross-browser support
+  const createAudioContext = () => {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) {
+      console.warn("AudioContext not supported in this browser.");
+      return null;
+    }
+    return new AudioContext();
+  };
+
+  // Utility to play audio with cross-browser compatibility
+  const playAudio = (audioUrl) => {
+    return new Promise((resolve, reject) => {
+      const audio = new Audio(audioUrl);
+      audio.crossOrigin = "anonymous"; // For CORS support
+      audio.preload = "auto";
+
+      audio.play().catch((err) => {
+        console.warn("Autoplay prevented:", err);
+        const browserInfo = getBrowserInfo();
+        if (browserInfo.isMobile || browserInfo.isSafari) {
+          const playButton = document.createElement("button");
+          playButton.innerText = "Play Audio";
+          playButton.style.position = "fixed";
+          playButton.style.top = "10px";
+          playButton.style.right = "10px";
+          playButton.style.zIndex = "10000";
+          document.body.appendChild(playButton);
+          playButton.onclick = () => {
+            audio.play().then(() => {
+              playButton.remove();
+              resolve(audio);
+            }).catch(reject);
+          };
+        } else {
+          reject(err);
+        }
+      }).then(() => resolve(audio));
+    });
+  };
+
+  // Save settings to localStorage
   function saveScreensaverSettings() {
     const settings = {
       prompt: promptInput.value,
@@ -45,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("screensaverSettings", JSON.stringify(settings));
   }
 
+  // Load settings from localStorage
   function loadScreensaverSettings() {
     const raw = localStorage.getItem("screensaverSettings");
     if (!raw) return;
@@ -60,9 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Failed to parse screensaver settings:", err);
     }
   }
-
   loadScreensaverSettings();
 
+  // Generate a random seed
   function generateSeed() {
     const length = Math.floor(Math.random() * 8) + 1;
     let seed = "";
@@ -72,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return seed;
   }
 
+  // Get dimensions based on aspect ratio
   function getDimensions(aspect) {
     switch (aspect) {
       case "widescreen": return { width: 1280, height: 720 };
@@ -81,22 +142,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // FIXED: Fetch a new image from Pollinations API with nolog parameter
   function fetchNewImage() {
     saveScreensaverSettings();
-    const prompt = promptInput.value || "random artistic scene, high quality, detailed";
+    let prompt = promptInput.value || "random artistic scene, high quality, detailed";
+    if (prompt.length > 100) {
+      prompt = prompt.substring(0, 100);
+    }
+    prompt += ", high resolution, detailed";
     const { width, height } = getDimensions(aspectSelect.value);
     const seed = generateSeed();
     const model = modelSelect.value || "flux";
     const enhance = enhanceCheckbox.checked;
     const priv = privateCheckbox.checked;
+    const safeParam = window._pollinationsAPIConfig ? `safe=${window._pollinationsAPIConfig.safe}` : "safe=false";
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}&${safeParam}&nolog=true`;
 
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}`;
-    
     screensaverImage.style.opacity = "0.5";
-    screensaverImage.onload = () => { screensaverImage.style.opacity = "1"; };
+    screensaverImage.crossOrigin = "anonymous";
+    screensaverImage.onload = () => {
+      screensaverImage.style.opacity = "1";
+      const browserInfo = getBrowserInfo();
+      if (browserInfo.isSafari) {
+        screensaverImage.style.webkitMaskImage = "none";
+      }
+    };
+    screensaverImage.onerror = () => {
+      screensaverImage.src = "https://via.placeholder.com/512?text=Image+Failed";
+      screensaverImage.style.opacity = "1";
+      console.error("Image load failed, using placeholder");
+    };
     screensaverImage.src = url;
   }
 
+  // Set or reset the image interval
   function setOrResetInterval() {
     clearInterval(imageInterval);
     const intervalSeconds = parseInt(timerInput.value) || 30;
@@ -106,10 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
     window.imageInterval = imageInterval;
   }
 
+  // Start the screensaver
   function startScreensaver() {
     screensaverActive = true;
     paused = false;
-    
     screensaverContainer.style.position = "fixed";
     screensaverContainer.style.top = "0";
     screensaverContainer.style.left = "0";
@@ -117,35 +196,41 @@ document.addEventListener("DOMContentLoaded", () => {
     screensaverContainer.style.height = "100vh";
     screensaverContainer.style.zIndex = "9999";
     screensaverContainer.classList.remove("hidden");
-    
+
     fetchNewImage();
     setOrResetInterval();
-    
+
     toggleScreensaverButton.textContent = "Stop Screensaver";
-    toggleScreensaverButton.style.backgroundColor = "";
     playPauseButton.innerHTML = "⏸️";
-    playPauseButton.style.backgroundColor = "";
     stopButton.style.backgroundColor = "";
-    
+    playPauseButton.style.backgroundColor = "";
+    toggleScreensaverButton.style.backgroundColor = "";
+
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     document.body.style.overflow = "hidden";
     window.screensaverActive = true;
+
+    // Optional audio cue for screensaver start (placeholder)
+    const audioUrl = "https://example.com/audio/start.mp3"; // Replace with actual audio API URL
+    playAudio(audioUrl).catch(err => console.warn("Audio cue failed:", err));
   }
 
+  // Stop the screensaver
   function stopScreensaver() {
     screensaverActive = false;
     paused = false;
     screensaverContainer.classList.add("hidden");
     clearInterval(imageInterval);
-    
+
     document.body.style.overflow = "";
     window.screensaverActive = false;
-    
+
     toggleScreensaverButton.textContent = "Start Screensaver";
-    toggleScreensaverButton.style.backgroundColor = "";
     playPauseButton.innerHTML = "▶️";
-    playPauseButton.style.backgroundColor = "";
     stopButton.style.backgroundColor = "";
+    playPauseButton.style.backgroundColor = "";
+    toggleScreensaverButton.style.backgroundColor = "";
+
     if (isFullscreen) {
       document.exitFullscreen().then(() => {
         isFullscreen = false;
@@ -155,14 +240,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Toggle pause state
   function togglePause() {
     paused = !paused;
     playPauseButton.innerHTML = paused ? "▶️" : "⏸️";
-    playPauseButton.style.backgroundColor = paused ? "" : "";
+    playPauseButton.style.backgroundColor = "";
     if (!paused && screensaverActive) fetchNewImage();
     window.showToast(paused ? "Screensaver paused" : "Screensaver resumed");
   }
 
+  // Save the current image
   function saveImage() {
     if (!screensaverImage.src) {
       window.showToast("No image to save");
@@ -187,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+  // Copy the current image to clipboard
   function copyImage() {
     if (!screensaverImage.src) {
       window.showToast("No image to copy");
@@ -195,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
     copyButton.textContent = "Copying...";
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    
+
     if (screensaverImage.complete && screensaverImage.naturalWidth > 0) {
       canvas.width = screensaverImage.naturalWidth;
       canvas.height = screensaverImage.naturalHeight;
@@ -243,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Toggle fullscreen mode
   function toggleFullscreen() {
     if (!screensaverActive) {
       window.showToast("Start the screensaver first!");
@@ -303,8 +392,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (screensaverActive) setOrResetInterval();
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
       if (isFullscreen) {
         document.exitFullscreen().then(() => {
           isFullscreen = false;
@@ -316,20 +405,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Cross-browser toast notification
   window.showToast = function(message, duration = 3000) {
-    let toast = document.getElementById('toast-notification');
+    let toast = document.getElementById("toast-notification");
     if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'toast-notification';
+      toast = document.createElement("div");
+      toast.id = "toast-notification";
       toast.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background-color:rgba(0,0,0,0.7);color:white;padding:10px 20px;border-radius:5px;z-index:9999;transition:opacity 0.3s;";
       document.body.appendChild(toast);
     }
     toast.textContent = message;
-    toast.style.opacity = '1';
+    toast.style.opacity = "1";
     clearTimeout(toast.timeout);
-    toast.timeout = setTimeout(() => toast.style.opacity = '0', duration);
+    toast.timeout = setTimeout(() => toast.style.opacity = "0", duration);
   };
 
+  // Expose functions globally
   window.startScreensaver = startScreensaver;
   window.stopScreensaver = stopScreensaver;
   window.togglePause = togglePause;

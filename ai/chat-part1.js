@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Define global API configuration
+  window._pollinationsAPIConfig = { safe: false };
+
   const chatBox = document.getElementById("chat-box");
   const chatInput = document.getElementById("chat-input");
   const sendButton = document.getElementById("send-button");
@@ -6,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const voiceToggleBtn = document.getElementById("voice-toggle");
   const modelSelect = document.getElementById("model-select");
 
+  // Initialize current session from storage (or create a new one if none exists)
   let currentSession = Storage.getCurrentSession();
   if (!currentSession) {
     currentSession = Storage.createSession("New Chat");
@@ -18,56 +22,91 @@ document.addEventListener("DOMContentLoaded", () => {
   let isSpeaking = false;
   let autoSpeakEnabled = localStorage.getItem("autoSpeakEnabled") === "true";
   let currentlySpeakingMessage = null;
-
+  
+  // Combined variable declarations from both branches
+  let activeUtterance = null;
   let recognition = null;
   let isListening = false;
   let voiceInputBtn = null;
   let slideshowInterval = null;
 
+  // Voice Chat Modal Elements (from develop branch)
+  const voiceChatModal =
+    document.getElementById("voice-chat-modal") || createVoiceChatModal();
+  const voiceChatBtn = document.getElementById("open-voice-chat-modal");
+  const voiceChatClose = document.getElementById("voice-chat-modal-close");
+  const voiceChatListen = document.getElementById("voice-chat-listen");
+  const voiceChatStop = document.getElementById("voice-chat-stop");
+  const voiceChatTranscript = document.getElementById("voice-chat-transcript");
+  const micIndicator = document.getElementById("mic-indicator");
+  const statusText = document.getElementById("status-text");
+
+  let voiceChatActive = false;
+
+  // Create Voice Chat Modal if not present in HTML
+  function createVoiceChatModal() {
+    const modal = document.createElement("div");
+    modal.id = "voice-chat-modal";
+    modal.className = "modal-backdrop hidden";
+    modal.innerHTML = `
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="fas fa-headset"></i> Voice Chat</h3>
+          <button id="voice-chat-modal-close" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="voice-chat-controls">
+            <button id="voice-chat-listen" class="btn btn-primary">Listen</button>
+            <button id="voice-chat-stop" class="btn btn-danger" disabled>Stop</button>
+            <span id="mic-indicator" style="margin-left: 10px;">🎤</span>
+          </div>
+          <textarea id="voice-chat-transcript" class="form-control mt-3" rows="4" readonly></textarea>
+          <p id="status-text" class="text-muted mt-2">Press 'Listen' to start</p>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  // Load voices for TTS
   function loadVoices() {
     return new Promise((resolve) => {
       let voicesLoaded = false;
-
       function setVoices() {
         voices = synth.getVoices();
         if (voices.length > 0) {
           voicesLoaded = true;
-          const preferredVoices = [
-            "Google UK English Female",
-            "Microsoft Zira",
-            "Samantha",
-            "Victoria"
-          ];
-          for (const name of preferredVoices) {
-            const voice = voices.find((v) => v.name === name);
-            if (voice) {
-              selectedVoice = voice;
-              break;
+          // First try to restore a previously selected voice
+          const savedVoiceIndex = localStorage.getItem("selectedVoiceIndex");
+          if (savedVoiceIndex && voices[savedVoiceIndex]) {
+            selectedVoice = voices[savedVoiceIndex];
+          } else {
+            // Otherwise, use a list of preferred voices
+            const preferredVoices = [
+              "Google UK English Female",
+              "Microsoft Zira",
+              "Samantha",
+              "Victoria"
+            ];
+            for (const name of preferredVoices) {
+              const voice = voices.find((v) => v.name === name);
+              if (voice) {
+                selectedVoice = voice;
+                break;
+              }
             }
-          }
-          if (!selectedVoice) {
-            selectedVoice =
-              voices.find((v) => v.name.toLowerCase().includes("female")) ||
-              voices[0];
+            if (!selectedVoice) {
+              selectedVoice = voices.find((v) => v.name.toLowerCase().includes("female")) || voices[0];
+            }
           }
           console.log("Selected voice:", selectedVoice ? selectedVoice.name : "None");
           resolve(selectedVoice);
         }
       }
-
       setVoices();
-
       if (!voicesLoaded && synth.onvoiceschanged !== undefined) {
-        synth.onvoiceschanged = () => {
-          setVoices();
-          resolve(selectedVoice);
-        };
-        setTimeout(() => {
-          if (!voicesLoaded) {
-            setVoices();
-            resolve(selectedVoice);
-          }
-        }, 1000);
+        synth.onvoiceschanged = setVoices;
       }
     });
   }
@@ -81,27 +120,22 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("autoSpeakEnabled", autoSpeakEnabled.toString());
     updateVoiceToggleUI();
     showToast(autoSpeakEnabled ? "Auto-speak enabled" : "Auto-speak disabled");
-    if (autoSpeakEnabled) {
-      speakMessage("Voice mode enabled. I'll speak responses out loud.");
-    } else {
-      stopSpeaking();
-    }
   }
 
   function updateVoiceToggleUI() {
     if (voiceToggleBtn) {
-      voiceToggleBtn.textContent = autoSpeakEnabled ? "🔊 Voice On" : "🔇 Voice Off";
+      voiceToggleBtn.innerHTML = autoSpeakEnabled
+        ? '<i class="fas fa-volume-up"></i> Voice On'
+        : '<i class="fas fa-volume-mute"></i> Voice Off';
       voiceToggleBtn.style.backgroundColor = autoSpeakEnabled ? "#4CAF50" : "";
     }
   }
 
   function speakMessage(text, onEnd = null) {
     if (!synth || !window.SpeechSynthesisUtterance) {
-      console.error("Speech synthesis not supported in this browser");
-      showToast("Speech synthesis not supported in your browser");
+      showToast("Speech synthesis not supported");
       return;
     }
-
     if (isSpeaking) {
       synth.cancel();
     }
@@ -112,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/https?:\/\/[^\s]+/g, "URL link.");
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
+    activeUtterance = utterance;
     if (selectedVoice) {
       utterance.voice = selectedVoice;
     } else {
@@ -123,7 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       return;
     }
-
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
@@ -131,25 +165,32 @@ document.addEventListener("DOMContentLoaded", () => {
     utterance.onstart = () => {
       isSpeaking = true;
       currentlySpeakingMessage = text;
+      if (voiceChatActive) {
+        voiceChatListen.disabled = true;
+        voiceChatListen.style.opacity = "0.5";
+      }
     };
     utterance.onend = () => {
       isSpeaking = false;
       currentlySpeakingMessage = null;
+      activeUtterance = null;
+      if (voiceChatActive) {
+        voiceChatListen.disabled = false;
+        voiceChatListen.style.opacity = "1";
+        statusText.textContent = "Press 'Listen' to start";
+      }
       if (onEnd) onEnd();
     };
-    utterance.onerror = (err) => {
-      console.error("Speech synthesis error:", err);
+    utterance.onerror = (event) => {
       isSpeaking = false;
-      currentlySpeakingMessage = null;
-      if (onEnd) onEnd();
+      showToast(`Speech error: ${event.error}`);
+      if (voiceChatActive) {
+        voiceChatListen.disabled = false;
+        voiceChatListen.style.opacity = "1";
+        statusText.textContent = "Error occurred";
+      }
     };
-
-    try {
-      synth.speak(utterance);
-    } catch (err) {
-      console.error("Error speaking:", err);
-      showToast("Error with speech synthesis");
-    }
+    synth.speak(utterance);
   }
 
   function stopSpeaking() {
@@ -157,6 +198,11 @@ document.addEventListener("DOMContentLoaded", () => {
       synth.cancel();
       isSpeaking = false;
       currentlySpeakingMessage = null;
+      activeUtterance = null;
+      if (voiceChatActive) {
+        voiceChatListen.disabled = false;
+        voiceChatListen.style.opacity = "1";
+      }
     }
   }
 
@@ -166,72 +212,159 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if ("SpeechRecognition" in window) {
       recognition = new SpeechRecognition();
     } else {
-      console.warn("Speech recognition not supported in this browser");
+      showToast("Speech recognition not supported");
       return false;
     }
     recognition.continuous = false;
-    recognition.interimResults = true;
+    recognition.interimResults = false;
 
     recognition.onstart = () => {
       isListening = true;
-      if (voiceInputBtn) {
-        voiceInputBtn.classList.add("listening");
-        voiceInputBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+      if (voiceChatActive) {
+        micIndicator.textContent = "🎤";
+        micIndicator.style.color = "red";
+        statusText.textContent = "Listening...";
+        voiceChatStop.disabled = false;
       }
-      showToast("Listening...");
     };
 
     recognition.onresult = (event) => {
       let finalTranscript = "";
-      let interimTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) finalTranscript += transcript;
-        else interimTranscript += transcript;
+        if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
       }
-      if (finalTranscript) {
-        chatInput.value = (chatInput.value + " " + finalTranscript).trim();
-      } else if (interimTranscript) {
-        console.log("Interim:", interimTranscript);
+      if (finalTranscript && voiceChatActive) {
+        voiceChatTranscript.value = finalTranscript;
       }
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error", event.error);
-      isListening = false;
-      if (voiceInputBtn) {
-        voiceInputBtn.classList.remove("listening");
-        voiceInputBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-      }
-      showToast("Voice recognition error: " + event.error);
     };
 
     recognition.onend = () => {
       isListening = false;
-      if (voiceInputBtn) {
-        voiceInputBtn.classList.remove("listening");
-        voiceInputBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+      if (voiceChatActive) {
+        micIndicator.textContent = "🎤";
+        micIndicator.style.color = "";
+        voiceChatStop.disabled = true;
+        if (voiceChatTranscript.value) {
+          statusText.textContent = "Processing...";
+          sendVoiceChatMessage(voiceChatTranscript.value);
+        } else {
+          statusText.textContent = "No input detected";
+        }
       }
     };
 
+    recognition.onerror = (event) => {
+      isListening = false;
+      showToast(`Voice recognition error: ${event.error}`);
+      if (voiceChatActive) {
+        micIndicator.textContent = "🎤";
+        micIndicator.style.color = "";
+        statusText.textContent = "Error occurred";
+        voiceChatStop.disabled = true;
+      }
+    };
     return true;
   }
 
-  function toggleSpeechRecognition() {
-    if (!recognition && !initSpeechRecognition()) {
-      showToast("Speech recognition not supported in your browser");
-      return;
-    }
-    if (isListening) {
-      recognition.stop();
-    } else {
-      try {
+  // Send voice chat message to API and handle response
+  function sendVoiceChatMessage(message) {
+    // Use the global currentSession, but refresh it from Storage if needed
+    const session = Storage.getCurrentSession();
+    session.messages.push({ role: "user", content: message });
+    Storage.updateSessionMessages(session.id, session.messages);
+    window.addNewMessage({ role: "user", content: message }); // Display in chat
+    statusText.textContent = "Waiting for AI response...";
+
+    const messages = [
+      { role: "system", content: "You are a helpful AI assistant. Respond concisely." },
+      ...session.messages.slice(-10).map((msg) => ({
+        role: msg.role === "ai" ? "assistant" : "user",
+        content: msg.content
+      }))
+    ];
+
+    const safeParam = window._pollinationsAPIConfig
+      ? `safe=${window._pollinationsAPIConfig.safe}`
+      : "safe=false";
+    fetch(`https://text.pollinations.ai/openai?${safeParam}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, model: modelSelect.value || "unity", stream: false })
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Pollinations error: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        let aiContent = data.choices?.[0]?.message?.content || "Error: No response";
+
+        // Check for image generation request
+        const lastUserMsg = message.toLowerCase();
+        const isImageRequest =
+          lastUserMsg.includes("image") ||
+          lastUserMsg.includes("picture") ||
+          lastUserMsg.includes("show me") ||
+          lastUserMsg.includes("generate an image");
+        if (isImageRequest && !aiContent.includes("https://image.pollinations.ai")) {
+          let imagePrompt = lastUserMsg.replace(/show me|generate|image of|picture of|image|picture/gi, "").trim();
+          if (imagePrompt.length < 5 && aiContent.toLowerCase().includes("image")) {
+            imagePrompt = aiContent.toLowerCase().replace(/here's an image of|image|to enjoy visually/gi, "").trim();
+          }
+          if (imagePrompt.length > 100) imagePrompt = imagePrompt.substring(0, 100);
+          imagePrompt += ", photographic";
+          const seed = Math.floor(Math.random() * 1000000);
+          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+            imagePrompt
+          )}?width=512&height=512&seed=${seed}&${safeParam}&nolog=true`;
+          aiContent += `\n\n**Generated Image:**\n${imageUrl}`;
+        }
+
+        session.messages.push({ role: "ai", content: aiContent });
+        Storage.updateSessionMessages(session.id, session.messages);
+        window.addNewMessage({ role: "ai", content: aiContent }); // Display in chat
+        voiceChatTranscript.value = aiContent;
+        statusText.textContent = "Speaking response...";
+        speakMessage(aiContent, () => {
+          statusText.textContent = "Press 'Listen' to start";
+        });
+      })
+      .catch((err) => {
+        showToast("Failed to get AI response");
+        statusText.textContent = "Error: Try again";
+      });
+  }
+
+  // Voice chat modal controls
+  if (voiceChatBtn && voiceChatModal) {
+    voiceChatBtn.addEventListener("click", () => {
+      voiceChatModal.classList.remove("hidden");
+      voiceChatActive = true;
+      if (!recognition) initSpeechRecognition();
+      voiceChatTranscript.value = "";
+      statusText.textContent = "Press 'Listen' to start";
+      voiceChatListen.disabled = false;
+      voiceChatListen.style.opacity = "1";
+      voiceChatStop.disabled = true;
+    });
+
+    voiceChatClose.addEventListener("click", () => {
+      voiceChatModal.classList.add("hidden");
+      voiceChatActive = false;
+      stopSpeaking();
+      if (isListening) recognition.stop();
+    });
+
+    voiceChatListen.addEventListener("click", () => {
+      if (!isListening && !isSpeaking) {
         recognition.start();
-      } catch (error) {
-        console.error("Recognition error:", error);
-        showToast("Could not start speech recognition");
       }
-    }
+    });
+
+    voiceChatStop.addEventListener("click", () => {
+      if (isListening) {
+        recognition.stop();
+      }
+    });
   }
 
   function showToast(message, duration = 3000) {
@@ -254,9 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.textContent = message;
     toast.style.opacity = "1";
     clearTimeout(toast.timeout);
-    toast.timeout = setTimeout(() => {
-      toast.style.opacity = "0";
-    }, duration);
+    toast.timeout = setTimeout(() => (toast.style.opacity = "0"), duration);
   }
 
   window._chatInternals = {
@@ -282,7 +413,6 @@ document.addEventListener("DOMContentLoaded", () => {
     speakMessage,
     stopSpeaking,
     initSpeechRecognition,
-    toggleSpeechRecognition,
     showToast
   };
 });

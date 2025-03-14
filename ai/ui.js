@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const themeSelect = document.getElementById("theme-select");
   const themeSelectSettings = document.getElementById("theme-select-settings");
+  const voiceSelect = document.getElementById("voice-select");
 
   const openPersonalizationBtn = document.getElementById("open-personalization-btn");
   const openPersonalizationSettings = document.getElementById("open-personalization-settings");
@@ -111,6 +112,47 @@ document.addEventListener("DOMContentLoaded", () => {
   themeSelectSettings.addEventListener("change", () => {
     changeTheme(themeSelectSettings.value);
   });
+
+  // Populate and handle voice selection
+  function populateVoiceDropdown() {
+    if (!voiceSelect || !window._chatInternals || !window._chatInternals.voices) return;
+
+    voiceSelect.innerHTML = "";
+    window._chatInternals.voices.forEach((voice, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = `${voice.name} (${voice.lang})`;
+      voiceSelect.appendChild(option);
+    });
+
+    const savedVoiceIndex = localStorage.getItem("selectedVoiceIndex");
+    if (savedVoiceIndex && window._chatInternals.voices[savedVoiceIndex]) {
+      voiceSelect.value = savedVoiceIndex;
+    }
+  }
+
+  if (voiceSelect) {
+    // Wait for voices to be loaded from chat-part1.js
+    if (window._chatInternals && window._chatInternals.voices.length > 0) {
+      populateVoiceDropdown();
+    } else {
+      const checkVoices = setInterval(() => {
+        if (window._chatInternals && window._chatInternals.voices.length > 0) {
+          populateVoiceDropdown();
+          clearInterval(checkVoices);
+        }
+      }, 100);
+    }
+
+    voiceSelect.addEventListener("change", () => {
+      if (window._chatInternals && window._chatInternals.voices) {
+        const selectedIndex = voiceSelect.value;
+        window._chatInternals.selectedVoice = window._chatInternals.voices[selectedIndex];
+        localStorage.setItem("selectedVoiceIndex", selectedIndex);
+        showToast(`Voice changed to ${window._chatInternals.voices[selectedIndex].name}`);
+      }
+    });
+  }
 
   function fetchPollinationsModels() {
     fetch("https://text.pollinations.ai/models")
@@ -431,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.showToast = function(message, duration = 3000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
-      toast = document.createElement('div');
+      toast = document.createElement("div");
       toast.id = 'toast-notification';
       toast.style.position = 'fixed';
       toast.style.bottom = '20px';
