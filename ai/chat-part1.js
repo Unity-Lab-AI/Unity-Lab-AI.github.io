@@ -9,30 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const voiceToggleBtn = document.getElementById("voice-toggle");
   const modelSelect = document.getElementById("model-select");
 
-  // Initialize current session from storage (or create a new one if none exists)
-  let currentSession = Storage.getCurrentSession();
-  if (!currentSession) {
-    currentSession = Storage.createSession("New Chat");
-    localStorage.setItem("currentSessionId", currentSession.id);
-  }
-
   const synth = window.speechSynthesis;
   let voices = [];
   let selectedVoice = null;
   let isSpeaking = false;
   let autoSpeakEnabled = localStorage.getItem("autoSpeakEnabled") === "true";
   let currentlySpeakingMessage = null;
-  
-  // Combined variable declarations from both branches
   let activeUtterance = null;
   let recognition = null;
   let isListening = false;
   let voiceInputBtn = null;
-  let slideshowInterval = null;
 
-  // Voice Chat Modal Elements (from develop branch)
-  const voiceChatModal =
-    document.getElementById("voice-chat-modal") || createVoiceChatModal();
+  // Voice Chat Modal Elements
+  const voiceChatModal = document.getElementById("voice-chat-modal") || createVoiceChatModal();
   const voiceChatBtn = document.getElementById("open-voice-chat-modal");
   const voiceChatClose = document.getElementById("voice-chat-modal-close");
   const voiceChatListen = document.getElementById("voice-chat-listen");
@@ -77,30 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
         voices = synth.getVoices();
         if (voices.length > 0) {
           voicesLoaded = true;
-          // First try to restore a previously selected voice
           const savedVoiceIndex = localStorage.getItem("selectedVoiceIndex");
-          if (savedVoiceIndex && voices[savedVoiceIndex]) {
-            selectedVoice = voices[savedVoiceIndex];
-          } else {
-            // Otherwise, use a list of preferred voices
-            const preferredVoices = [
-              "Google UK English Female",
-              "Microsoft Zira",
-              "Samantha",
-              "Victoria"
-            ];
-            for (const name of preferredVoices) {
-              const voice = voices.find((v) => v.name === name);
-              if (voice) {
-                selectedVoice = voice;
-                break;
-              }
-            }
-            if (!selectedVoice) {
-              selectedVoice = voices.find((v) => v.name.toLowerCase().includes("female")) || voices[0];
-            }
-          }
-          console.log("Selected voice:", selectedVoice ? selectedVoice.name : "None");
+          selectedVoice = savedVoiceIndex && voices[savedVoiceIndex] ? voices[savedVoiceIndex] : voices.find(v => v.name.toLowerCase().includes("female")) || voices[0];
           resolve(selectedVoice);
         }
       }
@@ -111,10 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  loadVoices().then(() => {
-    updateVoiceToggleUI();
-  });
+  loadVoices().then(() => updateVoiceToggleUI());
 
+  // Toggle auto-speak
   function toggleAutoSpeak() {
     autoSpeakEnabled = !autoSpeakEnabled;
     localStorage.setItem("autoSpeakEnabled", autoSpeakEnabled.toString());
@@ -124,41 +90,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateVoiceToggleUI() {
     if (voiceToggleBtn) {
-      voiceToggleBtn.innerHTML = autoSpeakEnabled
-        ? '<i class="fas fa-volume-up"></i> Voice On'
-        : '<i class="fas fa-volume-mute"></i> Voice Off';
+      voiceToggleBtn.innerHTML = autoSpeakEnabled ? '<i class="fas fa-volume-up"></i> Voice On' : '<i class="fas fa-volume-mute"></i> Voice Off';
       voiceToggleBtn.style.backgroundColor = autoSpeakEnabled ? "#4CAF50" : "";
     }
   }
 
+  // Speak message with completion callback
   function speakMessage(text, onEnd = null) {
     if (!synth || !window.SpeechSynthesisUtterance) {
       showToast("Speech synthesis not supported");
       return;
     }
-    if (isSpeaking) {
-      synth.cancel();
-    }
+    if (isSpeaking) synth.cancel();
 
-    let cleanText = text
-      .replace(/```[\s\S]*?```/g, "code block omitted.")
-      .replace(/`[\s\S]*?`/g, "inline code omitted.")
-      .replace(/https?:\/\/[^\s]+/g, "URL link.");
-
+    const cleanText = text.replace(/```[\s\S]*?```/g, "code block omitted.").replace(/`[\s\S]*?`/g, "inline code omitted.");
     const utterance = new SpeechSynthesisUtterance(cleanText);
     activeUtterance = utterance;
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-    } else {
-      loadVoices().then((voice) => {
-        if (voice) {
-          utterance.voice = voice;
-          synth.speak(utterance);
-        }
-      });
-      return;
-    }
-    utterance.rate = 1.0;
+    if (selectedVoice) utterance.voice = selectedVoice;
+    utterance.rate = 0.9;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
@@ -206,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Initialize speech recognition
   function initSpeechRecognition() {
     if ("webkitSpeechRecognition" in window) {
       recognition = new webkitSpeechRecognition();
@@ -268,43 +218,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Send voice chat message to API and handle response
   function sendVoiceChatMessage(message) {
-    // Use the global currentSession, but refresh it from Storage if needed
-    const session = Storage.getCurrentSession();
-    session.messages.push({ role: "user", content: message });
-    Storage.updateSessionMessages(session.id, session.messages);
+    const currentSession = Storage.getCurrentSession();
+    currentSession.messages.push({ role: "user", content: message });
+    Storage.updateSessionMessages(currentSession.id, currentSession.messages);
     window.addNewMessage({ role: "user", content: message }); // Display in chat
     statusText.textContent = "Waiting for AI response...";
 
     const messages = [
       { role: "system", content: "You are a helpful AI assistant. Respond concisely." },
-      ...session.messages.slice(-10).map((msg) => ({
-        role: msg.role === "ai" ? "assistant" : "user",
-        content: msg.content
-      }))
+      ...currentSession.messages.slice(-10).map(msg => ({ role: msg.role === "ai" ? "assistant" : "user", content: msg.content }))
     ];
 
-    const safeParam = window._pollinationsAPIConfig
-      ? `safe=${window._pollinationsAPIConfig.safe}`
-      : "safe=false";
+    const safeParam = window._pollinationsAPIConfig ? `safe=${window._pollinationsAPIConfig.safe}` : "safe=false";
     fetch(`https://text.pollinations.ai/openai?${safeParam}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages, model: modelSelect.value || "unity", stream: false })
     })
-      .then((res) => {
+      .then(res => {
         if (!res.ok) throw new Error(`Pollinations error: ${res.status}`);
         return res.json();
       })
-      .then((data) => {
+      .then(data => {
         let aiContent = data.choices?.[0]?.message?.content || "Error: No response";
 
         // Check for image generation request
         const lastUserMsg = message.toLowerCase();
-        const isImageRequest =
-          lastUserMsg.includes("image") ||
-          lastUserMsg.includes("picture") ||
-          lastUserMsg.includes("show me") ||
-          lastUserMsg.includes("generate an image");
+        const isImageRequest = lastUserMsg.includes("image") || 
+                              lastUserMsg.includes("picture") || 
+                              lastUserMsg.includes("show me") || 
+                              lastUserMsg.includes("generate an image");
         if (isImageRequest && !aiContent.includes("https://image.pollinations.ai")) {
           let imagePrompt = lastUserMsg.replace(/show me|generate|image of|picture of|image|picture/gi, "").trim();
           if (imagePrompt.length < 5 && aiContent.toLowerCase().includes("image")) {
@@ -313,14 +256,12 @@ document.addEventListener("DOMContentLoaded", () => {
           if (imagePrompt.length > 100) imagePrompt = imagePrompt.substring(0, 100);
           imagePrompt += ", photographic";
           const seed = Math.floor(Math.random() * 1000000);
-          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-            imagePrompt
-          )}?width=512&height=512&seed=${seed}&${safeParam}&nolog=true`;
+          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=512&height=512&seed=${seed}&${safeParam}&nolog=true`;
           aiContent += `\n\n**Generated Image:**\n${imageUrl}`;
         }
 
-        session.messages.push({ role: "ai", content: aiContent });
-        Storage.updateSessionMessages(session.id, session.messages);
+        currentSession.messages.push({ role: "ai", content: aiContent });
+        Storage.updateSessionMessages(currentSession.id, currentSession.messages);
         window.addNewMessage({ role: "ai", content: aiContent }); // Display in chat
         voiceChatTranscript.value = aiContent;
         statusText.textContent = "Speaking response...";
@@ -328,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
           statusText.textContent = "Press 'Listen' to start";
         });
       })
-      .catch((err) => {
+      .catch(err => {
         showToast("Failed to get AI response");
         statusText.textContent = "Error: Try again";
       });
@@ -387,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.textContent = message;
     toast.style.opacity = "1";
     clearTimeout(toast.timeout);
-    toast.timeout = setTimeout(() => (toast.style.opacity = "0"), duration);
+    toast.timeout = setTimeout(() => toast.style.opacity = "0", duration);
   }
 
   window._chatInternals = {
@@ -397,7 +338,6 @@ document.addEventListener("DOMContentLoaded", () => {
     clearChatBtn,
     voiceToggleBtn,
     modelSelect,
-    currentSession,
     synth,
     voices,
     selectedVoice,
@@ -407,7 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
     recognition,
     isListening,
     voiceInputBtn,
-    slideshowInterval,
     toggleAutoSpeak,
     updateVoiceToggleUI,
     speakMessage,
