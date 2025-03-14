@@ -1,6 +1,4 @@
-// ui.js (FIX: Prevent first-launch modal from re-appearing after new chat)
 document.addEventListener("DOMContentLoaded", () => {
-  // Buttons
   const newSessionBtn = document.getElementById("new-session-btn");
   const modelSelect = document.getElementById("model-select");
   const donationOpenBtn = document.getElementById("donation-open-btn");
@@ -11,11 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsModal = document.getElementById("settings-modal");
   const settingsModalClose = document.getElementById("settings-modal-close");
 
-  // Theme selectors - one in sidebar, one in settings
   const themeSelect = document.getElementById("theme-select");
   const themeSelectSettings = document.getElementById("theme-select-settings");
+  const voiceSelect = document.getElementById("voice-select");
 
-  // Personalization
   const openPersonalizationBtn = document.getElementById("open-personalization-btn");
   const openPersonalizationSettings = document.getElementById("open-personalization-settings");
   const personalizationModal = document.getElementById("personalization-modal");
@@ -23,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const savePersonalizationBtn = document.getElementById("save-personalization");
   const cancelPersonalizationBtn = document.getElementById("cancel-personalization");
 
-  // Memory Manager
   const openMemoryManagerBtn = document.getElementById("open-memory-manager");
   const memoryModal = document.getElementById("memory-modal");
   const memoryModalClose = document.getElementById("memory-modal-close");
@@ -31,14 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const addMemoryBtn = document.getElementById("add-memory-btn");
   const clearAllMemoryBtn = document.getElementById("clear-all-memory-btn");
 
-  // Add Memory Modal
   const addMemoryModal = document.getElementById("add-memory-modal");
   const addMemoryModalClose = document.getElementById("add-memory-modal-close");
   const newMemoryText = document.getElementById("new-memory-text");
   const saveNewMemoryBtn = document.getElementById("save-new-memory-btn");
   const cancelNewMemoryBtn = document.getElementById("cancel-new-memory-btn");
 
-  // Destructive Buttons
   const clearChatSessionsBtn = document.getElementById("clear-chat-sessions-btn");
   const clearUserDataBtn = document.getElementById("clear-user-data-btn");
 
@@ -118,6 +112,47 @@ document.addEventListener("DOMContentLoaded", () => {
   themeSelectSettings.addEventListener("change", () => {
     changeTheme(themeSelectSettings.value);
   });
+
+  // Populate and handle voice selection
+  function populateVoiceDropdown() {
+    if (!voiceSelect || !window._chatInternals || !window._chatInternals.voices) return;
+
+    voiceSelect.innerHTML = "";
+    window._chatInternals.voices.forEach((voice, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = `${voice.name} (${voice.lang})`;
+      voiceSelect.appendChild(option);
+    });
+
+    const savedVoiceIndex = localStorage.getItem("selectedVoiceIndex");
+    if (savedVoiceIndex && window._chatInternals.voices[savedVoiceIndex]) {
+      voiceSelect.value = savedVoiceIndex;
+    }
+  }
+
+  if (voiceSelect) {
+    // Wait for voices to be loaded from chat-part1.js
+    if (window._chatInternals && window._chatInternals.voices.length > 0) {
+      populateVoiceDropdown();
+    } else {
+      const checkVoices = setInterval(() => {
+        if (window._chatInternals && window._chatInternals.voices.length > 0) {
+          populateVoiceDropdown();
+          clearInterval(checkVoices);
+        }
+      }, 100);
+    }
+
+    voiceSelect.addEventListener("change", () => {
+      if (window._chatInternals && window._chatInternals.voices) {
+        const selectedIndex = voiceSelect.value;
+        window._chatInternals.selectedVoice = window._chatInternals.voices[selectedIndex];
+        localStorage.setItem("selectedVoiceIndex", selectedIndex);
+        showToast(`Voice changed to ${window._chatInternals.voices[selectedIndex].name}`);
+      }
+    });
+  }
 
   function fetchPollinationsModels() {
     fetch("https://text.pollinations.ai/models")
@@ -203,10 +238,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===================================================
-  // FIX: set firstLaunch to "1" when creating a new chat
-  // so the first-launch modal won't appear again.
-  // ===================================================
   newSessionBtn.addEventListener("click", () => {
     localStorage.setItem("firstLaunch", "1");
     const newSess = Storage.createSession("New Chat");
@@ -310,9 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
     Memory.addMemoryEntry(memoryText);
   }
 
-  // =====================
-  //  MEMORY MANAGER
-  // =====================
   openMemoryManagerBtn.addEventListener("click", () => {
     memoryModal.classList.remove("hidden");
     loadMemoryEntries();
@@ -369,7 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
       btnContainer.style.display = "flex";
       btnContainer.style.gap = "6px";
 
-      // Edit
       const editBtn = document.createElement("button");
       editBtn.className = "btn btn-sm btn-secondary";
       editBtn.innerHTML = '<i class="fas fa-pen"></i>';
@@ -378,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
       editBtn.addEventListener("click", () => {
         const newText = prompt("Edit memory entry:", line);
         if (!newText || newText.trim() === line) {
-          return; // cancelled or unchanged
+          return;
         }
         const success = Memory.updateMemoryEntry(idx, newText);
         if (success) {
@@ -388,7 +415,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       btnContainer.appendChild(editBtn);
 
-      // Delete
       const delBtn = document.createElement("button");
       delBtn.className = "btn btn-sm btn-danger";
       delBtn.innerHTML = '<i class="fas fa-trash"></i>';
@@ -416,9 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // =====================
-  //  DESTRUCTIVE BUTTONS
-  // =====================
   clearChatSessionsBtn.addEventListener("click", () => {
     if (!confirm("Are you sure you want to CLEAR ALL chat sessions?")) return;
     Storage.clearAllSessions();
@@ -450,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.showToast = function(message, duration = 3000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
-      toast = document.createElement('div');
+      toast = document.createElement("div");
       toast.id = 'toast-notification';
       toast.style.position = 'fixed';
       toast.style.bottom = '20px';

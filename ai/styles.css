@@ -1,9 +1,3 @@
-/* =========================
-   CORE (NEUTRAL) STYLES
-   (Themes will override colors)
-========================= */
-
-/* RESET / GLOBAL */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -12,7 +6,6 @@
 
 body {
   font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  /* Neutral gray base colors - will be overridden by themes */
   background-color: #e0e0e0;
   color: #222222;
   height: 100vh;
@@ -20,19 +13,14 @@ body {
   overflow: hidden;
 }
 
-/* Container for entire app */
 .app-container {
   display: flex;
   flex: 1;
   height: 100%;
 }
 
-/* =========================
-   SIDEBAR
-========================= */
 .sidebar {
   width: 260px;
-  /* Neutral base colors - will be overridden by themes */
   background: #c0c0c0;
   border-right: 2px solid #a0a0a0;
   display: flex;
@@ -49,7 +37,7 @@ body {
 }
 
 .sidebar-btn {
-  background: #b0b0b0; /* neutral fallback */
+  background: #b0b0b0;
   color: #222222;
   border: none;
   padding: 8px 12px;
@@ -76,7 +64,6 @@ body {
   border-radius: 8px;
   margin-bottom: 6px;
   cursor: pointer;
-  /* Neutral base color - slightly darker than sidebar */
   background: #b0b0b0;
   color: #222222;
   transition: all 0.2s ease;
@@ -113,7 +100,6 @@ body {
   color: #222222;
 }
 
-/* Label / Select in sidebar */
 .sidebar-label {
   margin-top: 12px;
   display: block;
@@ -137,9 +123,6 @@ body {
   margin: 15px 0;
 }
 
-/* =========================
-   CHAT AREA
-========================= */
 .chat-layout {
   flex: 1;
   display: flex;
@@ -150,12 +133,10 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  /* Neutral base color */
   background: #e5e5e5;
   color: #222222;
 }
 
-/* Chat box scrolling area */
 .chat-box {
   flex: 1;
   padding: 20px;
@@ -163,7 +144,6 @@ body {
   scrollbar-width: thin;
 }
 
-/* Input area at bottom */
 .chat-input-container {
   display: flex;
   padding: 12px 15px;
@@ -220,7 +200,6 @@ body {
   opacity: 0.6;
 }
 
-/* Chat controls below the input area */
 .chat-controls {
   display: flex;
   justify-content: space-between;
@@ -243,9 +222,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* =========================
-   MESSAGE BUBBLES
-========================= */
 .message {
   margin: 12px 0;
   padding: 12px 16px;
@@ -256,13 +232,12 @@ body {
   max-width: 70%;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
-/* Animation for message fadein */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Neutral base colors for messages */
 .user-message {
   background-color: #b0c0d0;
   color: #222222;
@@ -276,7 +251,6 @@ body {
   border-bottom-left-radius: 6px;
 }
 
-/* Message action buttons */
 .message-actions {
   display: flex;
   gap: 8px;
@@ -299,7 +273,6 @@ body {
   background: rgba(0,0,0,0.2);
 }
 
-/* Speak button for AI messages */
 .speak-message-btn {
   display: flex;
   align-items: center;
@@ -310,14 +283,12 @@ body {
   font-size: 14px;
 }
 
-/* Images inside messages */
 .message img {
   max-width: 100%;
   border-radius: 8px;
   margin-top: 10px;
 }
 
-/* AI image container with loading state */
 .ai-image-container {
   position: relative;
   margin: 10px 0;
@@ -349,7 +320,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Image buttons */
 .image-button-container {
   display: flex;
   gap: 8px;
@@ -372,9 +342,6 @@ body {
   background: rgba(0,0,0,0.2);
 }
 
-/* =========================
-   MODALS
-========================= */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -443,7 +410,6 @@ body {
   padding-top: 15px;
 }
 
-/* Form elements */
 .form-group {
   margin-bottom: 15px;
 }
@@ -471,9 +437,6 @@ body {
   box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.2);
 }
 
-/* =========================
-   VOICE CHAT MODAL
-========================= */
 .voice-chat-modal {
   background: #d0d0d0;
   border-radius: 15px;
@@ -559,9 +522,6 @@ body {
   color: #222222;
 }
 
-/* =========================
-   PERSONALIZATION MODAL
-========================= */
 .personalization-modal {
   max-width: 600px;
 }
@@ -572,9 +532,6 @@ body {
   gap: 15px;
 }
 
-/* =========================
-   CODE BLOCKS
-========================= */
 .code-block-container {
   margin: 12px 0;
   border-radius: 10px;
@@ -624,7 +581,7 @@ body {
   margin: 0;
   padding: 14px;
   overflow-x: auto;
-  background: #282c34; /* Dark background for code blocks for readability */
+  background: #282c34;
   color: #abb2bf;
   border-radius: 0 0 10px 10px;
 }
@@ -639,7 +596,6 @@ body {
   overflow-wrap: break-word;
 }
 
-/* Ensure markdown code blocks get styled correctly */
 .message pre {
   background: #282c34;
   color: #abb2bf;
@@ -659,7 +615,6 @@ body {
   word-break: break-word;
 }
 
-/* Fix message width for code blocks */
 .ai-message {
   max-width: 70% !important;
 }
@@ -671,16 +626,12 @@ body {
   word-break: break-word;
 }
 
-/* Ensure all content in messages wraps properly */
 .ai-message .message-text,
 .user-message .message-text {
   width: 100%;
   overflow-x: auto;
 }
 
-/* =========================
-   FIRST LAUNCH MODAL
-========================= */
 .first-launch-modal {
   max-width: 650px;
   text-align: center;
@@ -745,9 +696,6 @@ body {
   color: #444444;
 }
 
-/* =========================
-   TOAST NOTIFICATIONS
-========================= */
 #toast-notification {
   position: fixed;
   bottom: 20px;
@@ -761,9 +709,6 @@ body {
   transition: opacity 0.3s;
 }
 
-/* =========================
-   RESPONSIVENESS
-========================= */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -785,9 +730,6 @@ body {
   }
 }
 
-/* =========================
-   UTILITIES
-========================= */
 .hidden {
   display: none !important;
 }
@@ -815,9 +757,6 @@ body {
 .gap-2 { gap: 8px; }
 .gap-3 { gap: 16px; }
 
-/* =========================
-   SCREENSAVER
-========================= */
 .screensaver {
   position: fixed;
   top: 0;
@@ -912,11 +851,10 @@ body {
   background-color: #666;
 }
 
-/* Ensure the hidden class works with screensaver */
 .hidden {
   display: none !important;
 }
-/* Voice Chat Modal Styles */
+
 .voice-chat-modal {
   background: #d0d0d0;
   border-radius: 12px;
@@ -995,7 +933,6 @@ body {
   color: #222222;
 }
 
-/* Image Slideshow */
 .image-slideshow {
   width: 100%;
   margin-top: 15px;
@@ -1014,7 +951,6 @@ body {
   opacity: 1;
 }
 
-/* First Launch Modal */
 .first-launch-modal {
   max-width: 600px;
   padding: 30px;
@@ -1080,7 +1016,6 @@ body {
   text-align: center;
 }
 
-/* Modal Generic Styles */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -1098,7 +1033,6 @@ body {
   display: none;
 }
 
-/* Dark Theme Overrides */
 .dark-theme .voice-chat-modal {
   background: #2a2a2a;
   color: #e0e0e0;
@@ -1160,7 +1094,6 @@ body {
   color: #b0b0b0;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .voice-chat-modal {
     width: 95%;
@@ -1176,7 +1109,7 @@ body {
     padding: 20px;
   }
 }
-/* Additional rules for removed inline styles from index.html */
+
 #visitor-counter {
   margin-bottom: 10px;
 }
@@ -1194,4 +1127,17 @@ body {
 .memory-list-container {
   max-height: 300px;
   overflow-y: auto;
+}
+.voice-btn.listening {
+  animation: pulse-listen 1s infinite ease-in-out;
+  background-color: #d07070 !important;
+}
+
+@keyframes pulse-listen {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(208,112,112,0.6); }
+  50% { box-shadow: 0 0 0 10px rgba(208,112,112,0); }
+}
+
+#voice-input-btn.listening i {
+  color: #ff4d4d;
 }
