@@ -1,7 +1,6 @@
-// storage.js with model persistence fix and improved session rendering
 document.addEventListener("DOMContentLoaded", () => {
-  const SERVER_URL = "https://your-hosted-server.com"; // Replace if you have a real server
-  const USE_LOCAL_FALLBACK = true; // Set to false when your server is fully operational
+  const SERVER_URL = "https://your-hosted-server.com";
+  const USE_LOCAL_FALLBACK = true;
 
   const sessionListEl = document.getElementById("session-list");
   let sessions = loadSessions();
@@ -28,16 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
     getDefaultModel,
     setDefaultModel,
     clearAllSessions,
-    // Memory
     getMemories,
     addMemory,
     removeMemory,
     clearAllMemories,
-    // Destructive
     deleteAllUserData
   };
 
-  // Session functions
   function getSessions() {
     return sessions;
   }
@@ -208,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSessions();
   }
 
-  // Memory system
   function getMemories() {
     const raw = localStorage.getItem("pollinations_memory");
     return raw ? JSON.parse(raw) : [];
@@ -234,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
     location.reload();
   }
 
-  // Unique user ID & launch
   function initUserChecks() {
     let firstLaunch = localStorage.getItem("firstLaunch");
     if (firstLaunch === null) {
@@ -303,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateVisitorCount();
     setInterval(() => {
       updateVisitorCount();
-    }, 300000); // 5 min
+    }, 300000);
   }
   async function updateVisitorCount() {
     const visitorDisplay = document.getElementById("visitor-count-display");
