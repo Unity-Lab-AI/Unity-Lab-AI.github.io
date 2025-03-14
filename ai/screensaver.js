@@ -120,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Failed to parse screensaver settings:", err);
     }
   }
-
   loadScreensaverSettings();
 
   // Generate a random seed
@@ -147,34 +146,25 @@ document.addEventListener("DOMContentLoaded", () => {
   function fetchNewImage() {
     saveScreensaverSettings();
     let prompt = promptInput.value || "random artistic scene, high quality, detailed";
-    
-    // Keep the prompt concise and clean
     if (prompt.length > 100) {
       prompt = prompt.substring(0, 100);
     }
-    
-    // Add quality terms
     prompt += ", high resolution, detailed";
-    
     const { width, height } = getDimensions(aspectSelect.value);
     const seed = generateSeed();
     const model = modelSelect.value || "flux";
     const enhance = enhanceCheckbox.checked;
     const priv = privateCheckbox.checked;
-
-    // Use global config if available, otherwise hardcode safe=false
     const safeParam = window._pollinationsAPIConfig ? `safe=${window._pollinationsAPIConfig.safe}` : "safe=false";
-    
-    // Add nolog=true parameter to prevent unwanted URL parameters
     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}&${safeParam}&nolog=true`;
 
     screensaverImage.style.opacity = "0.5";
-    screensaverImage.crossOrigin = "anonymous"; // Enable CORS for cross-browser support
+    screensaverImage.crossOrigin = "anonymous";
     screensaverImage.onload = () => {
       screensaverImage.style.opacity = "1";
       const browserInfo = getBrowserInfo();
       if (browserInfo.isSafari) {
-        screensaverImage.style.webkitMaskImage = "none"; // Fix Safari rendering
+        screensaverImage.style.webkitMaskImage = "none";
       }
     };
     screensaverImage.onerror = () => {
@@ -199,7 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function startScreensaver() {
     screensaverActive = true;
     paused = false;
-
     screensaverContainer.style.position = "fixed";
     screensaverContainer.style.top = "0";
     screensaverContainer.style.left = "0";
@@ -222,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.screensaverActive = true;
 
     // Optional audio cue for screensaver start (placeholder)
-    const audioUrl = "https://example.com/audio/start.mp3"; // Replace with actual audio API
+    const audioUrl = "https://example.com/audio/start.mp3"; // Replace with actual audio API URL
     playAudio(audioUrl).catch(err => console.warn("Audio cue failed:", err));
   }
 
@@ -255,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function togglePause() {
     paused = !paused;
     playPauseButton.innerHTML = paused ? "▶️" : "⏸️";
-    playPauseButton.style.backgroundColor = paused ? "" : "";
+    playPauseButton.style.backgroundColor = "";
     if (!paused && screensaverActive) fetchNewImage();
     window.showToast(paused ? "Screensaver paused" : "Screensaver resumed");
   }
@@ -367,7 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Event listeners
   toggleScreensaverButton.addEventListener("click", () => {
     screensaverActive ? stopScreensaver() : startScreensaver();
   });

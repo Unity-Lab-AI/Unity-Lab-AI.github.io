@@ -1,6 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const { chatBox, chatInput, clearChatBtn, voiceToggleBtn, modelSelect, synth, autoSpeakEnabled, speakMessage, stopSpeaking, showToast, toggleSpeechRecognition, initSpeechRecognition } = window._chatInternals;
+  // Destructure properties from _chatInternals – merging both branch requirements
+  const {
+    chatBox,
+    chatInput,
+    clearChatBtn,
+    voiceToggleBtn,
+    modelSelect,
+    synth,
+    autoSpeakEnabled,
+    speakMessage,
+    stopSpeaking,
+    showToast,
+    toggleSpeechRecognition,
+    initSpeechRecognition,
+    recognition,
+    selectedVoice,
+    currentSession
+  } = window._chatInternals;
+  
+  let isRecording = false;
+  let slideshowInterval = null;
 
+  // Utility functions
   function randomSeed() {
     return Math.floor(Math.random() * 1000000).toString();
   }
@@ -17,27 +38,167 @@ document.addEventListener("DOMContentLoaded", () => {
     if (title.length > 50) title = title.substring(0, 50) + "...";
     return title;
   }
+  
+  // ---------------------------
+  // Voice Chat Modal Functions
+  // ---------------------------
+  
+  function createVoiceChatModal() {
+    const modalHTML = `
+      <div id="voice-chat-modal" class="modal-backdrop hidden">
+        <div class="voice-chat-modal">
+          <div class="voice-chat-header">
+            <h3>Voice Chat</h3>
+            <button id="voice-chat-close" class="close-btn">×</button>
+          </div>
+          <div class="voice-chat-controls">
+            <div id="voice-status" class="voice-status">Ready for voice chat</div>
+            <div class="voice-buttons">
+              <button id="start-voice-chat" class="voice-btn">
+                <i class="fas fa-microphone"></i> Start Listening
+              </button>
+              <button id="stop-voice-chat" class="voice-btn" disabled>
+                <i class="fas fa-stop"></i> Stop
+              </button>
+            </div>
+            <div id="voice-transcript" class="transcript"></div>
+            <div id="image-slideshow" class="image-slideshow">
+              <img id="slideshow-image" alt="Conversation Image" />
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const modalContainer = document.createElement("div");
+    modalContainer.innerHTML = modalHTML;
+    document.body.appendChild(modalContainer.firstElementChild);
 
-  function checkAndUpdateSessionTitle() {
-    const currentSession = Storage.getCurrentSession();
-    if (!currentSession.name || currentSession.name === "New Chat") {
-      const newTitle = generateSessionTitle(currentSession.messages);
-      if (newTitle && newTitle !== currentSession.name) {
-        Storage.renameSession(currentSession.id, newTitle);
+    document.getElementById("voice-chat-close").addEventListener("click", () => {
+      closeVoiceChatModal();
+    });
+
+    document.getElementById("start-voice-chat").addEventListener("click", () => {
+      startVoiceChat();
+      startSlideshow();
+    });
+    document.getElementById("stop-voice-chat").addEventListener("click", () => {
+      stopVoiceChat();
+      stopSlideshow();
+    });
+  }
+
+  function openVoiceChatModal() {
+    if (!document.getElementById("voice-chat-modal")) {
+      createVoiceChatModal();
+    }
+    // Additional code can be added here if needed
+  }
+
+  function closeVoiceChatModal() {
+    const modal = document.getElementById("voice-chat-modal");
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+  }
+
+  function startVoiceChat() {
+    const { synth, selectedVoice } = window._chatInternals;
+    window._chatInternals.autoSpeakEnabled = true;
+    localStorage.setItem("autoSpeakEnabled", "true");
+
+    if (!recognition) {
+      window._chatInternals.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      window._chatInternals.recognition.continuous = true;
+      window._chatInternals.recognition.interimResults = true;
+
+      window._chatInternals.recognition.onstart = () => {
+        isRecording = true;
+        const startBtn = document.getElementById("start-voice-chat");
+        const stopBtn = document.getElementById("stop-voice-chat");
+        if (startBtn) startBtn.disabled = true;
+        if (stopBtn) stopBtn.disabled = false;
+        const voiceStatus = document.getElementById("voice-status");
+        if (voiceStatus) voiceStatus.textContent = "Listening...";
+      };
+
+      window._chatInternals.recognition.onresult = (event) => {
+        let finalTranscript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + " ";
+          }
+        }
+        if (finalTranscript.trim()) {
+          document.getElementById("voice-transcript").textContent = finalTranscript;
+          sendVoiceMessage(finalTranscript);
+        }
+      };
+
+      window._chatInternals.recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        stopVoiceChat();
+      };
+
+      window._chatInternals.recognition.onend = () => {
+        stopVoiceChat();
+      };
+    }
+
+    try {
+      window._chatInternals.recognition.start();
+      speakMessage("Voice chat mode active. I'm listening.");
+    } catch (error) {
+      console.error("Failed to start voice recognition:", error);
+      showToast("Failed to start voice recognition. Please try again.");
+      const voiceStatus = document.getElementById("voice-status");
+      if (voiceStatus) {
+        voiceStatus.textContent = "Failed to start. Please try again.";
       }
     }
   }
 
-  function highlightAllCodeBlocks() {
-    if (!window.Prism) {
-      return;
+  function stopVoiceChat() {
+    if (window._chatInternals.recognition) {
+      try {
+        window._chatInternals.recognition.stop();
+      } catch (error) {
+        console.error("Error stopping recognition:", error);
+      }
     }
-    const codeBlocks = chatBox.querySelectorAll("pre code");
-    codeBlocks.forEach((block) => {
-      Prism.highlightElement(block);
+    isRecording = false;
+    const startBtn = document.getElementById("start-voice-chat");
+    const stopBtn = document.getElementById("stop-voice-chat");
+    const voiceStatus = document.getElementById("voice-status");
+
+    if (startBtn) startBtn.disabled = false;
+    if (stopBtn) stopBtn.disabled = true;
+    if (voiceStatus) voiceStatus.textContent = "Voice chat stopped";
+  }
+
+  function sendVoiceMessage(text) {
+    window.addNewMessage({ role: "user", content: text });
+    window.sendToPollinations(() => {
+      const { currentSession, autoSpeakEnabled } = window._chatInternals;
+      const lastMsg = currentSession.messages[currentSession.messages.length - 1];
+      if (lastMsg && lastMsg.role === "ai" && autoSpeakEnabled) {
+        speakMessage(lastMsg.content);
+        updateSlideshow(lastMsg.content);
+      }
+    });
+  }
+  
+  // Attach the "open voice chat" button if present
+  const openVoiceChatModalBtn = document.getElementById("open-voice-chat-modal");
+  if (openVoiceChatModalBtn) {
+    openVoiceChatModalBtn.addEventListener("click", () => {
+      openVoiceChatModal();
     });
   }
 
+  // ---------------------------
+  // Chat Message Rendering
+  // ---------------------------
+  
   function appendMessage({ role, content, index }) {
     const container = document.createElement("div");
     container.classList.add("message");
@@ -176,6 +337,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ---------------------------
+  // Supporting Functions for Code & Images
+  // ---------------------------
+  
   function downloadCodeAsTxt(codeContent, language) {
     const blob = new Blob([codeContent], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -309,9 +474,53 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function escapeHTML(html) {
-    return html.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">").replace(/"/g, """).replace(/'/g, "'");
+    return html.replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;")
+               .replace(/"/g, "&quot;")
+               .replace(/'/g, "&#039;");
   }
 
+  // ---------------------------
+  // Slideshow Functions
+  // ---------------------------
+  
+  function updateSlideshow(aiResponse) {
+    const baseUrl = "https://image.pollinations.ai/prompt/";
+    const prompt = `Generate an image based on this conversation: ${aiResponse}`;
+    const width = 512;
+    const height = 512;
+    const seed = Math.floor(Math.random() * 999999);
+    const safeParam = window._pollinationsAPIConfig ? `safe=${window._pollinationsAPIConfig.safe}` : "safe=false";
+    const imageUrl = `${baseUrl}${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&${safeParam}&nolog=true`;
+    const slideshowImage = document.getElementById("slideshow-image");
+    if (slideshowImage) {
+      slideshowImage.src = imageUrl;
+    }
+  }
+
+  function startSlideshow() {
+    stopSlideshow();
+    slideshowInterval = setInterval(() => {
+      const { currentSession } = window._chatInternals;
+      const lastMsg = currentSession.messages[currentSession.messages.length - 1];
+      if (lastMsg && lastMsg.role === "ai") {
+        updateSlideshow(lastMsg.content);
+      }
+    }, 5000); // Update interval (in ms) can be adjusted
+  }
+
+  function stopSlideshow() {
+    if (slideshowInterval) {
+      clearInterval(slideshowInterval);
+      slideshowInterval = null;
+    }
+  }
+  
+  // ---------------------------
+  // Stored Messages & Chat Functions
+  // ---------------------------
+  
   function renderStoredMessages(messages) {
     chatBox.innerHTML = "";
     messages.forEach((msg, idx) => appendMessage({ role: msg.role, content: msg.content, index: idx }));
@@ -330,7 +539,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentSession = Storage.getCurrentSession();
     const oldMessage = currentSession.messages[msgIndex];
     if (!oldMessage) return;
-    window._chatInternals.stopSpeaking();
+    stopSpeaking();
     const newContent = prompt("Edit this message:", oldMessage.content);
     if (newContent === null || newContent === oldMessage.content) return;
     if (oldMessage.role === "user") {
@@ -365,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function reGenerateAIResponse(aiIndex) {
-    window._chatInternals.stopSpeaking();
+    stopSpeaking();
     const currentSession = Storage.getCurrentSession();
     if (aiIndex < 0 || aiIndex >= currentSession.messages.length) return;
     let userIndex = -1;
@@ -498,7 +707,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function extractAIContent(response) {
     if (response.choices && response.choices.length > 0) {
-      if (response.choices[0].message && response.choices[0].message.content) return response.choices[0].message.content;
+      if (response.choices[0].message && response.choices[0].message.content)
+        return response.choices[0].message.content;
       else if (response.choices[0].text) return response.choices[0].text;
     } else if (response.response) return response.response;
     else if (typeof response === "string") return response;
@@ -516,7 +726,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function removeMemoryBlocks(text) {
     return text.replace(/\[memory\][\s\S]*?\[\/memory\]/gi, "");
   }
-
+  
+  // ---------------------------
+  // Event Listeners for UI Elements
+  // ---------------------------
+  
   if (voiceToggleBtn) {
     voiceToggleBtn.addEventListener("click", window._chatInternals.toggleAutoSpeak);
     window._chatInternals.updateVoiceToggleUI();
@@ -547,84 +761,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
-  function checkFirstLaunch() {
-    const firstLaunch = localStorage.getItem("firstLaunch") === "0";
-    if (firstLaunch) {
-      const firstLaunchModal = document.getElementById("first-launch-modal");
-      if (firstLaunchModal) {
-        firstLaunchModal.classList.remove("hidden");
-        document.getElementById("first-launch-close").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          localStorage.setItem("firstLaunch", "1");
-        });
-        document.getElementById("first-launch-complete").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          localStorage.setItem("firstLaunch", "1");
-        });
-        document.getElementById("setup-theme").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          document.getElementById("settings-modal").classList.remove("hidden");
-        });
-        document.getElementById("setup-personalization").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          document.getElementById("personalization-modal").classList.remove("hidden");
-        });
-        document.getElementById("setup-model").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          document.getElementById("model-select").focus();
-        });
-      }
-    }
-  }
-  checkFirstLaunch();
-
-  function setupVoiceInputButton() {
-    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-      const inputButtonsContainer = document.querySelector(".input-buttons-container");
-      if (!window._chatInternals.voiceInputBtn && inputButtonsContainer) {
-        const voiceInputBtn = document.createElement("button");
-        voiceInputBtn.id = "voice-input-btn";
-        voiceInputBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-        voiceInputBtn.title = "Voice input";
-        inputButtonsContainer.insertBefore(voiceInputBtn, document.getElementById("send-button"));
-        window._chatInternals.voiceInputBtn = voiceInputBtn;
-        voiceInputBtn.addEventListener("click", toggleSpeechRecognition);
-      }
-    }
-  }
-  setupVoiceInputButton();
-
-  const sendButton = document.getElementById("send-button");
-  function handleSendMessage() {
-    const message = chatInput.value.trim();
-    if (message === "") return;
-    window.addNewMessage({ role: "user", content: message });
-    chatInput.value = "";
-    chatInput.style.height = "auto";
-    window.sendToPollinations();
-    sendButton.disabled = true;
-  }
-
-  chatInput.addEventListener("input", () => {
-    sendButton.disabled = chatInput.value.trim() === "";
-    chatInput.style.height = "auto";
-    chatInput.style.height = chatInput.scrollHeight + "px";
-  });
-
-  chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  });
-
-  sendButton.addEventListener("click", () => {
-    handleSendMessage();
-  });
-
-  const initialSession = Storage.getCurrentSession();
-  if (initialSession.messages && initialSession.messages.length > 0) {
-    renderStoredMessages(initialSession.messages);
-  }
+  
+  // Expose voice chat functions to the global window for access elsewhere
+  window.openVoiceChatModal = openVoiceChatModal;
+  window.closeVoiceChatModal = closeVoiceChatModal;
+  window.startVoiceChat = startVoiceChat;
+  window.stopVoiceChat = stopVoiceChat;
+  window.sendVoiceMessage = sendVoiceMessage;
+  window.updateSlideshow = updateSlideshow;
+  window.startSlideshow = startSlideshow;
+  window.stopSlideshow = stopSlideshow;
 });
