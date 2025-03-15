@@ -31,19 +31,23 @@ document.addEventListener("DOMContentLoaded", () => {
     addMemory,
     removeMemory,
     clearAllMemories,
-    deleteAllUserData
+    deleteAllUserData,
+    renderSessions
   };
 
   function getSessions() {
     return sessions;
   }
+
   function getDefaultModel() {
     return localStorage.getItem("defaultModelPreference") || "unity";
   }
+
   function setDefaultModel(modelName) {
     localStorage.setItem("defaultModelPreference", modelName);
     console.log("Default model preference set to:", modelName);
   }
+
   function createSession(name) {
     const newId = Date.now().toString();
     const session = {
@@ -57,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveSessions();
     return session;
   }
+
   function deleteSession(sessionId) {
     sessions = sessions.filter(s => s.id !== sessionId);
     saveSessions();
@@ -72,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     renderSessions();
   }
+
   function renameSession(sessionId, newName) {
     const session = sessions.find(s => s.id === sessionId);
     if (session) {
@@ -92,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderSessions();
     }
   }
+
   function getCurrentSession() {
     const currentId = localStorage.getItem("currentSessionId");
     let session = sessions.find(s => s.id === currentId);
@@ -101,10 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return session;
   }
+
   function setCurrentSessionId(sessionId) {
     localStorage.setItem("currentSessionId", sessionId);
     renderSessions();
   }
+
   function setSessionModel(sessionId, modelName) {
     const session = sessions.find(s => s.id === sessionId);
     if (session) {
@@ -114,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setDefaultModel(modelName);
     }
   }
+
   function updateSessionMessages(sessionId, messages) {
     const session = sessions.find(s => s.id === sessionId);
     if (session) {
@@ -122,13 +132,16 @@ document.addEventListener("DOMContentLoaded", () => {
       saveSessions();
     }
   }
+
   function loadSessions() {
     const raw = localStorage.getItem("pollinations_sessions");
     return raw ? JSON.parse(raw) : [];
   }
+
   function saveSessions() {
     localStorage.setItem("pollinations_sessions", JSON.stringify(sessions));
   }
+
   function renderSessions() {
     if (!sessionListEl) return;
     sessionListEl.innerHTML = "";
@@ -208,22 +221,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const raw = localStorage.getItem("pollinations_memory");
     return raw ? JSON.parse(raw) : [];
   }
+
   function saveMemories(memories) {
     localStorage.setItem("pollinations_memory", JSON.stringify(memories));
   }
+
   function addMemory(text) {
     const memories = getMemories();
-    memories.push(text);
-    saveMemories(memories);
+    if (!memories.includes(text.trim())) {
+      memories.push(text.trim());
+      saveMemories(memories);
+    }
   }
+
   function removeMemory(index) {
     const memories = getMemories();
-    memories.splice(index, 1);
-    saveMemories(memories);
+    if (index >= 0 && index < memories.length) {
+      memories.splice(index, 1);
+      saveMemories(memories);
+    }
   }
+
   function clearAllMemories() {
     localStorage.removeItem("pollinations_memory");
   }
+
   function deleteAllUserData() {
     localStorage.clear();
     location.reload();
@@ -241,6 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ensureLocalUserId();
     });
   }
+
   function ensureLocalUserId() {
     if (!localStorage.getItem("uniqueUserId")) {
       const localId = generateRandomId();
@@ -248,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Created local user ID fallback");
     }
   }
+
   async function checkOrGenerateUserId() {
     let userId = localStorage.getItem("uniqueUserId");
     if (!userId) {
@@ -267,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return userId;
   }
+
   async function registerUserIdWithServer(userId) {
     if (USE_LOCAL_FALLBACK) {
       console.log("Using local fallback for user registration");
@@ -289,6 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     }
   }
+
   function generateRandomId() {
     return Math.random().toString(36).substr(2, 12) + Date.now().toString(36);
   }
@@ -299,6 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateVisitorCount();
     }, 300000);
   }
+
   async function updateVisitorCount() {
     const visitorDisplay = document.getElementById("visitor-count-display");
     if (!visitorDisplay) return;
