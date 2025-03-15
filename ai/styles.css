@@ -46,6 +46,7 @@ body {
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
+
 .sidebar-btn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
@@ -56,6 +57,7 @@ body {
   list-style: none;
   margin-bottom: 15px;
 }
+
 .session-item {
   display: flex;
   align-items: center;
@@ -68,14 +70,17 @@ body {
   color: #222222;
   transition: all 0.2s ease;
 }
+
 .session-item:hover {
   background: #a0a0a0;
   transform: translateY(-1px);
 }
+
 .session-item.active {
   background: #909090;
   font-weight: bold;
 }
+
 .session-title {
   flex: 1;
   margin-right: 10px;
@@ -84,6 +89,7 @@ body {
   text-overflow: ellipsis;
   color: inherit;
 }
+
 .session-edit-btn,
 .session-delete-btn {
   background: transparent;
@@ -94,6 +100,7 @@ body {
   margin-left: 6px;
   transition: transform 0.2s ease;
 }
+
 .session-edit-btn:hover,
 .session-delete-btn:hover {
   transform: scale(1.2);
@@ -108,6 +115,7 @@ body {
   margin-bottom: 6px;
   color: #222222;
 }
+
 .sidebar-select {
   width: 100%;
   padding: 8px;
@@ -117,6 +125,7 @@ body {
   background-color: #d0d0d0;
   color: #222222;
 }
+
 .divider {
   border: none;
   border-bottom: 1px solid #a0a0a0;
@@ -129,6 +138,7 @@ body {
   flex-direction: row;
   overflow: hidden;
 }
+
 .chat-main {
   display: flex;
   flex-direction: column;
@@ -150,6 +160,7 @@ body {
   background: #d0d0d0;
   align-items: center;
 }
+
 #chat-input {
   flex-grow: 1;
   background: #f0f0f0;
@@ -164,6 +175,7 @@ body {
   max-height: 120px;
   transition: box-shadow 0.2s ease;
 }
+
 #chat-input:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(100,100,100,0.3);
@@ -207,6 +219,7 @@ body {
   background: #d0d0d0;
   border-top: 1px solid #c0c0c0;
 }
+
 .control-btn {
   background: #a0a0a0;
   border: none;
@@ -217,6 +230,7 @@ body {
   margin-left: 10px;
   transition: all 0.2s ease;
 }
+
 .control-btn:hover {
   background: #909090;
   transform: translateY(-1px);
@@ -244,6 +258,7 @@ body {
   float: right;
   border-bottom-right-radius: 6px;
 }
+
 .ai-message {
   background-color: #c0c0c0;
   color: #222222;
@@ -325,6 +340,7 @@ body {
   gap: 8px;
   margin-top: 8px;
   flex-wrap: wrap;
+  z-index: 10;
 }
 
 .image-button {
@@ -503,13 +519,6 @@ body {
 
 .voice-btn.listening {
   background: #d07070;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(208, 112, 112, 0.6); }
-  70% { box-shadow: 0 0 0 10px rgba(208, 112, 112, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(208, 112, 112, 0); }
 }
 
 .transcript {
@@ -698,7 +707,7 @@ body {
 
 #toast-notification {
   position: fixed;
-  bottom: 20px;
+  top: 5%;
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba(60, 60, 60, 0.9);
@@ -1128,16 +1137,67 @@ body {
   max-height: 300px;
   overflow-y: auto;
 }
-.voice-btn.listening {
-  animation: pulse-listen 1s infinite ease-in-out;
-  background-color: #d07070 !important;
-}
-
-@keyframes pulse-listen {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(208,112,112,0.6); }
-  50% { box-shadow: 0 0 0 10px rgba(208,112,112,0); }
-}
 
 #voice-input-btn.listening i {
   color: #ff4d4d;
+}
+
+.image-button-container {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 10;
+}
+
+.ai-image-container {
+  position: relative;
+  margin: 10px 0;
+  max-width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ai-generated-image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.message-action-btn {
+  background: rgba(0,0,0,0.15);
+  border: none;
+  border-radius: 15px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #222222;
+  position: relative;
+  z-index: 10;
+  min-width: 80px;
+  text-align: center;
+}
+
+.image-button-container .message-action-btn {
+  background: rgba(0,0,0,0.2);
+  padding: 6px 12px;
+  font-size: 12px;
+  min-width: 90px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  visibility: visible;
+}
+
+.message-action-btn:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+.image-button-container .message-action-btn:hover {
+  background: rgba(0,0,0,0.35);
 }
