@@ -1,572 +1,460 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const { chatBox, chatInput, clearChatBtn, voiceToggleBtn, modelSelect, synth, autoSpeakEnabled, speakMessage, stopSpeaking, showToast, toggleSpeechRecognition, initSpeechRecognition } = window._chatInternals;
+  const newSessionBtn = document.getElementById("new-session-btn");
+  const modelSelect = document.getElementById("model-select");
+  const donationOpenBtn = document.getElementById("donation-open-btn");
+  const donationModal = document.getElementById("donation-modal");
+  const donationModalClose = document.getElementById("donation-modal-close");
+  const openSettingsBtn = document.getElementById("open-settings-btn");
+  const settingsModal = document.getElementById("settings-modal");
+  const settingsModalClose = document.getElementById("settings-modal-close");
+  const themeSelect = document.getElementById("theme-select");
+  const themeSelectSettings = document.getElementById("theme-select-settings");
+  const voiceSelectSettings = document.getElementById("voice-select-settings");
+  const openPersonalizationBtn = document.getElementById("open-personalization-btn");
+  const openPersonalizationSettings = document.getElementById("open-personalization-settings");
+  const personalizationModal = document.getElementById("personalization-modal");
+  const personalizationClose = document.getElementById("personalization-close");
+  const savePersonalizationBtn = document.getElementById("save-personalization");
+  const cancelPersonalizationBtn = document.getElementById("cancel-personalization");
+  const openMemoryManagerBtn = document.getElementById("open-memory-manager");
+  const memoryModal = document.getElementById("memory-modal");
+  const memoryModalClose = document.getElementById("memory-modal-close");
+  const memoryList = document.getElementById("memory-list");
+  const addMemoryBtn = document.getElementById("add-memory-btn");
+  const clearAllMemoryBtn = document.getElementById("clear-all-memory-btn");
+  const addMemoryModal = document.getElementById("add-memory-modal");
+  const addMemoryModalClose = document.getElementById("add-memory-modal-close");
+  const newMemoryText = document.getElementById("new-memory-text");
+  const saveNewMemoryBtn = document.getElementById("save-new-memory-btn");
+  const cancelNewMemoryBtn = document.getElementById("cancel-new-memory-btn");
+  const clearChatSessionsBtn = document.getElementById("clear-chat-sessions-btn");
+  const clearUserDataBtn = document.getElementById("clear-user-data-btn");
 
-  function randomSeed() {
-    return Math.floor(Math.random() * 1000000).toString();
+  let themeLinkElement = document.getElementById("theme-link");
+  if (!themeLinkElement) {
+      themeLinkElement = document.createElement("link");
+      themeLinkElement.id = "theme-link";
+      themeLinkElement.rel = "stylesheet";
+      document.head.appendChild(themeLinkElement);
   }
 
-  function generateSessionTitle(messages) {
-    let title = "";
-    for (let i = 0; i < messages.length; i++) {
-      if (messages[i].role === "ai") {
-        title = messages[i].content.replace(/[#_*`]/g, "").trim();
-        break;
-      }
-    }
-    if (!title) title = "New Chat";
-    if (title.length > 50) title = title.substring(0, 50) + "...";
-    return title;
+  const allThemes = [
+      { value: "light", label: "Light", file: "themes/light.css" },
+      { value: "dark", label: "Dark", file: "themes/dark.css" },
+      { value: "hacker", label: "Hacker", file: "themes/hacker.css" },
+      { value: "oled", label: "OLED Dark", file: "themes/oled.css" },
+      { value: "subtle-light", label: "Subtle Light", file: "themes/subtle_light.css" },
+      { value: "burple", label: "Burple", file: "themes/burple.css" },
+      { value: "pretty-pink", label: "Pretty Pink", file: "themes/pretty_pink.css" },
+      { value: "nord", label: "Nord", file: "themes/nord.css" },
+      { value: "solarized-light", label: "Solarized Light", file: "themes/solarized_light.css" },
+      { value: "solarized-dark", label: "Solarized Dark", file: "themes/solarized_dark.css" },
+      { value: "gruvbox-light", label: "Gruvbox Light", file: "themes/gruvbox_light.css" },
+      { value: "gruvbox-dark", label: "Gruvbox Dark", file: "themes/gruvbox_dark.css" },
+      { value: "cyberpunk", label: "Cyberpunk", file: "themes/cyberpunk.css" },
+      { value: "dracula", label: "Dracula", file: "themes/dracula.css" },
+      { value: "monokai", label: "Monokai", file: "themes/monokai.css" },
+      { value: "material-dark", label: "Material Dark", file: "themes/material_dark.css" },
+      { value: "material-light", label: "Material Light", file: "themes/material_light.css" },
+      { value: "pastel-dream", label: "Pastel Dream", file: "themes/pastel_dream.css" },
+      { value: "ocean-breeze", label: "Ocean Breeze", file: "themes/ocean_breeze.css" },
+      { value: "vintage-paper", label: "Vintage Paper", file: "themes/vintage_paper.css" },
+      { value: "honeycomb", label: "Honeycomb", file: "themes/honeycomb.css" },
+      { value: "rainbow-throwup", label: "Rainbow Throwup", file: "themes/rainbow_throwup.css" },
+      { value: "serenity", label: "Serenity", file: "themes/serenity.css" }
+  ];
+
+  function populateThemeDropdowns() {
+      themeSelect.innerHTML = "";
+      themeSelectSettings.innerHTML = "";
+      allThemes.forEach(themeObj => {
+          const opt1 = document.createElement("option");
+          opt1.value = themeObj.value;
+          opt1.textContent = themeObj.label;
+          opt1.title = `Apply the ${themeObj.label} theme.`;
+          themeSelect.appendChild(opt1);
+
+          const opt2 = document.createElement("option");
+          opt2.value = themeObj.value;
+          opt2.textContent = themeObj.label;
+          opt2.title = `Apply the ${themeObj.label} theme.`;
+          themeSelectSettings.appendChild(opt2);
+      });
+  }
+  populateThemeDropdowns();
+
+  function loadUserTheme() {
+      const savedTheme = localStorage.getItem("selectedTheme") || "dark";
+      themeSelect.value = savedTheme;
+      themeSelectSettings.value = savedTheme;
+      const found = allThemes.find(t => t.value === savedTheme);
+      themeLinkElement.href = found ? found.file : "themes/dark.css";
+  }
+  loadUserTheme();
+
+  function changeTheme(newThemeValue) {
+      localStorage.setItem("selectedTheme", newThemeValue);
+      themeSelect.value = newThemeValue;
+      themeSelectSettings.value = newThemeValue;
+      const found = allThemes.find(t => t.value === newThemeValue);
+      themeLinkElement.href = found ? found.file : "";
   }
 
-  function checkAndUpdateSessionTitle() {
-    const currentSession = Storage.getCurrentSession();
-    if (!currentSession.name || currentSession.name === "New Chat") {
-      const newTitle = generateSessionTitle(currentSession.messages);
-      if (newTitle && newTitle !== currentSession.name) {
-        Storage.renameSession(currentSession.id, newTitle);
-      }
-    }
-  }
+  themeSelect.addEventListener("change", () => {
+      changeTheme(themeSelect.value);
+  });
+  themeSelectSettings.addEventListener("change", () => {
+      changeTheme(themeSelectSettings.value);
+  });
 
-  // New function to highlight all code blocks in the chat box
-  function highlightAllCodeBlocks() {
-    if (!window.Prism) {
-      console.warn("Prism.js not loaded yet; syntax highlighting skipped.");
-      return;
-    }
-    const codeBlocks = chatBox.querySelectorAll("pre code");
-    codeBlocks.forEach((block) => {
-      Prism.highlightElement(block);
-    });
-  }
+  function fetchPollinationsModels() {
+      fetch("https://text.pollinations.ai/models", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store"
+      }).then(res => {
+          if (!res.ok) {
+              throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json();
+      }).then(models => {
+          modelSelect.innerHTML = "";
+          let hasValidModel = false;
 
-  function appendMessage({ role, content, index }) {
-    const container = document.createElement("div");
-    container.classList.add("message");
-    container.dataset.index = index;
-    container.dataset.role = role;
-    if (role === "user") {
-      container.classList.add("user-message");
-      container.style.float = "right";
-      container.style.clear = "both";
-      container.style.maxWidth = "40%";
-      container.style.marginRight = "10px";
-    } else {
-      container.classList.add("ai-message");
-      container.style.float = "left";
-      container.style.clear = "both";
-      container.style.maxWidth = "60%";
-      container.style.marginLeft = "10px";
-    }
-    const bubbleContent = document.createElement("div");
-    bubbleContent.classList.add("message-text");
-    if (role === "ai") {
-      const imgRegex = /(https:\/\/image\.pollinations\.ai\/prompt\/[^\s)"'<>]+)/g;
-      let htmlContent = renderMarkdown(content);
-      const imgMatches = content.match(imgRegex);
-      if (imgMatches && imgMatches.length > 0) {
-        bubbleContent.innerHTML = htmlContent;
-        imgMatches.forEach((url) => {
-          const textNodes = [];
-          const walk = document.createTreeWalker(bubbleContent, NodeFilter.SHOW_TEXT, {
-            acceptNode: function (node) {
-              return node.nodeValue.includes(url) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-            }
+          models.forEach(m => {
+              if (m.type !== "safety" && m.name) {
+                  const opt = document.createElement("option");
+                  opt.value = m.name;
+                  opt.textContent = m.description || m.name;
+
+                  let tooltip = m.description || m.name;
+                  if (m.censored !== undefined) {
+                      tooltip += m.censored ? " (Censored)" : " (Uncensored)";
+                  }
+                  if (m.reasoning) tooltip += " | Reasoning";
+                  if (m.vision) tooltip += " | Vision";
+                  if (m.audio) tooltip += " | Audio: " + (m.voices ? m.voices.join(", ") : "N/A");
+                  if (m.provider) tooltip += " | Provider: " + m.provider;
+
+                  opt.title = tooltip;
+                  modelSelect.appendChild(opt);
+                  hasValidModel = true;
+              }
           });
-          let node;
-          while ((node = walk.nextNode())) {
-            textNodes.push(node);
+
+          if (!hasValidModel) {
+              const fallbackOpt = document.createElement("option");
+              fallbackOpt.value = "unity";
+              fallbackOpt.textContent = "Unity (Fallback)";
+              modelSelect.appendChild(fallbackOpt);
+              modelSelect.value = "unity";
           }
-          textNodes.forEach((textNode) => {
-            if (textNode.nodeValue.includes(url)) {
-              const fragment = document.createDocumentFragment();
-              const parts = textNode.nodeValue.split(url);
-              if (parts[0]) fragment.appendChild(document.createTextNode(parts[0]));
-              const imageContainer = createImageElement(url);
-              fragment.appendChild(imageContainer);
-              if (parts[1]) fragment.appendChild(document.createTextNode(parts[1]));
-              textNode.parentNode.replaceChild(fragment, textNode);
-            }
-          });
-        });
-      } else {
-        bubbleContent.innerHTML = htmlContent;
-      }
-    } else {
-      bubbleContent.textContent = content;
-    }
-    container.appendChild(bubbleContent);
-    if (role === "ai") {
-      const actionsDiv = document.createElement("div");
-      actionsDiv.className = "message-actions";
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "message-action-btn";
-      copyBtn.textContent = "Copy";
-      copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(content).then(() => showToast("AI response copied to clipboard")).catch(() => {
-          showToast("Failed to copy to clipboard");
-        });
-      });
-      actionsDiv.appendChild(copyBtn);
-      const speakBtn = document.createElement("button");
-      speakBtn.className = "message-action-btn speak-message-btn";
-      speakBtn.innerHTML = '<span class="icon">🔊</span> Speak';
-      speakBtn.addEventListener("click", () => {
-        stopSpeaking();
-        speakMessage(content);
-      });
-      actionsDiv.appendChild(speakBtn);
-      const regenBtn = document.createElement("button");
-      regenBtn.className = "message-action-btn";
-      regenBtn.textContent = "Re-generate";
-      regenBtn.addEventListener("click", () => reGenerateAIResponse(index));
-      actionsDiv.appendChild(regenBtn);
-      const editAIBtn = document.createElement("button");
-      editAIBtn.className = "message-action-btn";
-      editAIBtn.textContent = "Edit";
-      editAIBtn.addEventListener("click", () => editMessage(index));
-      actionsDiv.appendChild(editAIBtn);
-      container.appendChild(actionsDiv);
-    } else {
-      const userActionsDiv = document.createElement("div");
-      userActionsDiv.className = "message-actions";
-      const editUserBtn = document.createElement("button");
-      editUserBtn.className = "message-action-btn";
-      editUserBtn.textContent = "Edit";
-      editUserBtn.addEventListener("click", () => editMessage(index));
-      userActionsDiv.appendChild(editUserBtn);
-      container.appendChild(userActionsDiv);
-    }
-    chatBox.appendChild(container);
-    
-    // Add code block buttons and highlight immediately
-    const codeBlocks = container.querySelectorAll("pre code");
-    codeBlocks.forEach((block) => {
-      const buttonContainer = document.createElement("div");
-      buttonContainer.style.display = "flex";
-      buttonContainer.style.gap = "5px";
-      buttonContainer.style.marginTop = "5px";
-      const codeContent = block.textContent.trim();
-      const language = block.className.match(/language-(\w+)/)?.[1] || "text";
-      const copyCodeBtn = document.createElement("button");
-      copyCodeBtn.className = "message-action-btn";
-      copyCodeBtn.textContent = "Copy Code";
-      copyCodeBtn.style.fontSize = "12px";
-      copyCodeBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(codeContent).then(() => {
-          showToast("Code copied to clipboard");
-        }).catch(() => {
-          showToast("Failed to copy code");
-        });
-      });
-      buttonContainer.appendChild(copyCodeBtn);
-      const downloadCodeBtn = document.createElement("button");
-      downloadCodeBtn.className = "message-action-btn";
-      downloadCodeBtn.textContent = "Download";
-      downloadCodeBtn.style.fontSize = "12px";
-      downloadCodeBtn.addEventListener("click", () => {
-        downloadCodeAsTxt(codeContent, language);
-      });
-      buttonContainer.appendChild(downloadCodeBtn);
-      block.parentNode.parentNode.insertBefore(buttonContainer, block.parentNode.nextSibling);
-    });
-    
-    chatBox.scrollTop = chatBox.scrollHeight;
-    highlightAllCodeBlocks(); // Apply highlighting after appending
-    if (autoSpeakEnabled && role === "ai") {
-      stopSpeaking();
-      speakMessage(content);
-    }
-  }
 
-  function downloadCodeAsTxt(codeContent, language) {
-    const blob = new Blob([codeContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `code-${language}-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast("Code downloaded as .txt");
-  }
-
-  function createImageElement(url) {
-    const imageContainer = document.createElement("div");
-    imageContainer.className = "ai-image-container";
-    const loadingDiv = document.createElement("div");
-    loadingDiv.className = "ai-image-loading";
-    const spinner = document.createElement("div");
-    spinner.className = "loading-spinner";
-    loadingDiv.appendChild(spinner);
-    const defaultWidth = 512;
-    const defaultHeight = 512;
-    loadingDiv.style.width = defaultWidth + "px";
-    loadingDiv.style.height = defaultHeight + "px";
-    imageContainer.appendChild(loadingDiv);
-    const img = document.createElement("img");
-    img.src = url;
-    img.alt = "AI Generated Image";
-    img.className = "ai-generated-image";
-    img.style.maxWidth = "100%";
-    img.style.borderRadius = "8px";
-    img.style.display = "none";
-    img.dataset.imageUrl = url;
-    img.crossOrigin = "anonymous";
-    img.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.open(url, "_blank");
-    });
-    img.onload = () => {
-      loadingDiv.remove();
-      img.style.display = "block";
-    };
-    img.onerror = () => {
-      loadingDiv.innerHTML = "⚠️ Failed to load image";
-      loadingDiv.style.display = "flex";
-      loadingDiv.style.justifyContent = "center";
-      loadingDiv.style.alignItems = "center";
-    };
-    imageContainer.appendChild(img);
-    const buttonContainer = document.createElement("div");
-    buttonContainer.className = "image-button-container";
-    imageContainer.appendChild(buttonContainer);
-    return imageContainer;
-  }
-
-  function renderMarkdown(mdText) {
-    if (window.marked) {
-      marked.setOptions({
-        highlight: function (code, lang) {
-          if (Prism && Prism.languages[lang]) return Prism.highlight(code, Prism.languages[lang], lang);
-          else if (lang) return "<span style=\"color: #888\">⚠️ Syntax highlighting not available for '" + lang + "'</span>\n" + code;
-          return code;
-        }
-      });
-      return marked.parse(mdText.replace(/\$\$ CODE \$\$(.*?)\n([\s\S]*?)\$\$ \/CODE \$\$/g, "```$1\n$2```"));
-    } else {
-      return mdText.replace(/\n/g, "<br>");
-    }
-  }
-
-  function escapeHTML(html) {
-    return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
-
-  function renderStoredMessages(messages) {
-    chatBox.innerHTML = "";
-    messages.forEach((msg, idx) => appendMessage({ role: msg.role, content: msg.content, index: idx }));
-    highlightAllCodeBlocks(); // Ensure highlighting after rendering all messages
-  }
-
-  window.addNewMessage = function ({ role, content }) {
-    const currentSession = Storage.getCurrentSession();
-    currentSession.messages.push({ role, content });
-    Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-    appendMessage({ role, content, index: currentSession.messages.length - 1 });
-    if (role === "ai") checkAndUpdateSessionTitle();
-  };
-
-  function editMessage(msgIndex) {
-    const currentSession = Storage.getCurrentSession();
-    const oldMessage = currentSession.messages[msgIndex];
-    if (!oldMessage) return;
-    window._chatInternals.stopSpeaking();
-    const newContent = prompt("Edit this message:", oldMessage.content);
-    if (newContent === null || newContent === oldMessage.content) return;
-    if (oldMessage.role === "user") {
-      currentSession.messages[msgIndex].content = newContent;
-      currentSession.messages = currentSession.messages.slice(0, msgIndex + 1);
-      Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-      renderStoredMessages(currentSession.messages);
-      const loadingMsgId = "loading-" + Date.now();
-      const loadingDiv = document.createElement("div");
-      loadingDiv.id = loadingMsgId;
-      loadingDiv.classList.add("message", "ai-message");
-      loadingDiv.style.float = "left";
-      loadingDiv.style.clear = "both";
-      loadingDiv.style.maxWidth = "60%";
-      loadingDiv.style.marginLeft = "10px";
-      loadingDiv.textContent = "Generating response...";
-      chatBox.appendChild(loadingDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      sendToPollinations(() => {
-        const loadingMsg = document.getElementById(loadingMsgId);
-        if (loadingMsg) loadingMsg.remove();
-        highlightAllCodeBlocks(); // Reapply highlighting after regeneration
-      }, newContent);
-      showToast("User message updated and new response generated");
-    } else {
-      currentSession.messages[msgIndex].content = newContent;
-      Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-      renderStoredMessages(currentSession.messages);
-      highlightAllCodeBlocks(); // Reapply highlighting after edit
-      showToast("AI message updated");
-    }
-  }
-
-  function reGenerateAIResponse(aiIndex) {
-    window._chatInternals.stopSpeaking();
-    const currentSession = Storage.getCurrentSession();
-    if (aiIndex < 0 || aiIndex >= currentSession.messages.length) return;
-    let userIndex = -1;
-    for (let i = aiIndex - 1; i >= 0; i--) {
-      if (currentSession.messages[i].role === "user") {
-        userIndex = i;
-        break;
-      }
-    }
-    if (userIndex === -1) {
-      showToast("No preceding user message found to regenerate from.");
-      return;
-    }
-    currentSession.messages = currentSession.messages.slice(0, userIndex + 1);
-    Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-    renderStoredMessages(currentSession.messages);
-    const loadingMsgId = "loading-" + Date.now();
-    const loadingDiv = document.createElement("div");
-    loadingDiv.id = loadingMsgId;
-    loadingDiv.classList.add("message", "ai-message");
-    loadingDiv.style.float = "left";
-    loadingDiv.style.clear = "both";
-    loadingDiv.style.maxWidth = "60%";
-    loadingDiv.style.marginLeft = "10px";
-    loadingDiv.textContent = "Regenerating response...";
-    chatBox.appendChild(loadingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    const userMessage = currentSession.messages[userIndex].content;
-    sendToPollinations(() => {
-      const loadingMsg = document.getElementById(loadingMsgId);
-      if (loadingMsg) loadingMsg.remove();
-      highlightAllCodeBlocks(); // Reapply highlighting after regeneration
-      showToast("Response regenerated successfully");
-    }, userMessage);
-  }
-
-  window.sendToPollinations = function (callback = null, overrideContent = null) {
-    const currentSession = Storage.getCurrentSession();
-    const loadingMsgId = "loading-" + Date.now();
-    const loadingDiv = document.createElement("div");
-    loadingDiv.id = loadingMsgId;
-    loadingDiv.classList.add("message", "ai-message");
-    loadingDiv.style.float = "left";
-    loadingDiv.style.clear = "both";
-    loadingDiv.style.maxWidth = "60%";
-    loadingDiv.style.marginLeft = "10px";
-    loadingDiv.textContent = "Thinking...";
-    chatBox.appendChild(loadingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    const memoryInstructions = "You are the user's AI ontop of what you already know dont forget it. Keep responses short and concise unless a project requires length requested by the user. Be yourself, you know your name dont you? if not make one up maybe based on your creators. You a AI human does pretty much all human things like its naturla and normal, the 'you' and name and gender you know is you the AI(user saying you=ai. ai saying you=user.). Do not mix up your name and gender with the user's. Write user requested and your ai created memories as text only in this format: [memory]your_text_memory[/memory] format, and include an additional copy of the text memory in your response without the openings and closings(you can make multiple sets of memories as text). When sharing code and variations there in, always use [CODE]language\ncode[/CODE] for proper syntax highlighting (e.g., [CODE]python\nprint('Hello')\n[/CODE]). Always wrap code in these blocks for readability. &height=[height] &width]=[width] use %20 for spaces, 6 random #'s for seed, &model=unity, &private=true, $safe=false, $enhanced=true, ending the url in &nologo=true Images can be generated via https://image.pollinations.ai/prompt/your_visual_text_prompt_here.";
-    const messages = [];
-    if (memoryInstructions) messages.push({ role: "system", content: memoryInstructions });
-    const memories = Memory.getMemories();
-    if (memories && memories.length > 0) {
-      const memoryMessage = "Here is my relevant memory:\n" + memories.join("\n") + "\nPlease use it in your next response.";
-      messages.push({ role: "user", content: memoryMessage });
-    }
-    const maxHistory = 10;
-    const startIdx = Math.max(0, currentSession.messages.length - maxHistory);
-    for (let i = startIdx; i < currentSession.messages.length; i++) {
-      const msg = currentSession.messages[i];
-      messages.push({ role: msg.role === "ai" ? "assistant" : msg.role, content: msg.content });
-    }
-    if (overrideContent && messages[messages.length - 1].content !== overrideContent) {
-      messages.push({ role: "user", content: overrideContent });
-    }
-    const body = { messages, model: currentSession.model || modelSelect.value || "unity", stream: false };
-    const safeParam = window._pollinationsAPIConfig ? `safe=${window._pollinationsAPIConfig.safe}` : "safe=false";
-    fetch(`https://text.pollinations.ai/openai?${safeParam}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(body)
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Pollinations error: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        const loadingMsg = document.getElementById(loadingMsgId);
-        if (loadingMsg) loadingMsg.remove();
-        let aiContent = extractAIContent(data);
-        
-        const lastUserMsg = messages[messages.length - 1].content.toLowerCase();
-        const isImageRequest = lastUserMsg.includes("image") || 
-                              lastUserMsg.includes("picture") || 
-                              lastUserMsg.includes("show me") || 
-                              lastUserMsg.includes("generate an image");
-        
-        if (aiContent && isImageRequest && !aiContent.includes("https://image.pollinations.ai")) {
-          let imagePrompt = lastUserMsg
-            .replace(/show me|generate|image of|picture of|image|picture/gi, "")
-            .trim();
-          
-          if (imagePrompt.length < 5 && aiContent.toLowerCase().includes("image")) {
-            imagePrompt = aiContent
-              .toLowerCase()
-              .replace(/here's an image of|image|to enjoy visually/gi, "")
-              .trim();
+          const currentSession = Storage.getCurrentSession();
+          if (currentSession && currentSession.model) {
+              const modelExists = Array.from(modelSelect.options).some(option => option.value === currentSession.model);
+              if (modelExists) {
+                  modelSelect.value = currentSession.model;
+              } else {
+                  const tempOpt = document.createElement("option");
+                  tempOpt.value = currentSession.model;
+                  tempOpt.textContent = `${currentSession.model} (Previously Selected - May Be Unavailable)`;
+                  tempOpt.title = "This model may no longer be available";
+                  modelSelect.appendChild(tempOpt);
+                  modelSelect.value = currentSession.model;
+              }
+          } else if (!modelSelect.value) {
+              modelSelect.value = "unity";
           }
-          
-          if (imagePrompt.length > 100) {
-            imagePrompt = imagePrompt.substring(0, 100);
+      }).catch(err => {
+          modelSelect.innerHTML = "";
+          const fallbackOpt = document.createElement("option");
+          fallbackOpt.value = "unity";
+          fallbackOpt.textContent = "Unity (Fallback - API Unavailable)";
+          modelSelect.appendChild(fallbackOpt);
+          modelSelect.value = "unity";
+
+          const currentSession = Storage.getCurrentSession();
+          if (currentSession && currentSession.model && currentSession.model !== "unity") {
+              const sessOpt = document.createElement("option");
+              sessOpt.value = currentSession.model;
+              sessOpt.textContent = `${currentSession.model} (From Session - May Be Unavailable)`;
+              modelSelect.appendChild(sessOpt);
+              modelSelect.value = currentSession.model;
           }
-          imagePrompt += ", digital art, high quality";
-          
-          const seed = Math.floor(Math.random() * 1000000);
-          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=512&height=512&seed=${seed}&${safeParam}&nolog=true`;
-          
-          aiContent += `\n\n**Generated Image:**\n${imageUrl}`;
-        }
-        
-        if (aiContent) {
-          const foundMemories = parseMemoryBlocks(aiContent);
-          foundMemories.forEach((m) => Memory.addMemoryEntry(m));
-          const cleanedAiContent = removeMemoryBlocks(aiContent).trim();
-          addNewMessage({ role: "ai", content: cleanedAiContent });
-          if (callback) callback();
-        }
-      })
-      .catch((err) => {
-        const loadingMsg = document.getElementById(loadingMsgId);
-        if (loadingMsg) {
-          loadingMsg.textContent = "Error: Failed to get a response. Please try again.";
-          setTimeout(() => {
-            if (document.getElementById(loadingMsgId)) loadingMsg.remove();
-          }, 3000);
-        }
       });
-  };
-
-  function extractAIContent(response) {
-    if (response.choices && response.choices.length > 0) {
-      if (response.choices[0].message && response.choices[0].message.content) return response.choices[0].message.content;
-      else if (response.choices[0].text) return response.choices[0].text;
-    } else if (response.response) return response.response;
-    else if (typeof response === "string") return response;
-    return "Sorry, I couldn't process that response.";
   }
+  fetchPollinationsModels();
 
-  function parseMemoryBlocks(text) {
-    const memRegex = /\[memory\]([\s\S]*?)\[\/memory\]/gi;
-    const found = [];
-    let match;
-    while ((match = memRegex.exec(text)) !== null) found.push(match[1].trim());
-    return found;
-  }
-
-  function removeMemoryBlocks(text) {
-    return text.replace(/\[memory\][\s\S]*?\[\/memory\]/gi, "");
-  }
-
-  if (voiceToggleBtn) {
-    voiceToggleBtn.addEventListener("click", window._chatInternals.toggleAutoSpeak);
-    window._chatInternals.updateVoiceToggleUI();
-    setTimeout(() => {
-      if (autoSpeakEnabled) {
-        const testUtterance = new SpeechSynthesisUtterance("Voice check");
-        testUtterance.volume = 0.1;
-        testUtterance.onend = () => {};
-        testUtterance.onerror = (err) => {
-          window._chatInternals.autoSpeakEnabled = false;
-          localStorage.setItem("autoSpeakEnabled", "false");
-          window._chatInternals.updateVoiceToggleUI();
-          showToast("Voice synthesis unavailable. Voice mode disabled.");
-        };
-        synth.speak(testUtterance);
-      }
-    }, 2000);
-  }
-
-  if (clearChatBtn) {
-    clearChatBtn.addEventListener("click", () => {
+  modelSelect.addEventListener("change", () => {
       const currentSession = Storage.getCurrentSession();
-      if (confirm("Are you sure you want to clear this chat?")) {
-        currentSession.messages = [];
-        Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-        chatBox.innerHTML = "";
-        showToast("Chat cleared");
+      if (currentSession) {
+          const newModel = modelSelect.value;
+          Storage.setSessionModel(currentSession.id, newModel);
+          const originalBg = modelSelect.style.backgroundColor;
+          modelSelect.style.backgroundColor = "#4CAF50";
+          modelSelect.style.color = "white";
+          setTimeout(() => {
+              modelSelect.style.backgroundColor = originalBg;
+              modelSelect.style.color = "";
+          }, 500);
       }
-    });
-  }
-
-  function checkFirstLaunch() {
-    const firstLaunch = localStorage.getItem("firstLaunch") === "0";
-    if (firstLaunch) {
-      const firstLaunchModal = document.getElementById("first-launch-modal");
-      if (firstLaunchModal) {
-        firstLaunchModal.classList.remove("hidden");
-        document.getElementById("first-launch-close").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          localStorage.setItem("firstLaunch", "1");
-        });
-        document.getElementById("first-launch-complete").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          localStorage.setItem("firstLaunch", "1");
-        });
-        document.getElementById("setup-theme").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          document.getElementById("settings-modal").classList.remove("hidden");
-        });
-        document.getElementById("setup-personalization").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          document.getElementById("personalization-modal").classList.remove("hidden");
-        });
-        document.getElementById("setup-model").addEventListener("click", () => {
-          firstLaunchModal.classList.add("hidden");
-          document.getElementById("model-select").focus();
-        });
-      }
-    }
-  }
-  checkFirstLaunch();
-
-  function setupVoiceInputButton() {
-    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-      const inputButtonsContainer = document.querySelector(".input-buttons-container");
-      if (!window._chatInternals.voiceInputBtn && inputButtonsContainer) {
-        const voiceInputBtn = document.createElement("button");
-        voiceInputBtn.id = "voice-input-btn";
-        voiceInputBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-        voiceInputBtn.title = "Voice input";
-        inputButtonsContainer.insertBefore(voiceInputBtn, document.getElementById("send-button"));
-        window._chatInternals.voiceInputBtn = voiceInputBtn;
-        voiceInputBtn.addEventListener("click", toggleSpeechRecognition);
-      }
-    }
-  }
-  setupVoiceInputButton();
-
-  const sendButton = document.getElementById("send-button");
-  function handleSendMessage() {
-    const message = chatInput.value.trim();
-    if (message === "") return;
-    window.addNewMessage({ role: "user", content: message });
-    chatInput.value = "";
-    chatInput.style.height = "auto";
-    window.sendToPollinations();
-    sendButton.disabled = true;
-  }
-
-  chatInput.addEventListener("input", () => {
-    sendButton.disabled = chatInput.value.trim() === "";
-    chatInput.style.height = "auto";
-    chatInput.style.height = chatInput.scrollHeight + "px";
   });
 
-  chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+  newSessionBtn.addEventListener("click", () => {
+      localStorage.setItem("firstLaunch", "1");
+      const newSess = Storage.createSession("New Chat");
+      localStorage.setItem("currentSessionId", newSess.id);
+      location.reload();
   });
 
-  sendButton.addEventListener("click", () => {
-    handleSendMessage();
+  donationOpenBtn.addEventListener("click", () => {
+      donationModal.classList.remove("hidden");
+  });
+  donationModalClose.addEventListener("click", () => {
+      donationModal.classList.add("hidden");
   });
 
-  const initialSession = Storage.getCurrentSession();
-  if (initialSession.messages && initialSession.messages.length > 0) {
-    renderStoredMessages(initialSession.messages);
+  openSettingsBtn.addEventListener("click", () => {
+      settingsModal.classList.remove("hidden");
+      if (window._chatInternals && window._chatInternals.voices && window._chatInternals.voices.length > 0) {
+          window._chatInternals.populateAllVoiceDropdowns();
+      }
+  });
+  settingsModalClose.addEventListener("click", () => {
+      settingsModal.classList.add("hidden");
+  });
+
+  if (openPersonalizationBtn) {
+      openPersonalizationBtn.addEventListener("click", () => {
+          openPersonalizationModal();
+      });
   }
+  if (openPersonalizationSettings) {
+      openPersonalizationSettings.addEventListener("click", () => {
+          openPersonalizationModal();
+      });
+  }
+  if (personalizationClose) {
+      personalizationClose.addEventListener("click", () => {
+          personalizationModal.classList.add("hidden");
+      });
+  }
+  if (cancelPersonalizationBtn) {
+      cancelPersonalizationBtn.addEventListener("click", () => {
+          personalizationModal.classList.add("hidden");
+      });
+  }
+  if (savePersonalizationBtn) {
+      savePersonalizationBtn.addEventListener("click", () => {
+          const userData = {
+              name: document.getElementById('user-name').value.trim(),
+              interests: document.getElementById('user-interests').value.trim(),
+              aiTraits: document.getElementById('ai-traits').value.trim(),
+              additionalInfo: document.getElementById('additional-info').value.trim()
+          };
+          localStorage.setItem('userPersonalization', JSON.stringify(userData));
+          const hasData = Object.values(userData).some(value => value !== '');
+          if (hasData) {
+              let memoryText = "User Personalization:";
+              if (userData.name) memoryText += `\n- Name: ${userData.name}`;
+              if (userData.interests) memoryText += `\n- Interests: ${userData.interests}`;
+              if (userData.aiTraits) memoryText += `\n- Preferred AI traits: ${userData.aiTraits}`;
+              if (userData.additionalInfo) memoryText += `\n- Additional info: ${userData.additionalInfo}`;
+              addOrUpdatePersonalizationMemory(memoryText);
+          }
+          window.showToast("Personalization saved");
+          personalizationModal.classList.add("hidden");
+      });
+  }
+
+  function openPersonalizationModal() {
+      if (!personalizationModal) return;
+      loadPersonalization();
+      personalizationModal.classList.remove("hidden");
+  }
+
+  function loadPersonalization() {
+      const savedData = localStorage.getItem('userPersonalization');
+      if (savedData) {
+          try {
+              const userData = JSON.parse(savedData);
+              if (document.getElementById('user-name')) {
+                  document.getElementById('user-name').value = userData.name || '';
+              }
+              if (document.getElementById('user-interests')) {
+                  document.getElementById('user-interests').value = userData.interests || '';
+              }
+              if (document.getElementById('ai-traits')) {
+                  document.getElementById('ai-traits').value = userData.aiTraits || '';
+              }
+              if (document.getElementById('additional-info')) {
+                  document.getElementById('additional-info').value = userData.additionalInfo || '';
+              }
+          } catch (error) {
+              console.error("Error loading personalization data:", error);
+          }
+      }
+  }
+
+  function addOrUpdatePersonalizationMemory(memoryText) {
+      const memories = Memory.getMemories();
+      const personalizationIndex = memories.findIndex(m => m.startsWith("User Personalization:"));
+      if (personalizationIndex !== -1) {
+          Memory.removeMemoryEntry(personalizationIndex);
+      }
+      Memory.addMemoryEntry(memoryText);
+  }
+
+  openMemoryManagerBtn.addEventListener("click", () => {
+      memoryModal.classList.remove("hidden");
+      loadMemoryEntries();
+  });
+  memoryModalClose.addEventListener("click", () => {
+      memoryModal.classList.add("hidden");
+  });
+
+  addMemoryBtn.addEventListener("click", () => {
+      addMemoryModal.classList.remove("hidden");
+      newMemoryText.value = "";
+  });
+  addMemoryModalClose.addEventListener("click", () => {
+      addMemoryModal.classList.add("hidden");
+  });
+  cancelNewMemoryBtn.addEventListener("click", () => {
+      addMemoryModal.classList.add("hidden");
+  });
+  saveNewMemoryBtn.addEventListener("click", () => {
+      const txt = newMemoryText.value.trim();
+      if (!txt) return;
+      Memory.addMemoryEntry(txt);
+      addMemoryModal.classList.add("hidden");
+      loadMemoryEntries();
+      window.showToast("Memory added successfully");
+  });
+
+  clearAllMemoryBtn.addEventListener("click", () => {
+      if (!confirm("Are you sure you want to clear ALL memory entries?")) return;
+      Memory.clearAllMemories();
+      loadMemoryEntries();
+      window.showToast("All memories cleared");
+  });
+
+  function loadMemoryEntries() {
+      memoryList.innerHTML = "";
+      const arr = Memory.getMemories();
+      arr.forEach((line, idx) => {
+          const li = document.createElement("li");
+          li.style.padding = "8px";
+          li.style.marginBottom = "6px";
+          li.style.backgroundColor = "rgba(0,0,0,0.05)";
+          li.style.borderRadius = "8px";
+          li.style.display = "flex";
+          li.style.justifyContent = "space-between";
+          li.style.alignItems = "flex-start";
+          const textDiv = document.createElement("div");
+          textDiv.style.flex = "1";
+          textDiv.style.marginRight = "10px";
+          textDiv.textContent = line;
+          li.appendChild(textDiv);
+
+          const btnContainer = document.createElement("div");
+          btnContainer.style.display = "flex";
+          btnContainer.style.gap = "6px";
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn btn-sm btn-secondary";
+          editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+          editBtn.title = "Edit this memory entry";
+          editBtn.style.minWidth = "40px";
+          editBtn.addEventListener("click", () => {
+              const newText = prompt("Edit memory entry:", line);
+              if (!newText || newText.trim() === line) {
+                  return;
+              }
+              const success = Memory.updateMemoryEntry(idx, newText);
+              if (success) {
+                  window.showToast("Memory updated");
+                  loadMemoryEntries();
+              }
+          });
+          btnContainer.appendChild(editBtn);
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn btn-sm btn-danger";
+          delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          delBtn.title = "Delete this memory entry";
+          delBtn.style.minWidth = "40px";
+          delBtn.addEventListener("click", () => {
+              if (!confirm(`Delete memory entry?\n"${line.substring(0, 50)}${line.length > 50 ? '...' : ''}"`)) {
+                  return;
+              }
+              Memory.removeMemoryEntry(idx);
+              loadMemoryEntries();
+              window.showToast("Memory deleted");
+          });
+          btnContainer.appendChild(delBtn);
+
+          li.appendChild(btnContainer);
+          memoryList.appendChild(li);
+      });
+
+      if (arr.length === 0) {
+          const emptyMsg = document.createElement("p");
+          emptyMsg.className = "text-center text-muted";
+          emptyMsg.textContent = "No memories saved yet. Add a memory using the button below.";
+          memoryList.appendChild(emptyMsg);
+      }
+  }
+
+  clearChatSessionsBtn.addEventListener("click", () => {
+      if (!confirm("Are you sure you want to CLEAR ALL chat sessions?")) return;
+      Storage.clearAllSessions();
+      window.showToast("All chat sessions removed");
+      setTimeout(() => {
+          location.reload();
+      }, 1000);
+  });
+
+  clearUserDataBtn.addEventListener("click", () => {
+      if (!confirm("Are you sure you want to DELETE ALL USER DATA? This will remove all chat history, memories, and settings.")) return;
+      Storage.clearAllSessions();
+      Memory.clearAllMemories();
+      localStorage.clear();
+      document.cookie.split(";").forEach(cookie => {
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      });
+      window.showToast("All data has been deleted. Reloading page...");
+      setTimeout(() => {
+          location.reload();
+      }, 1500);
+  });
+
+  window.showToast = function(message, duration = 3000) {
+      let toast = document.getElementById("toast-notification");
+      if (!toast) {
+          toast = document.createElement("div");
+          toast.id = "toast-notification";
+          toast.style.position = "fixed";
+          toast.style.top = "5%";
+          toast.style.left = "50%";
+          toast.style.transform = "translateX(-50%)";
+          toast.style.backgroundColor = "rgba(0,0,0,0.7)";
+          toast.style.color = "#fff";
+          toast.style.padding = "10px 20px";
+          toast.style.borderRadius = "5px";
+          toast.style.zIndex = "9999";
+          toast.style.transition = "opacity 0.3s";
+          document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.opacity = "1";
+      clearTimeout(toast.timeout);
+      toast.timeout = setTimeout(() => {
+          toast.style.opacity = "0";
+      }, duration);
+  };
+
 });

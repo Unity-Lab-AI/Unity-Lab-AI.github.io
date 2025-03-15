@@ -86,8 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const updatedText = newText.trim();
 
       try {
-        memories[index] = updatedText;
-        localStorage.setItem("pollinations_memory", JSON.stringify(memories));
+        const currentMemories = this.getMemories();
+        currentMemories[index] = updatedText;
+        localStorage.setItem("pollinations_memory", JSON.stringify(currentMemories));
         console.log(`Memory at index ${index} updated to: ${updatedText}`);
         return true;
       } catch (err) {
@@ -113,4 +114,5 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   console.log("Memory API loaded and linked to Storage-based memory system.");
+
 });
