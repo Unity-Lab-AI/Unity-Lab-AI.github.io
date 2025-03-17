@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Unity Chat UI 0.14.0</title>
+    <title>Unity Chat UI 0.14.5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,11 +13,14 @@
   </head>
   <body>
     <div id="screensaver-container" class="screensaver hidden">
-      <img id="screensaver-image" alt="Screensaver Image">
+      <img id="screensaver-image1" alt="Screensaver Image" style="opacity: 1;">
+      <img id="screensaver-image2" alt="Screensaver Image" style="opacity: 0;">
+      <canvas id="screensaver-particles"></canvas>
+      <div id="screensaver-thumbnails" class="screensaver-thumbnails"></div>
       <div class="screensaver-controls">
         <div class="screensaver-settings">
           <label>Prompt:
-            <input type="text" id="screensaver-prompt" value="random artistic scene, high quality, detailed">
+            <textarea id="screensaver-prompt" rows="3">random artistic scene, high quality, detailed</textarea>
           </label>
           <label>Timer (sec):
             <input type="number" id="screensaver-timer" value="30" min="5">
@@ -35,13 +38,20 @@
               <option value="turbo">Turbo</option>
             </select>
           </label>
-          <label>
-            <input type="checkbox" id="screensaver-enhance" checked>
-            Enhance
+          <label>Transition Duration (s):
+            <input type="number" id="screensaver-transition-duration" value="1" min="0.1" step="0.1">
           </label>
           <label>
-            <input type="checkbox" id="screensaver-private" checked>
-            Private
+            <input type="checkbox" id="screensaver-enhance" checked> Enhance
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-private" checked> Private
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-sound" checked> Sound Effects
+          </label>
+          <label>
+            <input type="checkbox" id="screensaver-particles-enabled" checked> Particle Effects
           </label>
         </div>
         <div class="screensaver-btn-group">
@@ -416,5 +426,5 @@
     <script defer src="chat-part1.js"></script>
     <script defer src="chat-part2.js"></script>
     <script defer src="chat-part3.js"></script>
-  </body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9217bdf1cbcec5b2',t:'MTc0MjE2NDcxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9217d6861e551359',t:'MTc0MjE2NTcyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
