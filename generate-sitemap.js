@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SITE_URL = 'https://unity-lab-ai.github.io/sitetest0';
+const SITE_URL = 'https://www.unityailab.com';
 const OUTPUT_FILE = 'sitemap.xml';
 
 // Pages with their priority and change frequency

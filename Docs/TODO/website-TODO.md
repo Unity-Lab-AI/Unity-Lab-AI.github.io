@@ -9,7 +9,7 @@
 
 The landing website consists of the main marketing/informational pages for UnityAILab. Core pages are complete and functional, but optimization and testing remain.
 
-**Live Site:** https://unity-lab-ai.github.io/sitetest0/
+**Live Site:** https://www.unityailab.com/
 
 **Current Status:**
 - ✅ All main pages implemented (Home, About, Services, Projects, Contact)
