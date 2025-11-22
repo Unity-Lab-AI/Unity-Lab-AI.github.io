@@ -1,0 +1,13 @@
+PolliLibPy/__pycache__/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Test results
+test-output*.txt
+test-output.log
+standalone-test-results.log
+*.log

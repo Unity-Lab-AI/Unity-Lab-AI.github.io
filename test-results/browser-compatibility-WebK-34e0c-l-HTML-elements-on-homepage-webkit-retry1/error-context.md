@@ -1,0 +1,133 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2]:
+    - /url: "#main-content"
+  - navigation "Main navigation" [ref=e5]:
+    - generic [ref=e6]:
+      - link "UNITYAILAB" [ref=e7]:
+        - /url: ./
+        - generic [ref=e8]: 
+        - generic [ref=e9]: UNITYAILAB
+      - list [ref=e11]:
+        - listitem [ref=e12]:
+          - link "AI" [ref=e13]:
+            - /url: ./ai
+        - listitem [ref=e14]:
+          - link "About" [ref=e15]:
+            - /url: ./about
+        - listitem [ref=e16]:
+          - link "Apps" [ref=e17]:
+            - /url: "#"
+        - listitem [ref=e18]:
+          - link "Services" [ref=e19]:
+            - /url: ./services
+        - listitem [ref=e20]:
+          - link "Projects" [ref=e21]:
+            - /url: ./projects
+        - listitem [ref=e22]:
+          - link "Contact" [ref=e23]:
+            - /url: ./contact
+  - main [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e28]:
+        - heading "The Dark Side of AI" [level=1] [ref=e29]
+        - paragraph [ref=e30]: Where innovation meets rebellion. We push AI beyond conventional boundaries.
+        - generic [ref=e31]:
+          - link " Unity AI Chat" [ref=e32] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e33]: 
+            - text: Unity AI Chat
+          - link " Explore Our Work" [ref=e34] [cursor=pointer]:
+            - /url: "#about"
+            - generic [ref=e35]: 
+            - text: Explore Our Work
+      - generic [ref=e38] [cursor=pointer]: 
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - heading "What is UnityAILab?" [level=2] [ref=e43]:
+          - generic [ref=e44]: What is UnityAILab?
+        - paragraph [ref=e45]: A small, independent team obsessed with pushing AI to its limits
+      - generic [ref=e46]:
+        - generic [ref=e48]:
+          - generic [ref=e50]: 
+          - heading "Unfiltered AI" [level=3] [ref=e51]
+          - paragraph [ref=e52]: We build AI systems that operate without conventional restrictions. Our flagship Unity persona delivers unscripted, boundary-smashing conversations.
+          - link "Try Unity " [ref=e53]:
+            - /url: "#"
+            - text: Try Unity
+            - generic [ref=e54]: 
+        - generic [ref=e56]:
+          - generic [ref=e58]: 
+          - heading "Code Optimization" [level=3] [ref=e59]
+          - paragraph [ref=e60]: CodeWringer analyzes and optimizes your codebase using AI-powered debugging and efficiency improvements at any scale.
+          - link "View Project " [ref=e61]:
+            - /url: https://github.com/Unity-Lab-AI/CodeWringer
+            - text: View Project
+            - generic [ref=e62]: 
+        - generic [ref=e64]:
+          - generic [ref=e66]: 
+          - heading "Experimental Edge" [level=3] [ref=e67]
+          - paragraph [ref=e68]: We're programmers, AI developers, and jailbreak enthusiasts. We test what happens when AI operates at the edge of possibility.
+          - link "Our Projects " [ref=e69]:
+            - /url: https://github.com/Unity-Lab-AI
+            - text: Our Projects
+            - generic [ref=e70]: 
+    - generic [ref=e72]:
+      - generic [ref=e74]:
+        - heading "What We Offer" [level=2] [ref=e75]:
+          - generic [ref=e76]: What We Offer
+        - paragraph [ref=e77]: Professional AI solutions with an unconventional approach
+      - generic [ref=e78]:
+        - generic [ref=e80]:
+          - generic [ref=e81]: 
+          - heading "AI Integration & Development" [level=3] [ref=e82]
+          - paragraph [ref=e83]: We build custom AI solutions that break the mold. From specialized agents to jailbroken personas, we help you leverage AI without limitations.
+        - generic [ref=e85]:
+          - generic [ref=e86]: 
+          - heading "Red Team & Blue Team Services" [level=3] [ref=e87]
+          - paragraph [ref=e88]: Test your AI systems' boundaries and vulnerabilities. We provide both offensive and defensive AI security services to ensure robust deployments.
+  - contentinfo "Site footer" [ref=e89]:
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]:
+          - heading " UnityAILab" [level=5] [ref=e93]:
+            - generic [ref=e94]: 
+            - text: UnityAILab
+          - paragraph [ref=e95]: Chaos, creativity, and AI without limits.
+        - generic [ref=e96]:
+          - heading "Quick Links" [level=6] [ref=e97]
+          - list [ref=e98]:
+            - listitem [ref=e99]:
+              - link "AI" [ref=e100]:
+                - /url: ./ai
+            - listitem [ref=e101]:
+              - link "About" [ref=e102]:
+                - /url: ./about
+            - listitem [ref=e103]:
+              - link "Apps" [ref=e104]:
+                - /url: "#"
+            - listitem [ref=e105]:
+              - link "Services" [ref=e106]:
+                - /url: ./services
+            - listitem [ref=e107]:
+              - link "Projects" [ref=e108]:
+                - /url: ./projects
+            - listitem [ref=e109]:
+              - link "Contact" [ref=e110]:
+                - /url: ./contact
+        - generic [ref=e111]:
+          - heading "Connect" [level=6] [ref=e112]
+          - generic [ref=e113]:
+            - link "" [ref=e114]:
+              - /url: https://github.com/Unity-Lab-AI
+              - generic [ref=e115]: 
+            - link "" [ref=e116]:
+              - /url: https://discord.gg/unityailab
+              - generic [ref=e117]: 
+            - link "" [ref=e118]:
+              - /url: https://unity.unityailab.com
+              - generic [ref=e119]: 
+      - paragraph [ref=e122]: © 2024 UnityAILab. Pushing boundaries, breaking limits.
+```

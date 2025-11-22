@@ -1,0 +1,173 @@
+name: Build and Deploy
+
+# Run on push to main/master branch
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch: # Allow manual triggering
+
+# Grant necessary permissions
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  issues: write
+  pull-requests: write
+
+# Ensure only one deployment runs at a time
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Job 1: Build with Vite
+  build:
+    name: Build with Vite
+    needs: []
+    runs-on: ubuntu-latest
+    outputs:
+      build_status: ${{ steps.build_check.outputs.status }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          echo "📦 Installing dependencies..."
+          npm ci
+
+      - name: Build with Vite
+        id: build_check
+        run: |
+          echo "🏗️  Building with Vite..."
+          npm run build
+
+          # Check if build succeeded
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed - dist directory not created!"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Verify critical files exist
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ Build failed - index.html not found in dist!"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "✅ Vite build completed successfully"
+          echo "📦 Build output:"
+          ls -lh dist/
+          echo ""
+          echo "📦 Assets:"
+          ls -lh dist/assets/ | head -20
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Copy additional files to dist
+        run: |
+          echo "📋 Copying additional files..."
+          # Copy files that Vite doesn't process but are needed
+          cp -r vendor dist/ 2>/dev/null || echo "No vendor directory to copy"
+          cp -r fonts dist/ 2>/dev/null || echo "No fonts directory to copy"
+          cp -r PolliLibJS dist/ 2>/dev/null || echo "No PolliLibJS directory to copy"
+          cp robots.txt dist/ 2>/dev/null || echo "No robots.txt to copy"
+          cp sitemap.xml dist/ 2>/dev/null || echo "No sitemap.xml to copy"
+          cp BingSiteAuth.xml dist/ 2>/dev/null || echo "No BingSiteAuth.xml to copy"
+          cp visitor-tracking.js dist/ 2>/dev/null || echo "No visitor-tracking.js to copy"
+
+          # Copy page-specific JS files
+          cp about/about.js dist/about/ 2>/dev/null || echo "No about.js to copy"
+          cp ai/demo/age-verification.js dist/ai/demo/ 2>/dev/null || echo "No age-verification.js to copy"
+          cp ai/demo/js/main.js dist/ai/demo/js/ 2>/dev/null || mkdir -p dist/ai/demo/js && cp ai/demo/js/main.js dist/ai/demo/js/ || echo "No main.js to copy"
+
+          echo "✅ Additional files copied"
+
+      - name: Upload artifact for deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+  # Job 4a: Report Build Status
+  report-status:
+    name: Report Build Status
+    needs: build
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Report success
+        if: needs.build.outputs.build_status == 'success'
+        run: |
+          echo "✅ BUILD SUCCESSFUL"
+          echo "================================"
+          echo "Built with: Vite"
+          echo "Status: SUCCESS"
+          echo "Ready for deployment"
+          echo "================================"
+
+      - name: Report failure
+        if: needs.build.outputs.build_status == 'failed'
+        run: |
+          echo "❌ BUILD FAILED"
+          echo "================================"
+          echo "Built with: Vite"
+          echo "Status: FAILED"
+          echo "Check build logs for details"
+          echo "================================"
+          exit 1
+
+      - name: Create status comment (if PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ needs.build.outputs.build_status }}';
+            const icon = status === 'success' ? '✅' : '❌';
+            const message = status === 'success' ? 'Build successful!' : 'Build failed!';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${icon} **${message}**\n\n**Built with:** Vite\n**Status:** ${status.toUpperCase()}`
+            });
+
+  # Job 4b: Deploy to GitHub Pages
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    if: needs.build.outputs.build_status == 'success'
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Report deployment success
+        run: |
+          echo "🚀 DEPLOYMENT SUCCESSFUL"
+          echo "================================"
+          echo "URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Built with: Vite (optimized)"
+          echo "================================"
+          echo ""
+          echo "✨ Your site is now live with the latest updates!"
+          echo "📦 Bundled, minified, and optimized for production"

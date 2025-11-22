@@ -1,0 +1,133 @@
+<!-- Shared Navigation for Apps -->
+<!-- This file should be included at the top of each app's HTML -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Main navigation">
+    <div class="container">
+        <a class="navbar-brand gothic-logo" href="/">
+            <i class="fas fa-brain" aria-hidden="true"></i>
+            <span>UNITYAILAB</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/sitetest0/ai">AI</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sitetest0/about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sitetest0/apps">Apps</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sitetest0/services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sitetest0/projects">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sitetest0/contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Navigation Styles - Compatible with landing page theme */
+.navbar {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(220, 20, 60, 0.2);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+    padding-top: calc(1rem + env(safe-area-inset-top));
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    z-index: 9999;
+}
+
+.navbar.scrolled {
+    box-shadow: 0 5px 30px rgba(220, 20, 60, 0.3);
+}
+
+.gothic-logo {
+    font-family: 'Trajan Pro', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gothic-logo i {
+    color: #dc143c;
+    font-size: 1.8rem;
+}
+
+.nav-link {
+    font-family: 'Trajan Pro', serif;
+    color: #cccccc !important;
+    font-weight: 600;
+    margin: 0 15px;
+    padding: 8px 15px !important;
+    position: relative;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #8b0000 0%, #dc143c 50%, #ff0033 100%);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #dc143c !important;
+}
+
+.nav-link:hover::before {
+    width: 80%;
+}
+
+@media (max-width: 991px) {
+    .nav-link {
+        margin: 5px 0;
+        font-size: 0.85rem;
+        padding: 8px 12px !important;
+    }
+
+    .navbar-collapse {
+        background: rgba(26, 26, 26, 0.95);
+        padding: 15px;
+        margin-top: 10px;
+        border: 1px solid rgba(220, 20, 60, 0.2);
+    }
+}
+</style>
+
+<script>
+// Scroll effect for navigation
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+</script>

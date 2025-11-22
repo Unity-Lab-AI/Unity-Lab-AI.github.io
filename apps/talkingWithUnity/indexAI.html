@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Voice Chat - Unity AI Lab</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
+
+    <!-- Shared Theme -->
+    <link rel="stylesheet" href="../shared-theme.css">
+
+    <!-- App-specific styles -->
+    <link rel="stylesheet" href="./styleAI.css?v=20240606">
+
+    <style>
+        body, html {
+            background: var(--primary-black);
+            color: var(--light-grey);
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-shell {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(220, 20, 60, 0.2);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .mute-indicator {
+            background: var(--gradient-red);
+            color: var(--white);
+            border: 2px solid var(--crimson-red);
+            border-radius: 8px;
+            padding: 10px 25px;
+            font-family: 'Trajan Pro', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .mute-indicator:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .mute-indicator[data-state="listening"] {
+            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+            border-color: #00ff00;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px 20px;
+            position: relative;
+        }
+
+        .image-stage {
+            max-width: 90%;
+            max-height: 70vh;
+            margin: 20px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(220, 20, 60, 0.2);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+            background: rgba(26, 26, 26, 0.8);
+            transition: all 0.5s ease;
+        }
+
+        .image-stage.is-visible {
+            opacity: 1;
+        }
+
+        .image-stage[data-state="loading"] {
+            opacity: 0.5;
+            filter: blur(5px);
+        }
+
+        .image-stage[data-state="loaded"] {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .image-stage img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .voice-stage {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .voice-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(26, 26, 26, 0.8);
+            border: 3px solid var(--crimson-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .voice-circle.is-speaking {
+            animation: pulse-speaking 1s ease-in-out infinite;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.6);
+        }
+
+        .voice-circle.is-listening {
+            border-color: #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+        }
+
+        .voice-circle.is-error {
+            border-color: #ff4444;
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.6);
+        }
+
+        @keyframes pulse-speaking {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--crimson-red);
+            opacity: 0;
+        }
+
+        .voice-circle.is-speaking .pulse-ring {
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        .no-js-banner {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px;
+            text-align: center;
+            color: #ff4444;
+            font-family: 'Trajan Pro', serif;
+        }
+
+        @media (max-width: 768px) {
+            .voice-stage {
+                gap: 30px;
+            }
+
+            .voice-circle {
+                width: 80px;
+                height: 80px;
+            }
+
+            .layout {
+                padding: 70px 15px 15px;
+            }
+
+            .image-stage {
+                max-width: 95%;
+                max-height: 60vh;
+            }
+        }
+    </style>
+</head>
+
+<body class="no-js">
+    <!-- Background Effects -->
+    <div class="unity-background-overlay"></div>
+    <div class="unity-red-streaks"></div>
+
+    <noscript>
+        <div class="no-js-banner" role="alert">
+            <strong>JavaScript is disabled.</strong>
+            The live Unity assistant requires JavaScript, so the static preview is shown instead.
+        </div>
+    </noscript>
+
+    <div class="app-shell">
+        <header class="status-banner" role="status" aria-live="polite">
+            <button id="mute-indicator" class="mute-indicator" data-state="muted" type="button">
+                <span class="indicator-text">Tap or click anywhere to unmute</span>
+            </button>
+        </header>
+
+        <main class="layout" aria-live="polite">
+            <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true">
+                <img id="hero-image" alt="" loading="lazy" decoding="async" />
+            </figure>
+
+            <section class="voice-stage" role="group" aria-label="Voice activity monitors">
+                <article class="voice-circle ai" data-role="ai" aria-label="Unity is idle">
+                    <div class="pulse-ring"></div>
+                    <span class="sr-only">Unity</span>
+                </article>
+                <article class="voice-circle user" data-role="user" aria-label="Microphone is muted">
+                    <div class="pulse-ring"></div>
+                    <span class="sr-only">You</span>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- Unity AI Lab Navigation -->
+    <script src="../shared-nav.js"></script>
+
+    <!-- Voice Chat Initialization -->
+    <script src="indexAI.js" defer></script>
+
+    <!-- Voice Experience Bundle -->
+    <script defer src="./app.js?v=20240606"></script>
+</body>
+</html>

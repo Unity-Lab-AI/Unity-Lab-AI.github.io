@@ -1,0 +1,2197 @@
+.screensaver {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.screensaver img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 0;
+  transition: opacity var(--transition-duration, 1s) ease;
+  display: block;
+}
+
+
+.screensaver-thumbnails-wrapper {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.screensaver-thumbnails {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: auto;
+  width: 100%;
+  max-width: 1290px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  transition: opacity 0.3s ease;
+  scrollbar-width: thin;
+  white-space: nowrap;
+}
+
+.thumb-nav {
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.thumb-nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.screensaver-thumbnails::-webkit-scrollbar {
+  height: 8px;
+}
+
+.screensaver-thumbnails::-webkit-scrollbar-track {
+  border-radius: 4px;
+}
+
+.screensaver-thumbnails::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+}
+
+.screensaver-thumbnails img.thumbnail {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  transition: border 0.3s, transform 0.2s;
+  flex-shrink: 0;
+  display: inline-block;
+  opacity: 1;
+  position: static;
+}
+
+.screensaver-thumbnails img.thumbnail.placeholder {
+  opacity: 0.3;
+  border: 3px dashed #555;
+  pointer-events: none;
+}
+
+.screensaver-controls {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 20px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 900px;
+  z-index: 2;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.screensaver-controls:hover {
+  transform: translateX(-50%) scale(1.02);
+}
+
+.screensaver:not(:hover) .screensaver-controls,
+.screensaver:not(:hover) .screensaver-thumbnails-wrapper {
+  opacity: 0.5;
+}
+
+.screensaver-controls.hidden-panel,
+.screensaver-thumbnails-wrapper.hidden-panel {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(20px);
+}
+
+.screensaver-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.screensaver-settings label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+
+.screensaver-settings label[for="screensaver-prompt"] {
+  grid-column: 1 / -1;
+}
+
+.screensaver-settings textarea,
+.screensaver-settings input,
+.screensaver-settings select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.screensaver-settings textarea:focus,
+.screensaver-settings input:focus,
+.screensaver-settings select:focus {
+  outline: none;
+}
+
+.screensaver-settings textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.screensaver-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.screensaver-btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.screensaver-btn:hover {
+  transform: translateY(-2px);
+}
+
+.screensaver-btn:active {
+  transform: translateY(0);
+}
+
+.screensaver canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+body[data-theme="light"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="light"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(245, 245, 245, 0.9), rgba(224, 224, 224, 0.9));
+  border: 1px solid #2196f3;
+}
+
+body[data-theme="light"] .screensaver-thumbnails {
+  background: rgba(245, 245, 245, 0.7);
+  scrollbar-color: #2196f3 #e0e0e0;
+}
+
+body[data-theme="light"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+body[data-theme="light"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #2196f3;
+}
+
+body[data-theme="light"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #1976d2;
+}
+
+body[data-theme="light"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="light"] .screensaver-settings label {
+  color: #333333;
+}
+
+body[data-theme="light"] .screensaver-settings textarea,
+body[data-theme="light"] .screensaver-settings input,
+body[data-theme="light"] .screensaver-settings select {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #333333;
+}
+
+body[data-theme="light"] .screensaver-settings textarea:focus,
+body[data-theme="light"] .screensaver-settings input:focus,
+body[data-theme="light"] .screensaver-settings select:focus {
+  border-color: #2196f3;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+body[data-theme="light"] .screensaver-btn {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+}
+
+body[data-theme="light"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.2);
+}
+
+body[data-theme="light"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="light"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="light"] #screensaver-save,
+body[data-theme="light"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="light"] #screensaver-save:hover,
+body[data-theme="light"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="light"] #screensaver-playpause,
+body[data-theme="light"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="light"] #screensaver-playpause:hover,
+body[data-theme="light"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="dark"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="dark"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(50, 50, 50, 0.9));
+  border: 1px solid #00ffcc;
+}
+
+body[data-theme="dark"] .screensaver-thumbnails {
+  background: rgba(0, 0, 0, 0.7);
+  scrollbar-color: #707070 #333333;
+}
+
+body[data-theme="dark"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #333333;
+}
+
+body[data-theme="dark"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #707070;
+}
+
+body[data-theme="dark"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #00ffcc;
+}
+
+body[data-theme="dark"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="dark"] .screensaver-settings label {
+  color: #e0e0e0;
+}
+
+body[data-theme="dark"] .screensaver-settings textarea,
+body[data-theme="dark"] .screensaver-settings input,
+body[data-theme="dark"] .screensaver-settings select {
+  background-color: #333333;
+  border: 1px solid #707070;
+  color: #e0e0e0;
+}
+
+body[data-theme="dark"] .screensaver-settings textarea:focus,
+body[data-theme="dark"] .screensaver-settings input:focus,
+body[data-theme="dark"] .screensaver-settings select:focus {
+  border-color: #00ffcc;
+  box-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
+}
+
+body[data-theme="dark"] .screensaver-btn {
+  background: linear-gradient(135deg, #404040, #505050);
+  color: #e0e0e0;
+}
+
+body[data-theme="dark"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #505050, #606060);
+  box-shadow: 0 4px 10px rgba(0, 255, 204, 0.2);
+}
+
+body[data-theme="dark"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="dark"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="dark"] #screensaver-save,
+body[data-theme="dark"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="dark"] #screensaver-save:hover,
+body[data-theme="dark"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="dark"] #screensaver-playpause,
+body[data-theme="dark"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="dark"] #screensaver-playpause:hover,
+body[data-theme="dark"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="hacker"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="hacker"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(0, 17, 0, 0.9), rgba(0, 34, 0, 0.9));
+  border: 1px solid #005500;
+}
+
+body[data-theme="hacker"] .screensaver-thumbnails {
+  background: rgba(0, 17, 0, 0.7);
+  scrollbar-color: #00ff00 #001100;
+}
+
+body[data-theme="hacker"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #001100;
+}
+
+body[data-theme="hacker"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #00ff00;
+}
+
+body[data-theme="hacker"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #00ff00;
+}
+
+body[data-theme="hacker"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="hacker"] .screensaver-settings label {
+  color: #00ff00;
+}
+
+body[data-theme="hacker"] .screensaver-settings textarea,
+body[data-theme="hacker"] .screensaver-settings input,
+body[data-theme="hacker"] .screensaver-settings select {
+  background-color: #001100;
+  border: 1px solid #005500;
+  color: #00ff00;
+}
+
+body[data-theme="hacker"] .screensaver-settings textarea:focus,
+body[data-theme="hacker"] .screensaver-settings input:focus,
+body[data-theme="hacker"] .screensaver-settings select:focus {
+  border-color: #00ff00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+body[data-theme="hacker"] .screensaver-btn {
+  background: linear-gradient(135deg, #002200, #003300);
+  color: #00ff00;
+}
+
+body[data-theme="hacker"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #003300, #004400);
+  box-shadow: 0 4px 10px rgba(0, 255, 0, 0.2);
+}
+
+body[data-theme="hacker"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="hacker"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="hacker"] #screensaver-save,
+body[data-theme="hacker"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="hacker"] #screensaver-save:hover,
+body[data-theme="hacker"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="hacker"] #screensaver-playpause,
+body[data-theme="hacker"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="hacker"] #screensaver-playpause:hover,
+body[data-theme="hacker"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="oled"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="oled"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(10, 10, 10, 0.9), rgba(20, 20, 20, 0.9));
+  border: 1px solid #1a1a1a;
+}
+
+body[data-theme="oled"] .screensaver-thumbnails {
+  background: rgba(0, 0, 0, 0.8);
+  scrollbar-color: #555555 #1a1a1a;
+}
+
+body[data-theme="oled"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+body[data-theme="oled"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #555555;
+}
+
+body[data-theme="oled"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #00ffcc;
+}
+
+body[data-theme="oled"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="oled"] .screensaver-settings label {
+  color: #ffffff;
+}
+
+body[data-theme="oled"] .screensaver-settings textarea,
+body[data-theme="oled"] .screensaver-settings input,
+body[data-theme="oled"] .screensaver-settings select {
+  background-color: #1a1a1a;
+  border: 1px solid #555555;
+  color: #ffffff;
+}
+
+body[data-theme="oled"] .screensaver-settings textarea:focus,
+body[data-theme="oled"] .screensaver-settings input:focus,
+body[data-theme="oled"] .screensaver-settings select:focus {
+  border-color: #00ffcc;
+  box-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
+}
+
+body[data-theme="oled"] .screensaver-btn {
+  background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+  color: #ffffff;
+}
+
+body[data-theme="oled"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #3a3a3a, #4a4a4a);
+  box-shadow: 0 4px 10px rgba(0, 255, 204, 0.2);
+}
+
+body[data-theme="oled"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="oled"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="oled"] #screensaver-save,
+body[data-theme="oled"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="oled"] #screensaver-save:hover,
+body[data-theme="oled"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="oled"] #screensaver-playpause,
+body[data-theme="oled"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="oled"] #screensaver-playpause:hover,
+body[data-theme="oled"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="subtle-light"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="subtle-light"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(240, 240, 240, 0.9), rgba(220, 220, 220, 0.9));
+  border: 1px solid #d0d0d0;
+}
+
+body[data-theme="subtle-light"] .screensaver-thumbnails {
+  background: rgba(240, 240, 240, 0.7);
+  scrollbar-color: #b0b0b0 #d0d0d0;
+}
+
+body[data-theme="subtle-light"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #d0d0d0;
+}
+
+body[data-theme="subtle-light"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+}
+
+body[data-theme="subtle-light"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #a0a0a0;
+}
+
+body[data-theme="subtle-light"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="subtle-light"] .screensaver-settings label {
+  color: #444444;
+}
+
+body[data-theme="subtle-light"] .screensaver-settings textarea,
+body[data-theme="subtle-light"] .screensaver-settings input,
+body[data-theme="subtle-light"] .screensaver-settings select {
+  background-color: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  color: #444444;
+}
+
+body[data-theme="subtle-light"] .screensaver-settings textarea:focus,
+body[data-theme="subtle-light"] .screensaver-settings input:focus,
+body[data-theme="subtle-light"] .screensaver-settings select:focus {
+  border-color: #b0b0b0;
+  box-shadow: 0 0 5px rgba(176, 176, 176, 0.3);
+}
+
+body[data-theme="subtle-light"] .screensaver-btn {
+  background: linear-gradient(135deg, #d0d0d0, #c0c0c0);
+  color: #444444;
+}
+
+body[data-theme="subtle-light"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #c0c0c0, #b0b0b0);
+  box-shadow: 0 4px 10px rgba(176, 176, 176, 0.2);
+}
+
+body[data-theme="subtle-light"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="subtle-light"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="subtle-light"] #screensaver-save,
+body[data-theme="subtle-light"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="subtle-light"] #screensaver-save:hover,
+body[data-theme="subtle-light"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="subtle-light"] #screensaver-playpause,
+body[data-theme="subtle-light"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="subtle-light"] #screensaver-playpause:hover,
+body[data-theme="subtle-light"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="burple"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="burple"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.9), rgba(67, 78, 185, 0.9));
+  border: 1px solid #7289da;
+}
+
+body[data-theme="burple"] .screensaver-thumbnails {
+  background: rgba(88, 101, 242, 0.7);
+  scrollbar-color: #7289da #434eb9;
+}
+
+body[data-theme="burple"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #434eb9;
+}
+
+body[data-theme="burple"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #7289da;
+}
+
+body[data-theme="burple"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #99aab5;
+}
+
+body[data-theme="burple"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="burple"] .screensaver-settings label {
+  color: #ffffff;
+}
+
+body[data-theme="burple"] .screensaver-settings textarea,
+body[data-theme="burple"] .screensaver-settings input,
+body[data-theme="burple"] .screensaver-settings select {
+  background-color: #434eb9;
+  border: 1px solid #7289da;
+  color: #ffffff;
+}
+
+body[data-theme="burple"] .screensaver-settings textarea:focus,
+body[data-theme="burple"] .screensaver-settings input:focus,
+body[data-theme="burple"] .screensaver-settings select:focus {
+  border-color: #99aab5;
+  box-shadow: 0 0 5px rgba(153, 170, 181, 0.3);
+}
+
+body[data-theme="burple"] .screensaver-btn {
+  background: linear-gradient(135deg, #7289da, #5865f2);
+  color: #ffffff;
+}
+
+body[data-theme="burple"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #5865f2, #434eb9);
+  box-shadow: 0 4px 10px rgba(153, 170, 181, 0.2);
+}
+
+body[data-theme="burple"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="burple"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="burple"] #screensaver-save,
+body[data-theme="burple"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="burple"] #screensaver-save:hover,
+body[data-theme="burple"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="burple"] #screensaver-playpause,
+body[data-theme="burple"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="burple"] #screensaver-playpause:hover,
+body[data-theme="burple"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="pretty-pink"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="pretty-pink"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.9), rgba(255, 105, 180, 0.9));
+  border: 1px solid #ff69b4;
+}
+
+body[data-theme="pretty-pink"] .screensaver-thumbnails {
+  background: rgba(255, 182, 193, 0.7);
+  scrollbar-color: #ff69b4 #ffb6c1;
+}
+
+body[data-theme="pretty-pink"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #ffb6c1;
+}
+
+body[data-theme="pretty-pink"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #ff69b4;
+}
+
+body[data-theme="pretty-pink"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #ff1493;
+}
+
+body[data-theme="pretty-pink"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffcc00;
+}
+
+body[data-theme="pretty-pink"] .screensaver-settings label {
+  color: #ffffff;
+}
+
+body[data-theme="pretty-pink"] .screensaver-settings textarea,
+body[data-theme="pretty-pink"] .screensaver-settings input,
+body[data-theme="pretty-pink"] .screensaver-settings select {
+  background-color: #ffb6c1;
+  border: 1px solid #ff69b4;
+  color: #ffffff;
+}
+
+body[data-theme="pretty-pink"] .screensaver-settings textarea:focus,
+body[data-theme="pretty-pink"] .screensaver-settings input:focus,
+body[data-theme="pretty-pink"] .screensaver-settings select:focus {
+  border-color: #ff1493;
+  box-shadow: 0 0 5px rgba(255, 20, 147, 0.3);
+}
+
+body[data-theme="pretty-pink"] .screensaver-btn {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: #ffffff;
+}
+
+body[data-theme="pretty-pink"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #ff1493, #c71585);
+  box-shadow: 0 4px 10px rgba(255, 20, 147, 0.2);
+}
+
+body[data-theme="pretty-pink"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="pretty-pink"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="pretty-pink"] #screensaver-save,
+body[data-theme="pretty-pink"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="pretty-pink"] #screensaver-save:hover,
+body[data-theme="pretty-pink"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="pretty-pink"] #screensaver-playpause,
+body[data-theme="pretty-pink"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+body[data-theme="pretty-pink"] #screensaver-playpause:hover,
+body[data-theme="pretty-pink"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+}
+
+body[data-theme="nord"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="nord"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(46, 52, 64, 0.9), rgba(59, 66, 82, 0.9));
+  border: 1px solid #81a1c1;
+}
+
+body[data-theme="nord"] .screensaver-thumbnails {
+  background: rgba(46, 52, 64, 0.7);
+  scrollbar-color: #81a1c1 #3b4252;
+}
+
+body[data-theme="nord"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #3b4252;
+}
+
+body[data-theme="nord"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #81a1c1;
+}
+
+body[data-theme="nord"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #88c0d0;
+}
+
+body[data-theme="nord"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ebcb8b;
+}
+
+body[data-theme="nord"] .screensaver-settings label {
+  color: #d8dee9;
+}
+
+body[data-theme="nord"] .screensaver-settings textarea,
+body[data-theme="nord"] .screensaver-settings input,
+body[data-theme="nord"] .screensaver-settings select {
+  background-color: #3b4252;
+  border: 1px solid #81a1c1;
+  color: #d8dee9;
+}
+
+body[data-theme="nord"] .screensaver-settings textarea:focus,
+body[data-theme="nord"] .screensaver-settings input:focus,
+body[data-theme="nord"] .screensaver-settings select:focus {
+  border-color: #88c0d0;
+  box-shadow: 0 0 5px rgba(136, 192, 208, 0.3);
+}
+
+body[data-theme="nord"] .screensaver-btn {
+  background: linear-gradient(135deg, #5e81ac, #81a1c1);
+  color: #d8dee9;
+}
+
+body[data-theme="nord"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #81a1c1, #88c0d0);
+  box-shadow: 0 4px 10px rgba(136, 192, 208, 0.2);
+}
+
+body[data-theme="nord"] #screensaver-exit {
+  background: linear-gradient(135deg, #bf616a, #d08770);
+}
+
+body[data-theme="nord"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d08770, #ebcb8b);
+}
+
+body[data-theme="nord"] #screensaver-save,
+body[data-theme="nord"] #screensaver-copy {
+  background: linear-gradient(135deg, #a3be8c, #b48ead);
+}
+
+body[data-theme="nord"] #screensaver-save:hover,
+body[data-theme="nord"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #b48ead, #ebcb8b);
+}
+
+body[data-theme="nord"] #screensaver-playpause,
+body[data-theme="nord"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #88c0d0, #8fbcbb);
+}
+
+body[data-theme="nord"] #screensaver-playpause:hover,
+body[data-theme="nord"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #8fbcbb, #81a1c1);
+}
+
+body[data-theme="solarized-light"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="solarized-light"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(253, 246, 227, 0.9), rgba(238, 232, 213, 0.9));
+  border: 1px solid #93a1a1;
+}
+
+body[data-theme="solarized-light"] .screensaver-thumbnails {
+  background: rgba(253, 246, 227, 0.7);
+  scrollbar-color: #93a1a1 #eee8d5;
+}
+
+body[data-theme="solarized-light"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #eee8d5;
+}
+
+body[data-theme="solarized-light"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #93a1a1;
+}
+
+body[data-theme="solarized-light"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #586e75;
+}
+
+body[data-theme="solarized-light"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #b58900;
+}
+
+body[data-theme="solarized-light"] .screensaver-settings label {
+  color: #657b83;
+}
+
+body[data-theme="solarized-light"] .screensaver-settings textarea,
+body[data-theme="solarized-light"] .screensaver-settings input,
+body[data-theme="solarized-light"] .screensaver-settings select {
+  background-color: #fdf6e3;
+  border: 1px solid #93a1a1;
+  color: #657b83;
+}
+
+body[data-theme="solarized-light"] .screensaver-settings textarea:focus,
+body[data-theme="solarized-light"] .screensaver-settings input:focus,
+body[data-theme="solarized-light"] .screensaver-settings select:focus {
+  border-color: #586e75;
+  box-shadow: 0 0 5px rgba(88, 110, 117, 0.3);
+}
+
+body[data-theme="solarized-light"] .screensaver-btn {
+  background: linear-gradient(135deg, #93a1a1, #839496);
+  color: #657b83;
+}
+
+body[data-theme="solarized-light"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #839496, #586e75);
+  box-shadow: 0 4px 10px rgba(88, 110, 117, 0.2);
+}
+
+body[data-theme="solarized-light"] #screensaver-exit {
+  background: linear-gradient(135deg, #dc322f, #cb4b16);
+}
+
+body[data-theme="solarized-light"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #cb4b16, #b58900);
+}
+
+body[data-theme="solarized-light"] #screensaver-save,
+body[data-theme="solarized-light"] #screensaver-copy {
+  background: linear-gradient(135deg, #2aa198, #268bd2);
+}
+
+body[data-theme="solarized-light"] #screensaver-save:hover,
+body[data-theme="solarized-light"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #268bd2, #b58900);
+}
+
+body[data-theme="solarized-light"] #screensaver-playpause,
+body[data-theme="solarized-light"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #6c71c4, #d33682);
+}
+
+body[data-theme="solarized-light"] #screensaver-playpause:hover,
+body[data-theme="solarized-light"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #d33682, #93a1a1);
+}
+
+body[data-theme="solarized-dark"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="solarized-dark"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(7, 54, 66, 0.9), rgba(0, 43, 54, 0.9));
+  border: 1px solid #93a1a1;
+}
+
+body[data-theme="solarized-dark"] .screensaver-thumbnails {
+  background: rgba(7, 54, 66, 0.7);
+  scrollbar-color: #93a1a1 #002b36;
+}
+
+body[data-theme="solarized-dark"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #002b36;
+}
+
+body[data-theme="solarized-dark"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #93a1a1;
+}
+
+body[data-theme="solarized-dark"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #839496;
+}
+
+body[data-theme="solarized-dark"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #b58900;
+}
+
+body[data-theme="solarized-dark"] .screensaver-settings label {
+  color: #839496;
+}
+
+body[data-theme="solarized-dark"] .screensaver-settings textarea,
+body[data-theme="solarized-dark"] .screensaver-settings input,
+body[data-theme="solarized-dark"] .screensaver-settings select {
+  background-color: #002b36;
+  border: 1px solid #93a1a1;
+  color: #839496;
+}
+
+body[data-theme="solarized-dark"] .screensaver-settings textarea:focus,
+body[data-theme="solarized-dark"] .screensaver-settings input:focus,
+body[data-theme="solarized-dark"] .screensaver-settings select:focus {
+  border-color: #839496;
+  box-shadow: 0 0 5px rgba(131, 148, 150, 0.3);
+}
+
+body[data-theme="solarized-dark"] .screensaver-btn {
+  background: linear-gradient(135deg, #93a1a1, #586e75);
+  color: #839496;
+}
+
+body[data-theme="solarized-dark"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #586e75, #073642);
+  box-shadow: 0 4px 10px rgba(131, 148, 150, 0.2);
+}
+
+body[data-theme="solarized-dark"] #screensaver-exit {
+  background: linear-gradient(135deg, #dc322f, #cb4b16);
+}
+
+body[data-theme="solarized-dark"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #cb4b16, #b58900);
+}
+
+body[data-theme="solarized-dark"] #screensaver-save,
+body[data-theme="solarized-dark"] #screensaver-copy {
+  background: linear-gradient(135deg, #2aa198, #268bd2);
+}
+
+body[data-theme="solarized-dark"] #screensaver-save:hover,
+body[data-theme="solarized-dark"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #268bd2, #b58900);
+}
+
+body[data-theme="solarized-dark"] #screensaver-playpause,
+body[data-theme="solarized-dark"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #6c71c4, #d33682);
+}
+
+body[data-theme="solarized-dark"] #screensaver-playpause:hover,
+body[data-theme="solarized-dark"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #d33682, #93a1a1);
+}
+
+body[data-theme="gruvbox-light"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(251, 241, 199, 0.9), rgba(235, 219, 178, 0.9));
+  border: 1px solid #d5c4a1;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-thumbnails {
+  background: rgba(251, 241, 199, 0.7);
+  scrollbar-color: #d5c4a1 #ebdbb2;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #ebdbb2;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #d5c4a1;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #bdae93;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #d79921;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-settings label {
+  color: #665c54;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-settings textarea,
+body[data-theme="gruvbox-light"] .screensaver-settings input,
+body[data-theme="gruvbox-light"] .screensaver-settings select {
+  background-color: #fbf1c7;
+  border: 1px solid #d5c4a1;
+  color: #665c54;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-settings textarea:focus,
+body[data-theme="gruvbox-light"] .screensaver-settings input:focus,
+body[data-theme="gruvbox-light"] .screensaver-settings select:focus {
+  border-color: #bdae93;
+  box-shadow: 0 0 5px rgba(189, 174, 147, 0.3);
+}
+
+body[data-theme="gruvbox-light"] .screensaver-btn {
+  background: linear-gradient(135deg, #d5c4a1, #bdae93);
+  color: #665c54;
+}
+
+body[data-theme="gruvbox-light"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #bdae93, #a89984);
+  box-shadow: 0 4px 10px rgba(189, 174, 147, 0.2);
+}
+
+body[data-theme="gruvbox-light"] #screensaver-exit {
+  background: linear-gradient(135deg, #cc241d, #9d0006);
+}
+
+body[data-theme="gruvbox-light"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #9d0006, #d79921);
+}
+
+body[data-theme="gruvbox-light"] #screensaver-save,
+body[data-theme="gruvbox-light"] #screensaver-copy {
+  background: linear-gradient(135deg, #98971a, #458588);
+}
+
+body[data-theme="gruvbox-light"] #screensaver-save:hover,
+body[data-theme="gruvbox-light"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #458588, #d79921);
+}
+
+body[data-theme="gruvbox-light"] #screensaver-playpause,
+body[data-theme="gruvbox-light"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #b16286, #d65d0e);
+}
+
+body[data-theme="gruvbox-light"] #screensaver-playpause:hover,
+body[data-theme="gruvbox-light"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #d65d0e, #d5c4a1);
+}
+
+body[data-theme="gruvbox-dark"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(40, 40, 40, 0.9), rgba(60, 56, 54, 0.9));
+  border: 1px solid #d5c4a1;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-thumbnails {
+  background: rgba(40, 40, 40, 0.7);
+  scrollbar-color: #d5c4a1 #3c3836;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #3c3836;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #d5c4a1;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #bdae93;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #d79921;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-settings label {
+  color: #ebdbb2;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-settings textarea,
+body[data-theme="gruvbox-dark"] .screensaver-settings input,
+body[data-theme="gruvbox-dark"] .screensaver-settings select {
+  background-color: #3c3836;
+  border: 1px solid #d5c4a1;
+  color: #ebdbb2;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-settings textarea:focus,
+body[data-theme="gruvbox-dark"] .screensaver-settings input:focus,
+body[data-theme="gruvbox-dark"] .screensaver-settings select:focus {
+  border-color: #bdae93;
+  box-shadow: 0 0 5px rgba(189, 174, 147, 0.3);
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-btn {
+  background: linear-gradient(135deg, #d5c4a1, #bdae93);
+  color: #ebdbb2;
+}
+
+body[data-theme="gruvbox-dark"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #bdae93, #a89984);
+  box-shadow: 0 4px 10px rgba(189, 174, 147, 0.2);
+}
+
+body[data-theme="gruvbox-dark"] #screensaver-exit {
+  background: linear-gradient(135deg, #cc241d, #9d0006);
+}
+
+body[data-theme="gruvbox-dark"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #9d0006, #d79921);
+}
+
+body[data-theme="gruvbox-dark"] #screensaver-save,
+body[data-theme="gruvbox-dark"] #screensaver-copy {
+  background: linear-gradient(135deg, #98971a, #458588);
+}
+
+body[data-theme="gruvbox-dark"] #screensaver-save:hover,
+body[data-theme="gruvbox-dark"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #458588, #d79921);
+}
+
+body[data-theme="gruvbox-dark"] #screensaver-playpause,
+body[data-theme="gruvbox-dark"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #b16286, #d65d0e);
+}
+
+body[data-theme="gruvbox-dark"] #screensaver-playpause:hover,
+body[data-theme="gruvbox-dark"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #d65d0e, #d5c4a1);
+}
+
+body[data-theme="cyberpunk"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="cyberpunk"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+  border: 1px solid #00f7ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-thumbnails {
+  background: rgba(0, 255, 255, 0.3);
+  scrollbar-color: #00f7ff #ff00ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #ff00ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #00f7ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #ff00ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffff00;
+}
+
+body[data-theme="cyberpunk"] .screensaver-settings label {
+  color: #00f7ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-settings textarea,
+body[data-theme="cyberpunk"] .screensaver-settings input,
+body[data-theme="cyberpunk"] .screensaver-settings select {
+  background-color: #1a1a1a;
+  border: 1px solid #00f7ff;
+  color: #00f7ff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-settings textarea:focus,
+body[data-theme="cyberpunk"] .screensaver-settings input:focus,
+body[data-theme="cyberpunk"] .screensaver-settings select:focus {
+  border-color: #ff00ff;
+  box-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+}
+
+body[data-theme="cyberpunk"] .screensaver-btn {
+  background: linear-gradient(135deg, #00f7ff, #ff00ff);
+  color: #ffffff;
+}
+
+body[data-theme="cyberpunk"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #ff00ff, #00f7ff);
+  box-shadow: 0 4px 10px rgba(255, 0, 255, 0.2);
+}
+
+body[data-theme="cyberpunk"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+body[data-theme="cyberpunk"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+body[data-theme="cyberpunk"] #screensaver-save,
+body[data-theme="cyberpunk"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+body[data-theme="cyberpunk"] #screensaver-save:hover,
+body[data-theme="cyberpunk"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+body[data-theme="cyberpunk"] #screensaver-playpause,
+body[data-theme="cyberpunk"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ffff00, #ff00ff);
+}
+
+body[data-theme="cyberpunk"] #screensaver-playpause:hover,
+body[data-theme="cyberpunk"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #ff00ff, #ffff00);
+}
+
+body[data-theme="dracula"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="dracula"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(40, 42, 54, 0.9), rgba(68, 71, 90, 0.9));
+  border: 1px solid #bd93f9;
+}
+
+body[data-theme="dracula"] .screensaver-thumbnails {
+  background: rgba(40, 42, 54, 0.7);
+  scrollbar-color: #bd93f9 #44475a;
+}
+
+body[data-theme="dracula"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #44475a;
+}
+
+body[data-theme="dracula"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #bd93f9;
+}
+
+body[data-theme="dracula"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #ff79c6;
+}
+
+body[data-theme="dracula"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffb86c;
+}
+
+body[data-theme="dracula"] .screensaver-settings label {
+  color: #f8f8f2;
+}
+
+body[data-theme="dracula"] .screensaver-settings textarea,
+body[data-theme="dracula"] .screensaver-settings input,
+body[data-theme="dracula"] .screensaver-settings select {
+  background-color: #44475a;
+  border: 1px solid #bd93f9;
+  color: #f8f8f2;
+}
+
+body[data-theme="dracula"] .screensaver-settings textarea:focus,
+body[data-theme="dracula"] .screensaver-settings input:focus,
+body[data-theme="dracula"] .screensaver-settings select:focus {
+  border-color: #ff79c6;
+  box-shadow: 0 0 5px rgba(255, 121, 198, 0.3);
+}
+
+body[data-theme="dracula"] .screensaver-btn {
+  background: linear-gradient(135deg, #bd93f9, #ff79c6);
+  color: #f8f8f2;
+}
+
+body[data-theme="dracula"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #ff79c6, #8be9fd);
+  box-shadow: 0 4px 10px rgba(255, 121, 198, 0.2);
+}
+
+body[data-theme="dracula"] #screensaver-exit {
+  background: linear-gradient(135deg, #ff5555, #ff79c6);
+}
+
+body[data-theme="dracula"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #ff79c6, #ffb86c);
+}
+
+body[data-theme="dracula"] #screensaver-save,
+body[data-theme="dracula"] #screensaver-copy {
+  background: linear-gradient(135deg, #50fa7b, #8be9fd);
+}
+
+body[data-theme="dracula"] #screensaver-save:hover,
+body[data-theme="dracula"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #8be9fd, #ffb86c);
+}
+
+body[data-theme="dracula"] #screensaver-playpause,
+body[data-theme="dracula"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #f1fa8c, #bd93f9);
+}
+
+body[data-theme="dracula"] #screensaver-playpause:hover,
+body[data-theme="dracula"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #bd93f9, #ff79c6);
+}
+
+body[data-theme="monokai"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="monokai"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(39, 40, 34, 0.9), rgba(66, 66, 66, 0.9));
+  border: 1px solid #f92672;
+}
+
+body[data-theme="monokai"] .screensaver-thumbnails {
+  background: rgba(39, 40, 34, 0.7);
+  scrollbar-color: #f92672 #272822;
+}
+
+body[data-theme="monokai"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #272822;
+}
+
+body[data-theme="monokai"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #f92672;
+}
+
+body[data-theme="monokai"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #fd971f;
+}
+
+body[data-theme="monokai"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #a6e22e;
+}
+
+body[data-theme="monokai"] .screensaver-settings label {
+  color: #f8f8f2;
+}
+
+body[data-theme="monokai"] .screensaver-settings textarea,
+body[data-theme="monokai"] .screensaver-settings input,
+body[data-theme="monokai"] .screensaver-settings select {
+  background-color: #272822;
+  border: 1px solid #f92672;
+  color: #f8f8f2;
+}
+
+body[data-theme="monokai"] .screensaver-settings textarea:focus,
+body[data-theme="monokai"] .screensaver-settings input:focus,
+body[data-theme="monokai"] .screensaver-settings select:focus {
+  border-color: #fd971f;
+  box-shadow: 0 0 5px rgba(253, 151, 31, 0.3);
+}
+
+body[data-theme="monokai"] .screensaver-btn {
+  background: linear-gradient(135deg, #f92672, #fd971f);
+  color: #f8f8f2;
+}
+
+body[data-theme="monokai"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #fd971f, #a6e22e);
+  box-shadow: 0 4px 10px rgba(253, 151, 31, 0.2);
+}
+
+body[data-theme="monokai"] #screensaver-exit {
+  background: linear-gradient(135deg, #f92672, #a6e22e);
+}
+
+body[data-theme="monokai"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #a6e22e, #66d9ef);
+}
+
+body[data-theme="monokai"] #screensaver-save,
+body[data-theme="monokai"] #screensaver-copy {
+  background: linear-gradient(135deg, #a6e22e, #66d9ef);
+}
+
+body[data-theme="monokai"] #screensaver-save:hover,
+body[data-theme="monokai"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #66d9ef, #f92672);
+}
+
+body[data-theme="monokai"] #screensaver-playpause,
+body[data-theme="monokai"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #fd971f, #f92672);
+}
+
+body[data-theme="monokai"] #screensaver-playpause:hover,
+body[data-theme="monokai"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f92672, #a6e22e);
+}
+
+body[data-theme="material-dark"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="material-dark"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(33, 33, 33, 0.9), rgba(66, 66, 66, 0.9));
+  border: 1px solid #0097a7;
+}
+
+body[data-theme="material-dark"] .screensaver-thumbnails {
+  background: rgba(33, 33, 33, 0.7);
+  scrollbar-color: #0097a7 #424242;
+}
+
+body[data-theme="material-dark"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #424242;
+}
+
+body[data-theme="material-dark"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #0097a7;
+}
+
+body[data-theme="material-dark"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #00bcd4;
+}
+
+body[data-theme="material-dark"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffeb3b;
+}
+
+body[data-theme="material-dark"] .screensaver-settings label {
+  color: #ffffff;
+}
+
+body[data-theme="material-dark"] .screensaver-settings textarea,
+body[data-theme="material-dark"] .screensaver-settings input,
+body[data-theme="material-dark"] .screensaver-settings select {
+  background-color: #424242;
+  border: 1px solid #0097a7;
+  color: #ffffff;
+}
+
+body[data-theme="material-dark"] .screensaver-settings textarea:focus,
+body[data-theme="material-dark"] .screensaver-settings input:focus,
+body[data-theme="material-dark"] .screensaver-settings select:focus {
+  border-color: #00bcd4;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.3);
+}
+
+body[data-theme="material-dark"] .screensaver-btn {
+  background: linear-gradient(135deg, #0097a7, #00bcd4);
+  color: #ffffff;
+}
+
+body[data-theme="material-dark"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #00bcd4, #26c6da);
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.2);
+}
+
+body[data-theme="material-dark"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #e91e63);
+}
+
+body[data-theme="material-dark"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #e91e63, #d81b60);
+}
+
+body[data-theme="material-dark"] #screensaver-save,
+body[data-theme="material-dark"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #8bc34a);
+}
+
+body[data-theme="material-dark"] #screensaver-save:hover,
+body[data-theme="material-dark"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #8bc34a, #689f38);
+}
+
+body[data-theme="material-dark"] #screensaver-playpause,
+body[data-theme="material-dark"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ffeb3b, #ffc107);
+}
+
+body[data-theme="material-dark"] #screensaver-playpause:hover,
+body[data-theme="material-dark"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #ffc107, #ffb300);
+}
+
+body[data-theme="material-light"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="material-light"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(245, 245, 245, 0.9), rgba(224, 224, 224, 0.9));
+  border: 1px solid #0097a7;
+}
+
+body[data-theme="material-light"] .screensaver-thumbnails {
+  background: rgba(245, 245, 245, 0.7);
+  scrollbar-color: #0097a7 #e0e0e0;
+}
+
+body[data-theme="material-light"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+body[data-theme="material-light"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #0097a7;
+}
+
+body[data-theme="material-light"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #00bcd4;
+}
+
+body[data-theme="material-light"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffeb3b;
+}
+
+body[data-theme="material-light"] .screensaver-settings label {
+  color: #212121;
+}
+
+body[data-theme="material-light"] .screensaver-settings textarea,
+body[data-theme="material-light"] .screensaver-settings input,
+body[data-theme="material-light"] .screensaver-settings select {
+  background-color: #ffffff;
+  border: 1px solid #0097a7;
+  color: #212121;
+}
+
+body[data-theme="material-light"] .screensaver-settings textarea:focus,
+body[data-theme="material-light"] .screensaver-settings input:focus,
+body[data-theme="material-light"] .screensaver-settings select:focus {
+  border-color: #00bcd4;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.3);
+}
+
+body[data-theme="material-light"] .screensaver-btn {
+  background: linear-gradient(135deg, #0097a7, #00bcd4);
+  color: #ffffff;
+}
+
+body[data-theme="material-light"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #00bcd4, #26c6da);
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.2);
+}
+
+body[data-theme="material-light"] #screensaver-exit {
+  background: linear-gradient(135deg, #f44336, #e91e63);
+}
+
+body[data-theme="material-light"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #e91e63, #d81b60);
+}
+
+body[data-theme="material-light"] #screensaver-save,
+body[data-theme="material-light"] #screensaver-copy {
+  background: linear-gradient(135deg, #4caf50, #8bc34a);
+}
+
+body[data-theme="material-light"] #screensaver-save:hover,
+body[data-theme="material-light"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #8bc34a, #689f38);
+}
+
+body[data-theme="material-light"] #screensaver-playpause,
+body[data-theme="material-light"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ffeb3b, #ffc107);
+}
+
+body[data-theme="material-light"] #screensaver-playpause:hover,
+body[data-theme="material-light"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #ffc107, #ffb300);
+}
+
+body[data-theme="pastel-dream"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="pastel-dream"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(224, 195, 252, 0.9), rgba(184, 225, 252, 0.9));
+  border: 1px solid #c3e6cb;
+}
+
+body[data-theme="pastel-dream"] .screensaver-thumbnails {
+  background: rgba(224, 195, 252, 0.7);
+  scrollbar-color: #c3e6cb #b8e1fc;
+}
+
+body[data-theme="pastel-dream"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #b8e1fc;
+}
+
+body[data-theme="pastel-dream"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #c3e6cb;
+}
+
+body[data-theme="pastel-dream"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #bee5eb;
+}
+
+body[data-theme="pastel-dream"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffeeba;
+}
+
+body[data-theme="pastel-dream"] .screensaver-settings label {
+  color: #495057;
+}
+
+body[data-theme="pastel-dream"] .screensaver-settings textarea,
+body[data-theme="pastel-dream"] .screensaver-settings input,
+body[data-theme="pastel-dream"] .screensaver-settings select {
+  background-color: #f8f9fa;
+  border: 1px solid #c3e6cb;
+  color: #495057;
+}
+
+body[data-theme="pastel-dream"] .screensaver-settings textarea:focus,
+body[data-theme="pastel-dream"] .screensaver-settings input:focus,
+body[data-theme="pastel-dream"] .screensaver-settings select:focus {
+  border-color: #bee5eb;
+  box-shadow: 0 0 5px rgba(190, 229, 235, 0.3);
+}
+
+body[data-theme="pastel-dream"] .screensaver-btn {
+  background: linear-gradient(135deg, #c3e6cb, #bee5eb);
+  color: #495057;
+}
+
+body[data-theme="pastel-dream"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #bee5eb, #b8e1fc);
+  box-shadow: 0 4px 10px rgba(190, 229, 235, 0.2);
+}
+
+body[data-theme="pastel-dream"] #screensaver-exit {
+  background: linear-gradient(135deg, #f4a8a7, #f8c1c0);
+}
+
+body[data-theme="pastel-dream"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #f8c1c0, #fce4e3);
+}
+
+body[data-theme="pastel-dream"] #screensaver-save,
+body[data-theme="pastel-dream"] #screensaver-copy {
+  background: linear-gradient(135deg, #b8e1fc, #c3e6cb);
+}
+
+body[data-theme="pastel-dream"] #screensaver-save:hover,
+body[data-theme="pastel-dream"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #c3e6cb, #bee5eb);
+}
+
+body[data-theme="pastel-dream"] #screensaver-playpause,
+body[data-theme="pastel-dream"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ffeeba, #ffdfba);
+}
+
+body[data-theme="pastel-dream"] #screensaver-playpause:hover,
+body[data-theme="pastel-dream"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #ffdfba, #ffeeba);
+}
+
+body[data-theme="ocean-breeze"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(139, 195, 235, 0.9), rgba(94, 172, 212, 0.9));
+  border: 1px solid #4fc3f7;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-thumbnails {
+  background: rgba(139, 195, 235, 0.7);
+  scrollbar-color: #4fc3f7 #5eacd4;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #5eacd4;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #4fc3f7;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #0288d1;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffd700;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-settings label {
+  color: #ffffff;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-settings textarea,
+body[data-theme="ocean-breeze"] .screensaver-settings input,
+body[data-theme="ocean-breeze"] .screensaver-settings select {
+  background-color: #5eacd4;
+  border: 1px solid #4fc3f7;
+  color: #ffffff;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-settings textarea:focus,
+body[data-theme="ocean-breeze"] .screensaver-settings input:focus,
+body[data-theme="ocean-breeze"] .screensaver-settings select:focus {
+  border-color: #0288d1;
+  box-shadow: 0 0 5px rgba(2, 136, 209, 0.3);
+}
+
+body[data-theme="ocean-breeze"] .screensaver-btn {
+  background: linear-gradient(135deg, #4fc3f7, #0288d1);
+  color: #ffffff;
+}
+
+body[data-theme="ocean-breeze"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #0288d1, #0277bd);
+  box-shadow: 0 4px 10px rgba(2, 136, 209, 0.2);
+}
+
+body[data-theme="ocean-breeze"] #screensaver-exit {
+  background: linear-gradient(135deg, #e57373, #ef5350);
+}
+
+body[data-theme="ocean-breeze"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #ef5350, #e53935);
+}
+
+body[data-theme="ocean-breeze"] #screensaver-save,
+body[data-theme="ocean-breeze"] #screensaver-copy {
+  background: linear-gradient(135deg, #81d4fa, #4fc3f7);
+}
+
+body[data-theme="ocean-breeze"] #screensaver-save:hover,
+body[data-theme="ocean-breeze"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #4fc3f7, #0288d1);
+}
+
+body[data-theme="ocean-breeze"] #screensaver-playpause,
+body[data-theme="ocean-breeze"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ffd700, #ffb300);
+}
+
+body[data-theme="ocean-breeze"] #screensaver-playpause:hover,
+body[data-theme="ocean-breeze"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #ffb300, #ffa000);
+}
+
+body[data-theme="vintage-paper"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="vintage-paper"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(245, 245, 220, 0.9), rgba(230, 230, 200, 0.9));
+  border: 1px solid #d2b48c;
+}
+
+body[data-theme="vintage-paper"] .screensaver-thumbnails {
+  background: rgba(245, 245, 220, 0.7);
+  scrollbar-color: #d2b48c #f5f5dc;
+}
+
+body[data-theme="vintage-paper"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #f5f5dc;
+}
+
+body[data-theme="vintage-paper"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #d2b48c;
+}
+
+body[data-theme="vintage-paper"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #8b4513;
+}
+
+body[data-theme="vintage-paper"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #b8860b;
+}
+
+body[data-theme="vintage-paper"] .screensaver-settings label {
+  color: #5c4033;
+}
+
+body[data-theme="vintage-paper"] .screensaver-settings textarea,
+body[data-theme="vintage-paper"] .screensaver-settings input,
+body[data-theme="vintage-paper"] .screensaver-settings select {
+  background-color: #fff8dc;
+  border: 1px solid #d2b48c;
+  color: #5c4033;
+}
+
+body[data-theme="vintage-paper"] .screensaver-settings textarea:focus,
+body[data-theme="vintage-paper"] .screensaver-settings input:focus,
+body[data-theme="vintage-paper"] .screensaver-settings select:focus {
+  border-color: #8b4513;
+  box-shadow: 0 0 5px rgba(139, 69, 19, 0.3);
+}
+
+body[data-theme="vintage-paper"] .screensaver-btn {
+  background: linear-gradient(135deg, #d2b48c, #deb887);
+  color: #5c4033;
+}
+
+body[data-theme="vintage-paper"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #deb887, #cd853f);
+  box-shadow: 0 4px 10px rgba(139, 69, 19, 0.2);
+}
+
+body[data-theme="vintage-paper"] #screensaver-exit {
+  background: linear-gradient(135deg, #8b0000, #a52a2a);
+}
+
+body[data-theme="vintage-paper"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #a52a2a, #b22222);
+}
+
+body[data-theme="vintage-paper"] #screensaver-save,
+body[data-theme="vintage-paper"] #screensaver-copy {
+  background: linear-gradient(135deg, #b8860b, #daa520);
+}
+
+body[data-theme="vintage-paper"] #screensaver-save:hover,
+body[data-theme="vintage-paper"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #daa520, #cd853f);
+}
+
+body[data-theme="vintage-paper"] #screensaver-playpause,
+body[data-theme="vintage-paper"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #228b22, #2e8b57);
+}
+
+body[data-theme="vintage-paper"] #screensaver-playpause:hover,
+body[data-theme="vintage-paper"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #2e8b57, #3cb371);
+}
+
+body[data-theme="honeycomb"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="honeycomb"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(255, 204, 0, 0.9), rgba(255, 165, 0, 0.9));
+  border: 1px solid #ffa500;
+}
+
+body[data-theme="honeycomb"] .screensaver-thumbnails {
+  background: rgba(255, 204, 0, 0.7);
+  scrollbar-color: #ffa500 #ffcc00;
+}
+
+body[data-theme="honeycomb"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #ffcc00;
+}
+
+body[data-theme="honeycomb"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #ffa500;
+}
+
+body[data-theme="honeycomb"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #ff8c00;
+}
+
+body[data-theme="honeycomb"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffd700;
+}
+
+body[data-theme="honeycomb"] .screensaver-settings label {
+  color: #3c2f2f;
+}
+
+body[data-theme="honeycomb"] .screensaver-settings textarea,
+body[data-theme="honeycomb"] .screensaver-settings input,
+body[data-theme="honeycomb"] .screensaver-settings select {
+  background-color: #ffebcd;
+  border: 1px solid #ffa500;
+  color: #3c2f2f;
+}
+
+body[data-theme="honeycomb"] .screensaver-settings textarea:focus,
+body[data-theme="honeycomb"] .screensaver-settings input:focus,
+body[data-theme="honeycomb"] .screensaver-settings select:focus {
+  border-color: #ff8c00;
+  box-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
+}
+
+body[data-theme="honeycomb"] .screensaver-btn {
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
+  color: #3c2f2f;
+}
+
+body[data-theme="honeycomb"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #ff8c00, #ff4500);
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.2);
+}
+
+body[data-theme="honeycomb"] #screensaver-exit {
+  background: linear-gradient(135deg, #8b0000, #a52a2a);
+}
+
+body[data-theme="honeycomb"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #a52a2a, #b22222);
+}
+
+body[data-theme="honeycomb"] #screensaver-save,
+body[data-theme="honeycomb"] #screensaver-copy {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+}
+
+body[data-theme="honeycomb"] #screensaver-save:hover,
+body[data-theme="honeycomb"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
+}
+
+body[data-theme="honeycomb"] #screensaver-playpause,
+body[data-theme="honeycomb"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff4500, #ff6347);
+}
+
+body[data-theme="honeycomb"] #screensaver-playpause:hover,
+body[data-theme="honeycomb"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #ff6347, #ff4500);
+}
+
+body[data-theme="rainbow-throwup"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.9), rgba(0, 255, 0, 0.9));
+  border: 1px solid #00f;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-thumbnails {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.7), rgba(0, 0, 255, 0.7));
+  scrollbar-color: #00f #ff0;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #ff0;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #00f;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #f0f;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #0ff;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-settings label {
+  color: #fff;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-settings textarea,
+body[data-theme="rainbow-throwup"] .screensaver-settings input,
+body[data-theme="rainbow-throwup"] .screensaver-settings select {
+  background-color: #333;
+  border: 1px solid #00f;
+  color: #fff;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-settings textarea:focus,
+body[data-theme="rainbow-throwup"] .screensaver-settings input:focus,
+body[data-theme="rainbow-throwup"] .screensaver-settings select:focus {
+  border-color: #f0f;
+  box-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-btn {
+  background: linear-gradient(135deg, #f00, #0f0);
+  color: #fff;
+}
+
+body[data-theme="rainbow-throwup"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #0f0, #00f);
+  box-shadow: 0 4px 10px rgba(255, 0, 255, 0.2);
+}
+
+body[data-theme="rainbow-throwup"] #screensaver-exit {
+  background: linear-gradient(135deg, #f00, #f0f);
+}
+
+body[data-theme="rainbow-throwup"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #f0f, #0ff);
+}
+
+body[data-theme="rainbow-throwup"] #screensaver-save,
+body[data-theme="rainbow-throwup"] #screensaver-copy {
+  background: linear-gradient(135deg, #0f0, #00f);
+}
+
+body[data-theme="rainbow-throwup"] #screensaver-save:hover,
+body[data-theme="rainbow-throwup"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #00f, #ff0);
+}
+
+body[data-theme="rainbow-throwup"] #screensaver-playpause,
+body[data-theme="rainbow-throwup"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ff0, #f00);
+}
+
+body[data-theme="rainbow-throwup"] #screensaver-playpause:hover,
+body[data-theme="rainbow-throwup"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f00, #0f0);
+}
+
+body[data-theme="serenity"] .screensaver {
+  background-color: #000000;
+}
+
+body[data-theme="serenity"] .screensaver-controls {
+  background: linear-gradient(135deg, rgba(240, 248, 255, 0.9), rgba(245, 245, 220, 0.9));
+  border: 1px solid #4682b4;
+}
+
+body[data-theme="serenity"] .screensaver-thumbnails {
+  background: rgba(240, 248, 255, 0.7);
+  scrollbar-color: #4682b4 #f0f8ff;
+}
+
+body[data-theme="serenity"] .screensaver-thumbnails::-webkit-scrollbar-track {
+  background: #f0f8ff;
+}
+
+body[data-theme="serenity"] .screensaver-thumbnails::-webkit-scrollbar-thumb {
+  background: #4682b4;
+}
+
+body[data-theme="serenity"] .screensaver-thumbnails img.thumbnail:hover {
+  border: 3px solid #87ceeb;
+}
+
+body[data-theme="serenity"] .screensaver-thumbnails img.thumbnail.selected {
+  border: 3px solid #ffd700;
+}
+
+body[data-theme="serenity"] .screensaver-settings label {
+  color: #2f4f4f;
+}
+
+body[data-theme="serenity"] .screensaver-settings textarea,
+body[data-theme="serenity"] .screensaver-settings input,
+body[data-theme="serenity"] .screensaver-settings select {
+  background-color: #f0f8ff;
+  border: 1px solid #4682b4;
+  color: #2f4f4f;
+}
+
+body[data-theme="serenity"] .screensaver-settings textarea:focus,
+body[data-theme="serenity"] .screensaver-settings input:focus,
+body[data-theme="serenity"] .screensaver-settings select:focus {
+  border-color: #87ceeb;
+  box-shadow: 0 0 5px rgba(135, 206, 235, 0.3);
+}
+
+body[data-theme="serenity"] .screensaver-btn {
+  background: linear-gradient(135deg, #4682b4, #87ceeb);
+  color: #2f4f4f;
+}
+
+body[data-theme="serenity"] .screensaver-btn:hover {
+  background: linear-gradient(135deg, #87ceeb, #b0e0e6);
+  box-shadow: 0 4px 10px rgba(135, 206, 235, 0.2);
+}
+
+body[data-theme="serenity"] #screensaver-exit {
+  background: linear-gradient(135deg, #cd5c5c, #f08080);
+}
+
+body[data-theme="serenity"] #screensaver-exit:hover {
+  background: linear-gradient(135deg, #f08080, #fa8072);
+}
+
+body[data-theme="serenity"] #screensaver-save,
+body[data-theme="serenity"] #screensaver-copy {
+  background: linear-gradient(135deg, #20b2aa, #48d1cc);
+}
+
+body[data-theme="serenity"] #screensaver-save:hover,
+body[data-theme="serenity"] #screensaver-copy:hover {
+  background: linear-gradient(135deg, #48d1cc, #40e0d0);
+}
+
+body[data-theme="serenity"] #screensaver-playpause,
+body[data-theme="serenity"] #fullscreen-screensaver {
+  background: linear-gradient(135deg, #ffd700, #f4a460);
+}
+
+body[data-theme="serenity"] #screensaver-playpause:hover,
+body[data-theme="serenity"] #fullscreen-screensaver:hover {
+  background: linear-gradient(135deg, #f4a460, #ffd700);
+}
