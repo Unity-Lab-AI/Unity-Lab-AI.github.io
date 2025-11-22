@@ -11,11 +11,11 @@
         const hostname = window.location.hostname;
         // Production: www.unityailab.com or unityailab.com
         if (hostname.includes('unityailab.com')) {
-            return '/sitetest0/';
+            return '/';
         }
         // GitHub Pages: unity-lab-ai.github.io
         if (hostname.includes('github.io')) {
-            return '/sitetest0/';
+            return '/';
         }
         // Local development: localhost, 127.0.0.1, or file://
         return '/';

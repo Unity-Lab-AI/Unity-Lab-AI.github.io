@@ -9,7 +9,7 @@
 
 The `/ai/demo` page is a fully functional, self-contained demonstration of the PolliLibJS library's capabilities. This is a **public-facing demo** showcasing AI features without requiring user accounts.
 
-**Live URL:** `https://unity-lab-ai.github.io/sitetest0/ai/demo`
+**Live URL:** `https://www.unityailab.com/ai/demo`
 
 **Implementation Status:**
 - ✅ Core functionality complete

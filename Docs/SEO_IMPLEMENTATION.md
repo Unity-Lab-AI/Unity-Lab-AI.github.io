@@ -272,10 +272,10 @@ All of the following keywords and their variations have been implemented across 
 1. **Submit Sitemap to Search Engines:**
    - Google Search Console: https://search.google.com/search-console
    - Bing Webmaster Tools: https://www.bing.com/webmasters
-   - Submit sitemap URL: `https://unity-lab-ai.github.io/sitetest0/sitemap.xml`
+   - Submit sitemap URL: `https://www.unityailab.com/sitemap.xml`
 
 2. **Verify robots.txt:**
-   - Test at: `https://unity-lab-ai.github.io/sitetest0/robots.txt`
+   - Test at: `https://www.unityailab.com/robots.txt`
    - Ensure it's accessible and properly formatted
 
 3. **Test Structured Data:**

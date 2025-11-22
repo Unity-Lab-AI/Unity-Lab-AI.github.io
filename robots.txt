@@ -1,11 +1,11 @@
 # robots.txt for Unity AI Lab
-# https://unity-lab-ai.github.io/sitetest0/
+# https://www.unityailab.com/
 
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://unity-lab-ai.github.io/sitetest0/sitemap.xml
+Sitemap: https://www.unityailab.com/sitemap.xml
 
 # Crawl-delay (optional, set to 1 second to be respectful)
 Crawl-delay: 1
