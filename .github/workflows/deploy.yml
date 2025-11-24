@@ -154,8 +154,11 @@ jobs:
     if: needs.build.outputs.build_status == 'success'
 
     steps:
-      - name: Checkout code
+      - name: Checkout gh-pages branch
         uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-repo
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -167,32 +170,71 @@ jobs:
         run: |
           cd artifact
           tar -xf artifact.tar
+          mkdir -p ../dist
           mv -f * ../dist/ 2>/dev/null || true
           cd ..
           rm -rf artifact
 
-      - name: Determine deployment path
+      - name: Determine deployment path and update files
         id: deploy-path
         run: |
           if [ "${{ github.ref_name }}" == "develop" ]; then
-            echo "path=development" >> $GITHUB_OUTPUT
-            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/development/" >> $GITHUB_OUTPUT
-            echo "📍 Deploying to /development/ subdirectory"
+            echo "📍 Deploying develop branch to /development/ subdirectory"
+            echo "url=https://www.unityailab.com/development/" >> $GITHUB_OUTPUT
+
+            # Remove old development folder and copy new build
+            rm -rf gh-pages-repo/development
+            mkdir -p gh-pages-repo/development
+            cp -r dist/* gh-pages-repo/development/
+
+            echo "✅ Updated /development/ folder only"
           else
-            echo "path=." >> $GITHUB_OUTPUT
-            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_OUTPUT
-            echo "📍 Deploying to root directory"
+            echo "📍 Deploying main branch to root directory"
+            echo "url=https://www.unityailab.com/" >> $GITHUB_OUTPUT
+
+            # Preserve CNAME and development folder
+            if [ -f "gh-pages-repo/CNAME" ]; then
+              cp gh-pages-repo/CNAME /tmp/CNAME
+              echo "💾 Preserved CNAME file"
+            fi
+
+            if [ -d "gh-pages-repo/development" ]; then
+              mv gh-pages-repo/development /tmp/development
+              echo "💾 Preserved /development/ folder"
+            fi
+
+            # Clear root and copy new build
+            rm -rf gh-pages-repo/*
+            cp -r dist/* gh-pages-repo/
+
+            # Restore preserved files
+            if [ -f "/tmp/CNAME" ]; then
+              mv /tmp/CNAME gh-pages-repo/CNAME
+              echo "♻️  Restored CNAME file"
+            fi
+
+            if [ -d "/tmp/development" ]; then
+              mv /tmp/development gh-pages-repo/development
+              echo "♻️  Restored /development/ folder"
+            fi
+
+            echo "✅ Updated root files while preserving /development/"
           fi
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          destination_dir: ${{ steps.deploy-path.outputs.path }}
-          keep_files: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Commit and push to gh-pages
+        run: |
+          cd gh-pages-repo
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "Deploy from ${{ github.ref_name }} branch - $(date +'%Y-%m-%d %H:%M:%S')"
+            git push origin gh-pages
+            echo "✅ Deployed successfully"
+          fi
 
       - name: Report deployment success
         run: |
