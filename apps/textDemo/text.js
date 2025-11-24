@@ -239,7 +239,9 @@ async function sendChatMessage(prompt, retryCount = 0) {
   userInput.focus();
 
   try {
-    const response = await polliAPI.retryRequest(PollinationsAPI.TEXT_API, {
+    // Use direct fetch like demo page - don't set forbidden headers (User-Agent, Referer)
+    // Add referrer as URL parameter instead
+    const response = await fetch(`${PollinationsAPI.TEXT_API}?referrer=${encodeURIComponent(polliAPI.referrer)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)

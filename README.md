@@ -211,6 +211,15 @@ This is a test site for validating:
 
 Changes tested here are promoted to the main Unity AI Lab website after validation.
 
+### Deployment
+
+The repository uses automated GitHub Actions deployment with dual-branch support:
+
+- **Main Branch** → Deploys to root: `https://unity-lab-ai.github.io/`
+- **Develop Branch** → Deploys to `/development/`: `https://unity-lab-ai.github.io/development/`
+
+This allows live testing of develop branch changes without affecting the production site. Both deployments run independently with separate concurrency groups.
+
 ## Documentation
 
 ### For Developers & AI Assistants

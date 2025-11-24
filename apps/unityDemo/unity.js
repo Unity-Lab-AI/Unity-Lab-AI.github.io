@@ -444,7 +444,8 @@ async function sendMessage(message) {
       requestBody.stream = false;
       requestBody.seed = Math.floor(Math.random() * 1000000);
     }
-    const response = await polliAPI.retryRequest(PollinationsAPI.TEXT_API, {
+    // Use direct fetch like demo page
+    const response = await fetch(`${PollinationsAPI.TEXT_API}?referrer=${encodeURIComponent(polliAPI.referrer)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -503,7 +504,8 @@ async function fetchModels() {
   const modelSelect = document.querySelector(".model-select");
   modelSelect.innerHTML = "";
   try {
-    const response = await polliAPI.retryRequest(`${PollinationsAPI.TEXT_API}/models`);
+    // Use direct fetch like demo page
+    const response = await fetch(`${PollinationsAPI.TEXT_API}/models?referrer=${encodeURIComponent(polliAPI.referrer)}`);
     if (!response.ok) throw new Error("Failed to fetch models");
     const data = await response.json();
     const customGroup = document.createElement("optgroup");
@@ -717,7 +719,8 @@ async function getImageDescription(imageUrl) {
       model: "openai",
       jsonMode: false
     };
-    const response = await polliAPI.retryRequest(PollinationsAPI.TEXT_API, {
+    // Use direct fetch like demo page
+    const response = await fetch(`${PollinationsAPI.TEXT_API}?referrer=${encodeURIComponent(polliAPI.referrer)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody)

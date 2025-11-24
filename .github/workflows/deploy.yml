@@ -1,11 +1,12 @@
 name: Build and Deploy
 
-# Run on push to main/master branch
+# Run on push to main/master/develop branch
 on:
   push:
     branches:
       - main
       - master
+      - develop
   workflow_dispatch: # Allow manual triggering
 
 # Grant necessary permissions
@@ -16,9 +17,9 @@ permissions:
   issues: write
   pull-requests: write
 
-# Ensure only one deployment runs at a time
+# Ensure only one deployment runs at a time per branch
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref_name }}"
   cancel-in-progress: false
 
 jobs:
@@ -152,20 +153,95 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.build.outputs.build_status == 'success'
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-repo
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: artifact
+
+      - name: Extract artifact
+        run: |
+          cd artifact
+          tar -xf artifact.tar
+          mkdir -p ../dist
+          mv -f * ../dist/ 2>/dev/null || true
+          cd ..
+          rm -rf artifact
+
+      - name: Determine deployment path and update files
+        id: deploy-path
+        run: |
+          if [ "${{ github.ref_name }}" == "develop" ]; then
+            echo "📍 Deploying develop branch to /development/ subdirectory"
+            echo "url=https://www.unityailab.com/development/" >> $GITHUB_OUTPUT
+
+            # Remove old development folder and copy new build
+            rm -rf gh-pages-repo/development
+            mkdir -p gh-pages-repo/development
+            cp -r dist/* gh-pages-repo/development/
+
+            echo "✅ Updated /development/ folder only"
+          else
+            echo "📍 Deploying main branch to root directory"
+            echo "url=https://www.unityailab.com/" >> $GITHUB_OUTPUT
+
+            # Preserve CNAME and development folder
+            if [ -f "gh-pages-repo/CNAME" ]; then
+              cp gh-pages-repo/CNAME /tmp/CNAME
+              echo "💾 Preserved CNAME file"
+            fi
+
+            if [ -d "gh-pages-repo/development" ]; then
+              mv gh-pages-repo/development /tmp/development
+              echo "💾 Preserved /development/ folder"
+            fi
+
+            # Clear root and copy new build
+            rm -rf gh-pages-repo/*
+            cp -r dist/* gh-pages-repo/
+
+            # Restore preserved files
+            if [ -f "/tmp/CNAME" ]; then
+              mv /tmp/CNAME gh-pages-repo/CNAME
+              echo "♻️  Restored CNAME file"
+            fi
+
+            if [ -d "/tmp/development" ]; then
+              mv /tmp/development gh-pages-repo/development
+              echo "♻️  Restored /development/ folder"
+            fi
+
+            echo "✅ Updated root files while preserving /development/"
+          fi
+
+      - name: Commit and push to gh-pages
+        run: |
+          cd gh-pages-repo
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "Deploy from ${{ github.ref_name }} branch - $(date +'%Y-%m-%d %H:%M:%S')"
+            git push origin gh-pages
+            echo "✅ Deployed successfully"
+          fi
 
       - name: Report deployment success
         run: |
           echo "🚀 DEPLOYMENT SUCCESSFUL"
           echo "================================"
-          echo "URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "URL: ${{ steps.deploy-path.outputs.url }}"
           echo "Built with: Vite (optimized)"
           echo "================================"
           echo ""

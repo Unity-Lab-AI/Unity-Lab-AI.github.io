@@ -1322,16 +1322,12 @@ async function getAIResponse(userInput) {
             model: 'unity'
         });
 
-        const textResponse = await polliAPI.retryRequest(POLLINATIONS_TEXT_URL, {
+        // Use direct fetch like demo page - add referrer as URL parameter
+        const textResponse = await fetch(`${POLLINATIONS_TEXT_URL}?referrer=${encodeURIComponent(UNITY_REFERRER)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            // Explicitly identify the Unity AI Lab referrer so the public
-            // Pollinations endpoint treats the request as coming from the
-            // approved web client even when running the app from localhost.
-            referrer: UNITY_REFERRER,
-            referrerPolicy: 'strict-origin-when-cross-origin',
             body: pollinationsPayload
         });
 
