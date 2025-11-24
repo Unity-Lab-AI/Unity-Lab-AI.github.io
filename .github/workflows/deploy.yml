@@ -17,9 +17,10 @@ permissions:
   issues: write
   pull-requests: write
 
-# Ensure only one deployment runs at a time per branch
+# Ensure only one deployment runs at a time across ALL branches
+# This prevents main and develop from conflicting when pushing to gh-pages
 concurrency:
-  group: "pages-${{ github.ref_name }}"
+  group: "gh-pages-deployment"
   cancel-in-progress: false
 
 jobs:
