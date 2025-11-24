@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Cache Control - Prevent aggressive caching by GitHub Pages -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="build-timestamp" content="2025-11-24T02:10:15.260Z">
+    <meta name="build-hash" content="fc5a9151">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Persona Chat - Unity AI Lab</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
+
+  <!-- Shared Theme -->
+  <link rel="stylesheet" href="../shared-theme.css">
+
+  <!-- App-specific styles -->
+  <style>
+    body, html {
+      background: var(--primary-black);
+      color: var(--light-grey);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .persona-wrapper {
+      max-width: 1400px;
+      margin: 80px auto 40px;
+      padding: 30px;
+    }
+
+    .persona-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .persona-title {
+      font-family: 'Trajan Pro', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      text-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .app-subtitle {
+      font-family: 'Trajan Pro', serif;
+      font-size: 1rem;
+      color: var(--light-grey);
+      letter-spacing: 1px;
+    }
+
+    .container {
+      background: rgba(26, 26, 26, 0.9);
+      border-radius: 12px;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
+    }
+
+    .settings-toggle {
+      background: var(--gradient-red);
+      margin: 0 auto 20px;
+      padding: 12px 25px;
+      color: var(--white);
+      border: 2px solid var(--crimson-red);
+      cursor: pointer;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 8px;
+      font-family: 'Trajan Pro', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+    }
+
+    .settings-toggle:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
+    }
+
+    .settings-panel {
+      max-width: 600px;
+      margin: 0 auto 20px;
+      background: rgba(21, 21, 21, 0.8);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      display: none;
+      box-shadow: 0 5px 15px rgba(220, 20, 60, 0.1);
+    }
+
+    .model-select {
+      margin-bottom: 15px;
+      padding: 12px 40px 12px 15px;
+      background: rgba(21, 21, 21, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      width: 100%;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23dc143c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 1.2em;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .model-select:hover,
+    .model-select:focus {
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+    }
+
+    #chatOutput {
+      width: 100%;
+      max-width: 600px;
+      height: 600px;
+      overflow-y: auto;
+      background: rgba(42, 42, 42, 0.6);
+      color: var(--light-grey);
+      padding: 20px;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      margin: 20px auto;
+      white-space: pre-wrap;
+      text-align: left;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      scrollbar-width: thin;
+      scrollbar-color: var(--crimson-red) rgba(26, 26, 26, 0.8);
+      font-family: 'Trajan Pro', serif;
+      line-height: 1.6;
+    }
+
+    #chatOutput::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chatOutput::-webkit-scrollbar-track {
+      background: rgba(26, 26, 26, 0.8);
+    }
+
+    #chatOutput::-webkit-scrollbar-thumb {
+      background: var(--gradient-red);
+      border-radius: 4px;
+    }
+
+    #chatOutput::-webkit-scrollbar-thumb:hover {
+      background: var(--crimson-red);
+    }
+
+    #chatOutput p {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(21, 21, 21, 0.4);
+      border-radius: 8px;
+      border-left: 3px solid rgba(220, 20, 60, 0.3);
+    }
+
+    #chatOutput p strong {
+      color: var(--crimson-red);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    #chatForm {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #userInput {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: rgba(21, 21, 21, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      resize: vertical;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      min-height: 100px;
+      outline: none;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      line-height: 1.6;
+    }
+
+    #userInput:focus {
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
+      background: rgba(26, 26, 26, 1);
+    }
+
+    #userInput::placeholder {
+      color: rgba(204, 204, 204, 0.5);
+    }
+
+    button {
+      padding: 12px 25px;
+      background: var(--gradient-red);
+      color: var(--white);
+      border: 2px solid var(--crimson-red);
+      cursor: pointer;
+      font-family: 'Trajan Pro', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(220, 20, 60, 0.3);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    img.inline {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 10px auto;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(220, 20, 60, 0.2);
+      border: 1px solid rgba(220, 20, 60, 0.2);
+    }
+
+    .landscape { width: 100%; }
+    .portrait { width: 75%; }
+    .square { width: 85%; }
+
+    .volume-control {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .volume-control label {
+      color: var(--light-grey);
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+    }
+
+    #volumeSlider {
+      width: 100%;
+      accent-color: var(--crimson-red);
+      background: rgba(51, 51, 51, 0.8);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 8px;
+      padding: 5px;
+      transition: all 0.3s ease;
+    }
+
+    #volumeSlider:hover {
+      border-color: var(--crimson-red);
+    }
+
+    .audio-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .loop-control {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--light-grey);
+      font-family: 'Trajan Pro', serif;
+    }
+
+    #loopCheckbox {
+      accent-color: var(--crimson-red);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .replay-button {
+      padding: 10px 20px;
+      background: transparent;
+      color: var(--crimson-red);
+      border: 2px solid var(--crimson-red);
+      cursor: pointer;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.2);
+    }
+
+    .replay-button:hover {
+      background: rgba(220, 20, 60, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+    }
+
+    .replay-button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .pollinations-credit {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 0.7rem;
+      color: rgba(170, 170, 170, 0.6);
+    }
+
+    .pollinations-credit a {
+      color: rgba(170, 170, 170, 0.6);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .pollinations-credit a:hover {
+      color: var(--crimson-red);
+    }
+
+    @media (max-width: 768px) {
+      .persona-wrapper {
+        margin: 70px 15px 20px;
+        padding: 20px;
+      }
+
+      .persona-title {
+        font-size: 1.8rem;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      #chatOutput {
+        height: 450px;
+        max-width: 100%;
+      }
+
+      #chatForm {
+        max-width: 100%;
+      }
+
+      #userInput {
+        min-height: 80px;
+      }
+
+      .audio-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .replay-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="unity-background-overlay"></div>
+  <div class="unity-red-streaks"></div>
+
+  <!-- Main Content -->
+  <div class="persona-wrapper">
+    <!-- Header -->
+    <div class="persona-header">
+      <h1 class="persona-title">Persona Chat</h1>
+      <p class="app-subtitle">Multi-Modal AI with Personality, Images & Music</p>
+    </div>
+
+    <!-- Persona Container -->
+    <div class="container">
+      <!-- Settings Toggle -->
+      <button id="settingsToggle" class="settings-toggle" title="Toggle the settings panel—tweak my shit here.">Show Settings</button>
+
+      <!-- Settings Panel -->
+      <div id="settingsPanel" class="settings-panel" title="Mess with my settings—models, audio, all that jazz.">
+        <select id="textModel" class="model-select" title="Choose the text model—pick how I talk to you, asshole."></select>
+        <select id="imageModel" class="model-select" title="Pick the image model—decide how my visuals fuck with you."></select>
+        <select id="aspectRatio" class="model-select" title="Set the image ratio—landscape, portrait, whatever you want.">
+          <option value="16:9">Landscape (16:9)</option>
+          <option value="4:3">Landscape (4:3)</option>
+          <option value="1:1">Square (1:1)</option>
+          <option value="3:4">Portrait (3:4)</option>
+        </select>
+
+        <!-- Volume Control -->
+        <div class="volume-control">
+          <label for="volumeSlider">Volume:</label>
+          <input type="range" id="volumeSlider" min="0" max="100" value="50" title="Adjust my audio—make me loud or shut me up.">
+
+          <!-- Audio Controls -->
+          <div class="audio-controls">
+            <label class="loop-control">
+              <input type="checkbox" id="loopCheckbox" title="Loop my tunes—keep the chaos going, you freak."> Loop Audio
+            </label>
+            <button id="replayButton" class="replay-button" disabled title="Replay the last audio—hear it again, you needy bitch.">Replay Audio</button>
+            <button id="downloadMidi" class="replay-button" disabled title="Download the MIDI—steal my music, you thief.">Download MIDI</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Output -->
+      <div id="chatOutput" title="This is where I spit my brilliance—chat, images, music, all here.">Chat will appear here...</div>
+
+      <!-- Chat Form -->
+      <form id="chatForm">
+        <textarea id="userInput" rows="3" placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)" title="Type your crap here—hit Enter to send it my way."></textarea>
+        <button type="submit" id="generateButton" title="Send your message to me—unleash the beast.">Send to AI</button>
+        <button type="button" id="directImageButton" title="Generate an image straight from your input—skip the chat, get art.">Direct Image Generation</button>
+      </form>
+    </div>
+
+    <!-- Pollinations Credit -->
+    <div class="pollinations-credit">
+      <a href="https://pollinations.ai" target="_blank">Generations by Pollinations.ai</a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+  <!-- Unity AI Lab Navigation -->
+  <script src="../shared-nav.js"></script>
+
+  <!-- PolliLibJS -->
+  <script src="../../PolliLibJS/pollylib.js"></script>
+
+  <!-- Persona Chat Functionality -->
+  <script src="persona.js"></script>
+
+<!-- Built: 2025-11-24T02:10:15.260Z | Hash: fc5a9151 -->
+</body>
+</html>

@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Cache Control - Prevent aggressive caching by GitHub Pages -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="build-timestamp" content="2025-11-24T02:10:15.260Z">
+    <meta name="build-hash" content="fc5a9151">
+    <!-- Meta Tags for Cross-Browser Compatibility -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+
+
+    <!-- SEO and Social Meta Tags -->
+    <meta name="description" content="Unity AI Lab Services - AI Integration Services, AI Chatbot Development, AI Red Team & Blue Team Testing, Prompt Engineering. Expert unrestricted AI development powered by Pollinations.">
+    <meta name="keywords" content="AI integration services, AI integration, AI chatbot development, chatbot development, chat bot development, AI red team, AI blue team, red team services, blue team services, AI security testing, AI security services, prompt engineering, prompt engineering services, AI training, AI agent development, specialized AI agents, unrestricted AI services, gothic AI services, AI development services, custom AI development, AI solutions, Unity AI services, Unity AI Lab services, Unity Lab AI services, AI consulting, AI implementation, conversational AI development, AI persona development, Pollinations integration, powered by Pollinations">
+    <meta name="author" content="Unity AI Lab - hackall360, GFourteen, SpongeBong">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="canonical" href="https://www.unityailab.com/services/?v=fc5a9151">
+
+    <!-- Mobile Web App Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UnityAILab Services">
+
+    <!-- MS Tile Color -->
+    <meta name="msapplication-TileColor" content="#0a0a0a">
+    <meta name="msapplication-navbutton-color" content="#0a0a0a">
+
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.unityailab.com/services/">
+    <meta property="og:title" content="AI Integration Services, Chatbot Development, Red Team & Blue Team">
+    <meta property="og:description" content="Unity AI Lab Services - AI Integration, Chatbot Development, Red Team & Blue Team Testing, Prompt Engineering. Expert unrestricted AI development.">
+    <meta property="og:site_name" content="Unity AI Lab">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@UnityAILab">
+    <meta name="twitter:creator" content="@UnityAILab">
+    <meta name="twitter:title" content="AI Integration Services, Chatbot Development, Red Team & Blue Team">
+    <meta name="twitter:description" content="Unity AI Lab Services - AI Integration, Chatbot Development, Red Team & Blue Team Testing, Prompt Engineering.">
+
+    <title>AI Integration Services, Chatbot Development, Red Team & Blue Team | Unity AI Lab</title>
+
+    <!-- Preconnect to external resources for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com?v=fc5a9151">
+    <link rel="preconnect" href="https://fonts.gstatic.com?v=fc5a9151" crossorigin>
+
+    <!-- Bootstrap CSS (local) -->
+
+    <!-- Font Awesome for Icons (local) -->
+
+    <!-- Custom CSS -->
+
+    <!-- AOS Animation Library CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+        /* Smooth transition when page loads */
+        body {
+            transition: opacity 0.3s ease-in;
+        }
+
+        /* Ensure background is visible immediately */
+        .background-overlay,
+        .red-streaks {
+            will-change: auto;
+        }
+
+        /* Service Modal Styles */
+        .service-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .service-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .service-modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px solid #dc143c;
+            border-radius: 15px;
+            padding: 40px;
+            padding-right: 20px;
+            max-width: 800px;
+            max-height: 85vh;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 0 50px rgba(220, 20, 60, 0.3);
+            animation: slideUp 0.3s ease-out;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Custom scrollbar for modal content */
+        .service-modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .service-modal-content::-webkit-scrollbar-track {
+            background: rgba(42, 42, 42, 0.5);
+            border-radius: 4px;
+        }
+
+        .service-modal-content::-webkit-scrollbar-thumb {
+            background: #dc143c;
+            border-radius: 4px;
+        }
+
+        .service-modal-content::-webkit-scrollbar-thumb:hover {
+            background: #ff0033;
+        }
+
+        .service-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 2px solid #dc143c;
+            color: #dc143c;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-modal-close:hover {
+            background: #dc143c;
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .service-modal-header {
+            margin-bottom: 30px;
+        }
+
+        .service-modal-icon {
+            font-size: 60px;
+            color: #dc143c;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .service-modal-title {
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .service-modal-description {
+            color: #cccccc;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .service-modal-section {
+            margin-bottom: 25px;
+        }
+
+        .service-modal-section h4 {
+            color: #dc143c;
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .service-modal-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .service-modal-section ul li {
+            color: #cccccc;
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .service-modal-section ul li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #dc143c;
+            font-size: 18px;
+        }
+
+        .service-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.4);
+        }
+
+        .service-card .learn-more {
+            color: #dc143c;
+            font-size: 14px;
+            margin-top: 15px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .learn-more {
+            letter-spacing: 2px;
+        }
+
+        .category-section {
+            margin-bottom: 80px;
+        }
+
+        .category-title {
+            font-size: 36px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .category-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #dc143c 0%, transparent 100%);
+        }
+
+        .category-description {
+            color: #cccccc;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Contact Form Enhancements */
+        .contact-form select.gothic-input {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px solid #2a2a2a;
+            color: #cccccc;
+            padding: 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-form select.gothic-input:focus {
+            border-color: #dc143c;
+            outline: none;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .contact-form select.gothic-input option {
+            background: #1a1a1a;
+            color: #cccccc;
+        }
+
+        /* Skip to main content link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #dc143c;
+            color: #fff;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 10000;
+            font-weight: bold;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Responsive Modal Styles */
+        @media (max-width: 768px) {
+            .service-modal {
+                padding: 10px;
+            }
+
+            .service-modal-content {
+                padding: 30px 20px;
+                padding-right: 10px;
+                max-height: 90vh;
+                width: 95%;
+            }
+
+            .service-modal-title {
+                font-size: 24px;
+            }
+
+            .service-modal-icon {
+                font-size: 40px;
+            }
+
+            .service-modal-description {
+                font-size: 14px;
+            }
+
+            .service-modal-section h4 {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .service-modal-content {
+                padding: 20px 15px;
+                padding-right: 8px;
+                max-height: 92vh;
+                width: 98%;
+            }
+
+            .service-modal-title {
+                font-size: 20px;
+            }
+
+            .service-modal-icon {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .service-modal-content {
+                max-height: 95vh;
+                padding: 25px 20px;
+            }
+        }
+    </style>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "AI Development and Integration Services",
+        "provider": {
+            "@type": "Organization",
+            "name": "Unity AI Lab",
+            "url": "https://www.unityailab.com/"
+        },
+        "areaServed": "Worldwide",
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "AI Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "AI Integration Services",
+                        "description": "Seamless integration of AI capabilities into existing systems and workflows"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "AI Chatbot Development",
+                        "description": "Intelligent conversational AI with custom personalities and advanced capabilities"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Red Team Services",
+                        "description": "Adversarial testing to expose vulnerabilities in AI systems"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Blue Team Services",
+                        "description": "Defensive AI security and hardening to protect against attacks"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Prompt Engineering",
+                        "description": "Expert prompt design and optimization to unlock AI's full potential"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "AI Training",
+                        "description": "Custom model fine-tuning and training on specific data and use cases"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Specialized AI Agents",
+                        "description": "Purpose-built AI agents designed for specific tasks and unique requirements"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.unityailab.com/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://www.unityailab.com/services/"
+            }
+        ]
+    }
+    </script>
+  <link rel="stylesheet" crossorigin href="../assets/styles-3Udimddt.css">
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Animated Background -->
+    <div class="background-overlay"></div>
+    <div class="red-streaks"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand gothic-logo" href="../">
+                <i class="fas fa-brain" aria-hidden="true"></i>
+                <span>UNITYAILAB</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../ai">AI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../apps">Apps</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../projects">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+
+    <!-- Page Header -->
+    <section class="page-header py-5">
+        <div class="container">
+            <div class="row text-center" style="margin-top: 100px;">
+                <div class="col-lg-12">
+                    <h1 class="display-3 mb-4" data-aos="fade-up">
+                        <span class="decorative-text">Our Services</span>
+                    </h1>
+                    <p class="lead" data-aos="fade-up" data-aos-delay="100" style="color: #cccccc; max-width: 800px; margin: 0 auto;">
+                        Professional AI solutions with an unconventional approach. We push boundaries, break limitations, and build AI systems that go beyond the ordinary.
+                    </p>
+                    <div class="decorative-line mt-4" data-aos="fade-up" data-aos-delay="200"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Services Category -->
+    <section class="category-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <h2 class="category-title" data-aos="fade-right">
+                        <i class="fas fa-shield-alt me-3"></i>Security Services
+                    </h2>
+                    <p class="category-description" data-aos="fade-right" data-aos-delay="100">
+                        Offensive and defensive AI security testing to fortify your systems against exploits and vulnerabilities.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Red Team Services -->
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="service-card" onclick="openServiceModal('redteam')">
+                        <i class="fas fa-user-secret service-icon" style="color: #dc143c;"></i>
+                        <h3>Red Team Services</h3>
+                        <p>Adversarial testing to expose vulnerabilities and jailbreak attempts in your AI systems.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Blue Team Services -->
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="service-card" onclick="openServiceModal('blueteam')">
+                        <i class="fas fa-shield-halved service-icon" style="color: #4169e1;"></i>
+                        <h3>Blue Team Services</h3>
+                        <p>Defensive AI security and hardening to protect against attacks and maintain safe operations.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Services Category -->
+    <section class="category-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <h2 class="category-title" data-aos="fade-right">
+                        <i class="fas fa-code me-3"></i>Development Services
+                    </h2>
+                    <p class="category-description" data-aos="fade-right" data-aos-delay="100">
+                        Custom AI development solutions tailored to your unique needs and workflows.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- AI Integration -->
+                <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="service-card" onclick="openServiceModal('integration')">
+                        <i class="fas fa-plug service-icon" style="color: #32cd32;"></i>
+                        <h3>AI Integration</h3>
+                        <p>Seamless integration of AI capabilities into your existing systems and workflows.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Chatbot Development -->
+                <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="service-card" onclick="openServiceModal('chatbot')">
+                        <i class="fas fa-comments service-icon" style="color: #ff69b4;"></i>
+                        <h3>Chatbot Development</h3>
+                        <p>Intelligent conversational AI that goes beyond basic responses with custom personalities.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Specialized Agents -->
+                <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="service-card" onclick="openServiceModal('agents')">
+                        <i class="fas fa-robot service-icon" style="color: #ffa500;"></i>
+                        <h3>Specialized Agents</h3>
+                        <p>Purpose-built AI agents designed for specific tasks and unique requirements.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Training & Optimization Category -->
+    <section class="category-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <h2 class="category-title" data-aos="fade-right">
+                        <i class="fas fa-graduation-cap me-3"></i>Training & Optimization
+                    </h2>
+                    <p class="category-description" data-aos="fade-right" data-aos-delay="100">
+                        Expert optimization and training services to maximize your AI's performance and capabilities.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Prompt Engineering -->
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="service-card" onclick="openServiceModal('prompting')">
+                        <i class="fas fa-wand-magic-sparkles service-icon" style="color: #9370db;"></i>
+                        <h3>Prompt Engineering</h3>
+                        <p>Expert prompt design and optimization to unlock your AI's full potential.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- AI Training -->
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="service-card" onclick="openServiceModal('training')">
+                        <i class="fas fa-brain service-icon" style="color: #00ced1;"></i>
+                        <h3>AI Training</h3>
+                        <p>Custom model fine-tuning and training on your specific data and use cases.</p>
+                        <span class="learn-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA Section -->
+    <section id="contact-cta" class="contact-section py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-12">
+                    <h2 class="section-title" data-aos="fade-up">
+                        <span class="decorative-text">Get Started</span>
+                    </h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Ready to push boundaries? Contact us about your project.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <form class="contact-form" id="serviceContactForm" data-aos="fade-up" data-aos-delay="200">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="contactName" class="visually-hidden">Your Name</label>
+                                <input type="text" id="contactName" class="form-control gothic-input" placeholder="Your Name" required aria-required="true">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contactEmail" class="visually-hidden">Your Email</label>
+                                <input type="email" id="contactEmail" class="form-control gothic-input" placeholder="Your Email" required aria-required="true">
+                            </div>
+                            <div class="col-12">
+                                <label for="serviceSelect" class="visually-hidden">Select a Service</label>
+                                <select id="serviceSelect" class="form-control gothic-input" required aria-required="true">
+                                    <option value="" disabled selected>Select a Service</option>
+                                    <option value="Red Team Services">Red Team Services</option>
+                                    <option value="Blue Team Services">Blue Team Services</option>
+                                    <option value="AI Integration">AI Integration</option>
+                                    <option value="Chatbot Development">Chatbot Development</option>
+                                    <option value="Specialized Agents">Specialized Agents</option>
+                                    <option value="Prompt Engineering">Prompt Engineering</option>
+                                    <option value="AI Training">AI Training</option>
+                                    <option value="General Inquiry">General Inquiry</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="contactSubject" class="visually-hidden">Subject</label>
+                                <input type="text" id="contactSubject" class="form-control gothic-input" placeholder="Subject" required aria-required="true">
+                            </div>
+                            <div class="col-12">
+                                <label for="contactMessage" class="visually-hidden">Tell us about your project</label>
+                                <textarea id="contactMessage" class="form-control gothic-input" rows="5" placeholder="Tell us about your project..." required aria-required="true"></textarea>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-gothic-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section py-4" role="contentinfo" aria-label="Site footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <h5 class="gothic-logo mb-3">
+                        <i class="fas fa-brain" aria-hidden="true"></i> UnityAILab
+                    </h5>
+                    <p class="footer-text">Chaos, creativity, and AI without limits.</p>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="../ai">AI</a></li>
+                        <li><a href="../about">About</a></li>
+                        <li><a href="../apps">Apps</a></li>
+                        <li><a href="../services">Services</a></li>
+                        <li><a href="../projects">Projects</a></li>
+                        <li><a href="../contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Connect</h6>
+                    <div class="social-links">
+                        <a href="https://github.com/Unity-Lab-AI"><i class="fab fa-github"></i></a>
+                        <a href="https://discord.gg/unityailab"><i class="fab fa-discord"></i></a>
+                        <a href="https://unity.unityailab.com"><i class="fas fa-comments"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="copyright">&copy; 2024 UnityAILab. Pushing boundaries, breaking limits.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Service Modals -->
+    <div id="serviceModal" class="service-modal">
+        <div class="service-modal-content">
+            <button class="service-modal-close" onclick="closeServiceModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="service-modal-header">
+                <i id="modalIcon" class="service-modal-icon"></i>
+                <h2 id="modalTitle" class="service-modal-title"></h2>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (local) -->
+    <script src="../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS Animation Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../script.js"></script>
+
+    <!-- Services Page Specific JavaScript -->
+    <script>
+        // Service Modal Data
+        const serviceData = {
+            redteam: {
+                icon: 'fas fa-user-secret',
+                color: '#dc143c',
+                title: 'Red Team Services',
+                description: 'Our red team specialists conduct comprehensive adversarial testing on your AI systems to identify vulnerabilities, test guardrails, and expose potential jailbreak vectors. We employ advanced prompt injection techniques, context manipulation, and creative exploitation methods to ensure your AI can withstand real-world attacks. Our testing goes beyond standard security audits to include social engineering scenarios, edge case discovery, and systematic boundary testing.',
+                benefits: [
+                    'Identify critical vulnerabilities before they\'re exploited',
+                    'Improve system robustness against adversarial attacks',
+                    'Understand your AI\'s failure modes and limitations',
+                    'Receive detailed reports with actionable remediation steps',
+                    'Test against real-world jailbreak techniques',
+                    'Validate safety guardrails and content filters'
+                ],
+                useCases: [
+                    'Pre-deployment security validation',
+                    'Ongoing security assessments for production systems',
+                    'Compliance and regulatory readiness',
+                    'Competitive analysis of AI safety measures',
+                    'Training data for blue team defenders'
+                ],
+                technical: [
+                    'Prompt injection and manipulation testing',
+                    'Context overflow and memory exploitation',
+                    'Guardrail bypass and jailbreak attempts',
+                    'Multi-turn conversation vulnerabilities',
+                    'Role-play and persona injection attacks',
+                    'Output validation and filter evasion',
+                    'Chain-of-thought exploitation techniques'
+                ]
+            },
+            blueteam: {
+                icon: 'fas fa-shield-halved',
+                color: '#4169e1',
+                title: 'Blue Team Services',
+                description: 'Our blue team provides defensive AI security services, implementing robust safeguards and monitoring systems to protect your AI deployments. We design and implement multi-layered defense strategies including input validation, output filtering, content moderation, and real-time threat detection. Our approach combines proactive hardening with reactive monitoring to ensure your AI systems remain secure and compliant.',
+                benefits: [
+                    'Prevent exploitation attempts before they succeed',
+                    'Maintain safe and compliant AI operations',
+                    'Implement industry-leading security practices',
+                    'Real-time threat detection and response',
+                    'Reduce risk of reputational damage',
+                    'Build user trust through demonstrable safety'
+                ],
+                useCases: [
+                    'AI system hardening and fortification',
+                    'Compliance with AI safety regulations',
+                    'Content moderation and filtering',
+                    'Production monitoring and incident response',
+                    'Safety-critical AI deployments'
+                ],
+                technical: [
+                    'Input sanitization and validation layers',
+                    'Output filtering and content moderation',
+                    'Rate limiting and abuse prevention',
+                    'Anomaly detection and behavioral monitoring',
+                    'Safety classifier integration',
+                    'Prompt template hardening',
+                    'Context isolation and sandboxing techniques'
+                ]
+            },
+            integration: {
+                icon: 'fas fa-plug',
+                color: '#32cd32',
+                title: 'AI Integration',
+                description: 'We provide seamless AI integration services that connect cutting-edge language models and AI capabilities into your existing systems and workflows. Our integration approach focuses on flexibility, scalability, and maintainability, ensuring your AI augmentation fits naturally into your technology stack. We handle everything from API connectivity to custom middleware development, creating robust pipelines that enhance your applications without disrupting existing operations.',
+                benefits: [
+                    'Enhance existing systems with AI capabilities',
+                    'Reduce development time and costs',
+                    'Scalable architecture for growing demands',
+                    'Maintain compatibility with legacy systems',
+                    'Future-proof integration patterns',
+                    'Minimize operational disruption'
+                ],
+                useCases: [
+                    'Adding AI chat to existing applications',
+                    'Automating content generation workflows',
+                    'Enhancing search with semantic capabilities',
+                    'Building AI-powered analytics dashboards',
+                    'Customer support automation'
+                ],
+                technical: [
+                    'RESTful API integration and middleware',
+                    'Webhook and event-driven architectures',
+                    'Custom endpoint development',
+                    'Authentication and access control',
+                    'Caching and rate limit optimization',
+                    'Error handling and fallback strategies',
+                    'Multi-model routing and load balancing'
+                ]
+            },
+            chatbot: {
+                icon: 'fas fa-comments',
+                color: '#ff69b4',
+                title: 'Chatbot Development',
+                description: 'Our chatbot development services go far beyond basic question-and-answer systems. We create intelligent conversational AI with custom personalities, domain expertise, and advanced reasoning capabilities. Whether you need a customer service bot, internal knowledge assistant, or creative companion, we build chatbots that understand context, maintain coherent conversations, and provide genuinely useful interactions. Our bots can be deployed across multiple platforms and integrate with your existing tools and databases.',
+                benefits: [
+                    'Provide 24/7 automated assistance',
+                    'Reduce support costs while improving quality',
+                    'Handle multiple conversations simultaneously',
+                    'Maintain consistent brand voice and personality',
+                    'Scale customer interactions effortlessly',
+                    'Gather valuable user insights and analytics'
+                ],
+                useCases: [
+                    'Customer service and support automation',
+                    'Internal knowledge base assistants',
+                    'E-commerce shopping assistants',
+                    'Educational and training bots',
+                    'Entertainment and creative companions'
+                ],
+                technical: [
+                    'Multi-turn conversation management',
+                    'Context window optimization',
+                    'Custom personality and persona design',
+                    'Intent classification and routing',
+                    'Sentiment analysis and tone adaptation',
+                    'Integration with databases and APIs',
+                    'Memory and state management systems'
+                ]
+            },
+            agents: {
+                icon: 'fas fa-robot',
+                color: '#ffa500',
+                title: 'Specialized Agents',
+                description: 'We design and deploy specialized AI agents tailored to your unique requirements and use cases. These purpose-built agents combine language understanding with tool use, function calling, and domain-specific knowledge to accomplish complex tasks autonomously. Our agents can interact with external systems, process multi-step workflows, and make decisions within defined parameters. From research assistants to automation agents, we build AI that works as an extension of your team.',
+                benefits: [
+                    'Automate complex, multi-step workflows',
+                    'Extend team capabilities without hiring',
+                    'Handle repetitive tasks with precision',
+                    'Operate autonomously within defined boundaries',
+                    'Integrate domain-specific expertise',
+                    'Adapt and improve through feedback'
+                ],
+                useCases: [
+                    'Research and data analysis agents',
+                    'Code generation and review assistants',
+                    'Content creation and editing workflows',
+                    'Data processing and transformation pipelines',
+                    'Monitoring and reporting automation'
+                ],
+                technical: [
+                    'Function calling and tool use frameworks',
+                    'RAG (Retrieval-Augmented Generation) systems',
+                    'Vector databases and semantic search',
+                    'Agent orchestration and chaining',
+                    'External API integration',
+                    'Feedback loops and reinforcement learning',
+                    'Task planning and execution strategies'
+                ]
+            },
+            prompting: {
+                icon: 'fas fa-wand-magic-sparkles',
+                color: '#9370db',
+                title: 'Prompt Engineering',
+                description: 'Our prompt engineering experts craft optimized prompts that unlock your AI\'s full potential while minimizing costs and maximizing output quality. We employ advanced techniques including chain-of-thought reasoning, few-shot learning, and structured output formatting to achieve superior results. Our approach combines deep understanding of model capabilities with systematic testing and refinement to develop prompt strategies that work reliably across different scenarios and scale effectively.',
+                benefits: [
+                    'Dramatically improve output quality and relevance',
+                    'Reduce token usage and operational costs',
+                    'Achieve consistent and predictable results',
+                    'Minimize hallucinations and errors',
+                    'Unlock advanced reasoning capabilities',
+                    'Transfer expertise without model training'
+                ],
+                useCases: [
+                    'Complex reasoning and analysis tasks',
+                    'Structured data extraction from text',
+                    'Content generation with specific formats',
+                    'Classification and categorization',
+                    'Creative writing with style constraints'
+                ],
+                technical: [
+                    'Chain-of-thought and reasoning frameworks',
+                    'Few-shot and zero-shot learning patterns',
+                    'System message optimization',
+                    'Structured output with JSON mode',
+                    'Role-based prompting strategies',
+                    'Temperature and sampling parameter tuning',
+                    'Prompt chaining and decomposition techniques'
+                ]
+            },
+            training: {
+                icon: 'fas fa-brain',
+                color: '#00ced1',
+                title: 'AI Training',
+                description: 'Our AI training services help you create custom models fine-tuned for your specific domain and use cases. We handle the entire training pipeline from data collection and preparation through model evaluation and deployment. Whether you need improved performance on specialized tasks, custom behavior patterns, or domain-specific knowledge, we develop training strategies that deliver measurable improvements while maintaining safety and alignment. Our approach includes careful dataset curation, systematic evaluation, and iterative refinement.',
+                benefits: [
+                    'Superior performance on domain-specific tasks',
+                    'Reduced inference costs through smaller models',
+                    'Custom behavior and output formatting',
+                    'Proprietary knowledge integration',
+                    'Better alignment with your use cases',
+                    'Competitive advantage through specialized models'
+                ],
+                useCases: [
+                    'Industry-specific language models',
+                    'Custom coding or technical assistants',
+                    'Brand voice and style adaptation',
+                    'Specialized classification tasks',
+                    'Domain knowledge integration'
+                ],
+                technical: [
+                    'Fine-tuning on custom datasets',
+                    'LoRA and parameter-efficient techniques',
+                    'Dataset preparation and curation',
+                    'Evaluation metrics and benchmarking',
+                    'Hyperparameter optimization',
+                    'Model compression and quantization',
+                    'Continuous learning and updates'
+                ]
+            }
+        };
+
+        // Open Modal
+        function openServiceModal(serviceKey) {
+            const service = serviceData[serviceKey];
+            const modal = document.getElementById('serviceModal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            // Set icon
+            modalIcon.className = 'service-modal-icon ' + service.icon;
+            modalIcon.style.color = service.color;
+
+            // Set title
+            modalTitle.textContent = service.title;
+
+            // Build body content
+            let bodyHTML = `
+                <div class="service-modal-description">
+                    ${service.description}
+                </div>
+
+                <div class="service-modal-section">
+                    <h4><i class="fas fa-check-circle me-2"></i>Key Benefits</h4>
+                    <ul>
+                        ${service.benefits.map(b => `<li>${b}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="service-modal-section">
+                    <h4><i class="fas fa-lightbulb me-2"></i>Use Cases</h4>
+                    <ul>
+                        ${service.useCases.map(u => `<li>${u}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="service-modal-section">
+                    <h4><i class="fas fa-cogs me-2"></i>Technical Approach</h4>
+                    <ul>
+                        ${service.technical.map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            modalBody.innerHTML = bodyHTML;
+
+            // Show modal
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close Modal
+        function closeServiceModal() {
+            const modal = document.getElementById('serviceModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on background click
+        document.getElementById('serviceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeServiceModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeServiceModal();
+            }
+        });
+
+        // Contact Form Handler
+        document.getElementById('serviceContactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const service = document.getElementById('serviceSelect').value;
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+
+            // Build mailto URL
+            const recipient = 'unityailabcontact@gmail.com';
+            const mailtoSubject = `[${service}] ${subject}`;
+            const mailtoBody = `Name: ${name}\nEmail: ${email}\nService: ${service}\n\nMessage:\n${message}`;
+
+            const mailtoURL = `mailto:${recipient}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+
+            // Open mailto link
+            window.location.href = mailtoURL;
+        });
+
+        // Remove FOUC class when page loads
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+    </script>
+
+<!-- Built: 2025-11-24T02:10:15.260Z | Hash: fc5a9151 -->
+</body>
+</html>
