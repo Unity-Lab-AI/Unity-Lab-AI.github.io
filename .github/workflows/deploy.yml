@@ -1,12 +1,11 @@
 name: Build and Deploy
 
-# Run on push to main/master/develop branch
+# Run on push to main/master branch only
 on:
   push:
     branches:
       - main
       - master
-      - develop
   workflow_dispatch: # Allow manual triggering
 
 # Grant necessary permissions
@@ -46,12 +45,8 @@ jobs:
 
       - name: Build with Vite
         id: build_check
-        env:
-          VITE_BASE_PATH: ${{ github.ref_name == 'develop' && '/development/' || '/' }}
         run: |
           echo "🏗️  Building with Vite..."
-          echo "📍 Base path: $VITE_BASE_PATH"
-          echo "🌿 Branch: ${{ github.ref_name }}"
           npm run build
 
           # Check if build succeeded
@@ -145,7 +140,7 @@ jobs:
               body: `${icon} **${message}**\n\n**Built with:** Vite\n**Status:** ${status.toUpperCase()}`
             });
 
-  # Job 4b: Deploy to GitHub Pages (Unified)
+  # Job 4b: Deploy to GitHub Pages
   deploy:
     name: Deploy to GitHub Pages
     needs: build
@@ -153,23 +148,6 @@ jobs:
     if: needs.build.outputs.build_status == 'success'
 
     steps:
-      - name: Checkout gh-pages branch (for main branch only)
-        if: github.ref_name == 'main' || github.ref_name == 'master'
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: gh-pages-backup
-
-      - name: Preserve /development/ folder (for main branch only)
-        if: github.ref_name == 'main' || github.ref_name == 'master'
-        run: |
-          if [ -d "gh-pages-backup/development" ]; then
-            cp -r gh-pages-backup/development /tmp/development-backup
-            echo "💾 Preserved /development/ folder"
-          else
-            echo "ℹ️  No /development/ folder to preserve"
-          fi
-
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -185,39 +163,21 @@ jobs:
           cd ..
           rm -rf artifact
 
-      - name: Restore /development/ folder (for main branch only)
-        if: github.ref_name == 'main' || github.ref_name == 'master'
-        run: |
-          if [ -d "/tmp/development-backup" ]; then
-            cp -r /tmp/development-backup dist/development
-            echo "♻️  Restored /development/ folder to deployment"
-          fi
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          destination_dir: ${{ github.ref_name == 'develop' && 'development' || '.' }}
-          keep_files: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
+          keep_files: false
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy ${{ github.ref_name }} branch'
+          commit_message: 'Deploy from main branch'
 
       - name: Report deployment success
         run: |
-          if [ "${{ github.ref_name }}" == "develop" ]; then
-            DEPLOY_URL="https://www.unityailab.com/development/"
-            DEPLOY_PATH="/development/"
-          else
-            DEPLOY_URL="https://www.unityailab.com/"
-            DEPLOY_PATH="root"
-          fi
-
           echo "🚀 DEPLOYMENT SUCCESSFUL"
           echo "================================"
           echo "Branch: ${{ github.ref_name }}"
-          echo "Deploy Path: $DEPLOY_PATH"
-          echo "URL: $DEPLOY_URL"
+          echo "URL: https://www.unityailab.com/"
           echo "Built with: Vite (optimized)"
           echo "================================"
