@@ -145,74 +145,23 @@ jobs:
               body: `${icon} **${message}**\n\n**Built with:** Vite\n**Status:** ${status.toUpperCase()}`
             });
 
-  # Job 4b: Deploy to GitHub Pages (Develop Branch)
-  deploy-develop:
-    name: Deploy to /development/
+  # Job 4b: Deploy to GitHub Pages (Unified)
+  deploy:
+    name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
-    if: needs.build.outputs.build_status == 'success' && github.ref_name == 'develop'
-
-    # Ensure only one gh-pages deployment runs at a time
-    concurrency:
-      group: "gh-pages-deployment"
-      cancel-in-progress: false
+    if: needs.build.outputs.build_status == 'success'
 
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: artifact
-
-      - name: Extract artifact
-        run: |
-          cd artifact
-          tar -xf artifact.tar
-          mkdir -p ../dist
-          mv * ../dist/ 2>/dev/null || true
-          cd ..
-          rm -rf artifact
-
-      - name: Deploy to /development/ subdirectory
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          destination_dir: development
-          keep_files: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy develop branch to /development/'
-
-      - name: Report deployment success
-        run: |
-          echo "🚀 DEPLOYMENT SUCCESSFUL"
-          echo "================================"
-          echo "Branch: develop"
-          echo "URL: https://www.unityailab.com/development/"
-          echo "Built with: Vite (optimized)"
-          echo "================================"
-
-  # Job 4c: Deploy to GitHub Pages (Main Branch)
-  deploy-main:
-    name: Deploy to Root
-    needs: build
-    runs-on: ubuntu-latest
-    if: needs.build.outputs.build_status == 'success' && (github.ref_name == 'main' || github.ref_name == 'master')
-
-    # Ensure only one gh-pages deployment runs at a time
-    concurrency:
-      group: "gh-pages-deployment"
-      cancel-in-progress: false
-
-    steps:
-      - name: Checkout gh-pages branch
+      - name: Checkout gh-pages branch (for main branch only)
+        if: github.ref_name == 'main' || github.ref_name == 'master'
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages-backup
 
-      - name: Preserve /development/ folder
+      - name: Preserve /development/ folder (for main branch only)
+        if: github.ref_name == 'main' || github.ref_name == 'master'
         run: |
           if [ -d "gh-pages-backup/development" ]; then
             cp -r gh-pages-backup/development /tmp/development-backup
@@ -236,28 +185,39 @@ jobs:
           cd ..
           rm -rf artifact
 
-      - name: Restore /development/ folder to build
+      - name: Restore /development/ folder (for main branch only)
+        if: github.ref_name == 'main' || github.ref_name == 'master'
         run: |
           if [ -d "/tmp/development-backup" ]; then
             cp -r /tmp/development-backup dist/development
             echo "♻️  Restored /development/ folder to deployment"
           fi
 
-      - name: Deploy to root directory
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          keep_files: false
+          destination_dir: ${{ github.ref_name == 'develop' && 'development' || '.' }}
+          keep_files: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy main branch to root'
+          commit_message: 'Deploy ${{ github.ref_name }} branch'
 
       - name: Report deployment success
         run: |
+          if [ "${{ github.ref_name }}" == "develop" ]; then
+            DEPLOY_URL="https://www.unityailab.com/development/"
+            DEPLOY_PATH="/development/"
+          else
+            DEPLOY_URL="https://www.unityailab.com/"
+            DEPLOY_PATH="root"
+          fi
+
           echo "🚀 DEPLOYMENT SUCCESSFUL"
           echo "================================"
           echo "Branch: ${{ github.ref_name }}"
-          echo "URL: https://www.unityailab.com/"
+          echo "Deploy Path: $DEPLOY_PATH"
+          echo "URL: $DEPLOY_URL"
           echo "Built with: Vite (optimized)"
           echo "================================"
