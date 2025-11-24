@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Cache Control - Prevent aggressive caching by GitHub Pages -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="build-timestamp" content="2025-11-24T01:59:38.044Z">
+    <meta name="build-hash" content="1d8dbe6d">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Slideshow - Unity AI Lab</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
+
+  <!-- Shared Theme -->
+  <link rel="stylesheet" href="../shared-theme.css">
+
+  <!-- App-specific styles -->
+  <style>
+    body, html {
+      background: var(--primary-black);
+      color: var(--light-grey);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .slideshow-wrapper {
+      max-width: 1600px;
+      margin: 80px auto 40px;
+      padding: 30px;
+    }
+
+    .slideshow-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .slideshow-title {
+      font-family: 'Trajan Pro', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      text-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    #slideshow-container {
+      width: 100%;
+      padding-top: 56.25%;
+      position: relative;
+      background: rgba(21, 21, 21, 0.8);
+      margin-bottom: 25px;
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    #slideshow-container:hover {
+      border-color: var(--crimson-red);
+      box-shadow: 0 15px 40px rgba(220, 20, 60, 0.3);
+    }
+
+    #slideshow-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #thumbnail-history {
+      background: rgba(21, 21, 21, 0.8);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      margin-bottom: 25px;
+    }
+
+    .thumbnail-container {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--crimson-red) rgba(21, 21, 21, 0.8);
+      padding: 10px 0;
+    }
+
+    .thumbnail {
+      flex: 0 0 160px;
+      width: 160px;
+      height: 90px;
+      object-fit: cover;
+      border: 2px solid rgba(220, 20, 60, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .thumbnail:hover {
+      border-color: var(--crimson-red);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(220, 20, 60, 0.4);
+    }
+
+    #controls {
+      background: rgba(21, 21, 21, 0.8);
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.15);
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px 0;
+    }
+
+    .control-row:first-child {
+      padding-top: 0;
+    }
+
+    .control-row + .control-row {
+      border-top: 1px solid rgba(220, 20, 60, 0.2);
+    }
+
+    #prompt-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 15px;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      background: rgba(26, 26, 26, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 8px;
+      resize: vertical;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    #prompt-textarea:focus {
+      background: rgba(26, 26, 26, 1);
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+    }
+
+    #prompt-textarea::placeholder {
+      color: rgba(204, 204, 204, 0.5);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--light-grey);
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--crimson-red);
+      cursor: pointer;
+    }
+
+    input[type="number"] {
+      width: 70px;
+      padding: 8px 12px;
+      background: rgba(26, 26, 26, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 6px;
+      text-align: center;
+      font-family: 'Trajan Pro', serif;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--crimson-red);
+      outline: none;
+    }
+
+    #loading-status {
+      color: var(--light-grey);
+      text-align: center;
+      font-family: 'Trajan Pro', serif;
+      font-style: italic;
+      min-height: 20px;
+    }
+
+    #fullscreen-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 9999;
+      cursor: pointer;
+    }
+
+    #fullscreen-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    @media (max-width: 768px) {
+      .slideshow-wrapper {
+        margin: 70px 15px 20px;
+        padding: 20px;
+      }
+
+      .slideshow-title {
+        font-size: 1.8rem;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .checkbox-group {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="unity-background-overlay"></div>
+  <div class="unity-red-streaks"></div>
+
+  <!-- Main Content -->
+  <div class="slideshow-wrapper">
+    <!-- Header -->
+    <div class="slideshow-header">
+      <h1 class="slideshow-title">AI Slideshow</h1>
+      <p class="app-subtitle">Mesmerizing AI-Generated Visual Journey</p>
+    </div>
+
+    <!-- Slideshow Display -->
+    <div id="slideshow-container">
+      <img id="slideshow-image" alt="AI Generated Slideshow Image" />
+    </div>
+
+    <!-- Thumbnail History -->
+    <div id="thumbnail-history">
+      <div class="thumbnail-container"></div>
+    </div>
+
+    <!-- Controls -->
+    <div id="controls">
+      <!-- Prompt Input -->
+      <div class="control-row">
+        <textarea
+          id="prompt-textarea"
+          class="unity-textarea"
+          placeholder="Enter your image prompt (or leave blank for Unity's twisted imagination)"
+        ></textarea>
+
+        <div class="button-group">
+          <button id="toggleButton" class="unity-btn unity-btn-primary">Stop</button>
+          <button id="fullscreenButton" class="unity-btn unity-btn-secondary">Fullscreen</button>
+        </div>
+
+        <div id="loading-status"></div>
+      </div>
+
+      <!-- Settings -->
+      <div class="control-row">
+        <select id="model-select" class="unity-select">
+          <option value="unity">Model: Unity (Default)</option>
+          <option value="flux">Flux</option>
+          <option value="flux-realism">Flux Realism</option>
+          <option value="flux-cablyai">Flux CablyAI</option>
+          <option value="flux-anime">Flux Anime</option>
+          <option value="flux-3d">Flux 3D</option>
+          <option value="any-dark">Any Dark</option>
+          <option value="flux-pro">Flux Pro</option>
+          <option value="turbo">Turbo</option>
+        </select>
+
+        <select id="aspect-ratio" class="unity-select">
+          <option value="16:9">16:9 (1920×1080)</option>
+          <option value="1:1">1:1 (2048×2048)</option>
+        </select>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="private-mode" />
+            <span>Private Mode</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="enhance-mode" />
+            <span>Enhance</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="refine-mode" />
+            <span>Refine</span>
+          </label>
+        </div>
+
+        <label class="checkbox-label">
+          Change Every:
+          <input type="number" id="intervalInput" min="5" value="30" />
+          seconds
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Container -->
+  <div id="fullscreen-container">
+    <img id="fullscreen-image" alt="Fullscreen AI Generated Image" />
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+  <!-- Unity AI Lab Navigation -->
+  <script src="../shared-nav.js"></script>
+
+  <!-- PolliLibJS -->
+  <script src="../../PolliLibJS/pollylib.js"></script>
+
+  <!-- Slideshow Functionality -->
+  <script src="slideshow.js"></script>
+
+<!-- Built: 2025-11-24T01:59:38.044Z | Hash: 1d8dbe6d -->
+</body>
+</html>
