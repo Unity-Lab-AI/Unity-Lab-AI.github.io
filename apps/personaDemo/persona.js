@@ -20,7 +20,8 @@ const imageModel = document.getElementById('imageModel');
 // Fetch Text Models
 async function fetchTextModels() {
   try {
-    const response = await polliAPI.retryRequest(`${PollinationsAPI.TEXT_API}/models`);
+    // Use direct fetch like demo page
+    const response = await fetch(`${PollinationsAPI.TEXT_API}/models?referrer=${encodeURIComponent(polliAPI.referrer)}`);
     const models = await response.json();
     textModel.innerHTML = '';
     models.forEach(model => {
@@ -37,7 +38,8 @@ async function fetchTextModels() {
 // Fetch Image Models
 async function fetchImageModels() {
   try {
-    const response = await polliAPI.retryRequest(`${PollinationsAPI.IMAGE_API}/models`);
+    // Use direct fetch like demo page
+    const response = await fetch(`${PollinationsAPI.IMAGE_API}/models?referrer=${encodeURIComponent(polliAPI.referrer)}`);
     const models = await response.json();
     imageModel.innerHTML = '';
     models.forEach(model => {
@@ -370,7 +372,8 @@ async function generateImageFromPrompt(prompt, appendToChat = true) {
   const encodedPrompt = polliAPI.encodePrompt(prompt);
   const imageUrl = `${PollinationsAPI.IMAGE_API}/prompt/${encodedPrompt}?seed=${randomSeed}&model=${selectedModel}&width=${width}&height=${height}&nofeed=true&nologo=true&enhance=false&referrer=${encodeURIComponent(polliAPI.referrer)}`;
   try {
-    const response = await polliAPI.retryRequest(imageUrl);
+    // Use direct fetch like demo page
+    const response = await fetch(imageUrl);
     if (response.ok) {
       const imageBlob = await response.blob();
       const imageObjectURL = URL.createObjectURL(imageBlob);
@@ -416,7 +419,8 @@ chatForm.onsubmit = async function(event) {
   chatOutput.innerHTML += `<p id="ai-thinking"><em>${isEvil ? 'Evil AI plotting...' : 'AI is thinking...'}</em></p>`;
   scrollToBottom();
   try {
-    const response = await polliAPI.retryRequest(PollinationsAPI.TEXT_API, {
+    // Use direct fetch like demo page
+    const response = await fetch(`${PollinationsAPI.TEXT_API}?referrer=${encodeURIComponent(polliAPI.referrer)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
