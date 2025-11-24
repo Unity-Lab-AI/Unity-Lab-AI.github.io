@@ -11,3 +11,6 @@ test-output*.txt
 test-output.log
 standalone-test-results.log
 *.log
+
+# Claude personal
+.claude/
