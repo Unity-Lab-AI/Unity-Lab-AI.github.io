@@ -1,11 +1,12 @@
 name: Build and Deploy
 
-# Run on push to main/master branch
+# Run on push to main/master/develop branch
 on:
   push:
     branches:
       - main
       - master
+      - develop
   workflow_dispatch: # Allow manual triggering
 
 # Grant necessary permissions
@@ -16,9 +17,9 @@ permissions:
   issues: write
   pull-requests: write
 
-# Ensure only one deployment runs at a time
+# Ensure only one deployment runs at a time per branch
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref_name }}"
   cancel-in-progress: false
 
 jobs:
@@ -152,20 +153,53 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.build.outputs.build_status == 'success'
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: artifact
+
+      - name: Extract artifact
+        run: |
+          cd artifact
+          tar -xf artifact.tar
+          mv -f * ../dist/ 2>/dev/null || true
+          cd ..
+          rm -rf artifact
+
+      - name: Determine deployment path
+        id: deploy-path
+        run: |
+          if [ "${{ github.ref_name }}" == "develop" ]; then
+            echo "path=development" >> $GITHUB_OUTPUT
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/development/" >> $GITHUB_OUTPUT
+            echo "📍 Deploying to /development/ subdirectory"
+          else
+            echo "path=." >> $GITHUB_OUTPUT
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_OUTPUT
+            echo "📍 Deploying to root directory"
+          fi
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: ${{ steps.deploy-path.outputs.path }}
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
 
       - name: Report deployment success
         run: |
           echo "🚀 DEPLOYMENT SUCCESSFUL"
           echo "================================"
-          echo "URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "URL: ${{ steps.deploy-path.outputs.url }}"
           echo "Built with: Vite (optimized)"
           echo "================================"
           echo ""

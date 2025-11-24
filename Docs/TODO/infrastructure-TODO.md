@@ -90,9 +90,12 @@ This TODO covers all backend infrastructure, DevOps, security, documentation, an
 ---
 
 ### P1 CI/CD
-**Status:** Partial (GitHub workflow exists for cache-busting)
+**Status:** Partial (GitHub workflow exists for dual-branch deployment)
 
 - [x] Basic deployment workflow (`.github/workflows/deploy.yml`)
+  - [x] Main branch deploys to root
+  - [x] Develop branch deploys to /development/ subdirectory
+  - [x] Separate concurrency groups per branch
 - [ ] Lint and type-check
   - [ ] ESLint for JavaScript
   - [ ] Pylint/Black for Python
