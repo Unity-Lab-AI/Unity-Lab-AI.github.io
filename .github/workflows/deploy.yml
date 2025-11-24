@@ -51,8 +51,12 @@ jobs:
 
       - name: Build with Vite
         id: build_check
+        env:
+          VITE_BASE_PATH: ${{ github.ref_name == 'develop' && '/development/' || '/' }}
         run: |
           echo "🏗️  Building with Vite..."
+          echo "📍 Base path: $VITE_BASE_PATH"
+          echo "🌿 Branch: ${{ github.ref_name }}"
           npm run build
 
           # Check if build succeeded
