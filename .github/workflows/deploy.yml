@@ -17,12 +17,6 @@ permissions:
   issues: write
   pull-requests: write
 
-# Ensure only one deployment runs at a time across ALL branches
-# This prevents main and develop from conflicting when pushing to gh-pages
-concurrency:
-  group: "gh-pages-deployment"
-  cancel-in-progress: false
-
 jobs:
   # Job 1: Build with Vite
   build:
@@ -158,6 +152,11 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.build.outputs.build_status == 'success' && github.ref_name == 'develop'
 
+    # Ensure only one gh-pages deployment runs at a time
+    concurrency:
+      group: "gh-pages-deployment"
+      cancel-in-progress: false
+
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -200,6 +199,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: needs.build.outputs.build_status == 'success' && (github.ref_name == 'main' || github.ref_name == 'master')
+
+    # Ensure only one gh-pages deployment runs at a time
+    concurrency:
+      group: "gh-pages-deployment"
+      cancel-in-progress: false
 
     steps:
       - name: Checkout gh-pages branch
