@@ -9,8 +9,9 @@ export default defineConfig({
     //   targets: []
     // })
   ],
-  // Base public path
-  base: './',
+  // Base public path - set via environment variable for branch-specific deployments
+  // Main branch: '/' (root), Develop branch: '/development/'
+  base: process.env.VITE_BASE_PATH || '/',
 
   // Build configuration
   build: {

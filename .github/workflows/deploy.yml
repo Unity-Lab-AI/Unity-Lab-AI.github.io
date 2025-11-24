@@ -51,8 +51,12 @@ jobs:
 
       - name: Build with Vite
         id: build_check
+        env:
+          VITE_BASE_PATH: ${{ github.ref_name == 'develop' && '/development/' || '/' }}
         run: |
           echo "🏗️  Building with Vite..."
+          echo "📍 Base path: $VITE_BASE_PATH"
+          echo "🌿 Branch: ${{ github.ref_name }}"
           npm run build
 
           # Check if build succeeded
@@ -146,19 +150,71 @@ jobs:
               body: `${icon} **${message}**\n\n**Built with:** Vite\n**Status:** ${status.toUpperCase()}`
             });
 
-  # Job 4b: Deploy to GitHub Pages
-  deploy:
-    name: Deploy to GitHub Pages
+  # Job 4b: Deploy to GitHub Pages (Develop Branch)
+  deploy-develop:
+    name: Deploy to /development/
     needs: build
     runs-on: ubuntu-latest
-    if: needs.build.outputs.build_status == 'success'
+    if: needs.build.outputs.build_status == 'success' && github.ref_name == 'develop'
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: artifact
+
+      - name: Extract artifact
+        run: |
+          cd artifact
+          tar -xf artifact.tar
+          mkdir -p ../dist
+          mv * ../dist/ 2>/dev/null || true
+          cd ..
+          rm -rf artifact
+
+      - name: Deploy to /development/ subdirectory
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: development
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy develop branch to /development/'
+
+      - name: Report deployment success
+        run: |
+          echo "🚀 DEPLOYMENT SUCCESSFUL"
+          echo "================================"
+          echo "Branch: develop"
+          echo "URL: https://www.unityailab.com/development/"
+          echo "Built with: Vite (optimized)"
+          echo "================================"
+
+  # Job 4c: Deploy to GitHub Pages (Main Branch)
+  deploy-main:
+    name: Deploy to Root
+    needs: build
+    runs-on: ubuntu-latest
+    if: needs.build.outputs.build_status == 'success' && (github.ref_name == 'main' || github.ref_name == 'master')
 
     steps:
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
         with:
           ref: gh-pages
-          path: gh-pages-repo
+          path: gh-pages-backup
+
+      - name: Preserve /development/ folder
+        run: |
+          if [ -d "gh-pages-backup/development" ]; then
+            cp -r gh-pages-backup/development /tmp/development-backup
+            echo "💾 Preserved /development/ folder"
+          else
+            echo "ℹ️  No /development/ folder to preserve"
+          fi
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -171,79 +227,32 @@ jobs:
           cd artifact
           tar -xf artifact.tar
           mkdir -p ../dist
-          mv -f * ../dist/ 2>/dev/null || true
+          mv * ../dist/ 2>/dev/null || true
           cd ..
           rm -rf artifact
 
-      - name: Determine deployment path and update files
-        id: deploy-path
+      - name: Restore /development/ folder to build
         run: |
-          if [ "${{ github.ref_name }}" == "develop" ]; then
-            echo "📍 Deploying develop branch to /development/ subdirectory"
-            echo "url=https://www.unityailab.com/development/" >> $GITHUB_OUTPUT
-
-            # Remove old development folder and copy new build
-            rm -rf gh-pages-repo/development
-            mkdir -p gh-pages-repo/development
-            cp -r dist/* gh-pages-repo/development/
-
-            echo "✅ Updated /development/ folder only"
-          else
-            echo "📍 Deploying main branch to root directory"
-            echo "url=https://www.unityailab.com/" >> $GITHUB_OUTPUT
-
-            # Preserve CNAME and development folder
-            if [ -f "gh-pages-repo/CNAME" ]; then
-              cp gh-pages-repo/CNAME /tmp/CNAME
-              echo "💾 Preserved CNAME file"
-            fi
-
-            if [ -d "gh-pages-repo/development" ]; then
-              mv gh-pages-repo/development /tmp/development
-              echo "💾 Preserved /development/ folder"
-            fi
-
-            # Clear root and copy new build
-            rm -rf gh-pages-repo/*
-            cp -r dist/* gh-pages-repo/
-
-            # Restore preserved files
-            if [ -f "/tmp/CNAME" ]; then
-              mv /tmp/CNAME gh-pages-repo/CNAME
-              echo "♻️  Restored CNAME file"
-            fi
-
-            if [ -d "/tmp/development" ]; then
-              mv /tmp/development gh-pages-repo/development
-              echo "♻️  Restored /development/ folder"
-            fi
-
-            echo "✅ Updated root files while preserving /development/"
+          if [ -d "/tmp/development-backup" ]; then
+            cp -r /tmp/development-backup dist/development
+            echo "♻️  Restored /development/ folder to deployment"
           fi
 
-      - name: Commit and push to gh-pages
-        run: |
-          cd gh-pages-repo
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A
-
-          if git diff --staged --quiet; then
-            echo "No changes to deploy"
-          else
-            git commit -m "Deploy from ${{ github.ref_name }} branch - $(date +'%Y-%m-%d %H:%M:%S')"
-            git push origin gh-pages
-            echo "✅ Deployed successfully"
-          fi
+      - name: Deploy to root directory
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          keep_files: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy main branch to root'
 
       - name: Report deployment success
         run: |
           echo "🚀 DEPLOYMENT SUCCESSFUL"
           echo "================================"
           echo "Branch: ${{ github.ref_name }}"
-          echo "URL: ${{ steps.deploy-path.outputs.url }}"
+          echo "URL: https://www.unityailab.com/"
           echo "Built with: Vite (optimized)"
           echo "================================"
-          echo ""
-          echo "✨ Your site is now live with the latest updates!"
-          echo "📦 Bundled, minified, and optimized for production"
