@@ -87,6 +87,26 @@
         .skip-link:focus {
             top: 0;
         }
+
+        /* Total visitors counter */
+        .total-visitors-container {
+            color: var(--light-grey, #cccccc);
+            font-size: 1rem;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .total-visitors-container i {
+            color: var(--crimson-red, #dc143c);
+        }
+
+        .total-visitors-container span {
+            font-weight: 600;
+            color: var(--white, #ffffff);
+        }
     </style>
 
     <!-- JSON-LD Structured Data -->
@@ -236,6 +256,12 @@
                         </a>
                     </div>
 
+                    <!-- Total Visitor Counter -->
+                    <div class="total-visitors-container mt-4" data-aos="fade-up" data-aos-delay="500">
+                        <i class="fas fa-users"></i>
+                        <span id="totalVisitorCount">Loading...</span> total unique visitors
+                    </div>
+
                     <!-- Decorative Elements -->
                     <div class="decorative-line mt-5"></div>
                 </div>
@@ -377,6 +403,9 @@
     <!-- AOS Animation Library JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
+    <!-- Visitor Tracking System -->
+    <script src="visitor-tracking.js"></script>
+
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
 
@@ -384,6 +413,28 @@
     <script>
         window.addEventListener('load', function() {
             document.body.classList.add('loaded');
+        });
+
+        // Load total visitor count
+        document.addEventListener('DOMContentLoaded', function() {
+            const countElement = document.getElementById('totalVisitorCount');
+            if (!countElement || typeof VisitorTracking === 'undefined') {
+                return;
+            }
+
+            // Fetch total count across all tracked pages
+            VisitorTracking.getTotalVisitorCount(['demo', 'apps']).then(data => {
+                if (data && typeof data.total_unique === 'number') {
+                    countElement.textContent = data.total_unique;
+                    console.log('Total unique visitors:', data.total_unique);
+                    console.log('Breakdown:', data.breakdown);
+                } else {
+                    countElement.textContent = '0';
+                }
+            }).catch(error => {
+                console.error('Failed to load total visitor count:', error);
+                countElement.textContent = '0';
+            });
         });
     </script>
 </body>

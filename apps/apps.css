@@ -136,3 +136,246 @@
         font-size: 1.4rem;
     }
 }
+
+/* ===================================
+   Age Verification System
+   =================================== */
+
+/* Verification backdrop overlay */
+.verification-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeInBackdrop 0.3s ease forwards;
+}
+
+@keyframes fadeInBackdrop {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Verification popup container */
+.verification-popup {
+    position: relative;
+    background: rgba(26, 26, 26, 0.98);
+    border: 2px solid var(--crimson-red, #dc143c);
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(220, 20, 60, 0.6);
+    text-align: center;
+    animation: popupSlideIn 0.4s ease;
+    z-index: 9999;
+}
+
+@keyframes popupSlideIn {
+    from {
+        transform: translateY(-50px) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Popup title */
+.verification-popup h2 {
+    font-family: 'Trajan Pro', serif;
+    font-size: 1.8rem;
+    color: var(--white, #ffffff);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Popup text */
+.verification-popup p {
+    font-size: 1.1rem;
+    color: var(--light-grey, #cccccc);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* Popup buttons */
+.verification-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.verification-btn {
+    padding: 15px 40px;
+    font-family: 'Trajan Pro', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 2px solid;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.verification-btn.yes {
+    border-color: var(--crimson-red, #dc143c);
+    color: var(--white, #ffffff);
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.6) 0%, rgba(220, 20, 60, 0.6) 100%);
+}
+
+.verification-btn.yes:hover {
+    background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+    box-shadow: 0 5px 20px rgba(220, 20, 60, 0.6);
+    transform: translateY(-2px);
+}
+
+.verification-btn.no {
+    border-color: rgba(204, 204, 204, 0.5);
+    color: var(--light-grey, #cccccc);
+}
+
+.verification-btn.no:hover {
+    border-color: var(--light-grey, #cccccc);
+    background: rgba(204, 204, 204, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Age input form */
+.age-input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.age-input-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.age-select-wrapper {
+    flex: 1;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.age-select-label {
+    font-size: 0.85rem;
+    color: var(--light-grey, #cccccc);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.age-select {
+    width: 100%;
+    background: rgba(42, 42, 42, 0.9);
+    border: 1px solid rgba(220, 20, 60, 0.3);
+    color: var(--light-grey, #cccccc);
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Trajan Pro', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23dc143c%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    padding-right: 35px;
+}
+
+.age-select:hover {
+    border-color: var(--crimson-red, #dc143c);
+}
+
+.age-select:focus {
+    border-color: var(--crimson-red, #dc143c);
+    box-shadow: 0 0 10px rgba(220, 20, 60, 0.4);
+}
+
+.age-select option {
+    background: rgba(42, 42, 42, 0.95);
+    color: var(--light-grey, #cccccc);
+}
+
+.verification-btn.submit {
+    width: 100%;
+    border-color: var(--crimson-red, #dc143c);
+    color: var(--white, #ffffff);
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.6) 0%, rgba(220, 20, 60, 0.6) 100%);
+}
+
+.verification-btn.submit:hover {
+    background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+    box-shadow: 0 5px 20px rgba(220, 20, 60, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Disabled state for main content during verification */
+#main-content.verification-disabled {
+    pointer-events: none;
+    filter: blur(5px);
+    opacity: 0.6;
+}
+
+/* Responsive verification popups */
+@media (max-width: 768px) {
+    .verification-popup {
+        padding: 30px 20px;
+        max-width: 90%;
+    }
+
+    .verification-popup h2 {
+        font-size: 1.4rem;
+    }
+
+    .verification-popup p {
+        font-size: 1rem;
+    }
+
+    .verification-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .verification-btn {
+        width: 100%;
+        padding: 12px 20px;
+    }
+
+    .age-input-row {
+        flex-direction: column;
+    }
+
+    .age-select-wrapper {
+        width: 100%;
+    }
+}
