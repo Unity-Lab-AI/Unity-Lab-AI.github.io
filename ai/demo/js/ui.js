@@ -22,53 +22,70 @@ export function setupEventListeners(
     handleSlashCommandInput
 ) {
     // Send button
-    document.getElementById('sendButton').addEventListener('click', () => sendMessage());
+    const sendButton = document.getElementById('sendButton');
+    if (sendButton) {
+        sendButton.addEventListener('click', () => sendMessage());
+    }
 
     // Message input - Enter to send, Shift+Enter for new line
     const messageInput = document.getElementById('messageInput');
-    messageInput.addEventListener('keydown', (e) => {
-        // Handle autocomplete navigation
-        if (handleAutocompleteNavigation(e)) {
-            return; // Autocomplete handled the event
-        }
+    if (messageInput) {
+        messageInput.addEventListener('keydown', (e) => {
+            // Handle autocomplete navigation
+            if (handleAutocompleteNavigation(e)) {
+                return; // Autocomplete handled the event
+            }
 
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    // Auto-resize textarea and handle slash commands
-    messageInput.addEventListener('input', () => {
-        autoResizeTextarea(messageInput);
-        handleSlashCommandInput();
-    });
-
-    // Input wrapper click - focus on textarea
-    const inputWrapper = document.querySelector('.input-wrapper');
-    if (inputWrapper) {
-        inputWrapper.addEventListener('click', (e) => {
-            // Don't focus if clicking the send button
-            if (!e.target.closest('.send-button')) {
-                messageInput.focus();
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
         });
+
+        // Auto-resize textarea and handle slash commands
+        messageInput.addEventListener('input', () => {
+            autoResizeTextarea(messageInput);
+            handleSlashCommandInput();
+        });
+
+        // Input wrapper click - focus on textarea
+        const inputWrapper = document.querySelector('.input-wrapper');
+        if (inputWrapper) {
+            inputWrapper.addEventListener('click', (e) => {
+                // Don't focus if clicking the send button
+                if (!e.target.closest('.send-button')) {
+                    messageInput.focus();
+                }
+            });
+        }
     }
 
     // Clear session button
-    document.getElementById('clearSession').addEventListener('click', () => clearSession());
+    const clearSessionBtn = document.getElementById('clearSession');
+    if (clearSessionBtn) {
+        clearSessionBtn.addEventListener('click', () => clearSession());
+    }
 
     // Stop talking button
-    document.getElementById('stopTalking').addEventListener('click', () => stopVoicePlayback());
+    const stopTalkingBtn = document.getElementById('stopTalking');
+    if (stopTalkingBtn) {
+        stopTalkingBtn.addEventListener('click', () => stopVoicePlayback());
+    }
 
     // Delete all data button
-    document.getElementById('deleteAllData').addEventListener('click', () => deleteAllData());
+    const deleteAllDataBtn = document.getElementById('deleteAllData');
+    if (deleteAllDataBtn) {
+        deleteAllDataBtn.addEventListener('click', () => deleteAllData());
+    }
 
     // Model info update
-    document.getElementById('modelSelect').addEventListener('change', (e) => {
-        updateModelInfo(e.target.value);
-        saveSettings();
-    });
+    const modelSelect = document.getElementById('modelSelect');
+    if (modelSelect) {
+        modelSelect.addEventListener('change', (e) => {
+            updateModelInfo(e.target.value);
+            saveSettings();
+        });
+    }
 }
 
 /**

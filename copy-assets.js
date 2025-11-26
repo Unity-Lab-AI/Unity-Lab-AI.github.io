@@ -15,6 +15,7 @@ const ASSETS_TO_COPY = [
   { src: 'vendor', dest: 'vendor', type: 'dir' },
   { src: 'fonts', dest: 'fonts', type: 'dir' },
   { src: 'PolliLibJS', dest: 'PolliLibJS', type: 'dir' },
+  { src: 'favicon.ico', dest: 'favicon.ico', type: 'file' },
   { src: 'robots.txt', dest: 'robots.txt', type: 'file' },
   { src: 'sitemap.xml', dest: 'sitemap.xml', type: 'file' },
   { src: 'BingSiteAuth.xml', dest: 'BingSiteAuth.xml', type: 'file' },
