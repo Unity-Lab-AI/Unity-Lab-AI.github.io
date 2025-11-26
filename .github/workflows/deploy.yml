@@ -141,31 +141,15 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.build.outputs.build_status == 'success'
 
+    # Required for GitHub Pages deployment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: artifact
-
-      - name: Extract artifact
-        run: |
-          cd artifact
-          tar -xf artifact.tar
-          mkdir -p ../dist
-          mv * ../dist/ 2>/dev/null || true
-          cd ..
-          rm -rf artifact
-
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          keep_files: false
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy from main branch'
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Purge Cloudflare cache
         run: |
@@ -181,7 +165,7 @@ jobs:
           echo "🚀 DEPLOYMENT SUCCESSFUL"
           echo "================================"
           echo "Branch: ${{ github.ref_name }}"
-          echo "URL: https://www.unityailab.com/"
+          echo "URL: ${{ steps.deployment.outputs.page_url }}"
           echo "Built with: Vite (optimized)"
           echo "Cache: Purged via Cloudflare API"
           echo "================================"
