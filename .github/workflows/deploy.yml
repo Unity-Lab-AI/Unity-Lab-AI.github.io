@@ -167,6 +167,15 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: 'Deploy from main branch'
 
+      - name: Purge Cloudflare cache
+        run: |
+          echo "🧹 Purging Cloudflare cache..."
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' | jq .
+          echo "✅ Cache purge requested"
+
       - name: Report deployment success
         run: |
           echo "🚀 DEPLOYMENT SUCCESSFUL"
@@ -174,4 +183,5 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "URL: https://www.unityailab.com/"
           echo "Built with: Vite (optimized)"
+          echo "Cache: Purged via Cloudflare API"
           echo "================================"
