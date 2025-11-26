@@ -51,10 +51,10 @@ function findHtmlFiles(dir) {
 }
 
 /**
- * Add cache-busting query parameters to external resources
+ * Add cache-busting query parameters to resources
  */
-function addQueryParamsToExternalResources(html) {
-  // Add cache-busting to CDN resources that don't have versioning
+function addQueryParamsToResources(html) {
+  // Add cache-busting to external CDN resources that don't have versioning
   html = html.replace(
     /(<script[^>]+src=["'])(https:\/\/[^"']+)(["'][^>]*>)/g,
     (match, prefix, url, suffix) => {
@@ -71,6 +71,30 @@ function addQueryParamsToExternalResources(html) {
     (match, prefix, url, suffix) => {
       // Skip if URL already has query parameters or is a known versioned CDN
       if (url.includes('?') || url.includes('@') || url.includes('/dist/')) {
+        return match;
+      }
+      return `${prefix}${url}?v=${BUILD_HASH}${suffix}`;
+    }
+  );
+
+  // Add cache-busting to LOCAL JS files (non-hashed ones like visitor-tracking.js, age-verification.js)
+  html = html.replace(
+    /(<script[^>]+src=["'])([^"']+\.js)(["'][^>]*>)/g,
+    (match, prefix, url, suffix) => {
+      // Skip if already has query params, is external (https://), or is a Vite-hashed asset
+      if (url.includes('?') || url.startsWith('http') || url.includes('/assets/') || url.includes('-')) {
+        return match;
+      }
+      return `${prefix}${url}?v=${BUILD_HASH}${suffix}`;
+    }
+  );
+
+  // Add cache-busting to LOCAL CSS files (non-hashed ones)
+  html = html.replace(
+    /(<link[^>]+href=["'])([^"']+\.css)(["'][^>]*>)/g,
+    (match, prefix, url, suffix) => {
+      // Skip if already has query params, is external (https://), or is a Vite-hashed asset
+      if (url.includes('?') || url.startsWith('http') || url.includes('/assets/') || url.includes('-')) {
         return match;
       }
       return `${prefix}${url}?v=${BUILD_HASH}${suffix}`;
@@ -95,8 +119,8 @@ function processHtmlFile(filePath) {
     console.warn(`    ⚠️  No <head> tag found in ${filePath}`);
   }
 
-  // Add cache-busting to external resources
-  html = addQueryParamsToExternalResources(html);
+  // Add cache-busting to all resources (external and local)
+  html = addQueryParamsToResources(html);
 
   // Add build info comment
   const buildComment = `\n<!-- Built: ${BUILD_TIMESTAMP} | Hash: ${BUILD_HASH} -->\n`;
@@ -139,7 +163,8 @@ function main() {
   console.log('  2. ✅ Pragma and Expires headers');
   console.log('  3. ✅ Build timestamp and hash in meta tags');
   console.log('  4. ✅ Query parameters added to external CDN resources');
-  console.log('  5. ✅ Vite content-hashed assets (built-in)');
+  console.log('  5. ✅ Query parameters added to local JS/CSS files');
+  console.log('  6. ✅ Vite content-hashed assets (built-in)');
   console.log('');
   console.log('🚀 Your site is now fully protected against aggressive caching!');
 }
