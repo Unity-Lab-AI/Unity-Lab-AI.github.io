@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import fs from 'fs';
 
 export default defineConfig({
   plugins: [
@@ -8,6 +9,41 @@ export default defineConfig({
     // viteStaticCopy({
     //   targets: []
     // })
+
+    // Custom plugin to handle directory URLs -> index.html
+    {
+      name: 'rewrite-middleware',
+      configureServer(server) {
+        // Use pre middleware to run before Vite's default handling
+        return () => {
+          server.middlewares.use((req, res, next) => {
+            // Skip API routes and files with extensions
+            if (!req.url || req.url.startsWith('/api/') || req.url.includes('.')) {
+              return next();
+            }
+
+            // Normalize URL path
+            let urlPath = req.url.split('?')[0]; // Remove query string
+            if (!urlPath.endsWith('/')) {
+              urlPath += '/';
+            }
+
+            const filePath = resolve(__dirname, '.' + urlPath + 'index.html');
+
+            if (fs.existsSync(filePath)) {
+              // Redirect to URL with trailing slash if needed (keeps relative paths working)
+              if (!req.url.endsWith('/') && !req.url.includes('?')) {
+                res.writeHead(302, { Location: req.url + '/' });
+                res.end();
+                return;
+              }
+              req.url = urlPath + 'index.html';
+            }
+            next();
+          });
+        };
+      },
+    },
   ],
   // Base public path
   base: './',
@@ -78,7 +114,29 @@ export default defineConfig({
     port: 3000,
     open: true,
     cors: true,
+    proxy: {
+      // Proxy API requests to avoid CORS issues in development
+      '/api/visitors': {
+        target: 'https://users.unityailab.com',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+    // Handle multi-page app routing
+    fs: {
+      strict: false,
+    },
   },
+
+  // Resolve configuration for proper page routing
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './'),
+    },
+  },
+
+  // App type for proper HTML handling
+  appType: 'mpa',
 
   // Preview server (for testing production build)
   preview: {

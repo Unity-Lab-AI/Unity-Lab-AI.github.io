@@ -555,7 +555,7 @@
             async function updateVisitorCount() {
                 try {
                     const count = await VisitorTracking.getVisitorCount('demo');
-                    if (count) {
+                    if (count !== null) {
                         // Only update if count has changed or is first load
                         if (currentCount !== count) {
                             countElement.textContent = count;

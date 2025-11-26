@@ -23,6 +23,7 @@ const ASSETS_TO_COPY = [
   { src: 'about/about.js', dest: 'about/about.js', type: 'file' },
   { src: 'ai/demo/age-verification.js', dest: 'ai/demo/age-verification.js', type: 'file' },
   { src: 'ai/demo/js/main.js', dest: 'ai/demo/js/main.js', type: 'file' },
+  { src: 'apps/age-verification.js', dest: 'apps/age-verification.js', type: 'file' },
   // Apps subdirectories (apps/index.html is handled by Vite)
   { src: 'apps/helperInterfaceDemo', dest: 'apps/helperInterfaceDemo', type: 'dir' },
   { src: 'apps/oldSiteProject', dest: 'apps/oldSiteProject', type: 'dir' },
