@@ -14,3 +14,4 @@ standalone-test-results.log
 
 # Claude personal
 .claude/
+CLAUDE.md
