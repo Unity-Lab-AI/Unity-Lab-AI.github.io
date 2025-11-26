@@ -87,6 +87,8 @@ jobs:
           cp about/about.js dist/about/ 2>/dev/null || echo "No about.js to copy"
           cp ai/demo/age-verification.js dist/ai/demo/ 2>/dev/null || echo "No age-verification.js to copy"
           cp ai/demo/js/main.js dist/ai/demo/js/ 2>/dev/null || mkdir -p dist/ai/demo/js && cp ai/demo/js/main.js dist/ai/demo/js/ || echo "No main.js to copy"
+          mkdir -p dist/apps && cp apps/age-verification.js dist/apps/ 2>/dev/null || echo "No apps/age-verification.js to copy"
+          cp apps/apps.css dist/apps/ 2>/dev/null || echo "No apps/apps.css to copy"
 
           echo "✅ Additional files copied"
 
