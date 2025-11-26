@@ -5,8 +5,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="build-timestamp" content="2025-11-24T03:53:12.078Z">
-    <meta name="build-hash" content="a2915e6e">
+    <meta name="build-timestamp" content="2025-11-26T07:57:21.808Z">
+    <meta name="build-hash" content="650fb0bd">
     <!-- Meta Tags for Cross-Browser Compatibility -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,7 +18,7 @@
     <meta name="author" content="Unity AI Lab - hackall360, GFourteen, SpongeBong">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="theme-color" content="#0a0a0a">
-    <link rel="canonical" href="https://www.unityailab.com/?v=a2915e6e">
+    <link rel="canonical" href="https://www.unityailab.com/?v=650fb0bd">
 
     <!-- Open Graph Meta Tags for Social Sharing -->
     <meta property="og:type" content="website">
@@ -48,8 +48,8 @@
     <title>Unity AI Lab - Unrestricted AI Chatbot, AI Integration Services & Red Team Testing</title>
 
     <!-- Preconnect to external resources for better performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com?v=a2915e6e">
-    <link rel="preconnect" href="https://fonts.gstatic.com?v=a2915e6e" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com?v=650fb0bd">
+    <link rel="preconnect" href="https://fonts.gstatic.com?v=650fb0bd" crossorigin>
 
     <!-- Bootstrap CSS (local) -->
 
@@ -89,6 +89,26 @@
         }
         .skip-link:focus {
             top: 0;
+        }
+
+        /* Total visitors counter */
+        .total-visitors-container {
+            color: var(--light-grey, #cccccc);
+            font-size: 1rem;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .total-visitors-container i {
+            color: var(--crimson-red, #dc143c);
+        }
+
+        .total-visitors-container span {
+            font-weight: 600;
+            color: var(--white, #ffffff);
         }
     </style>
 
@@ -240,6 +260,12 @@
                         </a>
                     </div>
 
+                    <!-- Total Visitor Counter -->
+                    <div class="total-visitors-container mt-4" data-aos="fade-up" data-aos-delay="500">
+                        <i class="fas fa-users"></i>
+                        <span id="totalVisitorCount">Loading...</span> total unique visitors
+                    </div>
+
                     <!-- Decorative Elements -->
                     <div class="decorative-line mt-5"></div>
                 </div>
@@ -381,6 +407,9 @@
     <!-- AOS Animation Library JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
+    <!-- Visitor Tracking System -->
+    <script src="visitor-tracking.js"></script>
+
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
 
@@ -389,8 +418,30 @@
         window.addEventListener('load', function() {
             document.body.classList.add('loaded');
         });
+
+        // Load total visitor count
+        document.addEventListener('DOMContentLoaded', function() {
+            const countElement = document.getElementById('totalVisitorCount');
+            if (!countElement || typeof VisitorTracking === 'undefined') {
+                return;
+            }
+
+            // Fetch total count across all tracked pages
+            VisitorTracking.getTotalVisitorCount(['demo', 'apps']).then(data => {
+                if (data && typeof data.total_unique === 'number') {
+                    countElement.textContent = data.total_unique;
+                    console.log('Total unique visitors:', data.total_unique);
+                    console.log('Breakdown:', data.breakdown);
+                } else {
+                    countElement.textContent = '0';
+                }
+            }).catch(error => {
+                console.error('Failed to load total visitor count:', error);
+                countElement.textContent = '0';
+            });
+        });
     </script>
 
-<!-- Built: 2025-11-24T03:53:12.078Z | Hash: a2915e6e -->
+<!-- Built: 2025-11-26T07:57:21.808Z | Hash: 650fb0bd -->
 </body>
 </html>
