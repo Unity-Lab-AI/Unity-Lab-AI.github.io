@@ -3,7 +3,6 @@
 <head>
     <!-- Meta Tags for Cross-Browser Compatibility -->
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://image.pollinations.ai https://*.gravatar.com https://avatars.githubusercontent.com; connect-src 'self' https://text.pollinations.ai https://image.pollinations.ai https://users.unityailab.com https://api.github.com; frame-ancestors 'none';">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 
@@ -410,33 +409,10 @@
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
 
-    <!-- Remove FOUC class when page loads -->
-    <script>
-        window.addEventListener('load', function() {
-            document.body.classList.add('loaded');
-        });
+    <!-- Home Page Initialization -->
+    <script src="home-init.js"></script>
 
-        // Load total visitor count
-        document.addEventListener('DOMContentLoaded', function() {
-            const countElement = document.getElementById('totalVisitorCount');
-            if (!countElement || typeof VisitorTracking === 'undefined') {
-                return;
-            }
-
-            // Fetch total count across all tracked pages
-            VisitorTracking.getTotalVisitorCount(['demo', 'apps']).then(data => {
-                if (data && typeof data.total_unique === 'number') {
-                    countElement.textContent = data.total_unique;
-                    console.log('Total unique visitors:', data.total_unique);
-                    console.log('Breakdown:', data.breakdown);
-                } else {
-                    countElement.textContent = '0';
-                }
-            }).catch(error => {
-                console.error('Failed to load total visitor count:', error);
-                countElement.textContent = '0';
-            });
-        });
-    </script>
+    <!-- Page Initialization -->
+    <script src="page-init.js"></script>
 </body>
 </html>

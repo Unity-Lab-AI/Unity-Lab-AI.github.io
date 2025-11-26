@@ -3,7 +3,6 @@
 <head>
     <!-- Meta Tags for Cross-Browser Compatibility -->
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://image.pollinations.ai https://*.gravatar.com https://avatars.githubusercontent.com; connect-src 'self' https://text.pollinations.ai https://image.pollinations.ai https://users.unityailab.com https://api.github.com; frame-ancestors 'none';">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 
@@ -657,34 +656,9 @@
     <script src="about.js"></script>
 
     <!-- About Contact Form Handler -->
-    <script>
-        document.getElementById('aboutContactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+    <script src="about-contact.js"></script>
 
-            const name = document.getElementById('contactName').value;
-            const email = document.getElementById('contactEmail').value;
-            const reason = document.getElementById('contactReason').value;
-            const source = document.getElementById('contactSource').value;
-            const subject = document.getElementById('contactSubject').value;
-            const message = document.getElementById('contactMessage').value;
-
-            // Build mailto URL
-            const recipient = 'unityailabcontact@gmail.com';
-            const mailtoSubject = `[${reason}] ${subject}`;
-            const mailtoBody = `Name: ${name}\nEmail: ${email}\nReason for Contact: ${reason}\nHow they heard about us: ${source}\n\nMessage:\n${message}`;
-
-            const mailtoURL = `mailto:${recipient}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
-
-            // Open mailto link
-            window.location.href = mailtoURL;
-        });
-    </script>
-
-    <!-- Remove FOUC class when page loads -->
-    <script>
-        window.addEventListener('load', function() {
-            document.body.classList.add('loaded');
-        });
-    </script>
+    <!-- Page Initialization -->
+    <script src="../page-init.js"></script>
 </body>
 </html>
