@@ -2,8 +2,8 @@
  * home-init.js - Home page initialization and visitor tracking
  */
 
-// Load total visitor count
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
+    // Load total visitor count
     var countElement = document.getElementById('totalVisitorCount');
     if (!countElement || typeof VisitorTracking === 'undefined') {
         return;
@@ -22,4 +22,4 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Failed to load total visitor count:', error);
         countElement.textContent = '0';
     });
-});
+})();

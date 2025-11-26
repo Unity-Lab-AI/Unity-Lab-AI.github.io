@@ -2,8 +2,8 @@
  * ai-init.js - AI page initialization and visitor tracking
  */
 
-// Load and auto-refresh visitor count for demo page
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
+    // Load and auto-refresh visitor count for demo page
     var countElement = document.getElementById('visitorCount');
     if (!countElement || typeof VisitorTracking === 'undefined') {
         return;
@@ -12,9 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentCount = null;
 
     // Function to fetch and update visitor count
-    async function updateVisitorCount() {
-        try {
-            var count = await VisitorTracking.getVisitorCount('demo');
+    function updateVisitorCount() {
+        VisitorTracking.getVisitorCount('demo').then(function(count) {
             if (count !== null) {
                 // Only update if count has changed or is first load
                 if (currentCount !== count) {
@@ -28,13 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentCount = '0';
                 }
             }
-        } catch (error) {
+        }).catch(function(error) {
             console.error('Failed to load visitor count:', error);
             if (currentCount === null) {
                 countElement.textContent = '0';
                 currentCount = '0';
             }
-        }
+        });
     }
 
     // Initial load
@@ -43,4 +42,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-refresh every 5 minutes (300,000 ms)
     setInterval(updateVisitorCount, 300000);
     console.log('Visitor count auto-refresh enabled (every 5 minutes)');
-});
+})();
