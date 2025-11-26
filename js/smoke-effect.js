@@ -57,9 +57,18 @@ export function initSmokeEffect() {
     var measureCanvas = document.createElement('canvas');
     var measureCtx = measureCanvas.getContext('2d');
 
+    // Check if canvas context is available
+    if (!measureCtx) {
+        console.warn('Smoke Effect: Canvas 2D context not available for text measurement');
+    }
+
     // Cache text element positions for collision detection
     function cacheTextElements() {
         textElements = [];
+
+        // Skip if no measurement context available
+        if (!measureCtx) return;
+
         var elements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, a, span, li, button, .nav-link, .section-title, .gothic-title');
 
         elements.forEach(function(el) {

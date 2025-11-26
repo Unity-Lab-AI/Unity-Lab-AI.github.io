@@ -21,6 +21,12 @@ let unitySystemPrompt = '';
  */
 export function initializePolliLib() {
     try {
+        // Check if PollinationsAPI is available (loaded from pollylib.js)
+        if (typeof PollinationsAPI === 'undefined') {
+            console.warn('PollinationsAPI not available - demo features will be disabled');
+            return { textAPI: null, imageAPI: null, voiceAPI: null };
+        }
+
         // Initialize Pollinations API (using default referrer)
         const textAPI = new PollinationsAPI();
         const imageAPI = new PollinationsAPI();

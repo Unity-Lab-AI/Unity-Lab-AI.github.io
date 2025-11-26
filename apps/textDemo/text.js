@@ -4,6 +4,17 @@
 // Initialize PolliLibJS API
 const polliAPI = new PollinationsAPI();
 
+// Sanitize HTML to prevent XSS attacks
+function sanitizeHTML(html) {
+    if (typeof DOMPurify !== 'undefined') {
+        return DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'a', 'code', 'pre', 'ul', 'ol', 'li', 'blockquote', 'img', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+            ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'crossorigin', 'loading', 'data-mime']
+        });
+    }
+    return html;
+}
+
 const BASE_INSTRUCTIONS = `
 I can help format code examples using [CODE] and [/CODE] tags. I will only use these tags for actual code examples.
 When providing image URLs, please output them as plain URLs (e.g., https://image.pollinations.ai/prompt/your_prompt?params) without wrapping them in [CODE] tags so they display as images in the chat.
@@ -226,7 +237,7 @@ async function sendChatMessage(prompt, retryCount = 0) {
     };
   }
 
-  chatOutput.innerHTML += `<p><strong>User:</strong> ${processResponse(prompt)}</p>`;
+  chatOutput.innerHTML += sanitizeHTML(`<p><strong>User:</strong> ${processResponse(prompt)}</p>`);
   scrollToBottom();
 
   const thinkingElement = document.createElement('p');
@@ -280,7 +291,7 @@ async function sendChatMessage(prompt, retryCount = 0) {
       thinkingElem.remove();
     }
 
-    chatOutput.innerHTML += `<p><strong>AI:</strong> ${processResponse(aiResponse)}</p>`;
+    chatOutput.innerHTML += sanitizeHTML(`<p><strong>AI:</strong> ${processResponse(aiResponse)}</p>`);
     scrollToBottom();
 
     updateConversationHistory(prompt, aiResponse);
@@ -314,7 +325,7 @@ userInput.addEventListener('keydown', function(e) {
 });
 
 clearChatBtn.addEventListener('click', function() {
-  chatOutput.innerHTML = '<p>Please select a chat persona and type your message below to begin the interaction.</p>';
+  chatOutput.innerHTML = sanitizeHTML('<p>Please select a chat persona and type your message below to begin the interaction.</p>');
   chatOutput.classList.add('empty');
   conversationHistory = [];
 });

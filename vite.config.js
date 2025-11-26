@@ -77,9 +77,13 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor';
           }
-          // Shared modules
-          if (id.includes('js/')) {
-            return 'shared';
+          // Demo-specific modules - keep separate from main site
+          if (id.includes('ai/demo/js/')) {
+            return 'demo';
+          }
+          // Main site shared modules (from /js/ directory)
+          if (id.includes('/js/') && !id.includes('ai/demo/js/')) {
+            return 'main-shared';
           }
         },
       },
