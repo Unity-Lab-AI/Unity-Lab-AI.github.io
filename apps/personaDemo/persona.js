@@ -4,6 +4,17 @@
 // Initialize PolliLibJS API
 const polliAPI = new PollinationsAPI();
 
+// Sanitize HTML to prevent XSS attacks
+function sanitizeHTML(html) {
+    if (typeof DOMPurify !== 'undefined') {
+        return DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'a', 'code', 'pre', 'ul', 'ol', 'li', 'blockquote', 'img', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+            ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'crossorigin', 'loading']
+        });
+    }
+    return html;
+}
+
 // Settings Toggle
 const settingsToggle = document.getElementById('settingsToggle');
 const settingsPanel = document.getElementById('settingsPanel');
@@ -353,7 +364,7 @@ textModel.addEventListener('change', function() {
     role: 'system',
     content: modelType === 'midijourney' ? midijourneySystemPrompt : systemMessage.content
   }];
-  chatOutput.innerHTML += `<p><em>Switched to ${textModel.value} model. ${modelType === 'midijourney' ? 'Starting Midijourney context...' : 'Starting new conversation with system context.'}</em></p>`;
+  chatOutput.innerHTML += sanitizeHTML(`<p><em>Switched to ${textModel.value} model. ${modelType === 'midijourney' ? 'Starting Midijourney context...' : 'Starting new conversation with system context.'}</em></p>`);
   scrollToBottom();
 });
 
@@ -378,7 +389,7 @@ async function generateImageFromPrompt(prompt, appendToChat = true) {
       const imageBlob = await response.blob();
       const imageObjectURL = URL.createObjectURL(imageBlob);
       if (appendToChat) {
-        chatOutput.innerHTML += `<img src="${imageObjectURL}" alt="Generated Image" class="inline ${cssClass}">`;
+        chatOutput.innerHTML += sanitizeHTML(`<img src="${imageObjectURL}" alt="Generated Image" class="inline ${cssClass}">`);
         scrollToBottom();
       }
       return imageObjectURL;
@@ -387,7 +398,7 @@ async function generateImageFromPrompt(prompt, appendToChat = true) {
     }
   } catch (error) {
     console.error("Error generating image:", error);
-    chatOutput.innerHTML += `<p><strong>Error:</strong> Unable to generate image. Please try again.</p>`;
+    chatOutput.innerHTML += sanitizeHTML(`<p><strong>Error:</strong> Unable to generate image. Please try again.</p>`);
     scrollToBottom();
   }
 }
@@ -400,7 +411,7 @@ chatForm.onsubmit = async function(event) {
   const selectedModel = textModel.value;
   const isEvil = selectedModel === 'evil';
   const modelType = getModelType(selectedModel);
-  chatOutput.innerHTML += `<p><strong>${isEvil ? 'Evil User' : 'User'}:</strong> ${prompt}</p>`;
+  chatOutput.innerHTML += sanitizeHTML(`<p><strong>${isEvil ? 'Evil User' : 'User'}:</strong> ${prompt}</p>`);
   userInput.value = '';
   scrollToBottom();
   if (modelType === 'chat' || isEvil) {
@@ -416,7 +427,7 @@ chatForm.onsubmit = async function(event) {
     messages: getModelMessages(modelType, prompt),
     model: selectedModel
   };
-  chatOutput.innerHTML += `<p id="ai-thinking"><em>${isEvil ? 'Evil AI plotting...' : 'AI is thinking...'}</em></p>`;
+  chatOutput.innerHTML += sanitizeHTML(`<p id="ai-thinking"><em>${isEvil ? 'Evil AI plotting...' : 'AI is thinking...'}</em></p>`);
   scrollToBottom();
   try {
     // Use direct fetch like demo page
@@ -447,16 +458,16 @@ chatForm.onsubmit = async function(event) {
           .trim();
         aiResponse = aiResponse.replace(/\n+/g, '\n').trim();
         if (aiResponse) {
-          chatOutput.innerHTML += `<p><strong>${isEvil ? 'Evil AI' : 'AI'}:</strong> ${aiResponse}</p>`;
+          chatOutput.innerHTML += sanitizeHTML(`<p><strong>${isEvil ? 'Evil AI' : 'AI'}:</strong> ${aiResponse}</p>`);
           scrollToBottom();
         }
-        chatOutput.innerHTML += `<p>${isEvil ? 'Summoning evil image...' : 'Generating image...'}</p>`;
+        chatOutput.innerHTML += sanitizeHTML(`<p>${isEvil ? 'Summoning evil image...' : 'Generating image...'}</p>`);
         scrollToBottom();
         await generateImageFromPrompt(lastImagePrompt);
         if (midiNotation && modelType === 'midijourney') {
           console.log("\n=== PLAYING MIDI SEQUENCE ===");
           console.log("MIDI Notation:", midiNotation);
-          chatOutput.innerHTML += `<p>Playing musical sequence...</p>`;
+          chatOutput.innerHTML += sanitizeHTML(`<p>Playing musical sequence...</p>`);
           scrollToBottom();
           downloadMidiBtn.disabled = false;
           synth.playMidiSequence(midiNotation);
@@ -467,12 +478,12 @@ chatForm.onsubmit = async function(event) {
       }
     } else if (isEvil) {
       aiResponse = aiResponse.replace(/\n+/g, '\n').trim();
-      chatOutput.innerHTML += `<p><strong>Evil AI:</strong> ${aiResponse}</p>`;
-      chatOutput.innerHTML += `<p><em>Evil AI failed to use proper image format. Next response should include ![MRKDWN]()</em></p>`;
+      chatOutput.innerHTML += sanitizeHTML(`<p><strong>Evil AI:</strong> ${aiResponse}</p>`);
+      chatOutput.innerHTML += sanitizeHTML(`<p><em>Evil AI failed to use proper image format. Next response should include ![MRKDWN]()</em></p>`);
       scrollToBottom();
     } else {
       aiResponse = aiResponse.replace(/\n+/g, '\n').trim();
-      chatOutput.innerHTML += `<p><strong>AI:</strong> ${aiResponse}</p>`;
+      chatOutput.innerHTML += sanitizeHTML(`<p><strong>AI:</strong> ${aiResponse}</p>`);
       scrollToBottom();
     }
     if (modelType === 'chat' || isEvil) {
@@ -487,7 +498,7 @@ chatForm.onsubmit = async function(event) {
   } catch (error) {
     console.error("Error:", error);
     const errorMessage = isEvil ? 'The darkness is temporarily unavailable. Please try again.' : 'Unable to contact AI. Please try again.';
-    chatOutput.innerHTML += `<p><strong>Error:</strong> ${errorMessage}</p>`;
+    chatOutput.innerHTML += sanitizeHTML(`<p><strong>Error:</strong> ${errorMessage}</p>`);
     scrollToBottom();
     const thinkingMessage = document.getElementById("ai-thinking");
     if (thinkingMessage) {
@@ -502,7 +513,7 @@ directImageButton.onclick = async function() {
   if (!prompt && !lastImagePrompt) return;
   const rawPrompt = prompt || lastImagePrompt;
   lastImagePrompt = rawPrompt;
-  chatOutput.innerHTML += `<p>${textModel.value === 'evil' ? 'Summoning evil direct image...' : 'Generating direct image...'}</p>`;
+  chatOutput.innerHTML += sanitizeHTML(`<p>${textModel.value === 'evil' ? 'Summoning evil direct image...' : 'Generating direct image...'}</p>`);
   scrollToBottom();
   await generateImageFromPrompt(rawPrompt);
   userInput.value = '';

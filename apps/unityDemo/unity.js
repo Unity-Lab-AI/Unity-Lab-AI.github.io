@@ -4,6 +4,17 @@
 // Initialize PolliLibJS API client
 const polliAPI = new PollinationsAPI();
 
+// Sanitize HTML to prevent XSS attacks
+function sanitizeHTML(html) {
+    if (typeof DOMPurify !== 'undefined') {
+        return DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'a', 'code', 'pre', 'ul', 'ol', 'li', 'blockquote', 'img', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'button'],
+            ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'style', 'onclick', 'title', 'data-mime']
+        });
+    }
+    return html;
+}
+
 const DEFAULT_INSTRUCTION = "All code must be wrapped in [CODE]...[/CODE] tags." +
   `When generating images, selfies, pics, photographs, ect  show them using format: ${PollinationsAPI.IMAGE_API}/prompt/your%20image-prompt-with-visual-style%20here?width=512&height=512&nologo=true&base=beesknees&private=true&seed={random}&enhance=false&model=Unity&referrer=${encodeURIComponent(polliAPI.referrer)} plus your response.\n\n` +
   "Code format: [CODE]code here[/CODE] with your response.\n\n" +
@@ -428,7 +439,7 @@ async function sendMessage(message) {
   userAvatar.innerHTML = `<img src="https://www.gravatar.com/avatar/?d=mp" alt="User">`;
   const userContent = document.createElement("div");
   userContent.className = "message-content";
-  userContent.innerHTML = imageHtml + processMessage(finalMessage);
+  userContent.innerHTML = sanitizeHTML(imageHtml + processMessage(finalMessage));
   userDiv.appendChild(userAvatar);
   userDiv.appendChild(userContent);
   chatBox.appendChild(userDiv);
@@ -457,7 +468,7 @@ async function sendMessage(message) {
     aiDiv.className = "message ai-message";
     const aiAvatar = document.createElement("div");
     aiAvatar.className = "message-avatar";
-    aiAvatar.innerHTML = `<img src="${await getModelAvatar(selectedModel)}" alt="Assistant">`;
+    aiAvatar.innerHTML = sanitizeHTML(`<img src="${await getModelAvatar(selectedModel)}" alt="Assistant">`);
     const aiContent = document.createElement("div");
     aiContent.className = "message-content";
     aiDiv.appendChild(aiAvatar);
@@ -470,7 +481,7 @@ async function sendMessage(message) {
       if (done) break;
       const text = new TextDecoder().decode(value);
       accumulatedResponse += text;
-      aiContent.innerHTML = processMessage(accumulatedResponse);
+      aiContent.innerHTML = sanitizeHTML(processMessage(accumulatedResponse));
       chatBox.scrollTo({
         top: chatBox.scrollHeight,
         behavior: "instant"
@@ -926,7 +937,7 @@ function fadeOutAndClear() {
     }, index * 50);
   });
   setTimeout(() => {
-    chatBox.innerHTML = "";
+    chatBox.innerHTML = sanitizeHTML("");
     clearCodePanel();
   }, messages.length * 50 + 300);
 }
@@ -938,12 +949,12 @@ function createMessage(type, content) {
   if (type === "ai") {
     const avatar = document.createElement("div");
     avatar.className = "message-avatar";
-    avatar.innerHTML = `<img src="${getUnityAvatar()}" alt="Unity">`;
+    avatar.innerHTML = sanitizeHTML(`<img src="${getUnityAvatar()}" alt="Unity">`);
     div.appendChild(avatar);
   }
   const contentDiv = document.createElement("div");
   contentDiv.className = "message-content";
-  contentDiv.innerHTML = content;
+  contentDiv.innerHTML = sanitizeHTML(content);
   div.appendChild(contentDiv);
   setTimeout(() => {
     div.style.opacity = "1";
