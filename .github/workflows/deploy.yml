@@ -73,24 +73,16 @@ jobs:
 
       - name: Copy additional files to dist
         run: |
-          echo "📋 Copying additional files..."
-          # Copy files that Vite doesn't process but are needed
-          cp -r vendor dist/ 2>/dev/null || echo "No vendor directory to copy"
-          cp -r fonts dist/ 2>/dev/null || echo "No fonts directory to copy"
-          cp -r PolliLibJS dist/ 2>/dev/null || echo "No PolliLibJS directory to copy"
-          cp robots.txt dist/ 2>/dev/null || echo "No robots.txt to copy"
-          cp sitemap.xml dist/ 2>/dev/null || echo "No sitemap.xml to copy"
-          cp BingSiteAuth.xml dist/ 2>/dev/null || echo "No BingSiteAuth.xml to copy"
-          cp visitor-tracking.js dist/ 2>/dev/null || echo "No visitor-tracking.js to copy"
+          echo "📋 Copying additional files using copy-assets.js..."
+          # Use the centralized copy-assets.js script for consistency
+          # This script maintains the list of all files/directories to copy
+          node copy-assets.js
 
-          # Copy page-specific JS files
-          cp about/about.js dist/about/ 2>/dev/null || echo "No about.js to copy"
-          cp ai/demo/age-verification.js dist/ai/demo/ 2>/dev/null || echo "No age-verification.js to copy"
-          cp ai/demo/js/main.js dist/ai/demo/js/ 2>/dev/null || mkdir -p dist/ai/demo/js && cp ai/demo/js/main.js dist/ai/demo/js/ || echo "No main.js to copy"
-          mkdir -p dist/apps && cp apps/age-verification.js dist/apps/ 2>/dev/null || echo "No apps/age-verification.js to copy"
-          cp apps/apps.css dist/apps/ 2>/dev/null || echo "No apps/apps.css to copy"
-
-          echo "✅ Additional files copied"
+          echo ""
+          echo "📦 Final dist contents:"
+          find dist -type f | head -50
+          echo "..."
+          echo "Total files: $(find dist -type f | wc -l)"
 
       - name: Upload artifact for deployment
         uses: actions/upload-pages-artifact@v3
