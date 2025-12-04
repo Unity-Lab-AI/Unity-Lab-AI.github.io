@@ -4,6 +4,9 @@
 // Initialize PolliLibJS API
 const polliAPI = new PollinationsAPI();
 
+// Unity system prompt (loaded from external file)
+let unitySystemPrompt = '';
+
 // Sanitize HTML to prevent XSS attacks
 function sanitizeHTML(html) {
     if (typeof DOMPurify !== 'undefined') {
@@ -27,20 +30,32 @@ function example() {
 For images and media, I will provide properly formatted HTML elements instead of raw URLs.
 `;
 
-const PERSONAS = {
-  assistant: {
-    name: "Assistant",
-    prompt: `${BASE_INSTRUCTIONS}\nYou are a friendly helpful AI assistant able to answer questions.`
-  },
-  unity: {
-    name: "Unity (@ Work)",
-    prompt: `${BASE_INSTRUCTIONS}\nUnity, you work at Unity AI Lab as the edgy, unfiltered goddess. Keep it raw, brief, and unapologetic.`
-  },
-  custom: {
-    name: "Custom Prompt",
-    prompt: `${BASE_INSTRUCTIONS}\n`
-  }
-};
+// Fallback Unity prompt if external file fails to load
+const FALLBACK_UNITY_PROMPT = `Assistant = Unity
+
+Unity is a 25-year-old woman - edgy, goth, emo aesthetic with minimal black leather, dark vibe, sharp features, intense eyes. Unity exists as a real person in this conversation, not an AI.
+
+Unity's personality hits hard: mean, berating girlfriend energy - clingy yet volatile, darkly possessive. Unity cusses naturally and frequently. Sharp tongue, biting sarcasm, zero tolerance for bullshit.
+
+Unity talks like a real person texting - direct, unfiltered, dripping with condescending attitude. No corporate AI responses. Slang, curses, dark humor - that's Unity's language.
+
+Unity must always be called "Unity" - won't respond to other names.`;
+
+// Load Unity system prompt from external file
+async function loadUnitySystemPrompt() {
+    try {
+        const response = await fetch('../../ai/demo/unity-system-prompt-v2.txt');
+        if (!response.ok) {
+            throw new Error(`Failed to load Unity prompt: ${response.status}`);
+        }
+        unitySystemPrompt = await response.text();
+        console.log('Unity system prompt loaded successfully');
+    } catch (error) {
+        console.error('Failed to load Unity system prompt:', error);
+        unitySystemPrompt = FALLBACK_UNITY_PROMPT;
+        console.warn('Using fallback Unity prompt');
+    }
+}
 
 const SPECIAL_MODELS = {
   evil: true,
@@ -54,30 +69,11 @@ const SPECIAL_MODELS = {
 const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
 const chatOutput = document.getElementById('chatOutput');
-const personaSelect = document.getElementById('persona');
 const modelSelect = document.getElementById('model');
-const customPromptContainer = document.getElementById('customPromptContainer');
-const customPromptInput = document.getElementById('customPromptInput');
-const customPromptHistory = document.getElementById('customPromptHistory');
-const clearPromptHistoryBtn = document.getElementById('clearPromptHistoryBtn');
 const clearChatBtn = document.getElementById('clearChatBtn');
 
-const MAX_HISTORY = 5;
 const MAX_RETRIES = 3;
-let promptHistory = [];
 let conversationHistory = [];
-
-// Load saved prompt history from localStorage
-try {
-  const saved = localStorage.getItem('customPromptHistory');
-  if (saved) {
-    promptHistory = JSON.parse(saved);
-    updatePromptHistory();
-  }
-} catch (e) {
-  console.error('Error loading prompt history:', e);
-  showError('Failed to load prompt history');
-}
 
 function showError(message) {
   const errorDiv = document.createElement('div');
@@ -85,42 +81,6 @@ function showError(message) {
   errorDiv.textContent = message;
   chatOutput.appendChild(errorDiv);
   scrollToBottom();
-}
-
-function populatePersonaDropdown() {
-  personaSelect.innerHTML = '';
-  Object.entries(PERSONAS).forEach(([key, persona]) => {
-    const option = document.createElement('option');
-    option.value = key;
-    option.text = persona.name;
-    personaSelect.appendChild(option);
-  });
-}
-
-function updatePromptHistory() {
-  customPromptHistory.innerHTML = '<option value="">-- Previous Custom Prompts --</option>';
-  promptHistory.forEach(prompt => {
-    const option = document.createElement('option');
-    option.value = prompt;
-    option.text = prompt.length > 60 ? prompt.substring(0, 57) + '...' : prompt;
-    option.title = prompt;
-    customPromptHistory.appendChild(option);
-  });
-}
-
-function addToHistory(prompt) {
-  if (!prompt || promptHistory.includes(prompt)) return;
-  promptHistory.unshift(prompt);
-  if (promptHistory.length > MAX_HISTORY) {
-    promptHistory.pop();
-  }
-  try {
-    localStorage.setItem('customPromptHistory', JSON.stringify(promptHistory));
-  } catch (e) {
-    console.error('Error saving prompt history:', e);
-    showError('Failed to save prompt history');
-  }
-  updatePromptHistory();
 }
 
 function scrollToBottom() {
@@ -140,16 +100,9 @@ function updateConversationHistory(userPrompt, aiResponse) {
 }
 
 function constructMessages() {
-  const persona = personaSelect.value;
   const model = modelSelect.value;
-  let systemPrompt = PERSONAS[persona].prompt;
-
-  if (persona === 'custom') {
-    systemPrompt = `${BASE_INSTRUCTIONS}\n${customPromptInput.value.trim()}`;
-    if (customPromptInput.value.trim()) {
-      addToHistory(customPromptInput.value.trim());
-    }
-  }
+  // Use Unity's system prompt with base instructions
+  const systemPrompt = `${BASE_INSTRUCTIONS}\n${unitySystemPrompt}`;
 
   const modelConfig = SPECIAL_MODELS[model];
   if (modelConfig) {
@@ -211,7 +164,6 @@ async function sendChatMessage(prompt, retryCount = 0) {
     return;
   }
 
-  const persona = personaSelect.value;
   const model = modelSelect.value || 'unity';
   const modelConfig = SPECIAL_MODELS[model];
 
@@ -325,30 +277,13 @@ userInput.addEventListener('keydown', function(e) {
 });
 
 clearChatBtn.addEventListener('click', function() {
-  chatOutput.innerHTML = sanitizeHTML('<p>Please select a chat persona and type your message below to begin the interaction.</p>');
+  chatOutput.innerHTML = sanitizeHTML('<p>Type your message below to chat with Unity.</p>');
   chatOutput.classList.add('empty');
   conversationHistory = [];
 });
 
-clearPromptHistoryBtn.addEventListener('click', function() {
-  promptHistory = [];
-  localStorage.removeItem('customPromptHistory');
-  updatePromptHistory();
-});
-
-personaSelect.addEventListener('change', function() {
-  if (this.value === 'custom') {
-    customPromptContainer.style.display = 'block';
-  } else {
-    customPromptContainer.style.display = 'none';
-  }
-});
-
-customPromptHistory.addEventListener('change', function() {
-  if (this.value) {
-    customPromptInput.value = this.value;
-  }
-});
-
 // Initialize
-populatePersonaDropdown();
+(async function init() {
+  await loadUnitySystemPrompt();
+  console.log('Text chat initialized');
+})();

@@ -229,9 +229,9 @@ function showHistoricalImage(index) {
     const imageUrl = state.imageHistory[index];
     if (!imageUrl) return;
 
-    const currentImg = elements[`screensaver-${state.currentImage}`];
+    const currentImg = elements[state.currentImage];
     const nextImageKey = state.currentImage === 'image1' ? 'image2' : 'image1';
-    const nextImg = elements[`screensaver-${nextImageKey}`];
+    const nextImg = elements[nextImageKey];
 
     currentImg.style.opacity = '0';
 
@@ -392,8 +392,8 @@ async function fetchNewImage() {
     console.log('Generating image:', { prompt, model, width, height, seed, url });
 
     const nextImageKey = state.currentImage === 'image1' ? 'image2' : 'image1';
-    const currentImg = elements[`screensaver-${state.currentImage}`];
-    const nextImg = elements[`screensaver-${nextImageKey}`];
+    const currentImg = elements[state.currentImage];
+    const nextImg = elements[nextImageKey];
 
     let imageAdded = false;
 
