@@ -442,36 +442,22 @@
 
     <!-- Chat Container -->
     <div id="main-container">
-      <!-- Model & Persona Selection -->
+      <!-- Model Selection -->
       <div class="top-controls">
-        <select id="model" title="Pick the AI model—choose your flavor of chaos, fucker.">
-          <option value="unity" selected>Unity by Unity AI Lab (chat)</option>
-          <option value="evil">Evil Mode (chat)</option>
-          <option value="openai">OpenAI GPT-4 (chat)</option>
-          <option value="mistral">Mistral (chat)</option>
-          <option value="mistral-large">Mistral Large (chat)</option>
-          <option value="llama">Llama (completion)</option>
-          <option value="qwen-coder">Qwen Coder (chat)</option>
-          <option value="midijourney">MidiJourney (chat)</option>
-          <option value="p1">P1 (chat)</option>
-        </select>
-        <select id="persona" title="Select my persona—decide how I'll roast you today."></select>
-      </div>
-
-      <!-- Custom Prompt Container -->
-      <div id="customPromptContainer" class="custom-prompt-container" title="Craft a custom prompt—make me your bitch, if you dare.">
-        <div class="custom-prompt-row">
-          <input type="text" id="customPromptInput" placeholder="Enter custom system prompt..." title="Type your custom prompt here—control my soul, you prick.">
-          <button id="clearPromptHistoryBtn" title="Wipe the prompt history—erase your past sins, coward.">Clear History</button>
-        </div>
-        <select id="customPromptHistory" title="Check old prompts—revisit your shitty ideas.">
-          <option value="">-- Previous Custom Prompts --</option>
+        <select id="model" title="Pick the AI model—choose your flavor of chaos.">
+          <option value="unity" selected>Unity by Unity AI Lab</option>
+          <option value="evil">Evil Mode</option>
+          <option value="openai">OpenAI GPT-4</option>
+          <option value="mistral">Mistral</option>
+          <option value="qwen-coder">Qwen Coder</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="gemini">Gemini</option>
         </select>
       </div>
 
       <!-- Chat Output -->
-      <div id="chatOutput" class="empty" title="This is where I talk back—watch the magic or cry at the mess.">
-        Please select a chat persona and type your message below to begin the interaction.
+      <div id="chatOutput" class="empty" title="This is where Unity talks back.">
+        Type your message below to chat with Unity.
       </div>
 
       <!-- Chat Form -->
