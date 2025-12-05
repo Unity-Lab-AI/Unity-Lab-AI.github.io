@@ -395,7 +395,7 @@ All of the following keywords and their variations have been implemented across 
 
 For questions about this SEO implementation:
 - Email: unityailabcontact@gmail.com
-- Discord: https://discord.gg/unityailab
+- Discord: https://discord.gg/64Rvr5pZas
 - GitHub: https://github.com/Unity-Lab-AI
 
 ---

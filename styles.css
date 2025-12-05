@@ -745,6 +745,161 @@ body {
     font-size: 1.1rem;
 }
 
+/* Coming Soon Teaser Section */
+.coming-soon-section {
+    background: linear-gradient(180deg, var(--primary-black) 0%, var(--secondary-black) 50%, var(--primary-black) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.coming-soon-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--crimson-red), transparent);
+}
+
+.coming-soon-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--crimson-red), transparent);
+}
+
+.teaser-card {
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
+    padding: 40px 30px;
+    border: 1px solid rgba(220, 20, 60, 0.3);
+    transition: all 0.4s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.teaser-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(220, 20, 60, 0.05) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.teaser-card:hover::before {
+    opacity: 1;
+}
+
+.teaser-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--crimson-red);
+    box-shadow: 0 15px 40px rgba(220, 20, 60, 0.25);
+}
+
+.teaser-icon {
+    font-size: 3.5rem;
+    color: var(--crimson-red);
+    margin-bottom: 25px;
+    text-shadow: 0 0 30px rgba(220, 20, 60, 0.6);
+    position: relative;
+}
+
+.teaser-icon i {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        text-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
+    }
+    50% {
+        text-shadow: 0 0 40px rgba(220, 20, 60, 0.8), 0 0 60px rgba(220, 20, 60, 0.4);
+    }
+}
+
+.teaser-card h3 {
+    font-family: 'Trajan Pro', serif;
+    color: var(--white);
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.teaser-card p {
+    color: var(--light-grey);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.coming-soon-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--blood-red) 0%, var(--crimson-red) 100%);
+    color: var(--white);
+    padding: 8px 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.coming-soon-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.teaser-cta {
+    color: var(--light-grey);
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments for teaser section */
+@media (max-width: 767.98px) {
+    .teaser-card {
+        padding: 30px 20px;
+        margin-bottom: 20px;
+    }
+
+    .teaser-icon {
+        font-size: 2.5rem;
+    }
+
+    .teaser-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .teaser-card p {
+        font-size: 0.95rem;
+    }
+}
+
 /* Contact Section */
 .contact-section {
     background: var(--secondary-black);
@@ -799,10 +954,13 @@ body {
 .footer-links {
     list-style: none;
     padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 15px;
 }
 
 .footer-links li {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .footer-links a {
@@ -810,11 +968,12 @@ body {
     text-decoration: none;
     transition: all 0.3s ease;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .footer-links a:hover {
     color: var(--crimson-red);
-    transform: translateX(5px);
+    transform: translateX(3px);
 }
 
 .social-links a {
@@ -985,6 +1144,9 @@ body {
 
     .footer-links {
         margin-bottom: 20px;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
     }
 
     .social-links {
