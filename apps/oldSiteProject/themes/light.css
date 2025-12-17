@@ -1,0 +1,608 @@
+/* LIGHT THEME OVERRIDES */
+/* This file overrides the neutral defaults in styles.css */
+body {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #f5f5f5;
+  border-right: 2px solid #e0e0e0;
+}
+
+.sidebar-header h2 {
+  color: #333333;
+}
+
+#visitor-counter {
+  color: #555555;
+}
+
+#visitor-count-display {
+  color: #333333;
+  font-weight: bold;
+}
+
+/* Session list */
+.session-list {
+  color: #333333;
+}
+
+.session-item {
+  background-color: #e8e8e8;
+  color: #333333;
+}
+
+.session-item:hover {
+  background-color: #d8d8d8;
+}
+
+.session-item.active {
+  background-color: #2196f3;
+  color: white;
+}
+
+.session-title {
+  color: inherit;
+}
+
+.session-edit-btn,
+.session-delete-btn {
+  color: #555555;
+}
+
+.session-edit-btn:hover,
+.session-delete-btn:hover {
+  color: #333333;
+}
+
+/* Sidebar buttons and controls */
+.sidebar-btn {
+  background-color: #e0e0e0;
+  color: #333333;
+}
+
+.sidebar-btn:hover {
+  background-color: #d0d0d0;
+}
+
+.sidebar-label {
+  color: #555555;
+}
+
+.sidebar-select {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #d0d0d0;
+}
+
+.divider {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Chat area */
+.chat-main {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Message bubbles */
+.user-message {
+  background-color: #e3f2fd; /* Pale blue bubble for user */
+  color: #333333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ai-message {
+  background-color: #f5f5f5; /* Soft gray bubble for AI */
+  color: #333333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Message action buttons */
+.message-action-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #555555;
+}
+
+.message-action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333333;
+}
+
+/* Input area */
+.chat-input-container {
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+}
+
+#chat-input {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
+}
+
+#chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+
+/* Send and voice buttons */
+#send-button, #voice-input-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+#send-button:hover, #voice-input-btn:hover {
+  background-color: #1976d2;
+}
+
+#send-button:disabled {
+  background-color: #bdbdbd;
+  color: #ffffff;
+  opacity: 0.7;
+}
+
+/* Chat controls */
+.chat-controls {
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+}
+
+.control-btn {
+  background-color: #e0e0e0;
+  color: #555555;
+}
+
+.control-btn:hover {
+  background-color: #d0d0d0;
+  color: #333333;
+}
+
+/* Voice chat controls */
+#voice-toggle.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+#headset-btn {
+  background-color: #9c27b0;
+  color: white;
+}
+
+#headset-btn:hover {
+  background-color: #7b1fa2;
+}
+
+/* Code blocks */
+.code-block-container {
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+}
+
+.code-block-header {
+  background-color: #e0e0e0;
+  border-bottom: 1px solid #d0d0d0;
+  color: #555555;
+}
+
+.code-language {
+  color: #444444;
+}
+
+.copy-code-btn, .expand-code-btn {
+  background-color: #d0d0d0;
+  color: #555555;
+}
+
+.copy-code-btn:hover, .expand-code-btn:hover {
+  background-color: #c0c0c0;
+  color: #333333;
+}
+
+.code-block {
+  background-color: #282c34; /* Keep dark background for code for readability */
+  color: #abb2bf;
+}
+
+/* Images */
+.ai-image-loading {
+  background-color: #f0f0f0;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0,0,0,0.05);
+  border-top: 4px solid #2196f3;
+}
+
+.image-button {
+  background-color: rgba(0,0,0,0.05);
+  color: #555555;
+}
+
+.image-button:hover {
+  background-color: rgba(0,0,0,0.1);
+  color: #333333;
+}
+
+/* Modals */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-container {
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  border: 1px solid #e0e0e0;
+  color: #333333;
+}
+
+.modal-header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-title {
+  color: #333333;
+}
+
+.close-btn {
+  color: #757575;
+}
+
+.close-btn:hover {
+  color: #333333;
+}
+
+.modal-body {
+  color: #333333;
+}
+
+.modal-footer {
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Form controls */
+.form-label {
+  color: #555555;
+}
+
+.form-control {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #333333;
+}
+
+.form-control:focus {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
+}
+
+/* Button styles */
+.btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #2196f3;
+  border-color: #2196f3;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1976d2;
+  border-color: #1976d2;
+}
+
+.btn-secondary {
+  background-color: #757575;
+  border-color: #757575;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #616161;
+  border-color: #616161;
+}
+
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.btn-outline-primary {
+  color: #2196f3;
+  border-color: #2196f3;
+}
+
+.btn-outline-primary:hover {
+  background-color: #2196f3;
+  color: white;
+}
+
+.btn-outline-danger {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+.btn-outline-danger:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-outline-info {
+  color: #00bcd4;
+  border-color: #00bcd4;
+}
+
+.btn-outline-info:hover {
+  background-color: #00bcd4;
+  color: white;
+}
+
+/* Voice chat modal */
+.voice-chat-modal {
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.voice-status {
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: #555555;
+}
+
+.voice-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.voice-btn:hover {
+  background-color: #1976d2;
+}
+
+.voice-btn:disabled {
+  background-color: #bdbdbd;
+  color: #ffffff;
+}
+
+.voice-btn.listening {
+  background-color: #f44336;
+}
+
+.transcript {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #333333;
+}
+
+/* Personalization modal */
+.personalization-form .form-group {
+  margin-bottom: 15px;
+}
+
+.personalization-form .form-label i {
+  color: #2196f3;
+  margin-right: 5px;
+}
+
+/* First launch modal */
+.first-launch-modal {
+  background-color: #ffffff;
+}
+
+.welcome-heading {
+  color: #2196f3;
+}
+
+.welcome-text {
+  color: #555555;
+}
+
+.setup-btn {
+  background-color: #f5f5f5;
+  color: #333333;
+  border: 1px solid #e0e0e0;
+}
+
+.setup-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.setup-btn-icon {
+  color: #2196f3;
+}
+
+.setup-btn-title {
+  color: #333333;
+}
+
+.setup-btn-desc {
+  color: #757575;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.alert-warning {
+  background-color: #fff8e1;
+  border: 1px solid #ffecb3;
+  color: #856404;
+}
+
+.alert-info {
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+  color: #0c5460;
+}
+
+.alert-danger {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  color: #721c24;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  color: #155724;
+}
+
+/* Toast notification */
+#toast-notification {
+  background-color: rgba(33, 33, 33, 0.9);
+  color: white;
+}
+
+/* Memory list items */
+#memory-list li {
+  background-color: #f5f5f5 !important;
+  border: 1px solid #e0e0e0;
+}
+
+#memory-list .text-muted {
+  color: #757575 !important;
+}
+
+/* Make sure all icons have proper contrast */
+.fas, .fab, .far {
+  color: inherit;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #2196f3 !important;
+}
+
+.text-secondary {
+  color: #757575 !important;
+}
+
+.text-success {
+  color: #4caf50 !important;
+}
+
+.text-danger {
+  color: #f44336 !important;
+}
+
+.text-warning {
+  color: #ff9800 !important;
+}
+
+.text-info {
+  color: #00bcd4 !important;
+}
+
+.bg-light {
+  background-color: #f5f5f5 !important;
+}
+
+.bg-white {
+  background-color: #ffffff !important;
+}
+
+.border {
+  border: 1px solid #e0e0e0 !important;
+}
+
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* Make sure Bootstrap components have proper colors */
+.dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.dropdown-item {
+  color: #333333;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-divider {
+  border-top: 1px solid #e0e0e0;
+}
+/* Add these screensaver styles to your light.css theme file */
+
+/* Screensaver styles for light theme */
+/* These override the base styles in styles.css */
+
+/* Background stays dark for better image viewing */
+.screensaver {
+  background-color: #000000;
+}
+
+/* Controls in light theme */
+.screensaver-controls {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Labels in light theme */
+.screensaver-settings label {
+  color: #e0e0e0;
+}
+
+/* Form elements in light theme */
+.screensaver-settings input[type="text"],
+.screensaver-settings input[type="number"],
+.screensaver-settings select {
+  background-color: #333;
+  border-color: #444;
+  color: #ffffff;
+}
+
+.screensaver-settings input[type="checkbox"] {
+  accent-color: #2196f3;
+}
+
+/* Buttons in light theme */
+.screensaver-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.screensaver-btn:hover {
+  background-color: #1976d2;
+}
+
+/* Specific buttons */
+#screensaver-exit {
+  background-color: #f44336;
+}
+
+#screensaver-exit:hover {
+  background-color: #d32f2f;
+}
+
+#screensaver-save, #screensaver-copy {
+  background-color: #4caf50;
+}
+
+#screensaver-save:hover, #screensaver-copy:hover {
+  background-color: #388e3c;
+}
+
+#screensaver-playpause, #fullscreen-screensaver {
+  background-color: #ff9800;
+}
+
+#screensaver-playpause:hover, #fullscreen-screensaver:hover {
+  background-color: #f57c00;
+}

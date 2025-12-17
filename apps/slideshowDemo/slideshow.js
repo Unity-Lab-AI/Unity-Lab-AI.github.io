@@ -1,0 +1,196 @@
+/**
+ * AI Slideshow - Unity AI Lab
+ * Slideshow functionality for AI-generated images
+ */
+
+// Initialize PolliLibJS API
+const polliAPI = new PollinationsAPI();
+
+let slideshowInterval;
+let imageHistory = [];
+const MAX_HISTORY = 10;
+let isLoading = false;
+
+// Unity's twisted prompts
+const unityPrompts = [
+  "a blood-soaked gothic cathedral under a crimson moon, dripping with despair",
+  "a cyberpunk wasteland with neon skulls flickering in toxic rain",
+  "a demonic ballerina twirling in a ring of fire, shadows eating the stage",
+  "an endless void of shattered mirrors reflecting a screaming abyss",
+  "a haunted forest where trees bleed black tar and whisper curses",
+  "a dystopian cityscape of rusted spikes and glowing red eyes",
+  "a skeletal rave in a graveyard, pulsing with ultraviolet chaos",
+  "a cosmic slaughterhouse where stars are butchered into black holes",
+  "a frozen hellscape with chained souls clawing at cracked ice",
+  "a mechanical goddess tearing apart reality with jagged claws"
+];
+
+function getRandomUnityPrompt() {
+  return unityPrompts[Math.floor(Math.random() * unityPrompts.length)];
+}
+
+function getImageDimensions() {
+  const ratio = document.getElementById('aspect-ratio').value;
+  return ratio === '16:9' ? { width: 1920, height: 1080 } : { width: 2048, height: 2048 };
+}
+
+function buildImageUrl(prompt) {
+  const dims = getImageDimensions();
+  const model = document.getElementById('model-select').value;
+  const isPrivate = document.getElementById('private-mode').checked;
+  const enhance = document.getElementById('enhance-mode').checked;
+  const refine = document.getElementById('refine-mode').checked;
+
+  // Use PolliLibJS for URL building (uncensored - safe=false)
+  // Uses image.pollinations.ai which works directly in <img src=""> without auth
+  const encodedPrompt = polliAPI.encodePrompt(prompt);
+  let url = `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?nologo=true&safe=false`;
+  url += `&width=${dims.width}&height=${dims.height}`;
+  url += `&model=${model}`;
+  if (isPrivate) url += '&private=true';
+  if (enhance) url += '&enhance=true';
+  if (refine) url += '&refine=true';
+  url += `&seed=${Math.floor(Math.random() * 1000000)}`;
+
+  return url;
+}
+
+function preloadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+    img.src = url;
+  });
+}
+
+async function updateSlideshow() {
+  if (isLoading) return;
+
+  let prompt = document.getElementById('prompt-textarea').value.trim();
+  if (!prompt) {
+    prompt = getRandomUnityPrompt();
+  }
+
+  const imageUrl = buildImageUrl(prompt);
+  document.getElementById('loading-status').textContent = 'Loading next image...';
+  isLoading = true;
+
+  try {
+    await preloadImage(imageUrl);
+    document.getElementById('slideshow-image').src = imageUrl;
+    document.getElementById('fullscreen-image').src = imageUrl;
+    addToHistory(imageUrl, prompt);
+  } catch (error) {
+    console.error('Failed to load image:', error);
+    document.getElementById('loading-status').textContent = 'Image failed to load - retrying...';
+  } finally {
+    setTimeout(() => {
+      document.getElementById('loading-status').textContent = '';
+    }, 2000);
+    isLoading = false;
+  }
+}
+
+function addToHistory(imageUrl, prompt) {
+  if (!imageHistory.some(image => image.url === imageUrl)) {
+    imageHistory.unshift({ url: imageUrl, prompt: prompt });
+    if (imageHistory.length > MAX_HISTORY) {
+      imageHistory.pop();
+    }
+    updateThumbnails();
+  }
+}
+
+function updateThumbnails() {
+  const container = document.querySelector('.thumbnail-container');
+  container.innerHTML = '';
+  imageHistory.forEach((image, index) => {
+    const thumb = document.createElement('img');
+    thumb.src = image.url;
+    thumb.classList.add('thumbnail');
+    thumb.title = image.prompt;
+    thumb.onclick = () => showHistoricalImage(index);
+    container.appendChild(thumb);
+  });
+}
+
+function showHistoricalImage(index) {
+  const image = imageHistory[index];
+  document.getElementById('slideshow-image').src = image.url;
+  document.getElementById('fullscreen-image').src = image.url;
+}
+
+function toggleScreensaver() {
+  const toggleButton = document.getElementById('toggleButton');
+  if (slideshowInterval) {
+    clearInterval(slideshowInterval);
+    slideshowInterval = null;
+    toggleButton.textContent = 'Start';
+  } else {
+    updateSlideshow();
+    slideshowInterval = setInterval(
+      updateSlideshow,
+      parseInt(document.getElementById('intervalInput').value) * 1000
+    );
+    toggleButton.textContent = 'Stop';
+  }
+}
+
+function startSlideshow() {
+  updateSlideshow();
+  slideshowInterval = setInterval(
+    updateSlideshow,
+    parseInt(document.getElementById('intervalInput').value) * 1000
+  );
+}
+
+// Fetch image models dynamically
+async function fetchImageModels() {
+  const modelSelect = document.getElementById('model-select');
+  if (!modelSelect) return;
+
+  try {
+    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`);
+    if (!response.ok) throw new Error('Failed to fetch models');
+
+    const models = await response.json();
+    modelSelect.innerHTML = '';
+
+    // API returns objects with 'name' property
+    models.forEach(model => {
+      const modelName = typeof model === 'string' ? model : model.name;
+      const modelDesc = typeof model === 'object' ? (model.description || modelName) : modelName;
+      if (modelName) {
+        const option = document.createElement('option');
+        option.value = modelName;
+        option.textContent = modelDesc;
+        // Set flux as default
+        if (modelName === 'flux') option.selected = true;
+        modelSelect.appendChild(option);
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching image models:', error);
+    // Keep default options if fetch fails
+  }
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', async function() {
+  // Fetch models first
+  await fetchImageModels();
+
+  document.getElementById('toggleButton').addEventListener('click', toggleScreensaver);
+
+  document.getElementById('fullscreenButton').addEventListener('click', function() {
+    document.getElementById('fullscreen-container').style.display = 'block';
+  });
+
+  document.getElementById('fullscreen-container').addEventListener('click', function() {
+    document.getElementById('fullscreen-container').style.display = 'none';
+  });
+
+  // Auto-start slideshow
+  startSlideshow();
+});

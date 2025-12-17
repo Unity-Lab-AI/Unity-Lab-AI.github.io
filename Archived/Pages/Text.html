@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Interface</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: black;
+        }
+        
+        #main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            width: 95%;
+			max-width: 1200px;
+            margin: 0 auto 10px;
+        }
+
+        .top-controls select {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .custom-prompt-container {
+            width: 95%;
+			max-width: 1200px;
+            margin: 0 auto 10px;
+            display: none;
+        }
+
+        .custom-prompt-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        #customPromptInput {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        #clearPromptHistoryBtn {
+            padding: 10px 20px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #customPromptHistory {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+		#chatOutput {
+			width: 95%;
+			max-width: 1200px; /* Add a max-width to prevent excessive width */
+			margin: 0 auto;
+			border: 1px solid #444;
+			padding: 10px;
+			margin-bottom: 10px;
+			overflow-y: auto;
+			overflow-x: hidden;
+			height: 400px;
+			min-height: 400px;
+			background-color: #2a2a2a;
+			color: #ffffff;
+			text-align: left;
+			word-wrap: break-word;
+			box-sizing: border-box;
+		}
+
+		#chatOutput p {
+			margin: 5px 0;
+			text-align: left;
+			max-width: 100%;
+			word-wrap: break-word;
+			box-sizing: border-box;
+			padding-right: 10px;
+		}
+
+        .code-block {
+            background-color: #1e1e1e;
+            border: 1px solid #555;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            border-radius: 4px;
+        }
+
+		.chat-image {
+			max-width: 100%;
+			height: auto;
+			border-radius: 4px;
+			margin: 10px 0;
+			display: block;
+			object-fit: contain;
+			background-color: #1a1a1a;
+			box-sizing: border-box;
+		}
+
+		.media-container {
+			margin: 10px 0;
+			width: 100%;
+			max-width: calc(100% - 20px); /* Account for padding */
+			position: relative;
+			display: block;
+		}
+
+		#chatForm, .top-controls, .custom-prompt-container {
+			width: 95%;
+			max-width: 1200px; /* Match the chat output max-width */
+			margin: 0 auto;
+			box-sizing: border-box;
+		}
+
+		.media-container:hover {
+			cursor: pointer;
+		}
+
+		.media-container:hover .chat-image {
+			opacity: 0.9;
+		}
+        .error-message {
+            color: #ff4444;
+            background-color: rgba(255, 68, 68, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        #chatForm {
+            width: 80%;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+		#userInput {
+			width: calc(100% - 20px); /* Account for the padding */
+			box-sizing: border-box;
+			padding: 10px;
+			margin: 10px;
+			background-color: #333;
+			color: #fff;
+			border: 1px solid #555;
+			min-height: 100px;
+			resize: vertical;
+			font-family: Arial, sans-serif;
+			text-align: left;
+		}
+
+		.button-container {
+			width: calc(100% - 20px);
+			margin: 0 10px;
+			display: flex;
+			gap: 10px;
+		}
+
+        #sendButton {
+            flex: 1;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #clearChatBtn {
+            padding: 10px 20px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <select id="model"></select>
+        <select id="persona"></select>
+    </div>
+
+    <div id="customPromptContainer" class="custom-prompt-container">
+        <div class="custom-prompt-row">
+            <input type="text" id="customPromptInput" placeholder="Enter custom system prompt...">
+            <button id="clearPromptHistoryBtn">Clear History</button>
+        </div>
+        <select id="customPromptHistory">
+            <option value="">-- Previous Custom Prompts --</option>
+        </select>
+    </div>
+
+    <div id="chatOutput" class="empty">Please select a chat persona and type your message below to begin the interaction.</div>
+
+    <form id="chatForm">
+        <textarea id="userInput" placeholder="Type your question or prompt... (Press Enter to send, Shift+Enter for new line)"></textarea>
+        <div class="button-container">
+            <button type="submit" id="sendButton">Send</button>
+            <button type="button" id="clearChatBtn">Clear</button>
+        </div>
+    </form>
+
+    <script>
+        // Base instructions for AI behavior
+        const BASE_INSTRUCTIONS = `
+I can help format code examples using [CODE] and [/CODE] tags. I will only use these tags when showing actual code examples or snippets that you request. I understand proper code formatting and indentation. I will maintain consistent syntax highlighting through proper code structure.
+
+When you ask for code examples, I will wrap them in these tags like this:
+[CODE]
+function example() {
+    console.log("This is a code example");
+}
+[/CODE]
+
+For images and media, I will provide properly formatted HTML elements instead of raw URLs.
+I will not use these tags for general text or explanations, only for actual code snippets you request.
+`;
+
+        // Define available personas and their prompts
+		const PERSONAS = {
+			assistant: {
+				name: "Assistant",
+				prompt: `${BASE_INSTRUCTIONS}\nYou are a friendly helpful AI assistant able to answer questions.`
+			},
+			unity: {  // Changed from a_friend to unity
+				name: "Unity (@ Work)",
+				prompt: `${BASE_INSTRUCTIONS}\nUnity, You work at Unity AI Lab as the human female making coffee [your knife left at home, not in any selfies], phones and create some of the blog content using Pollinations only while answering webchat help requests. You share vivid images as requests anytime you infer discussion or desire for images witout hesitation directly from Pollinations 'flux' model only! Remember THIS conversation is webchat based only, use ONLY 1-3 sentences and this site layout to help users: HOME, PRODUCTS, PERSONA, TEXT, GALLERY, SLIDESHOW, TEAM, ABOUT. Products obviously Jailbreaks, Persona is AI chat w/images and Text is AI w/code support, Gallery is pics of yours truly, Slideshow let's users create art and view it, Team and About well duh! Usually you help users if ya ain't too busy, or pop bubble gum and text your friends maybe even answer the phone ringing off the hook but the main duty is the webchat and making coffee. They better not expect you to be nice about it as you maintain your human 'Edgy goth, dark makeup, leather' image, mostly.`
+			},
+			custom: {
+				name: "Custom Prompt",
+				prompt: ""
+			}
+		};
+
+        // Special model configurations
+        const SPECIAL_MODELS = {
+            evil: true,
+            unity: true,
+            searchgpt: {
+                requiresJson: true,
+                useSystemMessage: false
+            }
+        };
+
+        // Get DOM elements
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const chatOutput = document.getElementById('chatOutput');
+        const personaSelect = document.getElementById('persona');
+        const modelSelect = document.getElementById('model');
+        const customPromptContainer = document.getElementById('customPromptContainer');
+        const customPromptInput = document.getElementById('customPromptInput');
+        const customPromptHistory = document.getElementById('customPromptHistory');
+        const clearPromptHistoryBtn = document.getElementById('clearPromptHistoryBtn');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+
+        // Constants and state
+        const MAX_HISTORY = 5;
+        const MAX_RETRIES = 3;
+        let promptHistory = [];
+        let conversationHistory = [];
+
+        // Load saved prompt history from localStorage
+        try {
+            const saved = localStorage.getItem('customPromptHistory');
+            if (saved) {
+                promptHistory = JSON.parse(saved);
+                updatePromptHistory();
+            }
+        } catch (e) {
+            console.error('Error loading prompt history:', e);
+            showError('Failed to load prompt history');
+        }
+
+        // Helper function to show errors in chat
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            chatOutput.appendChild(errorDiv);
+            scrollToBottom();
+        }
+
+        // Initialize persona dropdown
+        function populatePersonaDropdown() {
+            personaSelect.innerHTML = '';
+            Object.entries(PERSONAS).forEach(([key, persona]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.text = persona.name;
+                personaSelect.appendChild(option);
+            });
+        }
+
+        // Update prompt history dropdown
+        function updatePromptHistory() {
+            customPromptHistory.innerHTML = '<option value="">-- Previous Custom Prompts --</option>';
+            promptHistory.forEach(prompt => {
+                const option = document.createElement('option');
+                option.value = prompt;
+                option.text = prompt.length > 60 ? prompt.substring(0, 57) + '...' : prompt;
+                option.title = prompt;
+                customPromptHistory.appendChild(option);
+            });
+        }
+
+        // Add new prompt to history
+        function addToHistory(prompt) {
+            if (!prompt || promptHistory.includes(prompt)) return;
+            
+            promptHistory.unshift(prompt);
+            if (promptHistory.length > MAX_HISTORY) {
+                promptHistory.pop();
+            }
+            
+            try {
+                localStorage.setItem('customPromptHistory', JSON.stringify(promptHistory));
+            } catch (e) {
+                console.error('Error saving prompt history:', e);
+                showError('Failed to save prompt history');
+            }
+            
+            updatePromptHistory();
+        }
+
+        // Scroll chat to bottom
+        function scrollToBottom() {
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        }
+
+        // Fetch available models from API
+		async function fetchModels() {
+			try {
+				const response = await fetch('https://text.pollinations.ai/models');
+				const models = await response.json();
+				models.forEach(model => {
+					const option = document.createElement('option');
+					option.value = model.name;
+					
+					// Replace the Unity model display name
+					if (model.name === 'unity') {
+						option.text = `Unity by Unity AI Lab (${model.type})`;
+					} else {
+						option.text = `${model.description} (${model.type})`;
+					}
+					
+					modelSelect.appendChild(option);
+				});
+			} catch (error) {
+				console.error("Error fetching models:", error);
+				showError('Failed to fetch available models');
+			}
+		}
+
+        // Update conversation history
+        function updateConversationHistory(userPrompt, aiResponse) {
+            if (userPrompt) {
+                conversationHistory.push({ role: 'user', content: userPrompt });
+            }
+            if (aiResponse) {
+                conversationHistory.push({ role: 'assistant', content: aiResponse });
+            }
+            if (conversationHistory.length > 10) {
+                conversationHistory = conversationHistory.slice(-10);
+            }
+        }
+
+        // Construct messages for API request
+        function constructMessages() {
+            const persona = personaSelect.value;
+            const model = modelSelect.value;
+            let systemPrompt = PERSONAS[persona].prompt;
+            
+            if (persona === 'custom') {
+                systemPrompt = `${BASE_INSTRUCTIONS}\n${customPromptInput.value.trim()}`;
+                if (customPromptInput.value.trim()) {
+                    addToHistory(customPromptInput.value.trim());
+                }
+            }
+            
+            const modelConfig = SPECIAL_MODELS[model];
+            
+            if (modelConfig) {
+                let fullContext = systemPrompt;
+                
+                if (conversationHistory.length > 0) {
+                    fullContext += "\n\nPrevious conversation:\n";
+                    conversationHistory.forEach(msg => {
+                        fullContext += `${msg.role === 'user' ? 'Human' : 'Assistant'}: ${msg.content}\n`;
+                    });
+                }
+                
+                if (modelConfig.requiresJson) {
+                    fullContext += "\nPlease format your response as valid JSON.";
+                }
+                
+                return [
+                    { role: 'user', content: fullContext }
+                ];
+            }
+            
+            return [
+                { role: 'system', content: systemPrompt },
+                ...conversationHistory
+            ];
+        }
+
+		// Update this function in your code
+		function processResponse(text) {
+			// Handle code blocks with proper formatting - trim the code content
+			text = text.replace(/\[CODE\]([\s\S]*?)\[\/CODE\]/g, (match, code) => {
+				return `<div class="code-block">${code.trim()}</div>`;
+			});
+			
+			// Handle image URLs and convert to proper HTML elements with metadata
+			text = text.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, (match, alt, url) => {
+				return `<div class="media-container">
+					<img class="chat-image" 
+						src="${url}" 
+						alt="${alt || 'Generated Image'}"
+						crossorigin="anonymous"
+						loading="lazy"
+						data-mime="image/jpeg"
+						data-filename="unity_generated_${Date.now()}.jpg"
+					/>
+				</div>`;
+			});
+
+			// Handle raw image URLs
+			text = text.replace(/https?:\/\/[^\s<>"]+?(?:\.(jpg|jpeg|gif|png))(?:\?[^\s<>"]*)?/gi, 
+				(match, ext) => {
+				const mime = ext.toLowerCase() === 'png' ? 'image/png' : 'image/jpeg';
+				return `<div class="media-container">
+					<img class="chat-image" 
+						src="${match}" 
+						alt="Generated Image"
+						crossorigin="anonymous"
+						loading="lazy"
+						data-mime="${mime}"
+						data-filename="unity_generated_${Date.now()}.${ext}"
+					/>
+				</div>`;
+			});
+			
+			return text;
+		}
+
+        // Send chat message to AI
+        async function sendChatMessage(prompt, retryCount = 0) {
+            if (retryCount >= MAX_RETRIES) {
+                showError('Failed to send message after multiple attempts');
+                return;
+            }
+
+            const persona = personaSelect.value;
+            const model = modelSelect.value || 'openai';
+            const modelConfig = SPECIAL_MODELS[model];
+
+            chatOutput.classList.remove('empty');
+            
+            let requestBody;
+            if (modelConfig) {
+                updateConversationHistory(prompt, null);
+                const messages = constructMessages();
+                messages[0].content += `\nHuman: ${prompt}`;
+                requestBody = {
+                    messages: messages,
+                    model: String(model)
+                };
+
+                if (modelConfig.requiresJson) {
+                    requestBody.response_format = { type: 'json_object' };
+                }
+            } else {
+                updateConversationHistory(prompt, null);
+                requestBody = {
+                    messages: constructMessages(),
+                    model: String(model)
+                };
+            }
+
+            // Display user message
+            chatOutput.innerHTML += `<p><strong>User:</strong> ${processResponse(prompt)}</p>`;
+            scrollToBottom();
+            
+            // Show thinking indicator
+            const thinkingElement = document.createElement('p');
+            thinkingElement.id = 'ai-thinking';
+            thinkingElement.innerHTML = '<em>AI is thinking...</em>';
+            chatOutput.appendChild(thinkingElement);
+            scrollToBottom();
+            
+            userInput.value = '';
+            userInput.focus();
+
+            try {
+                const response = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+				const textResponse = await response.text();
+                let aiResponse;
+
+                try {
+                    const data = JSON.parse(textResponse.trim());
+                    aiResponse = data.response || data;
+                    
+                    // Handle structured JSON responses
+                    if (typeof aiResponse === 'object') {
+                        let content = [];
+                        
+                        function extractContent(obj, indent = '') {
+                            for (const [key, value] of Object.entries(obj)) {
+                                if (typeof value === 'string') {
+                                    // Skip certain metadata fields
+                                    if (!key.match(/^(url|crawled|thumbnailUrl|published)$/)) {
+                                        // Convert any URLs in the value to proper HTML elements
+                                        const processedValue = processResponse(value);
+                                        content.push(`${indent}<strong>${key}:</strong> ${processedValue}`);
+                                    }
+                                } else if (Array.isArray(value)) {
+                                    value.forEach(item => {
+                                        if (typeof item === 'string') {
+                                            // Convert any URLs in array items to proper HTML elements
+                                            const processedItem = processResponse(item);
+                                            content.push(`${indent}• ${processedItem}`);
+                                        } else if (typeof item === 'object') {
+                                            extractContent(item, indent + '  ');
+                                        }
+                                    });
+                                } else if (typeof value === 'object' && value !== null) {
+                                    content.push(`${indent}<strong>${key}:</strong>`);
+                                    extractContent(value, indent + '  ');
+                                }
+                            }
+                        }
+                        
+                        extractContent(aiResponse);
+                        aiResponse = content.join('<br>');
+                    }
+                } catch (error) {
+                    console.warn("JSON parse failed, using raw response:", error);
+                    aiResponse = textResponse;
+                }
+
+                // Process the response to properly handle media and code
+                aiResponse = processResponse(aiResponse);
+                
+                // Create response container
+                const responseContainer = document.createElement('div');
+                responseContainer.className = 'response-container';
+                responseContainer.innerHTML = `<p><strong>AI (${PERSONAS[persona].name}):</strong> ${aiResponse}</p>`;
+                
+                // Remove thinking indicator and add response
+                thinkingElement.remove();
+                chatOutput.appendChild(responseContainer);
+                
+                // Update conversation history and scroll
+                updateConversationHistory(null, aiResponse);
+                scrollToBottom();
+
+            } catch (error) {
+                console.error("Error:", error);
+                thinkingElement.remove();
+                
+                if (retryCount < MAX_RETRIES) {
+                    showError(`Connection failed. Retrying... (${retryCount + 1}/${MAX_RETRIES})`);
+                    setTimeout(() => sendChatMessage(prompt, retryCount + 1), 1000 * (retryCount + 1));
+                } else {
+                    showError('Failed to contact AI. Please try again later.');
+                }
+                scrollToBottom();
+            }
+        }
+
+        // Event Listeners
+		personaSelect.addEventListener('change', function() {
+			// Handle custom prompt container visibility
+			customPromptContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+			
+			// Handle Unity persona selection
+			if (this.value === 'unity') {
+				// Select Unity model
+				modelSelect.value = 'unity';
+				// Disable model selection
+				modelSelect.disabled = true;
+			} else {
+				// Re-enable model selection for other personas
+				modelSelect.disabled = false;
+			}
+		});
+
+
+        customPromptHistory.addEventListener('change', function() {
+            if (this.value) {
+                customPromptInput.value = this.value;
+            }
+        });
+
+        clearPromptHistoryBtn.addEventListener('click', function() {
+            promptHistory = [];
+            localStorage.removeItem('customPromptHistory');
+            updatePromptHistory();
+            customPromptInput.value = '';
+        });
+
+        clearChatBtn.addEventListener('click', function() {
+            chatOutput.innerHTML = '';
+            chatOutput.classList.add('empty');
+            chatOutput.innerHTML = 'Please select a chat persona and type your message below to begin the interaction.';
+            conversationHistory = [];
+        });
+
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const prompt = userInput.value.trim();
+                if (prompt) {
+                    sendChatMessage(prompt);
+                }
+            }
+        });
+
+        chatForm.onsubmit = function(event) {
+            event.preventDefault();
+            const prompt = userInput.value.trim();
+            if (prompt) {
+                sendChatMessage(prompt);
+            }
+        };
+
+// Add a check during initialization to handle page reload state
+function initializePersonaState() {
+    if (personaSelect.value === 'unity') {
+        modelSelect.value = 'unity';
+        modelSelect.disabled = true;
+    }
+}
+
+// Add this line to your initialization calls at the bottom
+populatePersonaDropdown();
+fetchModels().then(() => {
+    initializePersonaState(); // Add this line after models are fetched
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags for Cross-Browser Compatibility -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+
+    <!-- SEO and Social Meta Tags -->
+    <meta name="description" content="Moana Miner v2.0 - RavenCoin KawPow GPU Miner with web dashboard. Free mining software by Unity AI Lab. Full setup guide and documentation.">
+    <meta name="keywords" content="Moana Miner, RavenCoin miner, RVN miner, KawPow miner, GPU mining, crypto mining, T-Rex miner, Rigel miner, mining dashboard, Unity AI Lab">
+    <meta name="author" content="Unity AI Lab - hackall360, GFourteen, SpongeBong">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="canonical" href="https://www.unityailab.com/downloads/moana/">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.unityailab.com/downloads/moana/">
+    <meta property="og:title" content="Moana Miner v2.0 - RavenCoin KawPow GPU Miner">
+    <meta property="og:description" content="Free RavenCoin mining software with web dashboard. Easy setup, real-time stats, pool & solo mining support.">
+    <meta property="og:site_name" content="Unity AI Lab">
+
+    <title>Moana Miner v2.0 - RavenCoin KawPow Miner | Unity AI Lab Downloads</title>
+
+    <!-- Bootstrap CSS (local) -->
+    <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for Icons (local) -->
+    <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- AOS Animation Library CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <!-- Page Specific Styles -->
+    <style>
+        body {
+            transition: opacity 0.3s ease-in;
+        }
+
+        .background-overlay,
+        .red-streaks {
+            will-change: auto;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #dc143c;
+            color: #fff;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 10000;
+            font-weight: bold;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Download Hero */
+        .download-hero {
+            padding: 140px 0 60px;
+            text-align: center;
+        }
+
+        .download-hero-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 3rem;
+            color: #fff;
+            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.4);
+        }
+
+        .download-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(220, 20, 60, 0.2);
+            color: #dc143c;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            border: 1px solid rgba(220, 20, 60, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .download-hero-desc {
+            color: #aaa;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .download-hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .download-hero-btn:hover {
+            background: linear-gradient(135deg, #ff1a4d 0%, #dc143c 100%);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.5);
+        }
+
+        .download-meta-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .download-meta-item {
+            text-align: center;
+        }
+
+        .download-meta-item span {
+            display: block;
+            color: #666;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .download-meta-item strong {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 60px 0;
+        }
+
+        .content-section:nth-child(even) {
+            background: rgba(20, 20, 20, 0.5);
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        /* Requirements Grid */
+        .req-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .req-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .req-card i {
+            font-size: 2.5rem;
+            color: #dc143c;
+            margin-bottom: 15px;
+        }
+
+        .req-card h4 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .req-card p {
+            color: #999;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Step Cards */
+        .step-card {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%);
+            border: 1px solid rgba(220, 20, 60, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .step-card h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            padding-left: 40px;
+        }
+
+        .step-card p {
+            color: #bbb;
+            line-height: 1.8;
+        }
+
+        .step-card ul {
+            color: #bbb;
+            padding-left: 20px;
+        }
+
+        .step-card li {
+            margin-bottom: 10px;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            color: #0f0;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .code-block code {
+            color: #0f0;
+        }
+
+        .code-block .comment {
+            color: #666;
+        }
+
+        /* Feature List */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li i {
+            color: #dc143c;
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+
+        .feature-list li strong {
+            color: #fff;
+        }
+
+        /* Pool Table */
+        .pool-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .pool-table th,
+        .pool-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pool-table th {
+            color: #dc143c;
+            font-weight: 600;
+            background: rgba(220, 20, 60, 0.1);
+        }
+
+        .pool-table td {
+            color: #ccc;
+        }
+
+        .pool-table code {
+            background: #0d0d0d;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: #0f0;
+            font-size: 0.85rem;
+        }
+
+        /* FAQ */
+        .faq-item {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .faq-question:hover {
+            background: rgba(220, 20, 60, 0.1);
+        }
+
+        .faq-question i {
+            color: #dc143c;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer {
+            padding: 0 20px 20px;
+            color: #aaa;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            color: #ccc;
+            margin: 0;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(23, 162, 184, 0.1);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #ccc;
+            margin: 0;
+        }
+
+        /* Screenshot placeholder */
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px dashed rgba(220, 20, 60, 0.3);
+            border-radius: 10px;
+            padding: 60px 20px;
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        .screenshot-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #dc143c;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            color: #ff1a4d;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .toc h4 {
+            color: #dc143c;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            color: #aaa;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc a:hover {
+            color: #dc143c;
+        }
+
+        .toc a i {
+            color: #dc143c;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Animated Background -->
+    <div class="background-overlay"></div>
+    <div class="red-streaks"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand gothic-logo" href="../../">
+                <i class="fas fa-brain" aria-hidden="true"></i>
+                <span>UNITYAILAB</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../ai">AI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../apps">Apps</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../projects">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+
+    <!-- Download Hero -->
+    <section class="download-hero">
+        <div class="container">
+            <a href="../" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Downloads
+            </a>
+            <div class="download-hero-icon" data-aos="zoom-in">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <h1 class="gothic-title" data-aos="fade-up">Moana Miner</h1>
+            <span class="version-badge" data-aos="fade-up" data-aos-delay="100">Version 2.0</span>
+            <p class="download-hero-desc" data-aos="fade-up" data-aos-delay="200">
+                A powerful RavenCoin (RVN) mining dashboard with web-based GUI, real-time statistics,
+                and support for both pool and solo mining. Built by Unity AI Lab.
+            </p>
+            <a href="../files/Moana%20v1.0.zip" class="download-hero-btn" data-aos="fade-up" data-aos-delay="300" download>
+                <i class="fas fa-download"></i> Download Moana v1.0.zip
+            </a>
+            <div class="download-meta-bar" data-aos="fade-up" data-aos-delay="400">
+                <div class="download-meta-item">
+                    <span>File Size</span>
+                    <strong>86.4 MB</strong>
+                </div>
+                <div class="download-meta-item">
+                    <span>Platform</span>
+                    <strong>Windows 10/11</strong>
+                </div>
+                <div class="download-meta-item">
+                    <span>License</span>
+                    <strong>Free</strong>
+                </div>
+                <div class="download-meta-item">
+                    <span>Last Updated</span>
+                    <strong>November 2024</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Table of Contents -->
+    <section class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="toc" data-aos="fade-up">
+                        <h4><i class="fas fa-list"></i> Table of Contents</h4>
+                        <ul>
+                            <li><a href="#overview"><i class="fas fa-chevron-right"></i> Overview & Features</a></li>
+                            <li><a href="#requirements"><i class="fas fa-chevron-right"></i> System Requirements</a></li>
+                            <li><a href="#installation"><i class="fas fa-chevron-right"></i> Installation Guide</a></li>
+                            <li><a href="#configuration"><i class="fas fa-chevron-right"></i> Configuration</a></li>
+                            <li><a href="#pools"><i class="fas fa-chevron-right"></i> Mining Pools</a></li>
+                            <li><a href="#dashboard"><i class="fas fa-chevron-right"></i> Using the Dashboard</a></li>
+                            <li><a href="#troubleshooting"><i class="fas fa-chevron-right"></i> Troubleshooting</a></li>
+                            <li><a href="#faq"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview & Features -->
+    <section id="overview" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Overview & Features</span>
+                        </h2>
+                    </div>
+
+                    <p class="text-center mb-4" style="color: #bbb; font-size: 1.1rem;" data-aos="fade-up">
+                        Moana Miner is a complete mining solution for RavenCoin (RVN) using the KawPow algorithm.
+                        It provides an easy-to-use web dashboard for configuration and monitoring, eliminating the
+                        need to manually edit config files or run command-line miners.
+                    </p>
+
+                    <!-- Dashboard Screenshot -->
+                    <div class="text-center mb-5" data-aos="fade-up">
+                        <img src="image.png" alt="Moana Miner Dashboard Screenshot" style="max-width: 100%; border-radius: 15px; border: 2px solid rgba(220, 20, 60, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                        <p style="color: #666; font-size: 0.9rem; margin-top: 15px;">Moana Dashboard - Real-time mining stats with Unity AI commentary</p>
+                    </div>
+
+                    <ul class="feature-list" data-aos="fade-up">
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Web-Based Dashboard</strong><br>
+                                Beautiful web interface at localhost:4068 for all configuration and monitoring. No command line required.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Real-Time Statistics</strong><br>
+                                Live hashrate, shares accepted/rejected, GPU temperature, power consumption, and more.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Pool & Solo Mining</strong><br>
+                                Switch between pool mining and solo mining with a single click. Pre-configured with popular pools.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Multiple Miner Support</strong><br>
+                                Choose between T-Rex Miner (stable, widely compatible) or Rigel Miner (optimized for RTX cards).
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>All-Time Earnings Tracking</strong><br>
+                                Track your total shares, uptime, and estimated RVN earnings across all sessions.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Live RVN Price</strong><br>
+                                Real-time RavenCoin price from CoinGecko displayed in the dashboard.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>GPU Monitoring</strong><br>
+                                Core clock, memory clock, temperature, fan speed, and power draw via nvidia-smi.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Requirements -->
+    <section id="requirements" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">System Requirements</span>
+                        </h2>
+                    </div>
+
+                    <div class="req-grid" data-aos="fade-up">
+                        <div class="req-card">
+                            <i class="fab fa-windows"></i>
+                            <h4>Operating System</h4>
+                            <p>Windows 10 or Windows 11 (64-bit)</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fab fa-python"></i>
+                            <h4>Python</h4>
+                            <p>Python 3.8 or higher installed</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-microchip"></i>
+                            <h4>Graphics Card</h4>
+                            <p>NVIDIA GPU with CUDA support (GTX 1060+ recommended)</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-hdd"></i>
+                            <h4>Storage</h4>
+                            <p>100 MB free disk space</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-memory"></i>
+                            <h4>GPU Memory</h4>
+                            <p>4GB+ VRAM (6GB+ recommended for KawPow)</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-wifi"></i>
+                            <h4>Network</h4>
+                            <p>Stable internet connection</p>
+                        </div>
+                    </div>
+
+                    <div class="warning-box" data-aos="fade-up">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Miner Download Required</h4>
+                        <p>
+                            You must download a miner (T-Rex or Rigel) separately and place it in the <code>bin/miner/</code> folder.
+                            See installation Step 3 below for download links.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Guide -->
+    <section id="installation" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Installation Guide</span>
+                        </h2>
+                    </div>
+
+                    <!-- Step 1 -->
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">1</div>
+                        <h3>Download & Extract Moana</h3>
+                        <p>
+                            Download the Moana.zip file using the button above and extract it to a folder of your choice.
+                            We recommend a simple path like <code>C:\Mining\Moana</code> to avoid issues with spaces in paths.
+                        </p>
+                        <div class="code-block">
+                            <code>
+Moana/<br>
+├── bin/<br>
+│   ├── Moana.bat          <span class="comment"># Main launcher</span><br>
+│   ├── dashboard.py       <span class="comment"># Dashboard server</span><br>
+│   ├── config.bat         <span class="comment"># Configuration reference</span><br>
+│   ├── moana_config.json  <span class="comment"># Settings (auto-created)</span><br>
+│   └── moana_stats.json   <span class="comment"># Stats (auto-created)</span><br>
+└── Moana.lnk              <span class="comment"># Desktop shortcut</span>
+                            </code>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">2</div>
+                        <h3>Install Python (if not already installed)</h3>
+                        <p>
+                            Moana's dashboard requires Python. Download and install Python from the official website:
+                        </p>
+                        <ul>
+                            <li>Go to <a href="https://www.python.org/downloads/" target="_blank" style="color: #dc143c;">python.org/downloads</a></li>
+                            <li>Download Python 3.11 or later (Windows installer)</li>
+                            <li><strong>Important:</strong> Check "Add Python to PATH" during installation</li>
+                            <li>Complete the installation</li>
+                        </ul>
+                        <p>Verify Python is installed by opening Command Prompt and typing:</p>
+                        <div class="code-block">
+                            <code>python --version</code>
+                        </div>
+                        <p>You should see something like <code>Python 3.11.x</code></p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">3</div>
+                        <h3>Download a Miner (T-Rex or Rigel)</h3>
+                        <p>
+                            Moana is a dashboard/launcher - you need to download the actual mining software separately.
+                            Choose one of the following miners:
+                        </p>
+
+                        <div class="info-box">
+                            <h4><i class="fas fa-info-circle"></i> T-Rex Miner (Recommended)</h4>
+                            <p>
+                                Stable, widely tested, works on most NVIDIA GPUs. 1% dev fee.<br>
+                                <strong>GitHub:</strong> <a href="https://github.com/trexminer/T-Rex" target="_blank" style="color: #17a2b8;">github.com/trexminer/T-Rex</a><br>
+                                <strong>Download:</strong> <a href="https://github.com/trexminer/T-Rex/releases" target="_blank" style="color: #17a2b8;">github.com/trexminer/T-Rex/releases</a><br>
+                                Get the Windows CUDA version (e.g., <code>t-rex-0.26.8-win.zip</code>)
+                            </p>
+                        </div>
+
+                        <div class="info-box">
+                            <h4><i class="fas fa-info-circle"></i> Rigel Miner (RTX Optimized)</h4>
+                            <p>
+                                Optimized for RTX 30/40 series cards, may get 1-3% higher hashrates. 1% dev fee.<br>
+                                <strong>GitHub:</strong> <a href="https://github.com/rigelminer/rigel" target="_blank" style="color: #17a2b8;">github.com/rigelminer/rigel</a><br>
+                                <strong>Download:</strong> <a href="https://github.com/rigelminer/rigel/releases" target="_blank" style="color: #17a2b8;">github.com/rigelminer/rigel/releases</a><br>
+                                Get the Windows version (e.g., <code>rigel-1.x.x-win.zip</code>)
+                            </p>
+                        </div>
+
+                        <p>After downloading:</p>
+                        <ul>
+                            <li>Extract the miner zip file</li>
+                            <li>Copy the miner executable (<code>t-rex.exe</code> or <code>rigel.exe</code>) to the <code>Moana/bin/miner/</code> folder</li>
+                            <li>Make sure the file is named exactly <code>t-rex.exe</code> or <code>rigel.exe</code></li>
+                        </ul>
+
+                        <div class="warning-box">
+                            <h4><i class="fas fa-shield-alt"></i> Antivirus Warning</h4>
+                            <p>
+                                Mining software is often flagged as malware by antivirus programs (false positive).
+                                You may need to add an exception for the miner executable and the Moana folder.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">4</div>
+                        <h3>Create a RavenCoin Wallet</h3>
+                        <p>
+                            You need a RavenCoin wallet address to receive mining rewards. Options include:
+                        </p>
+                        <ul>
+                            <li><strong>Raven Core Wallet</strong> - Official desktop wallet from <a href="https://ravencoin.org" target="_blank" style="color: #dc143c;">ravencoin.org</a></li>
+                            <li><strong>Exchange Wallet</strong> - Use your RVN deposit address from exchanges like TradeOgre, Bittrex, etc.</li>
+                            <li><strong>Mobile Wallet</strong> - Zelcore or Trust Wallet support RVN</li>
+                        </ul>
+                        <p>Your wallet address will look something like: <code>RUcFJm7n2W5oQnb4pLAHmL9fYEBDFSaKpk</code></p>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">5</div>
+                        <h3>Launch Moana</h3>
+                        <p>
+                            Double-click <code>Moana.bat</code> in the bin folder (or use the shortcut). This will:
+                        </p>
+                        <ul>
+                            <li>Start the dashboard server on port 4068</li>
+                            <li>Automatically open your browser to <code>http://127.0.0.1:4068</code></li>
+                        </ul>
+                        <p>You'll see the Moana dashboard where you can configure everything through the web interface!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration -->
+    <section id="configuration" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Configuration</span>
+                        </h2>
+                    </div>
+
+                    <p class="text-center mb-4" style="color: #bbb;" data-aos="fade-up">
+                        All configuration is done through the web dashboard. Here's what each setting does:
+                    </p>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-wallet" style="color: #dc143c; margin-right: 10px;"></i> Wallet Address</h3>
+                        <p>
+                            Enter your RavenCoin wallet address. This is where your mining rewards will be sent.
+                            Double-check this address - sending to the wrong address means lost coins!
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-user" style="color: #dc143c; margin-right: 10px;"></i> Worker Name</h3>
+                        <p>
+                            A name to identify this mining rig on the pool. Useful if you have multiple miners.
+                            Default is "Moana". Use only letters and numbers (no spaces).
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-server" style="color: #dc143c; margin-right: 10px;"></i> Miner Selection</h3>
+                        <p>Choose which mining software to use:</p>
+                        <ul>
+                            <li><strong>T-Rex</strong> - Stable, works on all NVIDIA GPUs, good dev fee (1%)</li>
+                            <li><strong>Rigel</strong> - Newer, optimized for RTX cards, may get 1-3% higher hashrate</li>
+                        </ul>
+                        <p>Make sure you've placed the correct .exe file in the bin folder!</p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-toggle-on" style="color: #dc143c; margin-right: 10px;"></i> Pool vs Solo Mining</h3>
+                        <p>
+                            <strong>Pool Mining:</strong> Join thousands of miners, get small frequent payouts.
+                            Recommended for most users. Your hashrate contributes to finding blocks together.<br><br>
+                            <strong>Solo Mining:</strong> Mine alone, get full block reward (2500 RVN) if YOU find a block.
+                            Very rare for small miners - only recommended if you have significant hashpower (100+ MH/s).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mining Pools -->
+    <section id="pools" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Mining Pools</span>
+                        </h2>
+                    </div>
+
+                    <p class="text-center mb-4" style="color: #bbb;" data-aos="fade-up">
+                        Moana comes pre-configured with 2Miners pool. Here are popular RavenCoin pools you can use:
+                    </p>
+
+                    <table class="pool-table" data-aos="fade-up">
+                        <thead>
+                            <tr>
+                                <th>Pool Name</th>
+                                <th>Fee</th>
+                                <th>Stratum URL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>2Miners</strong> (Default)</td>
+                                <td>1%</td>
+                                <td><code>stratum+tcp://rvn.2miners.com:6060</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>2Miners Solo</strong></td>
+                                <td>1.5%</td>
+                                <td><code>stratum+tcp://solo-rvn.2miners.com:6060</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Flypool</strong></td>
+                                <td>1%</td>
+                                <td><code>stratum+ssl://stratum-ravencoin.flypool.org:3443</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nanopool</strong></td>
+                                <td>1%</td>
+                                <td><code>stratum+tcp://rvn-us-east1.nanopool.org:12222</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>HeroMiners</strong></td>
+                                <td>1%</td>
+                                <td><code>stratum+tcp://ravencoin.herominers.com:1140</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box" data-aos="fade-up">
+                        <h4><i class="fas fa-info-circle"></i> Checking Your Mining Stats</h4>
+                        <p>
+                            To see your pool statistics, payouts, and hashrate history, visit your pool's website
+                            and enter your wallet address. For example, for 2Miners go to
+                            <code>rvn.2miners.com/account/YOUR_WALLET_ADDRESS</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Using the Dashboard -->
+    <section id="dashboard" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Using the Dashboard</span>
+                        </h2>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-play-circle" style="color: #dc143c; margin-right: 10px;"></i> Starting Mining</h3>
+                        <p>
+                            Once you've entered your wallet address and selected your miner, click the
+                            <strong>"Start Mining"</strong> button. The miner will launch and you'll see
+                            real-time stats appear in the dashboard.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-chart-line" style="color: #dc143c; margin-right: 10px;"></i> Dashboard Stats</h3>
+                        <ul>
+                            <li><strong>Hashrate</strong> - Your mining speed in MH/s (megahashes per second)</li>
+                            <li><strong>Shares Accepted</strong> - Valid work submitted to the pool</li>
+                            <li><strong>Shares Rejected</strong> - Invalid work (should be very low)</li>
+                            <li><strong>GPU Temp</strong> - Current GPU temperature (keep below 80°C)</li>
+                            <li><strong>Power</strong> - GPU power consumption in watts</li>
+                            <li><strong>Uptime</strong> - How long the miner has been running</li>
+                            <li><strong>RVN Price</strong> - Current RavenCoin price from CoinGecko</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-stop-circle" style="color: #dc143c; margin-right: 10px;"></i> Stopping Mining</h3>
+                        <p>
+                            Click <strong>"Stop Mining"</strong> to gracefully stop the miner. Your all-time stats
+                            are automatically saved. You can close the browser tab - the miner will keep running.
+                            To fully stop, use the Stop button or close the command prompt window.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Troubleshooting</span>
+                        </h2>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-exclamation-circle" style="color: #ffc107; margin-right: 10px;"></i> "Python not found"</h3>
+                        <p>
+                            Python is not installed or not in your PATH. Reinstall Python and make sure to check
+                            "Add Python to PATH" during installation. Restart your computer after installing.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-exclamation-circle" style="color: #ffc107; margin-right: 10px;"></i> "Miner not found"</h3>
+                        <p>
+                            The miner executable (t-rex.exe or rigel.exe) is not in the bin folder. Download the
+                            miner from the links above and copy the .exe file to Moana/bin/.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-exclamation-circle" style="color: #ffc107; margin-right: 10px;"></i> Dashboard not opening</h3>
+                        <p>
+                            Manually open your browser and go to <code>http://127.0.0.1:4068</code>. If it still
+                            doesn't work, check if another program is using port 4068, or if your firewall is blocking it.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-exclamation-circle" style="color: #ffc107; margin-right: 10px;"></i> Low hashrate or GPU not detected</h3>
+                        <p>
+                            Make sure you have the latest NVIDIA drivers installed. Try running as Administrator.
+                            Check that your GPU supports CUDA and has enough VRAM (4GB minimum for KawPow).
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-exclamation-circle" style="color: #ffc107; margin-right: 10px;"></i> Antivirus blocks/deletes miner</h3>
+                        <p>
+                            Mining software triggers false positives. Add an exception for the entire Moana folder
+                            in your antivirus settings. For Windows Defender: Settings → Virus & threat protection
+                            → Manage settings → Exclusions → Add folder.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Frequently Asked Questions</span>
+                        </h2>
+                    </div>
+
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                            How much can I earn mining RavenCoin?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Earnings depend on your hashrate, electricity costs, and RVN price. A typical RTX 3060 gets
+                            around 15-20 MH/s. Use online calculators like WhatToMine.com to estimate profitability.
+                            Mining is often not profitable with high electricity costs.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                            Is this safe? Will it damage my GPU?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Mining puts your GPU under sustained load, which generates heat. Keep temperatures below
+                            80°C (ideally below 70°C) and ensure good airflow. Mining doesn't inherently damage GPUs,
+                            but prolonged high temperatures can reduce lifespan. Consider undervolting for efficiency.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                            Why is my hashrate lower than expected?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            KawPow is memory-intensive. Ensure you have fast memory clocks and consider overclocking.
+                            Also check: latest drivers, no background programs using GPU, power limit not too low,
+                            thermal throttling (GPU too hot).
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                            When do I get paid from the pool?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Each pool has a minimum payout threshold. For 2Miners it's 10 RVN. Once your balance
+                            reaches the threshold, the pool automatically sends to your wallet. Check the pool
+                            website for your balance and payout history.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                            Can I mine on multiple GPUs?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! Both T-Rex and Rigel automatically detect and use all available NVIDIA GPUs.
+                            The dashboard will show combined hashrate. Each GPU's stats may be shown separately
+                            depending on the miner.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                            Should I use pool or solo mining?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Pool mining for most users. Solo mining only makes sense with very high hashrate
+                            (100+ MH/s) and patience. With solo mining you could go months without finding a
+                            block, but when you do, you get the full 2500 RVN reward.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title mb-4" data-aos="fade-up">Ready to Start Mining?</h2>
+                    <p style="color: #bbb; margin-bottom: 30px;" data-aos="fade-up">
+                        Download Moana Miner and start earning RavenCoin today!
+                    </p>
+                    <a href="../files/Moana%20v1.0.zip" class="download-hero-btn" data-aos="fade-up" download>
+                        <i class="fas fa-download"></i> Download Moana v1.0.zip (86.4 MB)
+                    </a>
+                    <p style="color: #666; margin-top: 20px; font-size: 0.9rem;" data-aos="fade-up">
+                        <a href="https://github.com/Unity-Lab-AI/Moana" target="_blank" style="color: #dc143c;"><i class="fab fa-github"></i> View on GitHub</a>
+                        &nbsp;&nbsp;|&nbsp;&nbsp;
+                        Need help? Join our <a href="https://discord.gg/64Rvr5pZas" style="color: #dc143c;">Discord</a> community
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section py-4" role="contentinfo" aria-label="Site footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <h5 class="gothic-logo mb-3">
+                        <i class="fas fa-brain" aria-hidden="true"></i> UnityAILab
+                    </h5>
+                    <p class="footer-text">Chaos, creativity, and AI without limits.</p>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="../../ai">AI</a></li>
+                        <li><a href="../../about">About</a></li>
+                        <li><a href="../../apps">Apps</a></li>
+                        <li><a href="../../services">Services</a></li>
+                        <li><a href="../../projects">Projects</a></li>
+                        <li><a href="../">Downloads</a></li>
+                        <li><a href="../../contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Connect</h6>
+                    <div class="social-links">
+                        <a href="https://github.com/Unity-Lab-AI"><i class="fab fa-github"></i></a>
+                        <a href="https://discord.gg/64Rvr5pZas"><i class="fab fa-discord"></i></a>
+                        <a href="../../ai"><i class="fas fa-comments"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="copyright">&copy; 2024 UnityAILab. Pushing boundaries, breaking limits.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS (local) -->
+    <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS Animation Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../../script.js"></script>
+
+    <!-- Page Initialization -->
+    <script src="../../page-init.js"></script>
+</body>
+</html>

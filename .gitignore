@@ -1,0 +1,22 @@
+PolliLibPy/__pycache__/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Test results
+test-output*.txt
+test-output.log
+standalone-test-results.log
+*.log
+
+# Claude personal
+.claude/
+CLAUDE.md
+
+# Local development launchers (don't deploy these)
+START_LOCAL.html
+START_SERVER.bat
+START_SERVER.sh

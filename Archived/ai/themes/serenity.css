@@ -1,0 +1,488 @@
+/* SERENITY THEME OVERRIDES */
+/* This file overrides the neutral defaults in styles.css */
+body {
+  background-color: #F0F8FF;  /* AliceBlue – light, airy background */
+  color: #2F4F4F;            /* Dark Slate Gray for readable text */
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #E6F2F8;  /* Very light blue for a calm sidebar */
+  border-right: 2px solid #B0C4DE;  /* Light Steel Blue border */
+}
+.sidebar-header h2 {
+  color: #2F4F4F;
+}
+#visitor-counter {
+  color: #87CEEB;  /* Sky Blue for subtle emphasis */
+}
+#visitor-count-display {
+  color: #2F4F4F;
+  font-weight: bold;
+}
+
+/* Session list */
+.session-list {
+  color: #2F4F4F;
+}
+.session-item {
+  background-color: #E6F2F8;
+  color: #2F4F4F;
+}
+.session-item:hover {
+  background-color: #D0E7F5;  /* Slightly darker blue on hover */
+}
+.session-item.active {
+  background-color: #87CEEB;  /* Sky Blue for active items */
+  color: #F0F8FF;
+}
+.session-title {
+  color: inherit;
+}
+.session-edit-btn,
+.session-delete-btn {
+  color: #B0C4DE;
+}
+.session-edit-btn:hover,
+.session-delete-btn:hover {
+  color: #2F4F4F;
+}
+
+/* Sidebar buttons and controls */
+.sidebar-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.sidebar-btn:hover {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+.sidebar-label {
+  color: #87CEEB;
+}
+.sidebar-select {
+  background-color: #E6F2F8;
+  color: #2F4F4F;
+  border: 1px solid #B0C4DE;
+}
+.divider {
+  border-bottom: 1px solid #B0C4DE;
+}
+
+/* Chat area */
+.chat-main {
+  background-color: #F0F8FF;
+  color: #2F4F4F;
+}
+
+/* Message bubbles */
+.user-message {
+  background-color: #AFEEEE;  /* Pale Turquoise */
+  color: #2F4F4F;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.ai-message {
+  background-color: #E0FFFF;  /* Light Cyan */
+  color: #2F4F4F;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Message action buttons */
+.message-action-btn {
+  background-color: rgba(47,79,79,0.05);
+  color: #87CEEB;
+}
+.message-action-btn:hover {
+  background-color: rgba(47,79,79,0.1);
+  color: #2F4F4F;
+}
+
+/* Input area */
+.chat-input-container {
+  background-color: #E6F2F8;
+  border-top: 1px solid #B0C4DE;
+}
+#chat-input {
+  background-color: #F0F8FF;
+  color: #2F4F4F;
+  border: 1px solid #B0C4DE;
+}
+#chat-input:focus {
+  box-shadow: 0 0 0 2px rgba(176,196,222,0.3);
+}
+
+/* Send and voice buttons */
+#send-button,
+#voice-input-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+#send-button:hover,
+#voice-input-btn:hover {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+#send-button:disabled {
+  background-color: #A9A9A9;
+  color: #2F4F4F;
+  opacity: 0.7;
+}
+
+/* Chat controls */
+.chat-controls {
+  background-color: #E6F2F8;
+  border-top: 1px solid #B0C4DE;
+}
+.control-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.control-btn:hover {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+
+/* Voice chat controls */
+#voice-toggle.active {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+#headset-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+#headset-btn:hover {
+  background-color: #87CEEB;
+}
+
+/* Code blocks */
+.code-block-container {
+  background-color: #F0F8FF;
+  border: 1px solid #B0C4DE;
+}
+.code-block-header {
+  background-color: #E0FFFF;
+  border-bottom: 1px solid #87CEEB;
+  color: #B0C4DE;
+}
+.code-language {
+  color: #2F4F4F;
+}
+.copy-code-btn,
+.expand-code-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.copy-code-btn:hover,
+.expand-code-btn:hover {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+.code-block {
+  background-color: #D0E7F5;
+  color: #2F4F4F;
+}
+
+/* Images */
+.ai-image-loading {
+  background-color: #F0F8FF;
+}
+.loading-spinner {
+  border: 4px solid rgba(240,248,255,0.05);
+  border-top: 4px solid #B0C4DE;
+}
+.image-button {
+  background-color: rgba(240,248,255,0.05);
+  color: #87CEEB;
+}
+.image-button:hover {
+  background-color: rgba(240,248,255,0.1);
+  color: #2F4F4F;
+}
+
+/* Modals */
+.modal-backdrop {
+  background-color: rgba(0,0,0,0.7);
+}
+.modal-container {
+  background-color: #E6F2F8;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+.modal-header {
+  border-bottom: 1px solid #B0C4DE;
+}
+.modal-title {
+  color: #2F4F4F;
+}
+.close-btn {
+  color: #2F4F4F;
+}
+.modal-body {
+  color: #2F4F4F;
+}
+.modal-footer {
+  border-top: 1px solid #B0C4DE;
+}
+
+/* Form controls */
+.form-label {
+  color: #B0C4DE;
+}
+.form-control {
+  background-color: #E6F2F8;
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+.form-control:focus {
+  border-color: #87CEEB;
+  box-shadow: 0 0 0 2px rgba(135,206,235,0.25);
+}
+
+/* Button styles */
+.btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background-color: #B0C4DE;
+  border-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.btn-primary:hover {
+  background-color: #87CEEB;
+  border-color: #87CEEB;
+}
+.btn-secondary {
+  background-color: #B0C4DE;
+  border-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.btn-secondary:hover {
+  background-color: #87CEEB;
+  border-color: #87CEEB;
+}
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-danger:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+.btn-outline-primary {
+  color: #B0C4DE;
+  border-color: #B0C4DE;
+}
+.btn-outline-primary:hover {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.btn-outline-danger {
+  color: #f44336;
+  border-color: #f44336;
+}
+.btn-outline-danger:hover {
+  background-color: #f44336;
+  color: #FFFFFF;
+}
+.btn-outline-info {
+  color: #00bcd4;
+  border-color: #00bcd4;
+}
+.btn-outline-info:hover {
+  background-color: #00bcd4;
+  color: #FFFFFF;
+}
+
+/* Voice chat modal */
+.voice-chat-modal {
+  background-color: #E6F2F8;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+}
+.voice-status {
+  background-color: #E6F2F8;
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+.voice-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.voice-btn:hover {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+.voice-btn:disabled {
+  background-color: #87CEEB;
+  color: #2F4F4F;
+}
+.voice-btn.listening {
+  background-color: #f44336;
+}
+.transcript {
+  background-color: #E6F2F8;
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+
+/* Personalization modal */
+.personalization-form .form-group {
+  margin-bottom: 15px;
+}
+.personalization-form .form-label i {
+  color: #B0C4DE;
+  margin-right: 5px;
+}
+
+/* First launch modal */
+.first-launch-modal {
+  background-color: #E6F2F8;
+}
+.welcome-heading {
+  color: #B0C4DE;
+}
+.welcome-text {
+  color: #2F4F4F;
+}
+.setup-btn {
+  background-color: #B0C4DE;
+  color: #2F4F4F;
+  border: 1px solid #B0C4DE;
+}
+.setup-btn:hover {
+  background-color: #87CEEB;
+}
+.setup-btn-icon {
+  color: #B0C4DE;
+}
+.setup-btn-title {
+  color: #2F4F4F;
+}
+.setup-btn-desc {
+  color: #B0C4DE;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+.alert-warning {
+  background-color: #87CEEB;
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+.alert-info {
+  background-color: #E6F2F8;
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+.alert-danger {
+  background-color: #f44336;
+  border: 1px solid #f44336;
+  color: #ffb3b3;
+}
+.alert-success {
+  background-color: #87CEEB;
+  border: 1px solid #B0C4DE;
+  color: #2F4F4F;
+}
+
+/* Toast notification */
+#toast-notification {
+  background-color: rgba(240,248,255,0.9);
+  color: #2C2C2C;
+}
+
+/* Memory list items */
+#memory-list li {
+  background-color: #F0EDE8 !important;
+  border: 1px solid #CCC8C0;
+}
+#memory-list .text-muted {
+  color: #CCC8C0 !important;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #B0C4DE !important;
+}
+.text-secondary {
+  color: #D6CFBA !important;
+}
+.text-success {
+  color: #87CEEB !important;
+}
+.text-danger {
+  color: #f44336 !important;
+}
+.text-warning {
+  color: #ff9800 !important;
+}
+.text-info {
+  color: #00bcd4 !important;
+}
+.bg-light {
+  background-color: #F0EDE8 !important;
+}
+.bg-white {
+  background-color: #F8F6F1 !important;
+}
+.border {
+  border: 1px solid #CCC8C0 !important;
+}
+.rounded {
+  border-radius: 8px !important;
+}
+
+/* Bootstrap components */
+.dropdown-menu {
+  background-color: #F0EDE8;
+  border: 1px solid #CCC8C0;
+}
+.dropdown-item {
+  color: #2C2C2C;
+}
+.dropdown-item:hover {
+  background-color: #E8E3DC;
+}
+.dropdown-divider {
+  border-top: 1px solid #CCC8C0;
+}
+
+/* Screensaver styles for serenity theme */
+/* Background stays gentle and calm for immersive viewing */
+.screensaver {
+  background-color: #F0F8FF;
+}
+.screensaver-controls {
+  background: rgba(240,248,255,0.85);
+}
+.screensaver-settings label {
+  color: #2F4F4F;
+}
+.screensaver-settings input[type="text"],
+.screensaver-settings input[type="number"],
+.screensaver-settings select {
+  background-color: #E6F2F8;
+  border-color: #B0C4DE;
+  color: #2F4F4F;
+}
+.screensaver-settings input[type="checkbox"] {
+  accent-color: #B0C4DE;
+}
+.screensaver-btn {
+  background: #B0C4DE;
+  color: #2F4F4F;
+  border: 1px solid #87CEEB;
+}
+.screensaver-btn:hover {
+  background: #87CEEB;
+  color: #1B2631;
+}

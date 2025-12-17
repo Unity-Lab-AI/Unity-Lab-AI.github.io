@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Text Chat - Unity AI Lab</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
+
+  <!-- Shared Theme -->
+  <link rel="stylesheet" href="../shared-theme.css">
+
+  <!-- App-specific styles -->
+  <style>
+    body, html {
+      background: var(--primary-black);
+      color: var(--light-grey);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .chat-wrapper {
+      max-width: 1400px;
+      margin: 80px auto 40px;
+      padding: 30px;
+    }
+
+    .chat-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .chat-title {
+      font-family: 'Trajan Pro', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      text-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    #main-container {
+      background: rgba(26, 26, 26, 0.9);
+      border-radius: 12px;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
+    }
+
+    .top-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .top-controls select {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 40px 12px 15px;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      background: rgba(21, 21, 21, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 8px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23dc143c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .top-controls select:hover,
+    .top-controls select:focus {
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+    }
+
+    .custom-prompt-container {
+      display: none;
+      background: rgba(21, 21, 21, 0.8);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(220, 20, 60, 0.1);
+    }
+
+    .custom-prompt-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    #customPromptInput {
+      flex: 1;
+      min-width: 300px;
+      padding: 12px 15px;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      background: rgba(26, 26, 26, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    #customPromptInput:focus {
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+    }
+
+    #customPromptInput::placeholder {
+      color: rgba(204, 204, 204, 0.5);
+    }
+
+    #clearPromptHistoryBtn {
+      padding: 12px 25px;
+      background: var(--gradient-red);
+      color: var(--white);
+      border: 2px solid var(--crimson-red);
+      cursor: pointer;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+    }
+
+    #clearPromptHistoryBtn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
+    }
+
+    #customPromptHistory {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      background: rgba(21, 21, 21, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      border-radius: 8px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23dc143c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    #customPromptHistory:hover,
+    #customPromptHistory:focus {
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+    }
+
+    #chatOutput {
+      width: 100%;
+      border: 1px solid rgba(220, 20, 60, 0.2);
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 450px;
+      min-height: 450px;
+      background: rgba(42, 42, 42, 0.6);
+      color: var(--light-grey);
+      text-align: left;
+      word-wrap: break-word;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      scrollbar-width: thin;
+      scrollbar-color: var(--crimson-red) rgba(26, 26, 26, 0.8);
+      font-family: 'Trajan Pro', serif;
+      line-height: 1.6;
+    }
+
+    #chatOutput::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chatOutput::-webkit-scrollbar-track {
+      background: rgba(26, 26, 26, 0.8);
+    }
+
+    #chatOutput::-webkit-scrollbar-thumb {
+      background: var(--gradient-red);
+      border-radius: 4px;
+    }
+
+    #chatOutput::-webkit-scrollbar-thumb:hover {
+      background: var(--crimson-red);
+    }
+
+    #chatOutput p {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(21, 21, 21, 0.4);
+      border-radius: 8px;
+      border-left: 3px solid rgba(220, 20, 60, 0.3);
+    }
+
+    #chatOutput p strong {
+      color: var(--crimson-red);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    #chatOutput.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-style: italic;
+      color: rgba(204, 204, 204, 0.6);
+    }
+
+    .code-block {
+      background: rgba(30, 30, 30, 0.8);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      padding: 15px;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      border-radius: 8px;
+      color: var(--light-grey);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 10px 0;
+      display: block;
+      object-fit: contain;
+      background: rgba(26, 26, 26, 0.8);
+      box-shadow: 0 5px 15px rgba(220, 20, 60, 0.2);
+      border: 1px solid rgba(220, 20, 60, 0.2);
+    }
+
+    .media-container {
+      margin: 10px 0;
+      width: 100%;
+      max-width: calc(100% - 20px);
+      position: relative;
+      display: block;
+    }
+
+    #chatForm {
+      text-align: left;
+    }
+
+    #userInput {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: rgba(21, 21, 21, 0.8);
+      color: var(--light-grey);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      min-height: 120px;
+      resize: vertical;
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.95rem;
+      text-align: left;
+      border-radius: 8px;
+      outline: none;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      line-height: 1.6;
+    }
+
+    #userInput:focus {
+      border-color: var(--crimson-red);
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
+      background: rgba(26, 26, 26, 1);
+    }
+
+    #userInput::placeholder {
+      color: rgba(204, 204, 204, 0.5);
+    }
+
+    .button-container {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    #sendButton {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 30px;
+      background: var(--gradient-red);
+      color: var(--white);
+      border: 2px solid var(--crimson-red);
+      cursor: pointer;
+      font-family: 'Trajan Pro', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+    }
+
+    #sendButton:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
+    }
+
+    #sendButton:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(220, 20, 60, 0.3);
+    }
+
+    #clearChatBtn {
+      padding: 12px 30px;
+      background: transparent;
+      color: var(--crimson-red);
+      border: 2px solid var(--crimson-red);
+      cursor: pointer;
+      font-family: 'Trajan Pro', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.2);
+    }
+
+    #clearChatBtn:hover {
+      background: rgba(220, 20, 60, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+    }
+
+    #clearChatBtn:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      color: #ff4444;
+      background: rgba(255, 68, 68, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border: 1px solid rgba(255, 68, 68, 0.3);
+      font-family: 'Trajan Pro', serif;
+    }
+
+    #ai-thinking {
+      color: var(--crimson-red);
+      font-style: italic;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .chat-wrapper {
+        margin: 70px 15px 20px;
+        padding: 20px;
+      }
+
+      .chat-title {
+        font-size: 1.8rem;
+      }
+
+      #main-container {
+        padding: 20px;
+      }
+
+      .top-controls {
+        flex-direction: column;
+      }
+
+      .top-controls select {
+        min-width: 100%;
+      }
+
+      .custom-prompt-row {
+        flex-direction: column;
+      }
+
+      #customPromptInput {
+        min-width: 100%;
+      }
+
+      #chatOutput {
+        height: 350px;
+        min-height: 350px;
+      }
+
+      #userInput {
+        min-height: 100px;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+
+      #sendButton {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="unity-background-overlay"></div>
+  <div class="unity-red-streaks"></div>
+
+  <!-- Main Content -->
+  <div class="chat-wrapper">
+    <!-- Header -->
+    <div class="chat-header">
+      <h1 class="chat-title">AI Text Chat</h1>
+      <p class="app-subtitle">Conversational AI with Multiple Personas & Models</p>
+    </div>
+
+    <!-- Chat Container -->
+    <div id="main-container">
+      <!-- Model Selection -->
+      <div class="top-controls">
+        <select id="model" title="Pick the AI model—choose your flavor of chaos.">
+          <option value="unity" selected>Unity AI (Custom)</option>
+          <option value="evil">Evil Mode</option>
+        </select>
+        <select id="imageModel" title="Pick the image model for generating visuals.">
+          <option value="flux" selected>Flux (Default)</option>
+        </select>
+      </div>
+
+      <!-- Chat Output -->
+      <div id="chatOutput" class="empty" title="This is where Unity talks back.">
+        Type your message below to chat with Unity.
+      </div>
+
+      <!-- Chat Form -->
+      <form id="chatForm">
+        <textarea id="userInput" placeholder="Type your question or prompt... (Press Enter to send, Shift+Enter for new line)" title="Spill your guts here—Enter to send, Shift+Enter for a new line."></textarea>
+        <div class="button-container">
+          <button type="submit" id="sendButton" title="Send your message—unleash me, you fool.">Send Message</button>
+          <button type="button" id="clearChatBtn" title="Nuke the chat—start fresh, you weakling.">Clear Chat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+  <!-- Unity AI Lab Navigation -->
+  <script src="../shared-nav.js"></script>
+
+  <!-- DOMPurify for XSS Protection -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+  <!-- PolliLibJS -->
+  <script src="../../PolliLibJS/pollylib.js"></script>
+
+  <!-- Text Chat Functionality -->
+  <script src="text.js"></script>
+</body>
+</html>

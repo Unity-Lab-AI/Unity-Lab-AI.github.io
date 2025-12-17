@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags for Cross-Browser Compatibility -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+
+    <!-- SEO and Social Meta Tags -->
+    <meta name="description" content="Unity AI Lab Downloads - Free tools, miners, and utilities developed by the Unity AI Lab team. Download Moana Miner, AI tools, and more.">
+    <meta name="keywords" content="Unity AI downloads, Unity AI Lab downloads, free AI tools, Moana Miner, RavenCoin miner, KawPow miner, crypto mining tools, Unity AI utilities, hackall360, GFourteen, SpongeBong">
+    <meta name="author" content="Unity AI Lab - hackall360, GFourteen, SpongeBong">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="canonical" href="https://www.unityailab.com/downloads/">
+
+    <!-- Mobile Web App Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UnityAILab - Downloads">
+
+    <!-- MS Tile Color -->
+    <meta name="msapplication-TileColor" content="#0a0a0a">
+    <meta name="msapplication-navbutton-color" content="#0a0a0a">
+
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.unityailab.com/downloads/">
+    <meta property="og:title" content="Downloads - Unity AI Lab Tools & Utilities">
+    <meta property="og:description" content="Download free tools, miners, and utilities from Unity AI Lab. Moana Miner, AI tools, and more.">
+    <meta property="og:site_name" content="Unity AI Lab">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@UnityAILab">
+    <meta name="twitter:creator" content="@UnityAILab">
+    <meta name="twitter:title" content="Downloads - Unity AI Lab Tools & Utilities">
+    <meta name="twitter:description" content="Download free tools, miners, and utilities from Unity AI Lab.">
+
+    <title>Downloads - Unity AI Lab Tools & Utilities</title>
+
+    <!-- Preconnect to external resources for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Bootstrap CSS (local) -->
+    <link href="../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for Icons (local) -->
+    <link rel="stylesheet" href="../vendor/fontawesome/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- AOS Animation Library CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+        /* Smooth transition when page loads */
+        body {
+            transition: opacity 0.3s ease-in;
+        }
+
+        /* Ensure background is visible immediately */
+        .background-overlay,
+        .red-streaks {
+            will-change: auto;
+        }
+
+        /* Skip to main content link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #dc143c;
+            color: #fff;
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 10000;
+            font-weight: bold;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Download Cards */
+        .download-card {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .download-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(220, 20, 60, 0.6);
+            box-shadow: 0 20px 40px rgba(220, 20, 60, 0.2);
+        }
+
+        .download-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: #fff;
+        }
+
+        .download-card h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .download-version {
+            color: #dc143c;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .download-description {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .download-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .download-features li {
+            color: #ccc;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .download-features li:last-child {
+            border-bottom: none;
+        }
+
+        .download-features li i {
+            color: #dc143c;
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .download-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .download-meta-item {
+            text-align: center;
+        }
+
+        .download-meta-item span {
+            display: block;
+            color: #666;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .download-meta-item strong {
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            display: block;
+            width: 100%;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #ff1a4d 0%, #dc143c 100%);
+            color: #fff;
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .download-btn i {
+            margin-right: 8px;
+        }
+
+        /* Requirements Section */
+        .requirements-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .requirements-card h4 {
+            color: #dc143c;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .requirements-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .requirements-card ul li {
+            color: #999;
+            font-size: 0.85rem;
+            padding: 5px 0;
+        }
+
+        .requirements-card ul li i {
+            color: #dc143c;
+            margin-right: 8px;
+            width: 16px;
+        }
+
+        /* Tags */
+        .download-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .download-tag {
+            background: rgba(220, 20, 60, 0.2);
+            color: #dc143c;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(220, 20, 60, 0.3);
+        }
+
+        /* Disclaimer */
+        .disclaimer-section {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .disclaimer-section h4 {
+            color: #dc143c;
+            margin-bottom: 10px;
+        }
+
+        .disclaimer-section p {
+            color: #999;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Unity AI Lab Downloads",
+        "description": "Download free tools, miners, and utilities from Unity AI Lab.",
+        "url": "https://www.unityailab.com/downloads/",
+        "mainEntity": {
+            "@type": "ItemList",
+            "itemListElement": [
+                {
+                    "@type": "SoftwareApplication",
+                    "name": "Moana Miner",
+                    "applicationCategory": "Utility",
+                    "operatingSystem": "Windows",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.unityailab.com/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Downloads",
+                "item": "https://www.unityailab.com/downloads/"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Animated Background -->
+    <div class="background-overlay"></div>
+    <div class="red-streaks"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand gothic-logo" href="../">
+                <i class="fas fa-brain" aria-hidden="true"></i>
+                <span>UNITYAILAB</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../ai">AI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../apps">Apps</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../projects">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="./">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h1 class="display-2 gothic-title mb-3" data-aos="fade-down">
+                        Downloads
+                    </h1>
+                    <p class="lead gothic-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Free tools and utilities from Unity AI Lab
+                    </p>
+                    <div class="decorative-line mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Downloads Section -->
+    <section class="downloads-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-4" data-aos="fade-up">
+                        <span class="decorative-text">Available Downloads</span>
+                    </h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Tools crafted by the Unity AI Lab team for the community
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Moana Miner Download Card -->
+                <div class="col-lg-6 col-xl-5" data-aos="fade-up" data-aos-delay="200">
+                    <div class="download-card">
+                        <div class="download-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3>Moana Miner</h3>
+                        <div class="download-version">Version 2.0</div>
+
+                        <div class="download-tags">
+                            <span class="download-tag">RavenCoin</span>
+                            <span class="download-tag">KawPow</span>
+                            <span class="download-tag">GPU Mining</span>
+                            <span class="download-tag">Free</span>
+                        </div>
+
+                        <p class="download-description">
+                            A powerful RavenCoin (RVN) mining dashboard with web-based GUI, real-time stats monitoring,
+                            and support for both pool and solo mining. Features a beautiful dashboard interface,
+                            multiple miner backend support (T-Rex & Rigel), and Unity AI voice commentary.
+                        </p>
+
+                        <ul class="download-features">
+                            <li><i class="fas fa-check"></i> Web-based dashboard at localhost:4068</li>
+                            <li><i class="fas fa-check"></i> Real-time hashrate & share monitoring</li>
+                            <li><i class="fas fa-check"></i> Pool & Solo mining modes</li>
+                            <li><i class="fas fa-check"></i> T-Rex & Rigel miner support</li>
+                            <li><i class="fas fa-check"></i> GPU statistics & temperature</li>
+                            <li><i class="fas fa-check"></i> Easy wallet & pool configuration</li>
+                            <li><i class="fas fa-check"></i> All-time earnings tracking</li>
+                        </ul>
+
+                        <div class="download-meta">
+                            <div class="download-meta-item">
+                                <span>Size</span>
+                                <strong>86.4 MB</strong>
+                            </div>
+                            <div class="download-meta-item">
+                                <span>Platform</span>
+                                <strong>Windows</strong>
+                            </div>
+                            <div class="download-meta-item">
+                                <span>License</span>
+                                <strong>Free</strong>
+                            </div>
+                        </div>
+
+                        <a href="moana/" class="download-btn" style="margin-bottom: 15px; background: transparent; border: 2px solid #dc143c;">
+                            <i class="fas fa-info-circle"></i> View Details, Instructions & GitHub Links
+                        </a>
+                        <a href="files/Moana%20v1.0.zip" class="download-btn" download>
+                            <i class="fas fa-download"></i> Download Moana v1.0.zip
+                        </a>
+
+                        <div class="requirements-card">
+                            <h4><i class="fas fa-cog"></i> Requirements</h4>
+                            <ul>
+                                <li><i class="fas fa-windows"></i> Windows 10/11 (64-bit)</li>
+                                <li><i class="fab fa-python"></i> Python 3.8+ installed</li>
+                                <li><i class="fas fa-microchip"></i> NVIDIA GPU with CUDA support</li>
+                                <li><i class="fas fa-hdd"></i> 100MB free disk space</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Placeholder -->
+                <div class="col-lg-6 col-xl-5" data-aos="fade-up" data-aos-delay="300">
+                    <div class="download-card" style="opacity: 0.6;">
+                        <div class="download-icon" style="background: linear-gradient(135deg, #444 0%, #222 100%);">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <h3>More Coming Soon</h3>
+                        <div class="download-version">TBA</div>
+
+                        <div class="download-tags">
+                            <span class="download-tag" style="background: rgba(100,100,100,0.2); color: #888; border-color: rgba(100,100,100,0.3);">Coming Soon</span>
+                        </div>
+
+                        <p class="download-description">
+                            We're constantly developing new tools and utilities. Stay tuned for more downloads
+                            including AI tools, automation scripts, and other experimental projects from the
+                            Unity AI Lab team.
+                        </p>
+
+                        <ul class="download-features">
+                            <li><i class="fas fa-clock" style="color: #666;"></i> AI-powered tools in development</li>
+                            <li><i class="fas fa-clock" style="color: #666;"></i> Automation utilities</li>
+                            <li><i class="fas fa-clock" style="color: #666;"></i> Developer scripts</li>
+                            <li><i class="fas fa-clock" style="color: #666;"></i> More mining tools</li>
+                        </ul>
+
+                        <div class="download-meta">
+                            <div class="download-meta-item">
+                                <span>Size</span>
+                                <strong>TBA</strong>
+                            </div>
+                            <div class="download-meta-item">
+                                <span>Platform</span>
+                                <strong>TBA</strong>
+                            </div>
+                            <div class="download-meta-item">
+                                <span>License</span>
+                                <strong>Free</strong>
+                            </div>
+                        </div>
+
+                        <button class="download-btn" disabled style="background: linear-gradient(135deg, #444 0%, #222 100%); cursor: not-allowed;">
+                            <i class="fas fa-hourglass-half"></i> Coming Soon
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="disclaimer-section" data-aos="fade-up" data-aos-delay="400">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Disclaimer</h4>
+                        <p>
+                            All downloads are provided "as-is" without warranty of any kind. Cryptocurrency mining
+                            involves risks including hardware wear and electricity costs. Users are responsible for
+                            complying with local laws and regulations. Unity AI Lab is not responsible for any
+                            damages or losses resulting from the use of these tools. Always scan downloaded files
+                            with antivirus software. Mining software may trigger false positives in antivirus programs.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use Section -->
+    <section class="how-to-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-title mb-4" data-aos="fade-up">
+                        <span class="decorative-text">Getting Started with Moana</span>
+                    </h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Quick setup guide to start mining RavenCoin
+                    </p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <span style="font-size: 1.5rem; font-weight: bold;">1</span>
+                        </div>
+                        <h3>Download & Extract</h3>
+                        <p>Download Moana.zip and extract it to a folder of your choice.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <span style="font-size: 1.5rem; font-weight: bold;">2</span>
+                        </div>
+                        <h3>Add Miner</h3>
+                        <p>Download T-Rex or Rigel miner and place the .exe in the bin folder.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <span style="font-size: 1.5rem; font-weight: bold;">3</span>
+                        </div>
+                        <h3>Configure</h3>
+                        <p>Run Moana.bat and enter your RVN wallet address in the dashboard.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <span style="font-size: 1.5rem; font-weight: bold;">4</span>
+                        </div>
+                        <h3>Start Mining</h3>
+                        <p>Click Start Mining in the dashboard and watch your hashrate!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section py-4" role="contentinfo" aria-label="Site footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <h5 class="gothic-logo mb-3">
+                        <i class="fas fa-brain" aria-hidden="true"></i> UnityAILab
+                    </h5>
+                    <p class="footer-text">Chaos, creativity, and AI without limits.</p>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="../ai">AI</a></li>
+                        <li><a href="../about">About</a></li>
+                        <li><a href="../apps">Apps</a></li>
+                        <li><a href="../services">Services</a></li>
+                        <li><a href="../projects">Projects</a></li>
+                        <li><a href="./">Downloads</a></li>
+                        <li><a href="../contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Connect</h6>
+                    <div class="social-links">
+                        <a href="https://github.com/Unity-Lab-AI"><i class="fab fa-github"></i></a>
+                        <a href="https://discord.gg/64Rvr5pZas"><i class="fab fa-discord"></i></a>
+                        <a href="../ai"><i class="fas fa-comments"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="copyright">&copy; 2024 UnityAILab. Pushing boundaries, breaking limits.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS (local) -->
+    <script src="../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS Animation Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../script.js"></script>
+
+    <!-- Page Initialization -->
+    <script src="../page-init.js"></script>
+</body>
+</html>
