@@ -296,7 +296,7 @@ async function fetchImageModels() {
 // ===== PROMPT GENERATION =====
 
 async function fetchDynamicPrompt() {
-    const metaPrompt = "Generate exactly one short 125-character image prompt as text only of an outlandish and psychologically thrilling image.";
+    const metaPrompt = "Generate exactly one short 125-character image prompt as text only of an outlandish and psychologically thrilling image. Vary subjects - landscapes, creatures, objects, men, women, abstract. Don't default to young females.";
     const seed = generateSeed();
 
     try {
