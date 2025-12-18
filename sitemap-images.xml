@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Unity AI Lab Image Sitemap
+  https://www.unityailab.com/sitemap-images.xml
+  
+  Optimized for Google Image Search, Pinterest, and visual discovery
+  
+  Keywords: AI art, AI image generation, text to image, AI generated images,
+  generative AI art, AI visual content, Unity AI Lab images, AI screenshots,
+  AI demo visuals, machine learning images, artificial intelligence graphics
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage with branding images -->
+  <url>
+    <loc>https://www.unityailab.com/</loc>
+    <image:image>
+      <image:loc>https://www.unityailab.com/favicon.ico</image:loc>
+      <image:title>Unity AI Lab Logo - AI Innovation and Development</image:title>
+      <image:caption>Unity AI Lab favicon representing artificial intelligence and machine learning innovation</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Downloads - Moana Miner -->
+  <url>
+    <loc>https://www.unityailab.com/downloads/moana/</loc>
+    <image:image>
+      <image:loc>https://www.unityailab.com/downloads/moana/image.png</image:loc>
+      <image:title>Moana Miner - AI-Optimized Cryptocurrency Mining Software</image:title>
+      <image:caption>Moana cryptocurrency mining application interface by Unity AI Lab - efficient XMR Monero mining software with AI optimization</image:caption>
+      <image:geo_location>Worldwide</image:geo_location>
+      <image:license>https://www.unityailab.com/</image:license>
+    </image:image>
+  </url>
+  
+  <!-- AI Demo Page - Screenshots of AI chatbot interface -->
+  <url>
+    <loc>https://www.unityailab.com/ai/demo/</loc>
+    <!-- Note: Add actual screenshot images when available -->
+    <!-- 
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/ai-demo-screenshot.png</image:loc>
+      <image:title>Unity AI Chatbot Demo - Free AI Chat Interface</image:title>
+      <image:caption>Interactive AI chatbot demo featuring Unity AI - conversational AI, text generation, and AI assistant capabilities</image:caption>
+    </image:image>
+    -->
+  </url>
+  
+  <!-- Apps Gallery -->
+  <url>
+    <loc>https://www.unityailab.com/apps/</loc>
+    <!-- Note: Add app gallery thumbnails when available -->
+    <!--
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/apps-gallery.png</image:loc>
+      <image:title>Unity AI Lab Apps Gallery - AI-Powered Applications</image:title>
+      <image:caption>Collection of AI-powered applications including text generation, image generation, voice AI, and interactive demos</image:caption>
+    </image:image>
+    -->
+  </url>
+  
+  <!-- Text Demo - AI Text Generation -->
+  <url>
+    <loc>https://www.unityailab.com/apps/textDemo/text.html</loc>
+    <!--
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/text-demo.png</image:loc>
+      <image:title>AI Text Generator Demo - Free Text Generation Tool</image:title>
+      <image:caption>AI-powered text generation demo using advanced language models for content creation, writing assistance, and creative text generation</image:caption>
+    </image:image>
+    -->
+  </url>
+  
+  <!-- Slideshow Demo - AI Image Generation -->
+  <url>
+    <loc>https://www.unityailab.com/apps/slideshowDemo/slideshow.html</loc>
+    <!--
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/slideshow-demo.png</image:loc>
+      <image:title>AI Image Slideshow - Text to Image Generation</image:title>
+      <image:caption>AI-generated image slideshow demonstration featuring text-to-image capabilities, AI art generation, and generative AI visuals</image:caption>
+    </image:image>
+    -->
+  </url>
+  
+  <!-- Screensaver Demo - AI Art Display -->
+  <url>
+    <loc>https://www.unityailab.com/apps/screensaverDemo/screensaver.html</loc>
+    <!--
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/screensaver-demo.png</image:loc>
+      <image:title>AI Screensaver - Generative AI Art Display</image:title>
+      <image:caption>Dynamic AI-generated art screensaver featuring continuous generative AI image creation and display</image:caption>
+    </image:image>
+    -->
+  </url>
+  
+  <!-- Voice AI Demo -->
+  <url>
+    <loc>https://www.unityailab.com/apps/talkingWithUnity/</loc>
+    <!--
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/voice-ai-demo.png</image:loc>
+      <image:title>Voice AI Demo - Text to Speech and Speech to Text</image:title>
+      <image:caption>Interactive voice AI demonstration featuring text-to-speech, speech recognition, and conversational AI with voice capabilities</image:caption>
+    </image:image>
+    -->
+  </url>
+  
+  <!-- Services Page -->
+  <url>
+    <loc>https://www.unityailab.com/services/</loc>
+    <!--
+    <image:image>
+      <image:loc>https://www.unityailab.com/assets/services.png</image:loc>
+      <image:title>Unity AI Lab Services - AI Integration and Security Testing</image:title>
+      <image:caption>Professional AI services including AI integration, chatbot development, red team testing, and enterprise AI solutions</image:caption>
+    </image:image>
+    -->
+  </url>
+
+</urlset>
