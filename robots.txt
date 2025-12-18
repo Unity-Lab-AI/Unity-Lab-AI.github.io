@@ -1,5 +1,8 @@
 # robots.txt for Unity AI Lab
 # https://www.unityailab.com/
+#
+# IndexNow enabled for instant indexing:
+# https://www.unityailab.com/a743d8b18b9b4efeb89378e9a803f956.txt
 # 
 # Unity AI Lab - Your Premier AI Innovation Partner
 # Specializing in: Artificial Intelligence, Machine Learning, Generative AI,

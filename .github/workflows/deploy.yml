@@ -20,7 +20,6 @@ jobs:
   # Job 1: Build with Vite
   build:
     name: Build with Vite
-    needs: []
     runs-on: ubuntu-latest
     outputs:
       build_status: ${{ steps.build_check.outputs.status }}
@@ -160,6 +159,17 @@ jobs:
             --data '{"purge_everything":true}' | jq .
           echo "✅ Cache purge requested"
 
+      - name: Checkout code for IndexNow script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+
+      - name: Submit URLs to IndexNow
+        run: |
+          echo "🔍 Submitting URLs to IndexNow..."
+          node scripts/indexnow-submit.js
+        continue-on-error: true
+
       - name: Report deployment success
         run: |
           echo "🚀 DEPLOYMENT SUCCESSFUL"
@@ -168,4 +178,5 @@ jobs:
           echo "URL: ${{ steps.deployment.outputs.page_url }}"
           echo "Built with: Vite (optimized)"
           echo "Cache: Purged via Cloudflare API"
+          echo "IndexNow: URLs submitted to search engines"
           echo "================================"

@@ -27,6 +27,9 @@ const EXCLUDE = [
   'copy-assets.js',
   'cache-bust.js',
   'generate-sitemap.js',
+  
+  // Scripts folder (build/dev tools, not needed in production)
+  'scripts',
   '.gitignore',
   '.gitattributes',
   '.eslintrc.js',
