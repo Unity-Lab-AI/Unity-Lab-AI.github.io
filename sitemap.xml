@@ -1,45 +1,236 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<!--
+  Unity AI Lab Sitemap
+  https://www.unityailab.com/
+  
+  Keywords: artificial intelligence, AI lab, machine learning, deep learning,
+  generative AI, LLM, GPT, neural network, AI chatbot, conversational AI,
+  virtual assistant, AI assistant, text generation, AI image generation,
+  text to image, AI art, text to speech, AI voice, prompt engineering,
+  AI agents, agentic AI, autonomous AI, AI automation, enterprise AI,
+  AI solutions, AI services, AI tools, AI platform, AI API, AI demo,
+  free AI, AI online, try AI, ChatGPT alternative, AI for business
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+                            http://www.google.com/schemas/sitemap-image/1.1
+                            http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
+  
+  <!-- ==================== MAIN PAGES ==================== -->
+  
+  <!-- Homepage - Unity AI Lab: AI Innovation & Solutions -->
   <url>
     <loc>https://www.unityailab.com/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <!-- Keywords: AI lab, artificial intelligence, machine learning, AI solutions, 
+         generative AI, enterprise AI, AI platform, AI innovation, Unity AI Lab -->
   </url>
+  
+  <!-- About - Learn About Unity AI Lab's Mission -->
   <url>
     <loc>https://www.unityailab.com/about/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <!-- Keywords: AI company, AI research, AI lab, AI team, about AI, 
+         AI innovation, machine learning experts, AI development -->
   </url>
+  
+  <!-- Services - AI Solutions & Consulting Services -->
   <url>
     <loc>https://www.unityailab.com/services/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+    <!-- Keywords: AI services, AI consulting, AI solutions, enterprise AI, 
+         AI implementation, AI integration, custom AI, AI development,
+         AI for business, AI automation, AI strategy -->
   </url>
+  
+  <!-- Projects - AI Projects & Case Studies -->
   <url>
     <loc>https://www.unityailab.com/projects/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <!-- Keywords: AI projects, AI use cases, AI applications, AI examples,
+         machine learning projects, AI development, AI portfolio -->
   </url>
+  
+  <!-- Contact - Get in Touch with Unity AI Lab -->
   <url>
     <loc>https://www.unityailab.com/contact/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <!-- Keywords: contact AI lab, AI consulting, AI help, AI support,
+         enterprise AI contact, AI solutions inquiry -->
   </url>
+  
+  <!-- ==================== AI SECTION ==================== -->
+  
+  <!-- AI Landing - AI Technology Hub -->
   <url>
     <loc>https://www.unityailab.com/ai/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <!-- Keywords: AI technology, artificial intelligence, AI platform,
+         generative AI, LLM, machine learning, AI capabilities -->
   </url>
+  
+  <!-- AI Demo - Interactive AI Chatbot Demo -->
   <url>
     <loc>https://www.unityailab.com/ai/demo/</loc>
-    <lastmod>2025-11-26</lastmod>
+    <lastmod>2025-12-17</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
+    <!-- Keywords: AI demo, AI chatbot, try AI, free AI, AI online,
+         ChatGPT alternative, conversational AI, AI assistant, virtual assistant,
+         AI chat, text generation, generative AI demo, LLM demo -->
   </url>
+  
+  <!-- ==================== APPS SECTION ==================== -->
+  
+  <!-- Apps Gallery - AI-Powered Applications -->
+  <url>
+    <loc>https://www.unityailab.com/apps/</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <!-- Keywords: AI apps, AI applications, AI tools, free AI tools,
+         AI online, generative AI apps, AI demos, try AI -->
+  </url>
+  
+  <!-- Unity Demo App - Interactive AI Experience -->
+  <url>
+    <loc>https://www.unityailab.com/apps/unityDemo/unity.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <!-- Keywords: AI demo, Unity AI, AI chatbot demo, conversational AI,
+         AI assistant demo, try AI free -->
+  </url>
+  
+  <!-- Text Demo - AI Text Generation -->
+  <url>
+    <loc>https://www.unityailab.com/apps/textDemo/text.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <!-- Keywords: AI text generator, text generation, AI writing,
+         AI content creation, generative AI, AI copywriting, free AI writer -->
+  </url>
+  
+  <!-- Persona Demo - AI Personality Customization -->
+  <url>
+    <loc>https://www.unityailab.com/apps/personaDemo/persona.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <!-- Keywords: AI persona, AI personality, custom AI, AI character,
+         conversational AI, AI assistant customization -->
+  </url>
+  
+  <!-- Slideshow Demo - AI Image Generation Showcase -->
+  <url>
+    <loc>https://www.unityailab.com/apps/slideshowDemo/slideshow.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <!-- Keywords: AI image generation, AI art, text to image, AI slideshow,
+         AI image generator, generative AI images, AI art generator -->
+  </url>
+  
+  <!-- Screensaver Demo - AI-Generated Art Display -->
+  <url>
+    <loc>https://www.unityailab.com/apps/screensaverDemo/screensaver.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <!-- Keywords: AI screensaver, AI art, AI image generation, generative art,
+         AI visual, AI display, text to image -->
+  </url>
+  
+  <!-- Helper Interface Demo - AI Assistant Interface -->
+  <url>
+    <loc>https://www.unityailab.com/apps/helperInterfaceDemo/helperInterface.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <!-- Keywords: AI helper, AI assistant interface, AI chatbot interface,
+         conversational AI UI, AI support interface -->
+  </url>
+  
+  <!-- Talking With Unity - Voice AI Experience -->
+  <url>
+    <loc>https://www.unityailab.com/apps/talkingWithUnity/</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <!-- Keywords: AI voice, voice AI, text to speech AI, AI voice generation,
+         conversational AI voice, voice assistant, AI TTS, speech AI -->
+  </url>
+  
+  <!-- Talking With Unity - AI Voice Interface -->
+  <url>
+    <loc>https://www.unityailab.com/apps/talkingWithUnity/indexAI.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <!-- Keywords: AI voice chat, voice AI assistant, speech to text AI,
+         text to speech, AI conversation, voice-enabled AI -->
+  </url>
+  
+  <!-- Old Site Project - Legacy AI Chat Application -->
+  <url>
+    <loc>https://www.unityailab.com/apps/oldSiteProject/</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <!-- Keywords: AI chat app, AI chatbot, conversational AI, AI messaging -->
+  </url>
+  
+  <!-- Old Site Screensaver -->
+  <url>
+    <loc>https://www.unityailab.com/apps/oldSiteProject/screensaver.html</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <!-- Keywords: AI screensaver, AI art display, generative art -->
+  </url>
+  
+  <!-- ==================== DOWNLOADS SECTION ==================== -->
+  
+  <!-- Downloads - AI Tools & Software -->
+  <url>
+    <loc>https://www.unityailab.com/downloads/</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <!-- Keywords: AI downloads, AI software, AI tools download, free AI tools,
+         AI applications download, machine learning tools -->
+  </url>
+  
+  <!-- Moana Miner - Cryptocurrency Mining Software -->
+  <url>
+    <loc>https://www.unityailab.com/downloads/moana/</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://www.unityailab.com/downloads/moana/image.png</image:loc>
+      <image:title>Moana Miner - AI-Optimized Mining Software</image:title>
+      <image:caption>Moana cryptocurrency mining application by Unity AI Lab</image:caption>
+    </image:image>
+    <!-- Keywords: Moana miner, crypto miner, mining software, AI mining,
+         cryptocurrency mining, XMR miner, Monero mining -->
+  </url>
+
 </urlset>

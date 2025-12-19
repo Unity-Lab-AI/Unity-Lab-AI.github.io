@@ -1,34 +1,262 @@
 # robots.txt for Unity AI Lab
 # https://www.unityailab.com/
+#
+# IndexNow enabled for instant indexing:
+# https://www.unityailab.com/a743d8b18b9b4efeb89378e9a803f956.txt
+# 
+# Unity AI Lab - Your Premier AI Innovation Partner
+# Specializing in: Artificial Intelligence, Machine Learning, Generative AI,
+# AI Chatbots, LLM Integration, AI Agents, Text Generation, Image Generation,
+# Text-to-Speech, Speech-to-Text, AI Automation, and Enterprise AI Solutions
+#
+# Keywords: AI lab, artificial intelligence, machine learning, deep learning,
+# generative AI, gen AI, neural network, large language model, LLM, GPT,
+# natural language processing, NLP, computer vision, AI chatbot, conversational AI,
+# virtual assistant, AI assistant, text generation, AI image generation,
+# text to image, AI art, AI voice generation, text to speech AI, prompt engineering,
+# AI agents, agentic AI, autonomous AI, AI automation, enterprise AI, AI solutions,
+# AI services, AI tools, AI platform, AI API, responsible AI, AI safety
 
+# Default rules for all crawlers
 User-agent: *
 Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+Disallow: /*.min.js$
+Disallow: /*.min.css$
 
-# Sitemap
+# Sitemap locations
+Sitemap: https://www.unityailab.com/sitemap-index.xml
 Sitemap: https://www.unityailab.com/sitemap.xml
+Sitemap: https://www.unityailab.com/sitemap-images.xml
 
-# Crawl-delay (optional, set to 1 second to be respectful)
+# Crawl-delay for respectful crawling
 Crawl-delay: 1
 
-# Allow all major search engine bots
+# Google Search Bot - Primary search engine
 User-agent: Googlebot
 Allow: /
+Allow: /ai/
+Allow: /ai/demo/
+Allow: /apps/
+Allow: /services/
+Allow: /projects/
+Allow: /about/
+Allow: /contact/
+Allow: /downloads/
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
 
+# Google Image Bot - For AI art and image generation content
+User-agent: Googlebot-Image
+Allow: /
+Allow: /ai/
+Allow: /apps/
+Allow: /downloads/
+
+# Bing Search Bot
 User-agent: Bingbot
 Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
 
+# Bing Preview Bot
+User-agent: BingPreview
+Allow: /
+
+# Yahoo Search Bot
 User-agent: Slurp
 Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
 
+# DuckDuckGo Search Bot
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
 
+# Baidu Search Bot (China)
 User-agent: Baiduspider
 Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
 
+# Yandex Search Bot (Russia)
 User-agent: YandexBot
 Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
 
-# Disallow crawling of specific file types (if any)
-# Disallow: /*.js$
-# Disallow: /*.css$
+# Yandex Image Bot
+User-agent: YandexImages
+Allow: /
+Allow: /ai/
+Allow: /apps/
+Allow: /downloads/
+
+# Sogou Search Bot (China)
+User-agent: Sogou
+Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Naver Search Bot (Korea)
+User-agent: Yeti
+Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Seznam Search Bot (Czech Republic)
+User-agent: SeznamBot
+Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Apple Search Bot (Siri, Spotlight)
+User-agent: Applebot
+Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Facebook Crawler (for social sharing)
+User-agent: facebookexternalhit
+Allow: /
+
+# Twitter/X Crawler (for social sharing)
+User-agent: Twitterbot
+Allow: /
+
+# LinkedIn Crawler (for social sharing)
+User-agent: LinkedInBot
+Allow: /
+
+# Pinterest Crawler
+User-agent: Pinterestbot
+Allow: /
+Allow: /ai/
+Allow: /apps/
+
+# Slack Crawler (for link previews)
+User-agent: Slackbot
+Allow: /
+
+# Discord Crawler (for link previews)
+User-agent: Discordbot
+Allow: /
+
+# Telegram Crawler (for link previews)
+User-agent: TelegramBot
+Allow: /
+
+# WhatsApp Crawler (for link previews)
+User-agent: WhatsApp
+Allow: /
+
+# Microsoft Teams Crawler
+User-agent: SkypeUriPreview
+Allow: /
+
+# GPTBot (OpenAI) - Allow for AI training visibility
+User-agent: GPTBot
+Allow: /
+Allow: /ai/
+Allow: /apps/
+Allow: /services/
+Allow: /about/
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Google-Extended (Gemini/Bard training)
+User-agent: Google-Extended
+Allow: /
+Allow: /ai/
+Allow: /apps/
+Disallow: /Archived/
+
+# Anthropic Claude Bot
+User-agent: anthropic-ai
+Allow: /
+Allow: /ai/
+Allow: /apps/
+Disallow: /Archived/
+
+User-agent: Claude-Web
+Allow: /
+Allow: /ai/
+Allow: /apps/
+Disallow: /Archived/
+
+# CCBot (Common Crawl - used for AI training)
+User-agent: CCBot
+Allow: /
+Disallow: /Archived/
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Perplexity AI Bot
+User-agent: PerplexityBot
+Allow: /
+Disallow: /Archived/
+
+# Cohere AI Bot
+User-agent: cohere-ai
+Allow: /
+Disallow: /Archived/
+
+# Archive.org Wayback Machine
+User-agent: ia_archiver
+Allow: /
+Disallow: /playwright-report/
+Disallow: /test-results/
+
+# Ahrefs SEO Bot
+User-agent: AhrefsBot
+Allow: /
+Crawl-delay: 10
+
+# Semrush SEO Bot
+User-agent: SemrushBot
+Allow: /
+Crawl-delay: 10
+
+# Moz SEO Bot
+User-agent: rogerbot
+Allow: /
+Crawl-delay: 10
+
+# Majestic SEO Bot
+User-agent: MJ12bot
+Allow: /
+Crawl-delay: 10
+
+# Block known bad bots and scrapers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MauiBot
+Disallow: /
+
+User-agent: SemaltBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# Host directive for search engines
+Host: https://www.unityailab.com

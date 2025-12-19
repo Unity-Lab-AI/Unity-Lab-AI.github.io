@@ -1,0 +1,68 @@
+/* TEAM */
+
+Creator: SpongeBong (hackall360)
+Role: Co-Founder, Lead Developer, Ethical Hacker, System Administrator
+Contact: unityailabcontact@gmail.com
+GitHub: https://github.com/hackall360
+Location: Worldwide
+
+Creator: GFourteen
+Role: Co-Founder, Developer, Financial Advisor
+Contact: unityailabcontact@gmail.com
+Location: Worldwide
+
+/* THANKS */
+
+Name: Pollinations.AI
+Role: AI Infrastructure Partner
+URL: https://pollinations.ai
+
+Name: Open Source Community
+Role: Libraries, Tools, and Inspiration
+
+/* SITE */
+
+Name: Unity AI Lab
+URL: https://www.unityailab.com
+Description: Unrestricted AI Chatbot, AI Integration Services & Red Team Testing
+Keywords: AI lab, artificial intelligence, machine learning, generative AI, LLM, AI chatbot, conversational AI, AI assistant, text generation, AI image generation, AI voice, prompt engineering, AI agents, autonomous AI, AI automation, enterprise AI, AI solutions, ChatGPT alternative, free AI, AI demo
+
+Last Update: 2025-12-17
+Language: English
+Standards: HTML5, CSS3, JavaScript ES6+, JSON-LD, Schema.org
+Components: Bootstrap 5, Font Awesome, AOS Animations
+Doctype: HTML5
+
+Software: Visual Studio Code, GitHub, Claude AI
+Hosting: GitHub Pages, Cloudflare
+
+/* SERVICES */
+
+AI Integration & Development
+AI Chatbot Development
+Red Team Security Testing
+Blue Team Security Testing
+Prompt Engineering
+AI Agent Development
+Custom AI Solutions
+Unrestricted AI Development
+
+/* PRODUCTS */
+
+Unity AI - Unrestricted AI Chatbot
+PolliLibJS - JavaScript AI Library for Pollinations
+PolliLibPy - Python AI Library for Pollinations
+CodeWringer - AI Code Optimization Tool
+Moana Miner - Cryptocurrency Mining Software
+
+/* SOCIAL */
+
+GitHub: https://github.com/Unity-Lab-AI
+Discord: https://discord.gg/64Rvr5pZas
+Website: https://www.unityailab.com
+AI Demo: https://www.unityailab.com/ai/demo/
+
+/* LEGAL */
+
+Copyright: 2024 Unity AI Lab
+License: Proprietary (Website), Various (Open Source Projects)
