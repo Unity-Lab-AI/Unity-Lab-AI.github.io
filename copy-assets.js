@@ -45,10 +45,9 @@ const EXCLUDE = [
   'tsconfig.json',
   'jsconfig.json',
 
-  // Documentation (not needed in production)
+  // Documentation (README stays out, but Docs folder deploys for prompts)
   'CLAUDE.md',
   'README.md',
-  'Docs',
 
   // Archived/legacy content (not needed in production)
   'Archived',
