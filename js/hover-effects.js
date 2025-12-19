@@ -1,9 +1,17 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Hover Effects
+// mouse hover interactions
 // ===================================
 
 export function initHoverEffects() {
-    // Feature cards tilt effect
+    // tilt effect on cards
     const featureCards = document.querySelectorAll('.feature-card');
 
     featureCards.forEach(card => {
@@ -30,7 +38,7 @@ export function initHoverEffects() {
         });
     });
 
-    // Gallery items glow effect
+    // red glow on gallery items
     const galleryItems = document.querySelectorAll('.gallery-item');
 
     galleryItems.forEach(item => {

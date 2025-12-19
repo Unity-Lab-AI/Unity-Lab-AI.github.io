@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Function Calling / Tool Use - Enable AI to use external tools
 Implements the Function Calling section from the TODO list
 

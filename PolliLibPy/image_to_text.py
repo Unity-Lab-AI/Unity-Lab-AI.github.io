@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Image-to-Text (Vision) - Analyze images and generate descriptions
 Implements the Image-to-Text section from the TODO list
 
@@ -330,7 +338,7 @@ def main():
     vision = ImageToText()
 
     # Example image URLs for testing
-    example_image_url = "https://image.pollinations.ai/prompt/a%20cat%20sitting%20on%20a%20windowsill?width=512&height=512&seed=42"
+    example_image_url = "https://gen.pollinations.ai/image/a%20cat%20sitting%20on%20a%20windowsill?width=512&height=512&seed=42"
 
     # Example 1: Analyze image from URL
     print("\n1. Analyze Image from URL:")

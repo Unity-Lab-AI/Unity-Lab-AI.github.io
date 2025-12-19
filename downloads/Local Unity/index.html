@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+
+    <meta name="description" content="Local Unity AI v2.5 - A completely local AI assistant with LLM chat and SDXL image generation. Run Mistral, Llama 3, Qwen 2.5 on your GPU. 100% offline and private.">
+    <meta name="keywords" content="Local AI, local LLM, offline AI, Mistral, Llama 3, Qwen, Phi-3, SDXL, image generation, local chat, Unity AI Lab, GPU AI">
+    <meta name="author" content="Unity AI Lab - hackall360, GFourteen, SpongeBong">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="canonical" href="https://www.unityailab.com/downloads/local-unity/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.unityailab.com/downloads/local-unity/">
+    <meta property="og:title" content="Local Unity AI v2.5 - Offline LLM & Image Generation">
+    <meta property="og:description" content="Run AI locally on your GPU. Chat with Mistral, Llama, Qwen. Generate images with SDXL. 100% private.">
+    <meta property="og:site_name" content="Unity AI Lab">
+
+    <title>Local Unity AI v2.5 - Offline LLM & Image Generation | Unity AI Lab</title>
+
+    <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <style>
+        body { transition: opacity 0.3s ease-in; }
+        .background-overlay, .red-streaks { will-change: auto; }
+        .skip-link { position: absolute; top: -40px; left: 0; background: #dc143c; color: #fff; padding: 8px 16px; text-decoration: none; z-index: 10000; font-weight: bold; }
+        .skip-link:focus { top: 0; }
+
+        .download-hero { padding: 140px 0 60px; text-align: center; }
+        .download-hero-icon { width: 120px; height: 120px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; font-size: 3rem; color: #fff; box-shadow: 0 10px 40px rgba(220, 20, 60, 0.4); }
+        .download-hero h1 { font-size: 3rem; margin-bottom: 10px; }
+        .version-badge { display: inline-block; background: rgba(220, 20, 60, 0.2); color: #dc143c; padding: 5px 15px; border-radius: 20px; font-size: 1rem; border: 1px solid rgba(220, 20, 60, 0.4); margin-bottom: 20px; }
+        .download-hero-desc { color: #aaa; font-size: 1.2rem; max-width: 700px; margin: 0 auto 30px; }
+        .download-hero-btn { display: inline-flex; align-items: center; gap: 10px; padding: 18px 40px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); color: #fff; text-decoration: none; border-radius: 10px; font-size: 1.2rem; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3); }
+        .download-hero-btn:hover { background: linear-gradient(135deg, #ff1a4d 0%, #dc143c 100%); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(220, 20, 60, 0.5); }
+        .download-meta-bar { display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap; }
+        .download-meta-item { text-align: center; }
+        .download-meta-item span { display: block; color: #666; font-size: 0.85rem; text-transform: uppercase; }
+        .download-meta-item strong { color: #fff; font-size: 1.1rem; }
+
+        .content-section { padding: 60px 0; }
+        .content-section:nth-child(even) { background: rgba(20, 20, 20, 0.5); }
+        .section-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.5rem; color: #fff; }
+
+        .feature-list { list-style: none; padding: 0; margin: 30px 0; }
+        .feature-list li { display: flex; align-items: flex-start; gap: 15px; padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ccc; }
+        .feature-list li:last-child { border-bottom: none; }
+        .feature-list li i { color: #dc143c; font-size: 1.2rem; margin-top: 3px; }
+        .feature-list li strong { color: #fff; }
+
+        .step-card { background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%); border: 1px solid rgba(220, 20, 60, 0.2); border-radius: 15px; padding: 30px; margin-bottom: 30px; position: relative; }
+        .step-number { position: absolute; top: -15px; left: 30px; width: 40px; height: 40px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #fff; }
+        .step-card h3 { color: #fff; margin-bottom: 15px; padding-left: 40px; }
+        .step-card p { color: #bbb; line-height: 1.8; }
+        .step-card ul { color: #bbb; padding-left: 20px; }
+        .step-card li { margin-bottom: 10px; }
+
+        .code-block { background: #0d0d0d; border: 1px solid #333; border-radius: 8px; padding: 20px; font-family: 'Courier New', monospace; color: #0f0; overflow-x: auto; margin: 15px 0; }
+        .code-block code { color: #0f0; }
+        .code-block .comment { color: #666; }
+
+        .toc { background: rgba(26, 26, 26, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 25px; margin: 30px 0; }
+        .toc h4 { color: #dc143c; margin-bottom: 15px; }
+        .toc ul { list-style: none; padding: 0; margin: 0; }
+        .toc li { margin-bottom: 10px; }
+        .toc a { color: #aaa; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .toc a:hover { color: #dc143c; }
+        .toc a i { color: #dc143c; font-size: 0.8rem; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #dc143c; text-decoration: none; margin-bottom: 20px; font-size: 0.95rem; }
+        .back-link:hover { color: #ff1a4d; }
+
+        .warning-box { background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .warning-box h4 { color: #ffc107; margin-bottom: 10px; }
+        .warning-box p { color: #ccc; margin: 0; }
+
+        .info-box { background: rgba(23, 162, 184, 0.1); border: 1px solid rgba(23, 162, 184, 0.3); border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .info-box h4 { color: #17a2b8; margin-bottom: 10px; }
+        .info-box p { color: #ccc; margin: 0; }
+
+        .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
+        .req-card { background: rgba(26, 26, 26, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 25px; text-align: center; }
+        .req-card i { font-size: 2.5rem; color: #dc143c; margin-bottom: 15px; }
+        .req-card h4 { color: #fff; margin-bottom: 10px; }
+        .req-card p { color: #999; font-size: 0.9rem; margin: 0; }
+
+        .model-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .model-table th, .model-table td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .model-table th { color: #dc143c; font-weight: 600; background: rgba(220, 20, 60, 0.1); }
+        .model-table td { color: #ccc; }
+
+        .expandable-image { cursor: zoom-in; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .expandable-image:hover { transform: scale(1.02); box-shadow: 0 25px 70px rgba(220, 20, 60, 0.4); }
+        .image-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .image-overlay.active { opacity: 1; }
+        .image-overlay-container { max-width: 95vw; max-height: 95vh; position: relative; }
+        .image-overlay-image { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); }
+        .image-overlay-close { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: rgba(220, 20, 60, 0.9); border: none; color: #fff; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; z-index: 10001; }
+        .image-overlay-close:hover { background: #ff1a4d; transform: scale(1.1); }
+        .image-hint { display: block; text-align: center; color: #666; font-size: 0.8rem; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="background-overlay"></div>
+    <div class="red-streaks"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand gothic-logo" href="../../">
+                <i class="fas fa-brain" aria-hidden="true"></i>
+                <span>UNITYAILAB</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../ai">AI</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../apps">Apps</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="../">Downloads</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content" role="main">
+
+    <!-- Download Hero -->
+    <section class="download-hero">
+        <div class="container">
+            <a href="../" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Downloads
+            </a>
+            <div class="download-hero-icon" data-aos="zoom-in">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h1 class="gothic-title" data-aos="fade-up">Local Unity AI</h1>
+            <span class="version-badge" data-aos="fade-up" data-aos-delay="100">v2.5</span>
+            <p class="download-hero-desc" data-aos="fade-up" data-aos-delay="200">
+                A completely local AI assistant that runs entirely on your computer.
+                Chat with Mistral, Llama 3, Qwen 2.5, or Phi-3. Generate images with SDXL models.
+                No internet required. No API keys. 100% private. Your data never leaves your machine.
+            </p>
+            <a href="../files/Local%20Unity%20v2.5.zip" class="download-hero-btn" data-aos="fade-up" data-aos-delay="300" download>
+                <i class="fas fa-download"></i> Download Local Unity v2.5.zip
+            </a>
+            <div class="download-meta-bar" data-aos="fade-up" data-aos-delay="400">
+                <div class="download-meta-item">
+                    <span>File Size</span>
+                    <strong>~50 MB</strong>
+                </div>
+                <div class="download-meta-item">
+                    <span>Platform</span>
+                    <strong>Windows/Linux</strong>
+                </div>
+                <div class="download-meta-item">
+                    <span>License</span>
+                    <strong>Free</strong>
+                </div>
+                <div class="download-meta-item">
+                    <span>Last Updated</span>
+                    <strong>December 2025</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Screenshots</span>
+                        </h2>
+                    </div>
+
+                    <div class="row g-4" data-aos="fade-up">
+                        <div class="col-md-6">
+                            <img src="image.png" alt="AI Model Download Wizard" class="expandable-image" loading="lazy" onclick="expandImage(this.src, this.alt)" style="max-width: 100%; border-radius: 15px; border: 2px solid rgba(220, 20, 60, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                            <span class="image-hint"><i class="fas fa-expand"></i> Click to expand</span>
+                            <p style="color: #666; font-size: 0.9rem; margin-top: 15px; text-align: center;">Model Download Wizard - Select text models (Llama, Mistral, Qwen, Phi) and image models (DreamShaper, epiCRealism, Juggernaut)</p>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="image2.png" alt="Local Unity AI Chat Interface" class="expandable-image" loading="lazy" onclick="expandImage(this.src, this.alt)" style="max-width: 100%; border-radius: 15px; border: 2px solid rgba(220, 20, 60, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                            <span class="image-hint"><i class="fas fa-expand"></i> Click to expand</span>
+                            <p style="color: #666; font-size: 0.9rem; margin-top: 15px; text-align: center;">Full chat interface with AI-generated image, console output, sessions panel, and settings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Table of Contents -->
+    <section class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="toc" data-aos="fade-up">
+                        <h4><i class="fas fa-list"></i> Table of Contents</h4>
+                        <ul>
+                            <li><a href="#overview"><i class="fas fa-chevron-right"></i> Overview & Features</a></li>
+                            <li><a href="#requirements"><i class="fas fa-chevron-right"></i> System Requirements</a></li>
+                            <li><a href="#installation"><i class="fas fa-chevron-right"></i> Installation</a></li>
+                            <li><a href="#models"><i class="fas fa-chevron-right"></i> Available Models</a></li>
+                            <li><a href="#usage"><i class="fas fa-chevron-right"></i> Using the Interface</a></li>
+                            <li><a href="#adding-models"><i class="fas fa-chevron-right"></i> Adding Custom Models</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview & Features -->
+    <section id="overview" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Overview & Features</span>
+                        </h2>
+                    </div>
+
+                    <p class="text-center mb-4" style="color: #bbb; font-size: 1.1rem;" data-aos="fade-up">
+                        Local Unity AI brings the power of large language models and image generation directly to your
+                        computer. Everything runs on YOUR hardware using YOUR graphics card. No subscriptions, no API keys,
+                        no cloud services, no data collection. Complete privacy.
+                    </p>
+
+                    <ul class="feature-list" data-aos="fade-up">
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Local LLM Chat</strong><br>
+                                Chat with Mistral 7B, Llama 3.2, Qwen 2.5, or Phi-3. All models run locally via llama-cpp-python with CUDA acceleration.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>SDXL Image Generation</strong><br>
+                                Generate images with ponyRealism, DreamShaper, epiCRealism, Juggernaut XL, and more. Photorealistic or artistic styles.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Model Download Wizard</strong><br>
+                                First-run wizard lets you select which models to download. Only install what you need. Add more later from Hugging Face or CivitAI.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Session Management</strong><br>
+                                Save and organize chat history. Pick up conversations where you left off. Multiple sessions supported.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Memory System</strong><br>
+                                AI remembers context across sessions. Persistent memories stored locally in JSON files.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Customizable Personality</strong><br>
+                                Edit the system prompt in data/system_prompt.md to change the AI's personality and behavior.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Voice Output (TTS)</strong><br>
+                                AI can speak responses aloud. Dark gothic hacker-themed interface.
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>One-Click Startup</strong><br>
+                                Double-click run.bat (Windows) or ./start.sh (Linux). Browser opens automatically.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Requirements -->
+    <section id="requirements" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">System Requirements</span>
+                        </h2>
+                    </div>
+
+                    <div class="req-grid" data-aos="fade-up">
+                        <div class="req-card">
+                            <i class="fab fa-windows"></i>
+                            <h4>Operating System</h4>
+                            <p>Windows 10/11 (64-bit) or Linux with CUDA</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fab fa-python"></i>
+                            <h4>Python</h4>
+                            <p>Python 3.10 or newer (check "Add to PATH")</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-microchip"></i>
+                            <h4>Graphics Card</h4>
+                            <p>NVIDIA GPU with CUDA (GTX 1060 6GB+, RTX recommended)</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-memory"></i>
+                            <h4>System RAM</h4>
+                            <p>16 GB minimum, 32 GB recommended</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-hdd"></i>
+                            <h4>Storage</h4>
+                            <p>20-50 GB for models (depends on selection)</p>
+                        </div>
+                        <div class="req-card">
+                            <i class="fas fa-bolt"></i>
+                            <h4>CUDA Toolkit</h4>
+                            <p>CUDA 12.x recommended (auto-detected)</p>
+                        </div>
+                    </div>
+
+                    <div class="warning-box" data-aos="fade-up">
+                        <h4><i class="fas fa-exclamation-triangle"></i> GPU Required</h4>
+                        <p>
+                            Local Unity AI requires an NVIDIA GPU with CUDA support. AMD GPUs are not currently supported.
+                            CPU-only mode is extremely slow and not recommended.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Installation</span>
+                        </h2>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">1</div>
+                        <h3>Install Prerequisites</h3>
+                        <ul>
+                            <li><a href="https://www.python.org/downloads/" target="_blank" style="color: #dc143c;">Python 3.10+</a> - Check "Add Python to PATH" during installation</li>
+                            <li><a href="https://www.nvidia.com/drivers" target="_blank" style="color: #dc143c;">Latest NVIDIA GPU Drivers</a></li>
+                            <li><a href="https://developer.nvidia.com/cuda-downloads" target="_blank" style="color: #dc143c;">CUDA Toolkit 12.x</a> (optional, may auto-install)</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">2</div>
+                        <h3>Download & Extract</h3>
+                        <p>
+                            Download the Local Unity v2.5.zip file and extract it to a simple path like
+                            <code>C:\AI\LocalUnity</code>. Avoid paths with spaces or special characters.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">3</div>
+                        <h3>Run First-Time Setup</h3>
+                        <p><strong>Windows:</strong> Double-click <code>run.bat</code></p>
+                        <p><strong>Linux:</strong> Run <code>chmod +x start.sh && ./start.sh --setup</code></p>
+                        <p>First run will automatically:</p>
+                        <ul>
+                            <li>Create a Python virtual environment</li>
+                            <li>Install PyTorch with CUDA support</li>
+                            <li>Install llama-cpp-python for text models</li>
+                            <li>Install diffusers for image generation</li>
+                            <li>Show the Model Download Wizard</li>
+                        </ul>
+                        <p style="color: #888; font-size: 0.9rem;">This takes 5-10 minutes the first time. Subsequent starts are instant.</p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">4</div>
+                        <h3>Select Models</h3>
+                        <p>
+                            The Model Download Wizard will open in your browser. Select at least one text model and
+                            optionally an image model. Recommended for most users:
+                        </p>
+                        <ul>
+                            <li><strong>Text:</strong> Mistral 7B Instruct (4.1 GB) - Best balance of quality and speed</li>
+                            <li><strong>Image:</strong> ponyRealism V2.2 (7.1 GB) - Great photorealistic results</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <div class="step-number">5</div>
+                        <h3>Start Chatting!</h3>
+                        <p>
+                            Once models are downloaded, the chat interface opens at <code>http://localhost:8080</code>.
+                            Type a message and press Enter. For image generation, just describe what you want and enable
+                            the image toggle.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Available Models -->
+    <section id="models" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Available Models</span>
+                        </h2>
+                    </div>
+
+                    <h4 style="color: #dc143c; margin-bottom: 15px;">Text Models (GGUF Format)</h4>
+                    <table class="model-table" data-aos="fade-up">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Mistral 7B Instruct v0.3</strong></td>
+                                <td>4.1 GB</td>
+                                <td>Recommended. Excellent all-around chat model.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Llama 3.2 3B Instruct</strong></td>
+                                <td>2 GB</td>
+                                <td>Meta's compact model. Fast and efficient.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Llama 3.1 8B Instruct</strong></td>
+                                <td>4.9 GB</td>
+                                <td>Meta's flagship. High quality responses.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phi-3.5 Mini Instruct</strong></td>
+                                <td>2.4 GB</td>
+                                <td>Microsoft's efficient small model.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Qwen 2.5 7B Instruct</strong></td>
+                                <td>4.7 GB</td>
+                                <td>Alibaba's model. Great for coding and multilingual.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 style="color: #dc143c; margin: 30px 0 15px;">Image Models (SDXL Safetensors)</h4>
+                    <table class="model-table" data-aos="fade-up">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Size</th>
+                                <th>Style</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ponyRealism V2.2</strong></td>
+                                <td>7.1 GB</td>
+                                <td>Photorealistic. Great faces and details.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DreamShaper XL v2 Turbo</strong></td>
+                                <td>6.9 GB</td>
+                                <td>Fast artistic/creative generations.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>epiCRealism XL v5</strong></td>
+                                <td>6.9 GB</td>
+                                <td>Ultra realistic photography style.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Juggernaut XL v9</strong></td>
+                                <td>6.9 GB</td>
+                                <td>Most downloaded SDXL model. Versatile.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Using the Interface -->
+    <section id="usage" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Using the Interface</span>
+                        </h2>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-comment" style="color: #dc143c; margin-right: 10px;"></i> Chat</h3>
+                        <p>
+                            Type your message in the input field at the bottom and press Enter or click Send.
+                            The AI will respond using your selected text model. Responses stream in real-time.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-image" style="color: #dc143c; margin-right: 10px;"></i> Image Generation</h3>
+                        <p>
+                            Enable the IMAGE toggle in settings, then describe what you want to generate in chat.
+                            The AI will create an image based on your description. Images appear inline in the chat.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-save" style="color: #dc143c; margin-right: 10px;"></i> Sessions</h3>
+                        <p>
+                            Click SESSIONS to view, create, or switch between conversation sessions. Each session
+                            maintains its own chat history. Sessions are saved to data/sessions.json.
+                        </p>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-cogs" style="color: #dc143c; margin-right: 10px;"></i> Settings</h3>
+                        <p>
+                            Access SETTINGS to change models, enable/disable features, adjust TTS voice, and more.
+                            You can also edit data/system_prompt.md to customize the AI's personality.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Adding Custom Models -->
+    <section id="adding-models" class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <div class="section-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h2 class="section-title" data-aos="fade-up">
+                            <span class="decorative-text">Adding Custom Models</span>
+                        </h2>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-file-alt" style="color: #dc143c; margin-right: 10px;"></i> Text Models (GGUF)</h3>
+                        <p>
+                            Download .gguf files from <a href="https://huggingface.co/models?search=gguf" target="_blank" style="color: #dc143c;">Hugging Face</a>
+                            and place them in the <code>models/</code> folder:
+                        </p>
+                        <div class="code-block">
+                            <code>
+models/<br>
+├── mistral/<br>
+│   └── Mistral-7B-Instruct-v0.3.Q4_K_M.gguf<br>
+├── llama3/<br>
+│   └── Llama-3.2-3B-Instruct-Q4_K_M.gguf<br>
+└── your-model/<br>
+    └── YourModel.gguf
+                            </code>
+                        </div>
+                    </div>
+
+                    <div class="step-card" data-aos="fade-up">
+                        <h3 style="padding-left: 0;"><i class="fas fa-images" style="color: #dc143c; margin-right: 10px;"></i> Image Models (Safetensors)</h3>
+                        <p>
+                            Download .safetensors files from <a href="https://civitai.com/models?types=Checkpoint" target="_blank" style="color: #dc143c;">CivitAI</a>
+                            or Hugging Face and place them in <code>models/image/</code>:
+                        </p>
+                        <div class="code-block">
+                            <code>
+models/image/<br>
+├── ponyRealism_V22/<br>
+│   └── ponyRealism_v22MainVAE.safetensors<br>
+├── your-model/<br>
+│   └── YourModel.safetensors
+                            </code>
+                        </div>
+                    </div>
+
+                    <div class="info-box" data-aos="fade-up">
+                        <h4><i class="fas fa-info-circle"></i> Model Recommendations</h4>
+                        <p>
+                            Look for Q4_K_M or Q5_K_M quantized GGUF models for best balance of quality and speed.
+                            For images, SDXL-based models work best. Check CivitAI ratings and samples before downloading.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title mb-4" data-aos="fade-up">Ready for Local AI?</h2>
+                    <p style="color: #bbb; margin-bottom: 30px;" data-aos="fade-up">
+                        Download Local Unity AI and start chatting with AI models running entirely on your hardware.
+                        Complete privacy. No subscriptions. No limits.
+                    </p>
+                    <a href="../files/Local%20Unity%20v2.5.zip" class="download-hero-btn" data-aos="fade-up" download>
+                        <i class="fas fa-download"></i> Download Local Unity v2.5.zip
+                    </a>
+                    <p style="color: #666; margin-top: 20px; font-size: 0.9rem;" data-aos="fade-up">
+                        Need help? Join our <a href="https://discord.gg/64Rvr5pZas" style="color: #dc143c;">Discord</a> community
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <footer class="footer-section py-4" role="contentinfo" aria-label="Site footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <h5 class="gothic-logo mb-3">
+                        <i class="fas fa-brain" aria-hidden="true"></i> UnityAILab
+                    </h5>
+                    <p class="footer-text">Chaos, creativity, and AI without limits.</p>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="../../ai">AI</a></li>
+                        <li><a href="../../about">About</a></li>
+                        <li><a href="../../apps">Apps</a></li>
+                        <li><a href="../../services">Services</a></li>
+                        <li><a href="../../projects">Projects</a></li>
+                        <li><a href="../">Downloads</a></li>
+                        <li><a href="../../contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                    <h6 class="footer-title">Connect</h6>
+                    <div class="social-links">
+                        <a href="https://github.com/Unity-Lab-AI"><i class="fab fa-github"></i></a>
+                        <a href="https://discord.gg/64Rvr5pZas"><i class="fab fa-discord"></i></a>
+                        <a href="../../ai"><i class="fas fa-comments"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="copyright">&copy; 2024 UnityAILab. Pushing boundaries, breaking limits.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script type="module" src="../../js/init.js"></script>
+    <script src="../../page-init.js"></script>
+    <script>
+        function expandImage(imageUrl, altText) {
+            const overlay = document.createElement('div');
+            overlay.className = 'image-overlay';
+            overlay.id = 'imageOverlay';
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-overlay-container';
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = altText || 'Expanded image';
+            img.className = 'image-overlay-image';
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'image-overlay-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeImageOverlay(); });
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeImageOverlay(); });
+            document.addEventListener('keydown', function escapeHandler(e) {
+                if (e.key === 'Escape') { closeImageOverlay(); document.removeEventListener('keydown', escapeHandler); }
+            });
+            imageContainer.appendChild(img);
+            overlay.appendChild(imageContainer);
+            overlay.appendChild(closeBtn);
+            document.body.appendChild(overlay);
+            setTimeout(() => { overlay.classList.add('active'); }, 10);
+        }
+        function closeImageOverlay() {
+            const overlay = document.getElementById('imageOverlay');
+            if (overlay) { overlay.classList.remove('active'); setTimeout(() => { overlay.remove(); }, 300); }
+        }
+    </script>
+</body>
+</html>

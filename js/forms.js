@@ -1,5 +1,13 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Form Validation
+// form validation - garbage in garbage out
 // ===================================
 
 export function initFormValidation() {
@@ -17,7 +25,7 @@ export function initFormValidation() {
                     isValid = false;
                     input.style.borderColor = '#ff0033';
 
-                    // Reset border color after 2 seconds
+                    // resets after 2 seconds
                     setTimeout(() => {
                         input.style.borderColor = 'rgba(220, 20, 60, 0.3)';
                     }, 2000);
@@ -27,7 +35,6 @@ export function initFormValidation() {
             });
 
             if (isValid) {
-                // Show success message
                 showNotification('Message sent successfully!', 'success');
                 contactForm.reset();
             } else {
@@ -35,7 +42,7 @@ export function initFormValidation() {
             }
         });
 
-        // Add focus effects
+        // focus effects for inputs
         const inputs = contactForm.querySelectorAll('.gothic-input');
         inputs.forEach(input => {
             input.addEventListener('focus', function() {
@@ -50,7 +57,7 @@ export function initFormValidation() {
 }
 
 // ===================================
-// Notification System
+// notification popup system
 // ===================================
 export function showNotification(message, type) {
     const notification = document.createElement('div');
@@ -81,7 +88,7 @@ export function showNotification(message, type) {
     }, 3000);
 }
 
-// Add notification animations to document
+// inject notification animations
 export function initNotificationStyles() {
     const style = document.createElement('style');
     style.textContent = `

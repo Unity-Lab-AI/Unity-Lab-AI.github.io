@@ -1,5 +1,13 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Red Streaks Animation Enhancement
+// animated red streak effects
 // ===================================
 
 export function enhanceRedStreaks() {

@@ -1,13 +1,21 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Main Application Module
  * Unity AI Lab Demo Page
  *
- * Coordinates all modules and initializes the demo application
+ * Boots up the demo, wires everything together
  */
 
-// Import all modules
-import {  DEFAULT_SETTINGS } from './config.js';
-import { loadSettings, saveSettings, applySettingsToUI, setupControlsSync } from './settings.js';
+// Import all modules with cache busting
+import {  DEFAULT_SETTINGS } from './config.js?v=2.1.6';
+import { loadSettings, saveSettings, applySettingsToUI, setupControlsSync } from './settings.js?v=2.1.6';
 import {
     initializePolliLib,
     loadUnitySystemPrompt,
@@ -20,10 +28,10 @@ import {
     getAvailableImageModels,
     getAvailableVoices,
     extractVoices
-} from './api.js';
-import { addMessage, showTypingIndicator, removeTypingIndicator, clearSession } from './chat.js';
-import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js';
-import { handleToolCall } from './tools.js';
+} from './api.js?v=2.1.6';
+import { addMessage, showTypingIndicator, removeTypingIndicator, clearSession } from './chat.js?v=2.1.6';
+import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js?v=2.1.6';
+import { handleToolCall } from './tools.js?v=2.1.6';
 import {
     setupEventListeners,
     setupDesktopPanelCollapse,
@@ -38,9 +46,9 @@ import {
     populateImageModels,
     populateVoices,
     detectAndQueueEffects
-} from './ui.js';
-import { configureMarked, renderMarkdown } from './markdown.js';
-import { getSlashCommands, handleSlashCommandInput, handleAutocompleteNavigation } from './slash-commands.js';
+} from './ui.js?v=2.1.6';
+import { configureMarked, renderMarkdown } from './markdown.js?v=2.1.6';
+import { getSlashCommands, handleSlashCommandInput, handleAutocompleteNavigation } from './slash-commands.js?v=2.1.6';
 
 /**
  * Main Demo Application Object

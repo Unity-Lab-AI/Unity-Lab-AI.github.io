@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
     const { chatBox, chatInput, clearChatBtn, voiceToggleBtn, modelSelect, synth, autoSpeakEnabled, speakMessage, stopSpeaking, showToast, toggleSpeechRecognition, initSpeechRecognition, handleVoiceCommand, speakSentences } = window._chatInternals;
     const imagePatterns = window.imagePatterns;
@@ -253,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const refreshImage = (img, imageId) => {
         console.log(`Refreshing image with ID: ${imageId}`);
-        if (!img.src || (!img.src.includes("gen.pollinations.ai") && !img.src.includes("image.pollinations.ai"))) {
+        if (!img.src || !img.src.includes("gen.pollinations.ai/image")) {
             showToast("No valid Pollinations image source to refresh.");
             return;
         }

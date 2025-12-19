@@ -1,5 +1,13 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Mobile Menu Handler
+// mobile menu handler
 // ===================================
 
 export function initMobileMenu() {
@@ -8,7 +16,7 @@ export function initMobileMenu() {
         var navbarCollapse = document.querySelector('.navbar-collapse');
 
         if (navbarToggler && navbarCollapse) {
-            // Close menu when clicking outside
+            // close menu when clicking outside
             document.addEventListener('click', function(e) {
                 try {
                     var isClickInside = navbarToggler.contains(e.target) || navbarCollapse.contains(e.target);
@@ -26,7 +34,7 @@ export function initMobileMenu() {
                 }
             });
 
-            // Prevent body scroll when menu is open on mobile
+            // lock body scroll when menu open - nobody needs double scrolling
             navbarToggler.addEventListener('click', function() {
                 try {
                     setTimeout(function() {

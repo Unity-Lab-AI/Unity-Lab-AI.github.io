@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
 <html lang="en">
 <head>
     <!-- Meta Tags for Cross-Browser Compatibility -->
@@ -7,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 
     <!-- SEO and Social Meta Tags -->
-    <meta name="description" content="Moana Miner v2.0 - RavenCoin KawPow GPU Miner with web dashboard. Free mining software by Unity AI Lab. Full setup guide and documentation.">
+    <meta name="description" content="Moana Miner v1.0 - RavenCoin KawPow GPU Miner with web dashboard. Free mining software by Unity AI Lab. Full setup guide and documentation.">
     <meta name="keywords" content="Moana Miner, RavenCoin miner, RVN miner, KawPow miner, GPU mining, crypto mining, T-Rex miner, Rigel miner, mining dashboard, Unity AI Lab">
     <meta name="author" content="Unity AI Lab - hackall360, GFourteen, SpongeBong">
     <meta name="robots" content="index, follow">
@@ -17,11 +24,11 @@
     <!-- Open Graph Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.unityailab.com/downloads/moana/">
-    <meta property="og:title" content="Moana Miner v2.0 - RavenCoin KawPow GPU Miner">
+    <meta property="og:title" content="Moana Miner v1.0 - RavenCoin KawPow GPU Miner">
     <meta property="og:description" content="Free RavenCoin mining software with web dashboard. Easy setup, real-time stats, pool & solo mining support.">
     <meta property="og:site_name" content="Unity AI Lab">
 
-    <title>Moana Miner v2.0 - RavenCoin KawPow Miner | Unity AI Lab Downloads</title>
+    <title>Moana Miner v1.0 - RavenCoin KawPow Miner | Unity AI Lab Downloads</title>
 
     <!-- Bootstrap CSS (local) -->
     <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -485,6 +492,76 @@
             color: #dc143c;
             font-size: 0.8rem;
         }
+
+        /* Expandable Images */
+        .expandable-image {
+            cursor: zoom-in;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .expandable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 25px 70px rgba(220, 20, 60, 0.4);
+        }
+
+        /* Image Overlay - Fullscreen Lightbox */
+        .image-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .image-overlay.active {
+            opacity: 1;
+        }
+        .image-overlay-container {
+            max-width: 95vw;
+            max-height: 95vh;
+            position: relative;
+        }
+        .image-overlay-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+        .image-overlay-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(220, 20, 60, 0.9);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+        .image-overlay-close:hover {
+            background: #ff1a4d;
+            transform: scale(1.1);
+        }
+        .image-hint {
+            display: block;
+            text-align: center;
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -546,7 +623,7 @@
                 <i class="fas fa-microchip"></i>
             </div>
             <h1 class="gothic-title" data-aos="fade-up">Moana Miner</h1>
-            <span class="version-badge" data-aos="fade-up" data-aos-delay="100">Version 2.0</span>
+            <span class="version-badge" data-aos="fade-up" data-aos-delay="100">v1.0</span>
             <p class="download-hero-desc" data-aos="fade-up" data-aos-delay="200">
                 A powerful RavenCoin (RVN) mining dashboard with web-based GUI, real-time statistics,
                 and support for both pool and solo mining. Built by Unity AI Lab.
@@ -620,7 +697,8 @@
 
                     <!-- Dashboard Screenshot -->
                     <div class="text-center mb-5" data-aos="fade-up">
-                        <img src="image.png" alt="Moana Miner Dashboard Screenshot" style="max-width: 100%; border-radius: 15px; border: 2px solid rgba(220, 20, 60, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                        <img src="image.png" alt="Moana Miner Dashboard Screenshot" class="expandable-image" loading="lazy" onclick="expandImage(this.src, this.alt)" style="max-width: 100%; border-radius: 15px; border: 2px solid rgba(220, 20, 60, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                        <span class="image-hint"><i class="fas fa-expand"></i> Click image to expand</span>
                         <p style="color: #666; font-size: 0.9rem; margin-top: 15px;">Moana Dashboard - Real-time mining stats with Unity AI commentary</p>
                     </div>
 
@@ -1266,10 +1344,68 @@ Moana/<br>
     <!-- AOS Animation Library JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- Custom JavaScript -->
-    <script src="../../script.js"></script>
+    <!-- Custom JavaScript (ES6 Modules) -->
+    <script type="module" src="../../js/init.js"></script>
 
     <!-- Page Initialization -->
     <script src="../../page-init.js"></script>
+
+    <!-- Image Lightbox -->
+    <script>
+        function expandImage(imageUrl, altText) {
+            const overlay = document.createElement('div');
+            overlay.className = 'image-overlay';
+            overlay.id = 'imageOverlay';
+
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-overlay-container';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = altText || 'Expanded image';
+            img.className = 'image-overlay-image';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'image-overlay-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeImageOverlay();
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeImageOverlay();
+                }
+            });
+
+            const escapeHandler = (e) => {
+                if (e.key === 'Escape') {
+                    closeImageOverlay();
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+
+            imageContainer.appendChild(img);
+            overlay.appendChild(imageContainer);
+            overlay.appendChild(closeBtn);
+            document.body.appendChild(overlay);
+
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+        }
+
+        function closeImageOverlay() {
+            const overlay = document.getElementById('imageOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.remove();
+                }, 300);
+            }
+        }
+    </script>
 </body>
 </html>

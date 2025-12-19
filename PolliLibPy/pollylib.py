@@ -1,4 +1,10 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+
 PolliLibPy - Python Library for Pollinations.AI API
 Base library with common utilities and authentication handling.
 """
@@ -47,7 +53,7 @@ class PollinationsAPI:
             Dictionary of headers
         """
         headers = {
-            "User-Agent": "PolliLibPy/1.0 Python Client",
+            "User-Agent": "PolliLibPy/v2.1.5 Python Client",
             "Authorization": f"Bearer {self.bearer_token}"
         }
 

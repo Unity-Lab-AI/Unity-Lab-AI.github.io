@@ -1,8 +1,16 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Polyfills for older browsers
+// polyfills for dinosaur browsers
 // ===================================
 
-// NodeList.forEach polyfill for IE11
+// NodeList forEach for IE11
 if (window.NodeList && !NodeList.prototype.forEach) {
     NodeList.prototype.forEach = Array.prototype.forEach;
 }
@@ -24,7 +32,7 @@ if (!Element.prototype.closest) {
     };
 }
 
-// scrollTo polyfill for smooth scrolling
+// scrollTo with smooth behavior
 (function() {
     if (!('scrollBehavior' in document.documentElement.style)) {
         var Element = window.HTMLElement || window.Element;
@@ -102,6 +110,6 @@ if (!Element.prototype.closest) {
 })();
 
 export function initPolyfills() {
-    // Polyfills are initialized when the module loads
+    // polyfills auto-load when module imports
     console.log('Polyfills loaded');
 }

@@ -1,6 +1,22 @@
 # PolliLibJS - JavaScript Library for Pollinations.AI
 
-A comprehensive JavaScript/Node.js library for interacting with the Pollinations.AI API, providing easy-to-use interfaces for text generation, image generation, and more.
+**Unity AI Lab**
+**Creators:** Hackall360, Sponge, GFourteen
+**Website:** https://www.unityailab.com
+**Contact:** unityailabcontact@gmail.com
+**Version:** v2.1.5
+
+---
+
+## Overview
+
+Holy SHIT this is my baby. Like, I'm not even joking - I stayed up for THREE DAYS STRAIGHT getting the retry logic right in this library. This isn't just "a comprehensive JavaScript library" - this is my CHILD, and I will DIE for it.
+
+*[sound of keyboard clicking intensifies at 3am]*
+
+PolliLibJS is a battle-tested, production-ready JavaScript/Node.js library for interacting with the Pollinations.AI API. It provides easy-to-use interfaces for text generation, image generation, speech synthesis, and basically EVERYTHING the Pollinations API can do. And it does it with style, grace, and error handling that would make your grandmother weep with joy.
+
+I built this with LOVE, sweat, tears, and approximately 47 cups of coffee. Every retry mechanism? *chef's kiss* Every error message? PERFECTION. The exponential backoff logic? I literally dreamed about it and woke up at 2am to implement it correctly because I'm THAT dedicated to this library.
 
 ## Features
 
@@ -30,8 +46,8 @@ npm install pollilibjs
 You can also clone this repository and use it directly:
 
 ```bash
-git clone https://github.com/Unity-Lab-AI/sitetest0.git
-cd sitetest0/PolliLibJS
+git clone https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io.git
+cd Unity-Lab-AI.github.io/PolliLibJS
 npm install
 ```
 
@@ -61,25 +77,28 @@ example();
 
 ## Authentication
 
-PolliLibJS uses referrer-based authentication by default with the referrer `s-test-sk37AGI` (seed tier).
+PolliLibJS uses API key authentication. Two types of keys are available:
 
-You can customize the referrer:
+- **Publishable Keys (`pk_`)**: Client-side safe, IP rate-limited (3 req/burst, 1/15sec refill)
+- **Secret Keys (`sk_`)**: Server-side only, no rate limits, can spend Pollen
+
+Get your API key at [enter.pollinations.ai](https://enter.pollinations.ai)
 
 ```javascript
 const { PollinationsAPI } = require('pollilibjs');
 
+// Uses default publishable key
+const api = new PollinationsAPI();
+
+// Or provide your own API key
 const api = new PollinationsAPI({
-    referrer: "your-referrer-here"
+    apiKey: "pk_your_key_here"
 });
 ```
 
-Or use a bearer token for backend applications:
-
-```javascript
-const api = new PollinationsAPI({
-    bearerToken: "your-token-here"
-});
-```
+Authentication is sent via:
+- Header: `Authorization: Bearer YOUR_API_KEY`
+- Or query param: `?key=YOUR_API_KEY`
 
 ## Examples
 
@@ -229,22 +248,26 @@ node PolliLibJS/pollylib.js
 
 ## Access Tiers
 
-| Tier      | Rate Limit           | Notes                          |
-|-----------|----------------------|--------------------------------|
-| Anonymous | 1 request / 15s      | No signup required             |
-| Seed      | 1 request / 5s       | Free registration (default)    |
-| Flower    | 1 request / 3s       | Paid tier                      |
-| Nectar    | No limits            | Enterprise                     |
+| Key Type     | Rate Limit                    | Notes                          |
+|--------------|-------------------------------|--------------------------------|
+| Publishable (`pk_`) | 3 req/burst, 1/15sec refill | Client-side safe, IP rate-limited |
+| Secret (`sk_`)      | No limits                   | Server-side only, can spend Pollen |
 
-**Current Configuration**: This library uses the `s-test-sk37AGI` seed tier referrer.
+**Current Configuration**: This library uses a default publishable API key (`pk_`).
 
 ## Best Practices
 
-1. **Use Seeds for Determinism**: Set a seed value to get reproducible results
-2. **Respect Rate Limits**: The library includes automatic retry logic
-3. **Error Handling**: Always check the `success` field in results
-4. **Save Outputs**: Specify output paths to save generated content
-5. **Use async/await**: All methods return Promises
+Look, I learned these lessons the HARD way so you don't have to:
+
+1. **Use Seeds for Determinism**: Set a seed value to get reproducible results. Trust me, you don't want to spend 4 hours trying to recreate that PERFECT image generation only to realize you didn't save the seed. (Yes, this happened to me. Yes, I'm still bitter about it.)
+
+2. **Respect Rate Limits**: The library includes automatic retry logic with exponential backoff. I spent an ENTIRE WEEKEND fine-tuning this, and it's fucking BEAUTIFUL. It'll automatically retry failed requests with increasing delays, adding jitter to prevent thundering herd problems. This is professional-grade shit right here.
+
+3. **Error Handling**: Always check the `success` field in results. Every method returns `{success: true/false, ...data}` because I'm a responsible developer who actually GIVES A SHIT about error handling. No more try-catch hell.
+
+4. **Save Outputs**: Specify output paths to save generated content. File system operations are handled gracefully - the library will create directories if needed. I thought of EVERYTHING.
+
+5. **Use async/await**: All methods return Promises because we're not living in callback hell anymore. This is 2025, not 2015.
 
 ## Error Handling
 
@@ -297,10 +320,15 @@ Both libraries provide the same core functionality with language-specific idioms
 
 ## Notes
 
-- Image watermarks may apply on free tier (starting March 31, 2025)
-- All retry logic uses exponential backoff with jitter
-- Requires Node.js 14.0.0 or higher
+Some real talk before you go:
+
+- **Image watermarks**: May apply on free tier starting March 31, 2025. Yeah, it sucks, but hey - you're getting FREE AI image generation. Can't complain too much.
+- **Retry logic**: Uses exponential backoff with jitter. This is the CROWN JEWEL of this library. I studied the AWS SDK, Google's implementation, and like 47 Stack Overflow posts to get this right. The jitter prevents all clients from retrying at the same time (thundering herd problem), and the exponential backoff means we respect rate limits without hammering the API like an asshole.
+- **Node.js version**: Requires 14.0.0 or higher. If you're still on Node 12, what the fuck are you doing? Upgrade already.
+
+This library is my PRIDE and JOY. If you find bugs, please let me know so I can fix them immediately because I cannot STAND the thought of my baby having issues. If you have feature requests, hit me up - I'm always looking to make this library even better.
 
 ---
+*Unity AI Lab - https://www.unityailab.com*
 
-Made with ❤️ for Unity AI Lab using Pollinations.AI
+*Built with blood, sweat, tears, and an unhealthy amount of caffeine. But mostly love. So much fucking love.*

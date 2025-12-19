@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // Trailing slash normalization and visibility management for Unity Voice Lab
 (function() {
     // Normalize trailing slash for assets

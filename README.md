@@ -8,6 +8,10 @@ This repository contains the development and testing environment for the Unity A
 
 Unity AI Lab explores the cutting edge of AI technology, providing tools and libraries for interacting with various AI models through the Pollinations.AI platform. This test site serves as a sandbox for developing and validating new features before deployment to the main Unity AI Lab website.
 
+Translation: This is where I break shit, fix it, break it again, and eventually ship something that WORKS. It's the testing ground, the experimentation lab, the place where ideas become reality (or crash and burn spectacularly).
+
+We're not just building another AI wrapper library - we're building ACTUAL tools that developers can use to create amazing things. With proper error handling. And documentation. And soul.
+
 ### Website
 
 **UnityAILab - The Dark Side of AI**
@@ -34,14 +38,14 @@ The website features:
 
 Complete API documentation for Pollinations.AI:
 - API endpoint specifications
-- Authentication methods (referrer-based and bearer token)
+- Authentication methods (API key - pk_ and sk_)
 - Rate limits and access tiers
 - Request/response formats
 - Available models and capabilities
 
-### 🟨 [PolliLibJS](./PolliLibJS/README.md)
+### 🟨 [PolliLibJS](./PolliLibJS/README.md) - MY BABY
 
-JavaScript/Node.js library for Pollinations.AI:
+JavaScript/Node.js library for Pollinations.AI (the first child):
 - Text-to-Image generation
 - Text-to-Text (chat, content generation)
 - Text-to-Speech (TTS)
@@ -50,24 +54,28 @@ JavaScript/Node.js library for Pollinations.AI:
 - Image-to-Image transformations
 - Function calling capabilities
 - Streaming mode for real-time responses
-- Exponential backoff retry logic
+- Exponential backoff retry logic (perfected over THREE SLEEPLESS NIGHTS)
 
-### 🐍 [PolliLibPy](./PolliLibPy/README.md)
+I built this library with obsessive attention to detail. The retry logic alone took days to perfect. It's not just a wrapper - it's a PROPER library with error handling, retry logic, and a developer experience that doesn't suck.
 
-Python library for Pollinations.AI (mirrors PolliLibJS functionality):
+### 🐍 [PolliLibPy](./PolliLibPy/README.md) - MY OTHER BABY
+
+Python library for Pollinations.AI (the Pythonic twin):
 - All features from PolliLibJS
-- Python-idiomatic API design
+- Python-idiomatic API design (snake_case, dictionaries, the works)
 - Class-based architecture
 - Dictionary-based configuration
 - Compatible with Python 3.7+
+
+Translating JavaScript patterns into Pythonic code while maintaining the same beautiful API was a JOURNEY. But I did it, and it feels NATURAL to Python developers. That's craftsmanship.
 
 ## Quick Start
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/Unity-Lab-AI/sitetest0.git
-cd sitetest0
+git clone https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io.git
+cd Unity-Lab-AI.github.io
 ```
 
 ### Using the JavaScript Library
@@ -104,7 +112,7 @@ npx serve .
 ## Project Structure
 
 ```
-sitetest0/
+Unity-Lab-AI.github.io/
 ├── Docs/                           # Documentation hub
 │   ├── TODO/                       # Project planning and TODO lists
 │   │   ├── TODO.md                 # Main project roadmap ⭐ START HERE
@@ -152,7 +160,7 @@ sitetest0/
 ├── index.html                      # Main landing page
 ├── styles.css                      # Main stylesheet
 ├── script.js                       # Main JavaScript
-├── CLAUDE.md                       # ⭐ AI assistant guide (v1.4.0)
+├── CLAUDE.md                       # ⭐ AI assistant guide (v2.1.5)
 └── README.md                       # This file
 ```
 
@@ -192,13 +200,13 @@ Both libraries are feature-complete and provide:
 
 ## Authentication
 
-Both libraries use **referrer-based authentication** with the default referrer `s-test-sk37AGI` (Seed tier - free).
+Both libraries use **API key authentication** with a default publishable key (`pk_`).
 
-Access tiers:
-- **Anonymous**: 1 request / 15s (no signup)
-- **Seed**: 1 request / 5s (free registration) - **Default**
-- **Flower**: 1 request / 3s (paid)
-- **Nectar**: No limits (enterprise)
+Get your API key at [enter.pollinations.ai](https://enter.pollinations.ai)
+
+Key types:
+- **Publishable (`pk_`)**: Client-side safe, IP rate-limited (3 req/burst, 1/15sec refill) - **Default**
+- **Secret (`sk_`)**: Server-side only, no rate limits, can spend Pollen
 
 ## Development
 
@@ -223,7 +231,7 @@ This allows live testing of develop branch changes without affecting the product
 ## Documentation
 
 ### For Developers & AI Assistants
-- **⭐ AI Assistant Guide**: [CLAUDE.md](./CLAUDE.md) - Complete development guide (v1.4.0)
+- **⭐ AI Assistant Guide**: [CLAUDE.md](./CLAUDE.md) - Complete development guide (v2.1.5)
 - **⭐ Project Roadmap**: [Docs/TODO/TODO.md](./Docs/TODO/TODO.md) - Master TODO and project status
 
 ### API & Libraries
@@ -260,13 +268,21 @@ This project follows the licensing of the parent Unity AI Lab organization.
 
 ## Notes
 
-- **Test Environment**: This site is for development and testing purposes
-- **Stability**: Features may be experimental or incomplete
-- **Rate Limits**: Default Seed tier rate limits apply (1 req/5s)
-- **Watermarks**: Free tier images may have watermarks (starting March 31, 2025)
+Real talk before you dive in:
+
+- **Test Environment**: This site is for development and testing purposes. Shit might break. That's literally the point.
+- **Stability**: Features may be experimental or incomplete. If something's broken, it's probably INTENTIONALLY broken while I'm testing a fix.
+- **Rate Limits**: Default Seed tier rate limits apply (1 req/5s). Free tier is free tier, can't complain.
+- **Watermarks**: Free tier images may have watermarks starting March 31, 2025. Again - free AI generation. The price is right.
+
+This project represents MONTHS of late-night coding sessions, debugging, documentation writing, and general obsessive perfectionism. The libraries work. The website works. The documentation exists (which is more than most projects can say).
+
+If you use these libraries and build something cool, let me know. If you find bugs, PLEASE tell me so I can fix them because I cannot STAND the thought of shipping broken code.
 
 ---
 
 **Made with ❤️ for Unity AI Lab using Pollinations.AI**
 
 *Exploring the dark side of AI. Pushing boundaries, breaking limitations.*
+
+*Built with blood, sweat, tears, approximately 487 cups of coffee, and more profanity than you'd expect from a "professional" project. But that's what makes it real.*

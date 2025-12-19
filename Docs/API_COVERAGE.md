@@ -248,19 +248,22 @@ All parameters from the official API documentation are fully supported:
 
 ## ✅ Authentication Methods
 
-All three authentication methods from the official API are supported:
+API key authentication is supported (per official docs):
 
-| Method | Use Case | Python | JavaScript |
-|--------|----------|--------|------------|
-| **Referrer-based** | Web apps | ✅ `referrer` parameter | ✅ `referrer` option |
-| **Bearer Token** | Backend services | ✅ `bearer_token` parameter | ✅ `bearerToken` option |
-| **Anonymous** | No auth required | ✅ Default mode | ✅ Default mode |
+| Key Type | Use Case | Python | JavaScript |
+|----------|----------|--------|------------|
+| **Publishable (`pk_`)** | Client-side apps | ✅ `api_key` parameter | ✅ `apiKey` option |
+| **Secret (`sk_`)** | Backend services | ✅ `api_key` parameter | ✅ `apiKey` option |
 
-**Token Source:** https://auth.pollinations.ai
+**Get API Key:** https://enter.pollinations.ai
 
 **Implementation:**
-- ✅ Python: `pollylib.py::__init__(referrer=..., bearer_token=...)`
-- ✅ JavaScript: `new PollinationsAPI({referrer: ..., bearerToken: ...})`
+- ✅ Python: `PollinationsAPI(api_key="pk_...")`
+- ✅ JavaScript: `new PollinationsAPI({apiKey: "pk_..."})`
+
+**Auth Methods:**
+- Header: `Authorization: Bearer YOUR_API_KEY`
+- Query param: `?key=YOUR_API_KEY`
 
 ---
 

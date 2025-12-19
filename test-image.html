@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Load Test</title>
+</head>
+<body>
+    <h1>Direct Image Load Test</h1>
+    <p>If you see an apple below, images work:</p>
+
+    <img
+        src="https://gen.pollinations.ai/image/A%20fresh%20red%20apple?model=flux&width=512&height=512&key=pk_YBwckBxhiFxxCMbk"
+        alt="Test apple"
+        style="max-width: 512px; border: 2px solid green;"
+        onload="console.log('✅ Image loaded successfully'); document.getElementById('status').textContent = 'SUCCESS - Image loaded!'"
+        onerror="console.log('❌ Image failed to load'); document.getElementById('status').textContent = 'FAILED - Image did not load'"
+    >
+
+    <p id="status" style="font-size: 24px; font-weight: bold;">Loading...</p>
+
+    <hr>
+    <h2>Test 2: Dynamic Image</h2>
+    <div id="dynamic"></div>
+    <script>
+        const img = document.createElement('img');
+        img.style.maxWidth = '512px';
+        img.style.border = '2px solid blue';
+        img.onload = () => {
+            console.log('✅ Dynamic image loaded');
+            document.getElementById('status2').textContent = 'SUCCESS - Dynamic image loaded!';
+        };
+        img.onerror = () => {
+            console.log('❌ Dynamic image failed');
+            document.getElementById('status2').textContent = 'FAILED - Dynamic image did not load';
+        };
+        document.getElementById('dynamic').appendChild(img);
+        img.src = 'https://gen.pollinations.ai/image/A%20blue%20sky?model=flux&width=512&height=512&key=pk_YBwckBxhiFxxCMbk';
+    </script>
+    <p id="status2" style="font-size: 24px; font-weight: bold;">Loading...</p>
+</body>
+</html>

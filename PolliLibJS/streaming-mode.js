@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Streaming Mode (SSE) - Real-time streaming responses
  */
 
@@ -50,9 +58,10 @@ class StreamingMode extends PollinationsAPI {
                 const { done, value } = await reader.read();
                 if (done) break;
 
+                // decode incoming bytes and buffer them - SSE can split messages mid-line
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
+                buffer = lines.pop() || ''; // keep incomplete line in buffer
 
                 for (const line of lines) {
                     if (line.startsWith(':') || !line.trim()) continue;

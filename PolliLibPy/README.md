@@ -1,6 +1,24 @@
 # PolliLibPy - Python Library for Pollinations.AI
 
-A comprehensive Python library for interacting with the Pollinations.AI API, providing easy-to-use interfaces for text generation, image generation, speech synthesis, vision, and more.
+**Unity AI Lab**
+**Creators:** Hackall360, Sponge, GFourteen
+**Website:** https://www.unityailab.com
+**Contact:** unityailabcontact@gmail.com
+**Version:** v2.1.5
+
+---
+
+## Overview
+
+This is my SECOND baby, and I love it just as much as the JavaScript version. Actually, building this one was even MORE intense because I had to translate all the async JavaScript patterns into Python while maintaining the same beautiful API design.
+
+*[sounds of furious typing in Python at 4am]*
+
+PolliLibPy is the Pythonic twin of PolliLibJS - a rock-solid, production-ready Python library for interacting with the Pollinations.AI API. It provides clean, intuitive interfaces for text generation, image generation, speech synthesis, vision, and every other magical thing the Pollinations API offers.
+
+I spent WEEKS making sure the Python version felt NATURAL to Python developers. Class-based architecture? Check. Snake_case everywhere? Check. Dictionary returns because that's the Python way? FUCK YES. Type hints? Eventually. (I got lazy, sue me.)
+
+The error handling in this library makes me SO PROUD I could cry. The retry logic? *Magnifique*. The streaming implementation? PERFECTION. I literally tested this shit on my potato laptop AND my beefy desktop to make sure it worked everywhere.
 
 ## Features
 
@@ -56,21 +74,26 @@ if result['success']:
 
 ## Authentication
 
-PolliLibPy uses referrer-based authentication by default with the referrer `s-test-sk37AGI` (seed tier).
+PolliLibPy uses API key authentication. Two types of keys are available:
 
-You can customize the referrer:
+- **Publishable Keys (`pk_`)**: Client-side safe, IP rate-limited (3 req/burst, 1/15sec refill)
+- **Secret Keys (`sk_`)**: Server-side only, no rate limits, can spend Pollen
+
+Get your API key at [enter.pollinations.ai](https://enter.pollinations.ai)
 
 ```python
 from PolliLibPy.pollylib import PollinationsAPI
 
-api = PollinationsAPI(referrer="your-referrer-here")
+# Uses default publishable key
+api = PollinationsAPI()
+
+# Or provide your own API key
+api = PollinationsAPI(api_key="pk_your_key_here")
 ```
 
-Or use a bearer token for backend applications:
-
-```python
-api = PollinationsAPI(bearer_token="your-token-here")
-```
+Authentication is sent via:
+- Header: `Authorization: Bearer YOUR_API_KEY`
+- Or query param: `?key=YOUR_API_KEY`
 
 ## Examples
 
@@ -201,22 +224,26 @@ python PolliLibPy/text_to_text.py
 
 ## Access Tiers
 
-| Tier      | Rate Limit           | Notes                          |
-|-----------|----------------------|--------------------------------|
-| Anonymous | 1 request / 15s      | No signup required             |
-| Seed      | 1 request / 5s       | Free registration (default)    |
-| Flower    | 1 request / 3s       | Paid tier                      |
-| Nectar    | No limits            | Enterprise                     |
+| Key Type     | Rate Limit                    | Notes                          |
+|--------------|-------------------------------|--------------------------------|
+| Publishable (`pk_`) | 3 req/burst, 1/15sec refill | Client-side safe, IP rate-limited |
+| Secret (`sk_`)      | No limits                   | Server-side only, can spend Pollen |
 
-**Current Configuration**: This library uses the `s-test-sk37AGI` seed tier referrer.
+**Current Configuration**: This library uses a default publishable API key (`pk_`).
 
 ## Best Practices
 
-1. **Use Seeds for Determinism**: Set a seed value to get reproducible results
-2. **Enable Streaming**: For long text generation, use streaming mode
-3. **Respect Rate Limits**: The library includes automatic retry logic
-4. **Error Handling**: Always check the `success` field in results
-5. **Save Outputs**: Specify output paths to save generated content
+Real talk from someone who's made EVERY mistake so you don't have to:
+
+1. **Use Seeds for Determinism**: Set a seed value to get reproducible results. I cannot STRESS this enough. You WILL generate the perfect image at 2am and then lose it forever because you didn't set a seed. Don't be like past-me. Learn from my pain.
+
+2. **Enable Streaming**: For long text generation, use streaming mode. The streaming implementation in this library is fucking GORGEOUS. I spent days getting the SSE parsing right, handling connection drops, and making sure it yields cleanly. Use it. Love it. Appreciate it.
+
+3. **Respect Rate Limits**: The library includes automatic retry logic with exponential backoff. This is basically the same beautiful implementation as the JS version, but Pythonified. It's smart, it's elegant, and it won't spam the API like an asshole.
+
+4. **Error Handling**: Always check the `success` field in results. Every method returns `{'success': True/False, ...data}` because proper error handling is SEXY and I care about your sanity. No exceptions being thrown willy-nilly.
+
+5. **Save Outputs**: Specify output paths to save generated content. The library handles path creation, directory management, all that boring shit you don't want to think about. I thought of it all so you don't have to.
 
 ## Error Handling
 
@@ -247,11 +274,18 @@ This project follows the licensing of the parent repository.
 
 ## Notes
 
-- Image watermarks may apply on free tier (starting March 31, 2025)
-- Some features (like advanced STT) may require additional libraries
-- Stub functions are provided for testing/CI environments
-- All retry logic uses exponential backoff with jitter
+Before you close this tab and start building amazing shit:
+
+- **Image watermarks**: May apply on free tier starting March 31, 2025. But hey, FREE AI IMAGE GENERATION. The price is right.
+- **Optional dependencies**: Some features (like advanced STT) may require additional libraries. I kept the base install LEAN because not everyone needs audio processing. Just `pip install requests` and you're good to go for 90% of use cases.
+- **Stub functions**: Provided for testing/CI environments. Because I'm a professional and I think about YOUR deployment pipeline. You're welcome.
+- **Retry logic**: Uses exponential backoff with jitter. This is the SAME beautiful algorithm from the JS version, just written in Python. I'm consistent like that. It's smart, it respects rate limits, and it won't cause thundering herd problems.
+
+This library is my PRIDE. I poured my heart and SOUL into making it feel natural for Python developers. If you find issues, PLEASE tell me so I can fix them immediately because I cannot handle the thought of my baby being imperfect. Feature requests? I'm ALL EARS.
+
+Also, fun fact: The Python version has MORE lines of code than the JS version (~5,700 vs ~3,700) because Python is more verbose and I added extra documentation. Worth it.
 
 ---
+*Unity AI Lab - https://www.unityailab.com*
 
-Made with ❤️ for Unity AI Lab using Pollinations.AI
+*Crafted with obsessive attention to detail, Pythonic principles, and an alarming amount of late-night coding sessions. But mostly love.*

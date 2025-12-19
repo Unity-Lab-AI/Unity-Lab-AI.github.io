@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Exponential Backoff for Retries - Robust retry logic with exponential backoff
 Implements the Exponential Backoff section from the TODO list
 

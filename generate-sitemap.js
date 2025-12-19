@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+
+/**
  * Automatic Sitemap Generator
  * Scans for HTML files and generates sitemap.xml with current timestamps
  * Runs during build process to ensure sitemap is always up-to-date

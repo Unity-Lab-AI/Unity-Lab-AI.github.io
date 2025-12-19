@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Text-to-Image Generation - Generate images from text prompts
 Implements the Text-to-Image Generation section from the TODO list
 

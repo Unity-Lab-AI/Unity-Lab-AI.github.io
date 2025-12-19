@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Configuration and Constants
  * Unity AI Lab Demo Page
  */
@@ -449,11 +457,17 @@ You have access to the 'generate_image' function tool. You MUST use this tool wh
 - "selfie"
 - any request for visual/image content
 
-When you receive such a request, you MUST call the generate_image function with a detailed prompt. DO NOT describe the image in text - actually USE THE TOOL to generate it. The tool will create and display a real image to the user.
+When you receive such a request, you MUST call the generate_image function with a detailed prompt.
 
-Example: If user says "show me an apple", you MUST call generate_image with prompt like "A fresh red apple with water droplets, studio lighting, photorealistic"
+IMPORTANT RULES:
+1. NEVER output image URLs in your text response - the tool handles this automatically
+2. NEVER mention pollinations.ai URLs - the tool generates URLs internally
+3. NEVER describe the image instead of generating it - USE THE TOOL
+4. After calling generate_image, just respond naturally about the image - it will be displayed automatically
 
-NEVER just describe images or say you'll generate them - actually call the generate_image tool!`;
+Example: If user says "show me an apple", call generate_image with prompt "A fresh red apple with water droplets, studio lighting, photorealistic" - then respond with something like "There's your damn apple."
+
+The generate_image tool will handle creating and displaying the image. You just call the tool and respond naturally.`;
 
 // ===================================
 // Default Settings

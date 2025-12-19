@@ -1,6 +1,6 @@
 {
   "name": "pollilibjs",
-  "version": "1.0.0",
+  "version": "2.1.5",
   "description": "JavaScript library for interacting with the Pollinations.AI API",
   "main": "index.js",
   "scripts": {
@@ -14,13 +14,14 @@
     "llm",
     "api"
   ],
-  "author": "Unity AI Lab",
+  "author": "Unity AI Lab - Hackall360, Sponge, GFourteen",
+  "homepage": "https://www.unityailab.com",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Unity-Lab-AI/sitetest0"
+    "url": "https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io"
   }
 }

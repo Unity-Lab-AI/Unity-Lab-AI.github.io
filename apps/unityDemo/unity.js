@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // Unity Chat Interface - Main JavaScript
 // Complex Unity Chat Interface with Prism.js code highlighting, split chat/code view, and many controls
 
@@ -5,15 +13,21 @@
 const polliAPI = new PollinationsAPI();
 
 // Sanitize HTML to prevent XSS attacks
+// SECURITY: Removed onclick from ALLOWED_ATTR - event handlers are XSS vectors
+// SECURITY: Added fallback sanitization if DOMPurify is not loaded
 function sanitizeHTML(html) {
     if (typeof DOMPurify !== 'undefined') {
         return DOMPurify.sanitize(html, {
             ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'a', 'code', 'pre', 'ul', 'ol', 'li', 'blockquote', 'img', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'button'],
-            ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'style', 'onclick', 'title', 'data-mime'],
+            ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'title', 'data-mime'],
+            FORBID_ATTR: ['onclick', 'onerror', 'onload', 'onmouseover', 'onfocus', 'onblur', 'style'],
             ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
         });
     }
-    return html;
+    // Fallback: basic HTML escaping if DOMPurify not loaded
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
 }
 
 const DEFAULT_INSTRUCTION = "All code must be wrapped in [CODE]...[/CODE] tags." +
@@ -716,13 +730,13 @@ async function fetchImageModels() {
 }
 
 // Generate image URL from description (uncensored - safe=false)
-// Uses image.pollinations.ai which works directly in <img src=""> without auth
+// Uses gen.pollinations.ai/image/ endpoint per official docs
 function generateImageUrl(description) {
   const imageModelSelect = document.querySelector(".image-model-select");
   const imageModel = imageModelSelect ? imageModelSelect.value : 'flux';
   const encodedPrompt = encodeURIComponent(description);
   const seed = Math.floor(Math.random() * 1000000);
-  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
+  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
 }
 
 // Strip image generation patterns from text (for TTS)
@@ -792,12 +806,10 @@ function processMessage(text) {
     if (url.includes('your_prompt') || url.includes('your%20') || url.includes('{') || url.includes('}')) {
       return url;
     }
-    // Convert gen.pollinations.ai URLs to image.pollinations.ai (which works for browser <img src>)
-    let fixedUrl = url.replace('https://gen.pollinations.ai/image/', 'https://image.pollinations.ai/prompt/');
-    // Remove any key= parameter since image.pollinations.ai doesn't need it
-    fixedUrl = fixedUrl.replace(/[?&]key=[^&]+/gi, '');
-    // Fix any broken query string (if key was first param)
-    fixedUrl = fixedUrl.replace(/\?&/, '?').replace(/\?$/, '');
+    // Use gen.pollinations.ai/image/ endpoint directly (per official docs)
+    let fixedUrl = url;
+    // Normalize old image.pollinations.ai URLs to new format
+    fixedUrl = fixedUrl.replace('https://image.pollinations.ai/prompt/', 'https://gen.pollinations.ai/image/');
     window.pendingChatImages.push({ url: fixedUrl, alt: 'Generated Image' });
     return ''; // Remove URL from text
   });
@@ -1265,7 +1277,7 @@ async function getModelAvatar(modelName = "unity") {
   };
   const prompt = prompts[modelName] || "artificial_intelligence_portrait_digital";
   const seed = Math.floor(Date.now() / (1000 * 60 * 60));
-  const avatarUrl = `${PollinationsAPI.IMAGE_API}/${polliAPI.encodePrompt(prompt)}?width=512&height=512&model=flux&nologo=true&seed=${seed}`;
+  const avatarUrl = `${PollinationsAPI.IMAGE_API}/${polliAPI.encodePrompt(prompt)}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=flux&nologo=true&seed=${seed}`;
   localStorage.setItem(storageKey, avatarUrl);
   return avatarUrl;
 }

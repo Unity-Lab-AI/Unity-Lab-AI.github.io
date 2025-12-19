@@ -1,8 +1,8 @@
 {
-  "name": "sitetest0",
-  "version": "1.0.0",
-  "description": "**Test site for the latest version of the main Unity AI Lab website**",
-  "main": "script.js",
+  "name": "unity-lab-ai-website",
+  "version": "2.1.5",
+  "description": "Unity AI Lab - Official website with AI demos, libraries, and tools",
+  "main": "js/init.js",
   "scripts": {
     "dev": "vite",
     "build": "node generate-sitemap.js && vite build && node copy-assets.js && node cache-bust.js",
@@ -10,15 +10,16 @@
     "sitemap": "node generate-sitemap.js",
     "cache-bust": "node cache-bust.js",
     "copy-assets": "node copy-assets.js",
-    "minify": "npx terser script.js -c -m -o script.min.js && npx cleancss -o styles.min.css styles.css",
+    "minify": "npx terser js/init.js -c -m -o script.min.js && npx cleancss -o styles.min.css styles.css",
     "build:legacy": "npm run minify && ./update-version.sh"
   },
   "repository": {
     "type": "git",
-    "url": "http://local_proxy@127.0.0.1:46313/git/Unity-Lab-AI/sitetest0"
+    "url": "https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Unity AI Lab - Hackall360, Sponge, GFourteen",
+  "homepage": "https://www.unityailab.com",
   "license": "ISC",
   "devDependencies": {
     "clean-css-cli": "^5.6.3",

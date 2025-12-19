@@ -1,19 +1,19 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Chat Functionality Module
  * Unity AI Lab Demo Page
  *
  * Handles message display, chat history, and typing indicators
  */
 
-/**
- * Add a message to the chat (with optional images)
- * @param {string} sender - 'user' or 'ai'
- * @param {string} content - Message content
- * @param {Array} images - Optional array of image objects
- * @param {Function} renderMarkdown - Markdown renderer function
- * @param {Function} expandImage - Image expansion handler
- * @param {Function} detectAndQueueEffects - Effects detection function
- */
+// throw a message into the chat window with optional images attached
 export function addMessage(sender, content, images = [], renderMarkdown, expandImage, detectAndQueueEffects) {
     const messagesContainer = document.getElementById('chatMessages');
     if (!messagesContainer) {
@@ -25,7 +25,8 @@ export function addMessage(sender, content, images = [], renderMarkdown, expandI
 
     console.log(`💬 addMessage: sender=${sender}, images=${images?.length || 0}`);
 
-    // Add images at the top if present (for AI messages)
+
+    // stick images at the top for AI responses
     if (sender === 'ai' && images && images.length > 0) {
         console.log('🖼️ Adding images to message:', images);
         const imagesContainer = document.createElement('div');
@@ -35,14 +36,15 @@ export function addMessage(sender, content, images = [], renderMarkdown, expandI
             const imageWrapper = document.createElement('div');
             imageWrapper.className = 'message-image-wrapper';
 
+            console.log(`🖼️ Preparing image: ${imageData.url}`);
+
             const img = document.createElement('img');
-            img.src = imageData.url;
             img.alt = imageData.prompt || 'Generated image';
             img.title = imageData.prompt || 'Generated image';
-            img.className = 'message-image';
+            img.className = 'message-image loading';
             img.dataset.imageIndex = index;
 
-            // Add click handler for expansion
+            // make images clickable for fullscreen view
             if (expandImage && typeof expandImage === 'function') {
                 img.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -50,35 +52,57 @@ export function addMessage(sender, content, images = [], renderMarkdown, expandI
                 });
             }
 
-            // Add loading handler
-            img.onload = () => {
-                console.log(`Image ${index + 1} loaded successfully`);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            };
-
-            img.onerror = () => {
-                console.error(`Image ${index + 1} failed to load`);
-                img.alt = 'Failed to load image';
-                img.classList.add('image-error');
-            };
-
             imageWrapper.appendChild(img);
             imagesContainer.appendChild(imageWrapper);
+
+            // Load image with retry on 429
+            let retryCount = 0;
+            const maxRetries = 3;
+
+            const loadImage = () => {
+                img.onload = () => {
+                    console.log(`✅ Image ${index + 1} loaded`);
+                    img.classList.remove('loading');
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                };
+
+                img.onerror = () => {
+                    retryCount++;
+                    if (retryCount <= maxRetries) {
+                        const delay = retryCount * 3000; // 3s, 6s, 9s
+                        console.log(`⏳ Image ${index + 1} failed, retry ${retryCount}/${maxRetries} in ${delay/1000}s...`);
+                        setTimeout(() => {
+                            // Add cache buster to force new request
+                            img.src = imageData.url + '&_retry=' + Date.now();
+                        }, delay);
+                    } else {
+                        console.error(`❌ Image ${index + 1} failed after ${maxRetries} retries`);
+                        img.alt = 'Failed to load image';
+                        img.classList.remove('loading');
+                        img.classList.add('image-error');
+                    }
+                };
+
+                img.src = imageData.url;
+            };
+
+            // Delay initial load to avoid rate limiting from text API calls
+            setTimeout(loadImage, 2000);
         });
 
         messageDiv.appendChild(imagesContainer);
     }
 
-    // Add text content below images
+    // add the actual text below any images
     if (content) {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
 
         if (sender === 'ai') {
-            // Render markdown for AI messages
+            // render markdown for AI responses because we're fancy
             contentDiv.innerHTML = renderMarkdown(content);
         } else {
-            // Plain text for user messages
+            // user messages stay plain and boring
             contentDiv.textContent = content;
         }
 
@@ -87,18 +111,16 @@ export function addMessage(sender, content, images = [], renderMarkdown, expandI
 
     messagesContainer.appendChild(messageDiv);
 
-    // Trigger atmospheric effects for Unity AI messages
+    // trigger smoke and lighter effects for Unity's messages
     if (sender === 'ai' && content && detectAndQueueEffects) {
         detectAndQueueEffects(content);
     }
 
-    // Scroll to bottom
+    // scroll down so people see the new shit
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-/**
- * Show typing indicator
- */
+// show those little dots so they know the AI is thinking
 export function showTypingIndicator() {
     const messagesContainer = document.getElementById('chatMessages');
     const indicator = document.createElement('div');
@@ -109,9 +131,7 @@ export function showTypingIndicator() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-/**
- * Remove typing indicator
- */
+// get rid of the typing dots
 export function removeTypingIndicator() {
     const indicator = document.getElementById('typingIndicator');
     if (indicator) {
@@ -119,27 +139,23 @@ export function removeTypingIndicator() {
     }
 }
 
-/**
- * Clear chat session
- * @param {Array} chatHistory - Chat history array (will be modified)
- * @param {Function} stopVoicePlayback - Voice playback stop function
- */
+// wipe the entire chat history and start fresh
 export function clearSession(chatHistory, stopVoicePlayback) {
-    // Confirm before clearing
+    // make sure they actually want to nuke everything
     if (chatHistory.length > 0) {
         if (!confirm('Are you sure you want to clear the chat session?')) {
             return;
         }
     }
 
-    // Clear history
+    // wipe the history array
     chatHistory.length = 0;
 
-    // Clear messages
+    // clear all messages from the screen
     const messagesContainer = document.getElementById('chatMessages');
     messagesContainer.innerHTML = '';
 
-    // Show empty state
+    // show the empty state message
     const emptyState = document.createElement('div');
     emptyState.className = 'empty-state';
     emptyState.id = 'emptyState';
@@ -149,7 +165,7 @@ export function clearSession(chatHistory, stopVoicePlayback) {
     `;
     messagesContainer.appendChild(emptyState);
 
-    // Stop any playing audio
+    // shut up any voice that's currently playing
     stopVoicePlayback();
 
     console.log('Chat session cleared');

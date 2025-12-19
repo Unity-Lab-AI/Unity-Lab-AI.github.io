@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Text-to-Text Generation - Generate text responses using AI models
 Implements the Text-to-Text Generation section from the TODO list
 
@@ -240,7 +248,7 @@ class TextToText(PollinationsAPI):
 
     def _redact_sensitive(self, text: str) -> str:
         """
-        Redact sensitive information from text (emails, phone numbers, etc.).
+        Redact sensitive info so it doesn't leak into logs.
 
         Args:
             text: Text to redact
@@ -248,19 +256,19 @@ class TextToText(PollinationsAPI):
         Returns:
             Redacted text
         """
-        # Redact email addresses
+        # strip out email addresses
         text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
                       '[EMAIL_REDACTED]', text)
 
-        # Redact phone numbers (simple pattern)
+        # strip out phone numbers
         text = re.sub(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
                       '[PHONE_REDACTED]', text)
 
-        # Redact credit card numbers (simple pattern)
+        # strip out credit card numbers
         text = re.sub(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b',
                       '[CARD_REDACTED]', text)
 
-        # Redact SSN (simple pattern)
+        # strip out SSNs
         text = re.sub(r'\b\d{3}-\d{2}-\d{4}\b',
                       '[SSN_REDACTED]', text)
 

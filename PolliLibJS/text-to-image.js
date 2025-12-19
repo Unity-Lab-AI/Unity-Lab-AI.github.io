@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Text-to-Image Generation - Generate images from text prompts
  *
  * Features:
@@ -177,7 +185,7 @@ class TextToImage extends PollinationsAPI {
             const seed = actualBaseSeed + i;
             console.log(`\nVariant ${i + 1}/${n} (seed: ${seed})...`);
 
-            // Generate output path if not provided
+            // auto-name files if user didn't specify paths
             const variantOptions = { ...otherOptions };
             if (!variantOptions.outputPath) {
                 variantOptions.outputPath = `variant_${i + 1}_seed_${seed}`;

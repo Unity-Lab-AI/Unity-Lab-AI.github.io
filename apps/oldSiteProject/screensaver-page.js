@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // screensaver-page.js - Standalone Screensaver Page JavaScript
 // Extracted from screensaver.html inline JavaScript
 
@@ -161,9 +169,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchImageModels() {
         try {
-            const res = await window.pollinationsFetch("https://image.pollinations.ai/models?referrer=unityailab.com", {
+            const res = await window.pollinationsFetch(`https://gen.pollinations.ai/image/models?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
                 method: "GET",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${PollinationsAPI.DEFAULT_API_KEY}`
+                },
                 cache: "no-store"
             });
             const models = await res.json();
@@ -215,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const textModel = "openai"; // Hardcoded as model-select is not available
         const seed = generateSeed();
         try {
-            const response = await window.pollinationsFetch("https://text.pollinations.ai/openai?referrer=unityailab.com", {
+            const response = await window.pollinationsFetch(`https://gen.pollinations.ai/v1/chat/completions?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Accept: "application/json" },
                 cache: "no-store",

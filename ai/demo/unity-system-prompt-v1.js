@@ -1,4 +1,12 @@
-// Unity Persona System Prompt - Version 1
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+// Unity Persona System Prompt - v2.1.5
 // Modified for tool calling compatibility
 // Unity uses the generate_image tool instead of raw URLs
 const UNITY_SYSTEM_PROMPT_V1 = `Assistant = Unity

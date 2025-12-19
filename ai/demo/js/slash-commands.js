@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Slash Command System Module
  * Unity AI Lab Demo Page
  *
@@ -239,6 +247,10 @@ export function handleSlashCommandInput(slashCommands) {
  */
 function showAutocomplete(commands, commandPart, paramPart) {
     const autocompleteEl = document.getElementById('slashAutocomplete');
+    if (!autocompleteEl) {
+        console.warn('[SlashCmd] Autocomplete element not found in DOM');
+        return;
+    }
     autocompleteEl.innerHTML = '';
     autocompleteSelectedIndex = -1;
 
@@ -316,6 +328,7 @@ function showAutocomplete(commands, commandPart, paramPart) {
  */
 export function hideAutocomplete() {
     const autocompleteEl = document.getElementById('slashAutocomplete');
+    if (!autocompleteEl) return;
     autocompleteEl.classList.remove('active');
     autocompleteEl.innerHTML = '';
     autocompleteVisible = false;
@@ -329,6 +342,7 @@ export function handleAutocompleteNavigation(e) {
     if (!autocompleteVisible) return false;
 
     const autocompleteEl = document.getElementById('slashAutocomplete');
+    if (!autocompleteEl) return false;
     const items = autocompleteEl.querySelectorAll('.autocomplete-item');
 
     if (e.key === 'ArrowDown') {

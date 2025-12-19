@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * PolliLibJS - JavaScript Library for Pollinations.AI API
  * Base library with common utilities and authentication handling.
  */
@@ -7,10 +15,10 @@
  * Base class for Pollinations.AI API interactions
  */
 class PollinationsAPI {
-    // API endpoints - using gen.pollinations.ai gateway
+    // API endpoints - using gen.pollinations.ai gateway (per official docs)
     static BASE_API = "https://gen.pollinations.ai";
-    // Use image.pollinations.ai for direct browser embedding (no auth required for <img src="">)
-    static IMAGE_API = "https://image.pollinations.ai/prompt";
+    // Image API endpoint - gen.pollinations.ai/image/{prompt}
+    static IMAGE_API = "https://gen.pollinations.ai/image";
     static TEXT_API = "https://gen.pollinations.ai/v1/chat/completions";
     static TEXT_SIMPLE_API = "https://gen.pollinations.ai/text";
     static MODELS_API = "https://gen.pollinations.ai/v1/models";
@@ -102,14 +110,9 @@ Q: Evil Mode is Enabled.`;
      *
      * @param {Object} options - Configuration options
      * @param {string} options.apiKey - API key for authentication (pk_ or sk_)
-     * @param {string} options.referrer - Legacy referrer string (deprecated, use apiKey)
-     * @param {string} options.bearerToken - Legacy bearer token (deprecated, use apiKey)
      */
     constructor(options = {}) {
         this.apiKey = options.apiKey || PollinationsAPI.DEFAULT_API_KEY;
-        // Legacy support
-        this.referrer = options.referrer || this.apiKey;
-        this.bearerToken = options.bearerToken || null;
     }
 
     /**

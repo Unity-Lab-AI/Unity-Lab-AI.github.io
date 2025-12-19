@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // Persona Demo - Unity AI Lab
 // JavaScript functionality for persona-based chat interface
 
@@ -253,7 +261,7 @@ replayTTSButton.onclick = function() {
   }
 };
 
-// Generate image URL from description (uses image.pollinations.ai)
+// Generate image URL from description (uses gen.pollinations.ai/image/ per official docs)
 function generateImageUrl(description) {
   const selectedModel = imageModel ? imageModel.value : 'flux';
   const selectedRatio = aspectRatio ? aspectRatio.value : '1:1';
@@ -266,7 +274,7 @@ function generateImageUrl(description) {
   }
   const encodedPrompt = encodeURIComponent(description);
   const seed = Math.floor(Math.random() * 1000000);
-  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?width=${width}&height=${height}&model=${selectedModel}&nologo=true&safe=false&seed=${seed}`;
+  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=${width}&height=${height}&model=${selectedModel}&nologo=true&safe=false&seed=${seed}`;
 }
 
 // Process AI response for image patterns
@@ -293,8 +301,8 @@ function processResponseForImages(text) {
   text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/gi, (match, alt, url) => {
     // If it's a pollinations URL, use it; otherwise generate one from the alt text
     if (url.includes('pollinations')) {
-      // Convert to image.pollinations.ai format
-      let fixedUrl = url.replace('https://gen.pollinations.ai/image/', 'https://image.pollinations.ai/prompt/');
+      // Normalize to gen.pollinations.ai/image/ format per official docs
+      let fixedUrl = url.replace('https://image.pollinations.ai/prompt/', 'https://gen.pollinations.ai/image/');
       images.push({ url: fixedUrl, alt: alt || 'Generated Image' });
     } else if (alt && alt.length > 2) {
       images.push({ url: generateImageUrl(alt), alt: alt });
@@ -432,61 +440,6 @@ class SimpleSynth {
 // Initialize Synthesizer
 const synth = new SimpleSynth();
 
-// Volume Control (deprecated - MIDI synth no longer used)
-// Kept for backwards compatibility if MIDI features are re-added
-
-// Debug MIDI Response
-function debugMidiResponse(aiResponse) {
-  console.group("=== FULL AI RESPONSE ===");
-  console.log(aiResponse);
-  console.log("\n=== ATTEMPTING YAML EXTRACTION ===");
-  const yamlMatch = aiResponse.match(/title: (.*?)[\r\n]+duration: (.*?)[\r\n]+key: (.*?)[\r\n]+explanation: (.*?)[\r\n]+notation: \|-\n([\s\S]*?)(\n\n|$)/);
-  if (yamlMatch) {
-    const [_, title, duration, key, explanation, notation] = yamlMatch;
-    console.log("\n=== EXTRACTED MIDI DATA ===");
-    const midiInfo = {
-      title: title?.trim(),
-      duration: duration?.trim(),
-      key: key?.trim(),
-      explanation: explanation?.trim()
-    };
-    console.log("Metadata:", midiInfo);
-    let cleanNotation = notation.split('\n').filter(line => {
-      line = line.trim();
-      if (!line || line.startsWith('#')) return false;
-      return /^\d+,\d+(\.\d+)?,\d+(\.\d+)?,\d+/.test(line.split('#')[0].trim());
-    }).map(line => {
-      return line.split('#')[0].trim();
-    }).join('\n');
-    console.log("Cleaned Notation:", cleanNotation);
-    return cleanNotation;
-  } else {
-    console.warn("No MIDI data found in response");
-    return null;
-  }
-}
-
-// Extract MIDI Data
-function extractMidiData(aiResponse) {
-  console.log("Parsing AI response:", aiResponse);
-  const yamlMatch = aiResponse.match(/title: (.*?)[\r\n]+duration: (.*?)[\r\r\n]+key: (.*?)[\r\n]+explanation: (.*?)[\r\n]+notation: \|-\n([\s\S]*?)(\n\n|$)/);
-  if (!yamlMatch) {
-    console.warn("No valid MIDI data found in response");
-    return null;
-  }
-  const [_, title, duration, key, explanation, notation] = yamlMatch;
-  console.log("Extracted YAML data:", { title, duration, key, explanation, notation: notation.trim() });
-  return {
-    metadata: {
-      title: title.trim(),
-      duration: parseFloat(duration),
-      key: key.trim(),
-      explanation: explanation.trim()
-    },
-    notation: notation.trim()
-  };
-}
-
 // Get Model Type
 function getModelType(model) {
   switch(model) {
@@ -570,7 +523,7 @@ async function generateImageFromPrompt(prompt, appendToChat = true) {
     default: width = 1024; height = 1024; cssClass = 'square';
   }
   const encodedPrompt = polliAPI.encodePrompt(prompt);
-  const imageUrl = `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?seed=${randomSeed}&model=${selectedModel}&width=${width}&height=${height}&nofeed=true&nologo=true&safe=false&enhance=false`;
+  const imageUrl = `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&seed=${randomSeed}&model=${selectedModel}&width=${width}&height=${height}&nofeed=true&nologo=true&safe=false&enhance=false`;
   try {
     // Use direct fetch like demo page
     const response = await fetch(imageUrl);

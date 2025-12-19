@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Copy Additional Assets to Dist
  * Uses BLACKLIST approach - copies everything EXCEPT excluded items
  * Vite handles HTML files, this copies all other assets

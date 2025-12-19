@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
     const style = document.createElement("style");
     style.textContent = `
@@ -560,7 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function refreshImage(img, imageId) {
             console.log(`Refreshing image with ID: ${imageId} in simple mode`);
-            if (!img.src || (!img.src.includes("image.pollinations.ai") && !img.src.includes("gen.pollinations.ai/image"))) {
+            if (!img.src || !img.src.includes("gen.pollinations.ai/image")) {
                 window.showToast("No valid Pollinations image source to refresh.");
                 return;
             }

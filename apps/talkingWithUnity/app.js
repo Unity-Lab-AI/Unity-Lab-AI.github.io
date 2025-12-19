@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 function logToScreen(message) {
     return;
 }
@@ -188,18 +196,19 @@ function resolveAssetPath(relativePath) {
     }
 }
 
+// evaluateDependencies is defined in landing.js and runs there
+// app.js should NOT call it - landing.js handles the dependency checking
 document.addEventListener('DOMContentLoaded', () => {
-    evaluateDependencies();
-
+    // Dependencies are checked by landing.js, not here
+    // Just set up the recheck button if it exists
     recheckButton?.addEventListener('click', () => {
-        evaluateDependencies({ announce: true });
+        // Dispatch event for landing.js to handle
+        window.dispatchEvent(new CustomEvent('recheck-dependencies'));
     });
 });
 
 window.addEventListener('focus', () => {
-    if (!appStarted) {
-        evaluateDependencies();
-    }
+    // Dependencies are checked by landing.js on focus
 });
 
 function normalizeLaunchResults(detail) {
@@ -623,18 +632,24 @@ async function setupSpeechRecognition() {
         recognition.maxAlternatives = 1;
 
         recognition.onresult = (event) => {
-            if (recognitionPaused) return;
+            console.log('🎙️ onresult fired, recognitionPaused:', recognitionPaused);
+            if (recognitionPaused) {
+                console.log('🎙️ Skipping - recognition paused');
+                return;
+            }
             const transcript = event.results[event.results.length - 1][0].transcript.trim();
-            console.log('User said:', transcript);
+            console.log('🎙️ User said:', transcript);
             setCircleState(userCircle, { listening: true, speaking: false, label: 'Processing what you said' });
             const isLocalCommand = handleVoiceCommand(transcript);
+            console.log('🎙️ Is local command:', isLocalCommand);
             if (!isLocalCommand) {
+                console.log('🎙️ Calling getAIResponse...');
                 getAIResponse(transcript);
             }
         };
 
         recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error);
+            console.error('🎙️ Speech recognition error:', event.error);
             setCircleState(userCircle, { error: true, listening: false, speaking: false, label: `Microphone error: ${event.error}` });
         };
     } else {
@@ -654,10 +669,12 @@ async function setupSpeechRecognition() {
     };
 
     recognition.onspeechstart = () => {
+        console.log('🎙️ Speech started - hearing you speak');
         setCircleState(userCircle, { speaking: true, listening: true, label: 'Hearing you speak' });
     };
 
     recognition.onspeechend = () => {
+        console.log('🎙️ Speech ended - processing');
         setCircleState(userCircle, { listening: true, speaking: false, label: 'Processing what you said' });
     };
 
@@ -1532,13 +1549,13 @@ const POLLINATIONS_TEXT_URL = PollinationsAPI.TEXT_API;
 const UNITY_REFERRER = 'https://www.unityailab.com/';
 
 async function getAIResponse(userInput) {
+    console.log('🎤 [1/6] getAIResponse called with:', userInput);
     recognitionPaused = true;
     updateMuteIndicator();
 
     try {
-        console.log(`Sending to AI: ${userInput}`);
-
         chatHistory.push({ role: 'user', content: userInput });
+        console.log('🎤 [2/6] Chat history length:', chatHistory.length);
 
         if (chatHistory.length > 12) {
             chatHistory.splice(0, chatHistory.length - 12);
@@ -1554,29 +1571,59 @@ async function getAIResponse(userInput) {
             model: 'mistral'
         });
 
-        // Use direct fetch with API key authentication
-        console.log('Sending to Pollinations API:', POLLINATIONS_TEXT_URL);
-        console.log('System prompt length:', systemPrompt.length);
+        console.log('🌐 [3/6] Sending to API:', POLLINATIONS_TEXT_URL);
+        console.log('🌐 [3/6] System prompt loaded:', systemPrompt.length > 0 ? 'YES (' + systemPrompt.length + ' chars)' : 'NO - EMPTY!');
 
-        const textResponse = await fetch(`${POLLINATIONS_TEXT_URL}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${PollinationsAPI.DEFAULT_API_KEY}`
-            },
-            body: pollinationsPayload
-        });
+        // Retry logic for rate limiting - keep trying until success
+        let textResponse;
+        let attempt = 0;
+        const maxAttempts = 10;
 
-        console.log('API response status:', textResponse.status);
+        while (attempt < maxAttempts) {
+            attempt++;
+            try {
+                textResponse = await fetch(`${POLLINATIONS_TEXT_URL}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${PollinationsAPI.DEFAULT_API_KEY}`
+                    },
+                    body: pollinationsPayload
+                });
 
-        if (!textResponse.ok) {
-            const errorText = await textResponse.text();
-            console.error('API error response:', errorText);
-            throw new Error(`Pollinations text API returned ${textResponse.status}: ${errorText}`);
+                if (textResponse.status === 429) {
+                    // Rate limited - wait and retry
+                    const retryAfter = parseInt(textResponse.headers.get('retry-after')) || 3;
+                    console.log(`⏳ [3/6] Rate limited, waiting ${retryAfter}s... (attempt ${attempt}/${maxAttempts})`);
+                    await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+                    continue;
+                }
+
+                if (textResponse.ok) {
+                    break; // Success!
+                }
+
+                // Other error - still retry with backoff
+                console.log(`⏳ [3/6] API error ${textResponse.status}, retrying... (attempt ${attempt}/${maxAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+
+            } catch (fetchError) {
+                console.log(`⏳ [3/6] Network error, retrying... (attempt ${attempt}/${maxAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+            }
+        }
+
+        console.log('🌐 [4/6] API response status:', textResponse?.status);
+
+        if (!textResponse || !textResponse.ok) {
+            const errorText = textResponse ? await textResponse.text() : 'No response';
+            console.error('❌ [4/6] API failed after retries:', errorText);
+            throw new Error(`API failed after ${maxAttempts} attempts`);
         }
 
         const data = await textResponse.json();
         aiText = data.choices?.[0]?.message?.content ?? '';
+        console.log('🤖 [5/6] AI response received:', aiText.substring(0, 100) + '...');
 
         if (!aiText) {
             throw new Error('Received empty response from Pollinations AI');
@@ -1638,6 +1685,7 @@ async function getAIResponse(userInput) {
 
         if (!shouldSuppressSpeech) {
             const spokenText = sanitizeForSpeech(finalAssistantMessage);
+            console.log('🔊 [6/6] Speaking:', spokenText ? spokenText.substring(0, 50) + '...' : '(empty)');
             if (spokenText) {
                 await heroImagePromise;
                 await speak(spokenText);
@@ -1716,43 +1764,66 @@ function updateHeroImage(imageUrl) {
     }
 
     return new Promise((resolve) => {
-        const image = new Image();
-        image.decoding = 'async';
-        image.crossOrigin = 'anonymous';
+        let retryCount = 0;
+        const maxRetries = 10;
 
-        image.onload = () => {
-            if (pendingHeroUrl !== imageUrl) {
-                resolve(false);
-                return;
-            }
+        const tryLoad = () => {
+            const image = new Image();
+            image.decoding = 'async';
+            image.crossOrigin = 'anonymous';
 
-            currentHeroUrl = imageUrl;
-            pendingHeroUrl = '';
-            heroImage.src = imageUrl;
-            heroStage.dataset.state = 'loaded';
-            heroStage.classList.add('has-image');
-            heroStage.setAttribute('aria-hidden', 'false');
-            resolve(true);
-        };
+            image.onload = () => {
+                if (pendingHeroUrl !== imageUrl) {
+                    resolve(false);
+                    return;
+                }
 
-        image.onerror = (error) => {
-            if (pendingHeroUrl === imageUrl) {
+                currentHeroUrl = imageUrl;
                 pendingHeroUrl = '';
-            }
-            if (!hadImage) {
-                heroStage.dataset.state = 'error';
-                heroStage.classList.remove('has-image');
-                heroImage.removeAttribute('src');
-                heroStage.setAttribute('aria-hidden', 'true');
-            } else {
+                heroImage.src = imageUrl;
                 heroStage.dataset.state = 'loaded';
+                heroStage.classList.add('has-image');
                 heroStage.setAttribute('aria-hidden', 'false');
-            }
-            console.error('Failed to load hero image:', error);
-            resolve(false);
+                console.log('✅ Hero image loaded successfully');
+                resolve(true);
+            };
+
+            image.onerror = () => {
+                retryCount++;
+                if (retryCount <= maxRetries) {
+                    const delay = retryCount * 2000; // 2s, 4s, 6s...
+                    console.log(`⏳ Hero image failed, retry ${retryCount}/${maxRetries} in ${delay/1000}s...`);
+                    setTimeout(() => {
+                        // Add cache buster for retry
+                        tryLoad();
+                    }, delay);
+                } else {
+                    // Give up after max retries
+                    if (pendingHeroUrl === imageUrl) {
+                        pendingHeroUrl = '';
+                    }
+                    if (!hadImage) {
+                        heroStage.dataset.state = 'error';
+                        heroStage.classList.remove('has-image');
+                        heroImage.removeAttribute('src');
+                        heroStage.setAttribute('aria-hidden', 'true');
+                    } else {
+                        heroStage.dataset.state = 'loaded';
+                        heroStage.setAttribute('aria-hidden', 'false');
+                    }
+                    console.error('❌ Hero image failed after', maxRetries, 'retries');
+                    resolve(false);
+                }
+            };
+
+            // Add cache buster on retries
+            const urlWithBuster = retryCount > 0
+                ? imageUrl + (imageUrl.includes('?') ? '&' : '?') + '_retry=' + Date.now()
+                : imageUrl;
+            image.src = urlWithBuster;
         };
 
-        image.src = imageUrl;
+        tryLoad();
     });
 }
 

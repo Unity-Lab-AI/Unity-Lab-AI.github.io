@@ -1,9 +1,19 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Tool Calling and Image Generation Module
  * Unity AI Lab Demo Page
  *
  * Handles tool/function calling and image generation
  */
+
+import { API_KEY } from './config.js';
 
 /**
  * Handle tool call execution
@@ -113,12 +123,15 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
         // Build Pollinations image URL
         // Use settings seed or generate random 6-8 digit seed
         const seed = (settings.seed !== -1) ? settings.seed : generateRandomSeed();
-        const encodedPrompt = encodeURIComponent(prompt);
+        const encodedPrompt = encodeURIComponent(prompt.trim());
 
-        // Build URL with unrestricted content - safe=false MUST be explicit for uncensored images
-        let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?` +
-            `width=${width}&height=${height}&seed=${seed}&model=${model}&` +
-            `private=true&enhance=${settings.imageEnhance}&safe=false&nologo=true`;
+        // Build URL per Pollinations docs
+        let imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?` +
+            `model=${model}&width=${width}&height=${height}&seed=${seed}&` +
+            `enhance=${settings.imageEnhance}&nologo=true&safe=false&private=true&key=${API_KEY}`;
+
+        console.log(`🔑 API_KEY used: ${API_KEY}`);
+        console.log(`🖼️ Full image URL: ${imageUrl}`);
 
         generatedImages.push({
             url: imageUrl,
@@ -159,8 +172,11 @@ export async function generateImageFromCommand(prompt, settings, addMessage, sho
         showTypingIndicator();
 
         // Build image URL with safe=false for uncensored content
-        let imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
-        imageUrl += `?model=${imageModel}`;
+        // Using gen.pollinations.ai/image/ endpoint per official docs
+        // API key REQUIRED in query param for browser <img src=""> loading
+        let imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}`;
+        imageUrl += `?key=${API_KEY}`;
+        imageUrl += `&model=${imageModel}`;
         imageUrl += `&width=${width}`;
         imageUrl += `&height=${height}`;
         imageUrl += `&seed=${seed}`;

@@ -1,12 +1,20 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Navbar Scroll Effect
+// nav scroll behavior
 // ===================================
 
 export function initNavbar() {
     const navbar = document.querySelector('.navbar');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    // Check if navbar exists before initializing
+    // bail if no navbar
     if (!navbar) {
         console.warn('Navbar not found, skipping navbar initialization');
         return;
@@ -19,11 +27,11 @@ export function initNavbar() {
             navbar.classList.remove('scrolled');
         }
 
-        // Update active nav link based on scroll position
+        // track which section you're looking at
         updateActiveNavLink();
     });
 
-    // Highlight active nav link
+    // highlight the active nav link
     function updateActiveNavLink() {
         const sections = document.querySelectorAll('section[id]');
         const scrollY = window.pageYOffset;
@@ -46,7 +54,7 @@ export function initNavbar() {
 }
 
 // ===================================
-// Smooth Scrolling (Cross-browser)
+// smooth scroll for anchor links
 // ===================================
 export function initSmoothScroll() {
     var links = document.querySelectorAll('a[href^="#"]');
@@ -55,7 +63,7 @@ export function initSmoothScroll() {
         link.addEventListener('click', function(e) {
             var href = this.getAttribute('href');
 
-            // Only prevent default if it's an actual section link
+            // only intercept real section links
             if (href !== '#' && href.length > 1) {
                 e.preventDefault();
                 var target = document.querySelector(href);
@@ -63,14 +71,14 @@ export function initSmoothScroll() {
                 if (target) {
                     var offsetTop = target.offsetTop - 80;
 
-                    // Use polyfilled scrollTo
+                    // smooth scroll with polyfill
                     window.scrollTo({
                         top: offsetTop,
                         left: 0,
                         behavior: 'smooth'
                     });
 
-                    // Close mobile menu if open
+                    // close mobile menu if it's open
                     try {
                         var navbarCollapse = document.querySelector('.navbar-collapse');
                         if (navbarCollapse && navbarCollapse.classList.contains('show')) {

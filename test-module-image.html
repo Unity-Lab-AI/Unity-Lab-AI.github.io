@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Image Load Test</title>
+    <style>
+        .message-images { display: flex; gap: 10px; }
+        .message-image-wrapper { border: 2px solid blue; }
+        .message-image { max-width: 512px; display: block; }
+        .image-error { border: 2px dashed red !important; }
+    </style>
+</head>
+<body>
+    <h1>ES6 Module Image Load Test</h1>
+    <p>This test mimics exactly what chat.js does</p>
+
+    <div id="chatMessages"></div>
+
+    <p id="status" style="font-size: 24px; font-weight: bold;">Loading...</p>
+
+    <script type="module">
+        // Mimic exactly what chat.js does
+        const messagesContainer = document.getElementById('chatMessages');
+
+        const images = [
+            { url: 'https://gen.pollinations.ai/image/A%20fresh%20red%20apple?model=flux&width=512&height=512&key=pk_YBwckBxhiFxxCMbk', prompt: 'A fresh red apple' }
+        ];
+
+        const pendingImages = [];
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-bubble ai';
+
+        const imagesContainer = document.createElement('div');
+        imagesContainer.className = 'message-images';
+
+        images.forEach((imageData, index) => {
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = 'message-image-wrapper';
+
+            console.log(`Preparing image: ${imageData.url}`);
+
+            const img = document.createElement('img');
+            img.alt = imageData.prompt || 'Generated image';
+            img.title = imageData.prompt || 'Generated image';
+            img.className = 'message-image';
+            img.dataset.imageIndex = index;
+
+            img.onload = () => {
+                console.log(`Image ${index + 1} loaded successfully`);
+                document.getElementById('status').textContent = 'SUCCESS - Image loaded!';
+                document.getElementById('status').style.color = 'green';
+            };
+
+            img.onerror = () => {
+                console.error(`Image ${index + 1} failed to load`);
+                console.error(`Failed URL was: ${img.src}`);
+                img.alt = 'Failed to load image';
+                img.classList.add('image-error');
+                document.getElementById('status').textContent = 'FAILED - Image did not load';
+                document.getElementById('status').style.color = 'red';
+            };
+
+            imageWrapper.appendChild(img);
+            imagesContainer.appendChild(imageWrapper);
+
+            // Queue image for loading after DOM insertion
+            pendingImages.push({ img, url: imageData.url });
+        });
+
+        messageDiv.appendChild(imagesContainer);
+
+        // Add content div
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.textContent = 'Here is your image:';
+        messageDiv.appendChild(contentDiv);
+
+        messagesContainer.appendChild(messageDiv);
+
+        // NOW set image src after element is in DOM - triggers browser to load
+        // Add small delay to avoid rate limiting from text API call
+        if (pendingImages.length > 0) {
+            setTimeout(() => {
+                pendingImages.forEach(({ img, url }) => {
+                    console.log(`Loading image: ${url.substring(0, 80)}...`);
+                    img.src = url;
+                });
+            }, 500);
+        }
+    </script>
+</body>
+</html>

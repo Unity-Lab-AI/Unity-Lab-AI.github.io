@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * API Integration Module
  * Unity AI Lab Demo Page
  *
@@ -6,6 +14,29 @@
  */
 
 import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON } from './config.js';
+
+/**
+ * Sanitize image URLs - convert old image.pollinations.ai URLs to new gen.pollinations.ai format
+ * This is a safety net in case any component returns old format URLs
+ */
+function sanitizeImageUrl(url) {
+    if (!url) return url;
+    // Convert old format to new format
+    // Old: https://image.pollinations.ai/prompt/{prompt}?params
+    // New: https://gen.pollinations.ai/image/{prompt}?params
+    return url.replace('https://image.pollinations.ai/prompt/', 'https://gen.pollinations.ai/image/');
+}
+
+/**
+ * Sanitize an array of image objects - apply URL conversion to each
+ */
+function sanitizeImageArray(images) {
+    if (!images || !Array.isArray(images)) return images;
+    return images.map(img => ({
+        ...img,
+        url: sanitizeImageUrl(img.url)
+    }));
+}
 
 // Available models (populated from API)
 let availableTextModels = [];
@@ -64,7 +95,7 @@ export function initializePolliLib() {
             return { textAPI: null, imageAPI: null, voiceAPI: null };
         }
 
-        // Initialize Pollinations API (using default referrer)
+        // Initialize Pollinations API (using API key authentication)
         const textAPI = new PollinationsAPI();
         const imageAPI = new PollinationsAPI();
         const voiceAPI = new PollinationsAPI();
@@ -149,9 +180,26 @@ export async function fetchModels() {
 }
 
 /**
- * Fetch text models from Pollinations API
+ * Fetch text models from Pollinations API (with localStorage caching to avoid rate limits)
  */
 async function fetchTextModels() {
+    // Check localStorage cache first (24 hour TTL)
+    const cacheKey = 'pollinationsTextModels';
+    const cacheExpiry = 'pollinationsTextModelsExpiry';
+    const cached = localStorage.getItem(cacheKey);
+    const expiry = localStorage.getItem(cacheExpiry);
+
+    if (cached && expiry && Date.now() < parseInt(expiry)) {
+        try {
+            const models = JSON.parse(cached);
+            availableTextModels = [...CUSTOM_UNITY_MODELS, ...models];
+            console.log(`Text models loaded from cache: ${models.length} + ${CUSTOM_UNITY_MODELS.length} custom`);
+            return;
+        } catch (e) {
+            // Cache corrupted, fetch fresh
+        }
+    }
+
     try {
         // Use gen.pollinations.ai API with key authentication
         const apiKey = PollinationsAPI.DEFAULT_API_KEY;
@@ -182,6 +230,10 @@ async function fetchTextModels() {
             throw new Error('Invalid models data received');
         }
 
+        // Cache models for 24 hours
+        localStorage.setItem(cacheKey, JSON.stringify(models));
+        localStorage.setItem(cacheExpiry, String(Date.now() + 24 * 60 * 60 * 1000));
+
         // Store all models from API (UI will handle filtering and adding custom models)
         // Keep custom models in the array for metadata lookups (getCurrentModelMetadata)
         availableTextModels = [...CUSTOM_UNITY_MODELS, ...models];
@@ -198,9 +250,26 @@ async function fetchTextModels() {
 }
 
 /**
- * Fetch image models from Pollinations API
+ * Fetch image models from Pollinations API (with localStorage caching to avoid rate limits)
  */
 async function fetchImageModels() {
+    // Check localStorage cache first (24 hour TTL)
+    const cacheKey = 'pollinationsImageModels';
+    const cacheExpiry = 'pollinationsImageModelsExpiry';
+    const cached = localStorage.getItem(cacheKey);
+    const expiry = localStorage.getItem(cacheExpiry);
+
+    if (cached && expiry && Date.now() < parseInt(expiry)) {
+        try {
+            const models = JSON.parse(cached);
+            availableImageModels = models;
+            console.log(`Image models loaded from cache: ${models.length}`);
+            return;
+        } catch (e) {
+            // Cache corrupted, fetch fresh
+        }
+    }
+
     try {
         // Use gen.pollinations.ai API with key authentication
         const apiKey = PollinationsAPI.DEFAULT_API_KEY;
@@ -229,6 +298,10 @@ async function fetchImageModels() {
         if (!Array.isArray(models) || models.length === 0) {
             throw new Error('Invalid models data received');
         }
+
+        // Cache models for 24 hours
+        localStorage.setItem(cacheKey, JSON.stringify(models));
+        localStorage.setItem(cacheExpiry, String(Date.now() + 24 * 60 * 60 * 1000));
 
         availableImageModels = models;
         console.log('Image models loaded:', models.length);
@@ -531,8 +604,9 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
                 const result = await handleToolCall(toolCall, chatHistory, settings, generateRandomSeed);
                 if (result.images) {
                     images.push(...result.images);
+                    console.log('🖼️ Tool result images:', result.images?.length || 0);
+                    console.log('🖼️ FULL URL from tool:', result.images[0]?.url);
                 }
-                console.log('🖼️ Tool result images:', result.images?.length || 0);
             }
 
             // Build a TEMPORARY history for the follow-up call only
@@ -564,6 +638,9 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
 
             // Now get a proper text response from the model
             // The model will see that the tool was executed and respond naturally
+            // Add delay to avoid rate limiting between calls (15s refill rate)
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
             let finalText = '';
             try {
                 finalText = await getFinalResponseAfterTools(model, systemPrompt, tempHistoryForFollowUp, settings, generateRandomSeed);
@@ -574,13 +651,14 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
                 finalText = assistantMessage.content || "There you go.";
             }
 
-            // Return response with images
+            // Return response with images (apply URL sanitizer as safety net)
             // NOTE: The main.js will add the final text to chatHistory as a normal assistant message
-            console.log('🖼️ Returning', images.length, 'images to UI');
-            console.log('🖼️ Image URLs:', images.map(img => img.url?.substring(0, 80) + '...'));
+            const sanitizedImages = sanitizeImageArray(images);
+            console.log('🖼️ Returning', sanitizedImages.length, 'images to UI');
+            console.log('🖼️ Image URLs:', sanitizedImages.map(img => img.url?.substring(0, 80) + '...'));
             return {
                 text: finalText,
-                images: images
+                images: sanitizedImages
             };
         } else {
             // Regular text response - but check if model outputted tool call as text
@@ -623,7 +701,7 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
 
                             return {
                                 text: content,
-                                images: result.images
+                                images: sanitizeImageArray(result.images)
                             };
                         }
                     }
@@ -673,7 +751,7 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
 
     // Retry logic for rate limiting
     const maxRetries = 3;
-    const retryDelays = [2000, 4000, 6000]; // 2s, 4s, 6s delays
+    const retryDelays = [3000, 8000, 15000]; // 3s, 8s, 15s delays (respect 15s refill rate)
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {

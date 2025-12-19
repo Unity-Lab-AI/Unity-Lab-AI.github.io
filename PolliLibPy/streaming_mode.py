@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Streaming Mode (SSE) - Real-time streaming responses
 Implements the Streaming Mode section from the TODO list
 

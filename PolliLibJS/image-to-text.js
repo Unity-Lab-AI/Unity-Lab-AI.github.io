@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Image-to-Text (Vision) - Analyze images and generate descriptions
  */
 
@@ -187,7 +195,7 @@ async function main() {
     console.log("=".repeat(60));
 
     const vision = new ImageToText();
-    const exampleImageUrl = "https://image.pollinations.ai/prompt/a%20cat%20sitting%20on%20a%20windowsill?width=512&height=512&seed=42";
+    const exampleImageUrl = "https://gen.pollinations.ai/image/a%20cat%20sitting%20on%20a%20windowsill?width=512&height=512&seed=42";
 
     console.log("\n1. Analyze Image from URL:");
     console.log("-".repeat(60));

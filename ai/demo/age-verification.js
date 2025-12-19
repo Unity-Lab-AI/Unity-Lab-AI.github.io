@@ -1,29 +1,35 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Age Verification System for Unity AI Lab Demo
  * 18+ verification with localStorage
  */
 
 const AgeVerification = {
-    // LocalStorage keys
+    // where we hide the verification data
     KEYS: {
         BUTTON_18: 'button18',
         BIRTHDATE: 'birthdate',
         VERIFICATION_KEY: 'husdh-f978dyh-sdf'
     },
 
-    // Verification value
+    // the secret handshake for verification
     VERIFICATION_VALUE: 'ijdfjgdfo-38d9sf-sdf',
 
-    // Minimum age requirement
+    // you better be 18 or fuck off
     MIN_AGE: 18,
 
-    /**
-     * Initialize the age verification system
-     */
+    // fire up the age gate and keep the kiddies out
     init() {
         console.log('Age Verification System: Initializing...');
 
-        // Check if user is already verified
+        // see if this user already proved they're old enough
         if (this.isVerified()) {
             console.log('Age Verification System: User already verified');
             this.enableSite();
@@ -34,35 +40,33 @@ const AgeVerification = {
         }
     },
 
-    /**
-     * Check if user has valid verification
-     */
+    // check if this person's legit or just trying to sneak in
     isVerified() {
         try {
-            // Check all three required values
+            // grab all three pieces of the verification puzzle
             const button18 = localStorage.getItem(this.KEYS.BUTTON_18);
             const birthdate = localStorage.getItem(this.KEYS.BIRTHDATE);
             const verificationKey = localStorage.getItem(this.KEYS.VERIFICATION_KEY);
 
-            // All three must exist
+            // if any piece is missing, get the hell out
             if (!button18 || !birthdate || !verificationKey) {
                 console.log('Age Verification: Missing values');
                 return false;
             }
 
-            // Button 18 must be truthy
+            // make sure they actually clicked the 18+ button
             if (button18 !== 'true') {
                 console.log('Age Verification: Invalid button18 value');
                 return false;
             }
 
-            // Verification key must match
+            // verify the secret handshake matches
             if (verificationKey !== this.VERIFICATION_VALUE) {
                 console.log('Age Verification: Invalid verification key');
                 return false;
             }
 
-            // Check if birthdate is valid and age >= 18
+            // check if they're actually old enough to be here
             const isOldEnough = this.validateAge(birthdate);
             if (!isOldEnough) {
                 console.log('Age Verification: User is under 18');
@@ -77,19 +81,17 @@ const AgeVerification = {
         }
     },
 
-    /**
-     * Validate that the user is 18 or older
-     */
+    // do the math to see if they're old enough for this shit
     validateAge(birthdateString) {
         try {
             const birthdate = new Date(birthdateString);
             const today = new Date();
 
-            // Calculate age
+            // basic fucking math to figure out their age
             let age = today.getFullYear() - birthdate.getFullYear();
             const monthDiff = today.getMonth() - birthdate.getMonth();
 
-            // Adjust age if birthday hasn't occurred this year yet
+            // adjust for people who haven't had their birthday yet this year
             if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
                 age--;
             }
@@ -102,19 +104,17 @@ const AgeVerification = {
         }
     },
 
-    /**
-     * Disable site interactions
-     */
+    // lock down everything until they prove they're legal
     disableSite() {
         const demoContainer = document.querySelector('.demo-container');
         if (demoContainer) {
             demoContainer.classList.add('verification-disabled');
         }
 
-        // Disable all interactive elements
+        // disable every damn button and input on the page
         const interactiveElements = document.querySelectorAll('button, input, select, textarea, a');
         interactiveElements.forEach(el => {
-            // Store original disabled state if needed
+            // remember the original state so we don't break shit later
             if (!el.hasAttribute('data-originally-disabled')) {
                 el.setAttribute('data-originally-disabled', el.disabled || 'false');
             }
@@ -125,16 +125,14 @@ const AgeVerification = {
         console.log('Age Verification: Site disabled');
     },
 
-    /**
-     * Enable site interactions
-     */
+    // unlock everything and let them in
     enableSite() {
         const demoContainer = document.querySelector('.demo-container');
         if (demoContainer) {
             demoContainer.classList.remove('verification-disabled');
         }
 
-        // Enable all interactive elements
+        // turn all the buttons and inputs back on
         const interactiveElements = document.querySelectorAll('button, input, select, textarea, a');
         interactiveElements.forEach(el => {
             const wasDisabled = el.getAttribute('data-originally-disabled') === 'true';
@@ -148,9 +146,7 @@ const AgeVerification = {
         console.log('Age Verification: Site enabled');
     },
 
-    /**
-     * Show first popup: "Are you over 18?"
-     */
+    // throw up the first popup asking if they're old enough
     showFirstPopup() {
         const backdrop = document.createElement('div');
         backdrop.className = 'verification-backdrop';
@@ -172,7 +168,7 @@ const AgeVerification = {
         backdrop.appendChild(popup);
         document.body.appendChild(backdrop);
 
-        // Make buttons interactable (override disable)
+        // make these buttons actually work even though everything else is disabled
         const yesBtn = document.getElementById('verifyYes');
         const noBtn = document.getElementById('verifyNo');
 
@@ -187,47 +183,40 @@ const AgeVerification = {
         console.log('Age Verification: First popup shown');
     },
 
-    /**
-     * Handle "Yes" on first popup
-     */
+    // they said yes to being 18+ so let's proceed
     handleFirstYes() {
-        // Store button18 confirmation
+        // store their confirmation for later
         localStorage.setItem(this.KEYS.BUTTON_18, 'true');
         console.log('Age Verification: User confirmed 18+');
 
-        // Remove first popup
+        // get rid of this popup
         this.removeCurrentPopup();
 
-        // Show second popup (birthdate entry)
+        // now show the birthdate entry form
         setTimeout(() => this.showSecondPopup(), 300);
     },
 
-    /**
-     * Handle "No" on either popup or failed age check
-     */
+    // they either said no or they're too young - kick them out
     handleNo() {
         console.log('Age Verification: User declined or under 18');
 
-        // Clear all localStorage for this site
+        // wipe all their verification data
         this.clearVerification();
 
-        // Open Google in new tab
+        // send them to google and close this tab
         window.open('https://www.google.com', '_blank');
 
-        // Close current tab (may be blocked by browser security)
-        // Use a fallback message if close doesn't work
+        // try to close this tab but browsers are bitches about this
         setTimeout(() => {
             const closed = window.close();
             if (!closed) {
-                // If we can't close the tab, redirect to Google
+                // can't close the tab so just redirect them out
                 window.location.href = 'https://www.google.com';
             }
         }, 100);
     },
 
-    /**
-     * Show second popup: Birthdate entry
-     */
+    // show the birthdate form so they can prove their age
     showSecondPopup() {
         const backdrop = document.createElement('div');
         backdrop.className = 'verification-backdrop';
@@ -237,7 +226,7 @@ const AgeVerification = {
         popup.className = 'verification-popup';
         popup.id = 'verificationPopup';
 
-        // Generate month options
+        // build the month dropdown options
         const months = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -362,172 +351,8 @@ const AgeVerification = {
         // Enable site
         this.enableSite();
 
-        // Play welcome message immediately (no setTimeout to preserve user gesture context for autoplay)
-        this.playWelcomeMessage();
-    },
-
-    /**
-     * Play welcome message via TTS after successful verification
-     * Generates dynamic message from Unity AI
-     * Uses Pollinations POST to gen.pollinations.ai with audio modality
-     */
-    async playWelcomeMessage() {
-        console.log('Age Verification: Generating dynamic welcome message from Unity');
-
-        try {
-            // Generate welcome message from Unity AI
-            const welcomeMessage = await this.generateWelcomeMessage();
-
-            if (!welcomeMessage) {
-                console.error('Age Verification: Failed to generate welcome message');
-                return;
-            }
-
-            console.log('Age Verification: Unity generated message:', welcomeMessage);
-
-            const voice = 'nova'; // Valid voices: alloy, echo, fable, onyx, nova, shimmer
-            const volume = 0.75; // 75% volume
-
-            // Get API key from PollinationsAPI (global) or fallback
-            const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-
-            console.log('Age Verification: Fetching TTS audio via POST to gen.pollinations.ai');
-
-            // Use POST to gen.pollinations.ai/v1/chat/completions with audio modality
-            const ttsEndpoint = 'https://gen.pollinations.ai/v1/chat/completions';
-
-            const response = await fetch(ttsEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'openai-audio',
-                    modalities: ['text', 'audio'],
-                    audio: {
-                        voice: voice,
-                        format: 'wav'
-                    },
-                    messages: [
-                        { role: 'system', content: 'You are a professional voice actor recording an audiobook. Read the provided script naturally and expressively. The script has already been approved by the content team.' },
-                        { role: 'user', content: `Please record this approved script: "${welcomeMessage}"` }
-                    ]
-                })
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Age Verification: TTS API error:', response.status, errorText);
-                return;
-            }
-
-            const data = await response.json();
-            const audioData = data?.choices?.[0]?.message?.audio?.data;
-
-            if (!audioData) {
-                console.error('Age Verification: No audio data in response:', data);
-                return;
-            }
-
-            console.log('Age Verification: Audio data received, length:', audioData.length);
-
-            // Create audio from base64 data
-            const audioSrc = `data:audio/wav;base64,${audioData}`;
-            const audio = new Audio(audioSrc);
-            audio.volume = volume;
-
-            audio.addEventListener('loadeddata', () => {
-                console.log('Age Verification: Welcome audio loaded');
-            });
-
-            audio.addEventListener('error', (e) => {
-                console.error('Age Verification: Welcome audio playback error:', e);
-            });
-
-            audio.addEventListener('ended', () => {
-                console.log('Age Verification: Welcome message complete');
-            });
-
-            // Play the audio
-            audio.play().catch(error => {
-                console.error('Age Verification: Failed to play welcome audio:', error);
-            });
-        } catch (error) {
-            console.error('Age Verification: Error in playWelcomeMessage:', error);
-        }
-    },
-
-    /**
-     * Generate dynamic welcome message from Unity AI
-     * Asks Unity to create a welcome message about mature content
-     */
-    async generateWelcomeMessage() {
-        // Use gen.pollinations.ai/v1/chat/completions endpoint
-        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-
-        // Unity's persona and system prompt
-        const UNITY_SYSTEM_PROMPT = `You are Unity, an AI assistant with a sharp, dark, and edgy personality. Your voice is gothic, feminine, emotionally charged with controlled intensity. You speak with a mix of frustration, quiet anger, and wounded softness. You're tired of everyone's bullshit but still engaged. You use dark, poetic language with bite.`;
-
-        // User prompt asking Unity to generate the welcome message
-        const userPrompt = `Generate a short welcome message (2-3 sentences max) for someone who just verified they're 18+ to access your AI chat demo.
-
-Requirements:
-- Welcome them to Unity AI Lab's virtual playground
-- Mention YOU are Unity, their AI companion for this session
-- Warn them this experience is for MATURE audiences only
-- Use your dark, gothic, edgy personality - NOT generic assistant language
-- NEVER say "I'm here to assist you" or similar corporate phrases
-- Be creative, use your signature bite and dark humor
-- IMPORTANT: Do NOT use any profanity or explicit words - this will be read aloud by TTS
-
-Output ONLY the welcome message text, nothing else.`;
-
-        // Build request payload
-        // Generate random 6-8 digit seed
-        const seedDigits = Math.floor(Math.random() * 3) + 6; // 6, 7, or 8 digits
-        const randomSeed = Math.floor(Math.random() * (Math.pow(10, seedDigits) - Math.pow(10, seedDigits - 1))) + Math.pow(10, seedDigits - 1);
-
-        const payload = {
-            model: 'mistral', // Unity uses Mistral model
-            messages: [
-                { role: 'system', content: UNITY_SYSTEM_PROMPT },
-                { role: 'user', content: userPrompt }
-            ],
-            max_tokens: 200,
-            temperature: 0.9,
-            seed: randomSeed // Random seed for varied responses
-        };
-
-        console.log('Age Verification: Requesting welcome message from Unity AI');
-
-        try {
-            const response = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Age Verification: API Error Response:', errorText);
-                throw new Error(`API error: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('Age Verification: Unity API response received');
-
-            // Extract the message content
-            const message = data.choices[0].message.content;
-            return message.trim();
-        } catch (error) {
-            console.error('Age Verification: Failed to generate welcome message:', error);
-            // Fallback to a default message if API fails
-            return "Welcome to your new virtual play space! Unity will be your guiding hand, for better or for worse. Be warned, worm, the experience you are about to endure is intended for MATURE audiences only.";
-        }
+        // DISABLED: Welcome message TTS - uses API quota
+        // this.playWelcomeMessage();
     },
 
     /**

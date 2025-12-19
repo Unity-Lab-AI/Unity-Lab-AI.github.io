@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
   /* ─── Cloudflare‑only setup (no VPS) ───────────────────────────── */
   const USE_LOCAL_FALLBACK = false;              // set true only for offline dev

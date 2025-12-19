@@ -1,6 +1,13 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Gothic Theme - Main Initialization
-// Cross-Browser Compatible - Modular Version
+// main init - boot this shit up
 // ===================================
 
 import { initPolyfills } from './polyfills.js';
@@ -14,33 +21,31 @@ import { initMobileMenu } from './mobile-menu.js';
 import { enhanceRedStreaks } from './red-streaks.js';
 
 // ===================================
-// Global Error Handlers (Prevent Browser Crashes)
+// catch errors before they murder the page
 // ===================================
 window.addEventListener('error', function(event) {
     console.error('Global error caught:', event.error);
-    // Prevent the error from crashing the page
     event.preventDefault();
     return true;
 });
 
 window.addEventListener('unhandledrejection', function(event) {
     console.error('Unhandled promise rejection:', event.reason);
-    // Prevent the unhandled promise from crashing the page
     event.preventDefault();
 });
 
 // ===================================
-// Resize handler (throttled)
+// resize handler - throttled so it doesn't choke
 // ===================================
 (function() {
     var resizeTimer;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
-            // Re-initialize features that depend on viewport size
+            // reinit viewport-dependent shit
             var viewport = getViewportSize();
 
-            // Refresh AOS on resize if available
+            // refresh AOS if it exists
             if (typeof AOS !== 'undefined' && viewport.width >= 768) {
                 AOS.refresh();
             }
@@ -49,11 +54,11 @@ window.addEventListener('unhandledrejection', function(event) {
 })();
 
 // ===================================
-// Function to initialize all features once DOM is ready
+// boot everything when DOM is ready
 // ===================================
 function initializeAllFeatures() {
     try {
-        // Initialize AOS if available
+        // boot AOS if it's loaded
         if (typeof AOS !== 'undefined') {
             try {
                 AOS.init({
@@ -62,7 +67,7 @@ function initializeAllFeatures() {
                     once: true,
                     mirror: false,
                     disable: function() {
-                        // Disable on mobile devices with limited performance
+                        // mobile gets no animations - too damn slow
                         return window.innerWidth < 768;
                     }
                 });
@@ -71,10 +76,10 @@ function initializeAllFeatures() {
             }
         }
 
-        // Initialize notification styles (must be done before form validation)
+        // notification styles first - forms need this
         initNotificationStyles();
 
-        // Initialize all interactive features with individual error handling
+        // fire up all the interactive shit
         safeInit('Navbar', initNavbar);
         safeInit('Smooth Scroll', initSmoothScroll);
         safeInit('Scroll Indicator', initScrollIndicator);
@@ -82,7 +87,7 @@ function initializeAllFeatures() {
         safeInit('Form Validation', initFormValidation);
         safeInit('Hover Effects', initHoverEffects);
 
-        // Skip smoke effect in headless browsers (test environments) to prevent crashes
+        // skip smoke in headless - it crashes those dumb test browsers
         var isHeadless = /HeadlessChrome/.test(navigator.userAgent);
         if (!isHeadless) {
             safeInit('Smoke Effect', initSmokeEffect);
@@ -91,7 +96,7 @@ function initializeAllFeatures() {
         safeInit('Mobile Menu', initMobileMenu);
         safeInit('Throttled Scroll', initThrottledScroll);
 
-        // Initialize red streaks enhancement
+        // red streaks setup
         enhanceRedStreaks();
     } catch (error) {
         console.error('Error initializing features:', error);
@@ -99,21 +104,20 @@ function initializeAllFeatures() {
 }
 
 // ===================================
-// Wait for DOM to be ready
+// wait for DOM
 // ===================================
 document.addEventListener('DOMContentLoaded', function() {
-    // Make page visible after a short delay (FOUC prevention fallback)
+    // delay makes page visible - prevents that ugly flash
     setTimeout(function() {
         document.body.classList.add('loaded');
     }, 100);
 
-    // Initialize all features regardless of environment
-    // Tests need JavaScript to verify interactive functionality
+    // boot everything - yeah even in test environments
     initializeAllFeatures();
 });
 
 // ===================================
-// Console Message
+// console branding
 // ===================================
-console.log('%c🧠 UnityAILab 🧠', 'color: #dc143c; font-size: 24px; font-weight: bold;');
+console.log('%cUnityAILab', 'color: #dc143c; font-size: 24px; font-weight: bold;');
 console.log('%cPushing AI to its limits...', 'color: #cccccc; font-size: 14px;');

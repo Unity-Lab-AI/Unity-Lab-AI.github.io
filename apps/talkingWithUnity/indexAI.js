@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // Unity Voice Chat - Direct Interface
 // This file provides minimal initialization for the direct voice chat interface
 // Main functionality is handled by app.js

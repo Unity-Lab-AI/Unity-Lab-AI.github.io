@@ -1,4 +1,10 @@
 #!/bin/bash
+# Unity AI Lab
+# Creators: Hackall360, Sponge, GFourteen
+# https://www.unityailab.com
+# unityailabcontact@gmail.com
+# Version: v2.1.5
+#
 # Automatic cache-busting script
 # Updates version numbers in index.html based on git commit hash
 

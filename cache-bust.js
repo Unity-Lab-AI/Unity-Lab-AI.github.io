@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Post-Build Cache Busting Script
  * Ensures aggressive cache invalidation for GitHub Pages deployment
  *

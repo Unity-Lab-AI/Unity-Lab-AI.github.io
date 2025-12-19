@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Voice/Audio Playback Module
  * Unity AI Lab Demo Page
  *
@@ -158,17 +166,27 @@ async function playNextVoiceChunk(settings, generateRandomSeed, retryCount = 0, 
             })
         });
 
-        // Handle rate limiting (429) - wait for the time specified by API
+        // Handle rate limiting (429) - wait and retry with exponential backoff
         if (response.status === 429) {
+            const MAX_RETRIES = 3;
+            if (retryCount >= MAX_RETRIES) {
+                console.warn(`TTS rate limited ${MAX_RETRIES} times, skipping chunk`);
+                playNextVoiceChunk(settings, generateRandomSeed);
+                return;
+            }
+
             let waitTime = 15000; // Default 15 seconds (rate limit refill time)
             try {
                 const errorData = await response.json();
                 if (errorData.retryAfterSeconds) {
-                    waitTime = (errorData.retryAfterSeconds + 1) * 1000; // Add 1s buffer
+                    waitTime = (errorData.retryAfterSeconds + 1) * 1000;
                 }
             } catch {}
+            // Add exponential backoff multiplier
+            waitTime = waitTime * Math.pow(1.5, retryCount);
+            console.log(`TTS rate limited, retry ${retryCount + 1}/${MAX_RETRIES} in ${Math.round(waitTime/1000)}s`);
             await new Promise(resolve => setTimeout(resolve, waitTime));
-            return playNextVoiceChunk(settings, generateRandomSeed, 0, currentChunk); // Reset retry count
+            return playNextVoiceChunk(settings, generateRandomSeed, retryCount + 1, currentChunk);
         }
 
         if (!response.ok) {

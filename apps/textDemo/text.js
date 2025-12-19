@@ -1,3 +1,11 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // Text Chat Demo - JavaScript
 // Unity AI Lab - AI Text Chat Interface
 
@@ -158,12 +166,12 @@ async function fetchImageModels() {
 }
 
 // Generate image from prompt (uncensored - safe=false)
-// Uses image.pollinations.ai which works directly in <img src=""> without auth
+// Uses gen.pollinations.ai/image/ endpoint per official docs
 function generateImageUrl(prompt) {
   const imageModel = imageModelSelect.value || 'flux';
   const encodedPrompt = encodeURIComponent(prompt);
   const seed = Math.floor(Math.random() * 1000000);
-  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
+  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
 }
 
 // Store for generated images to insert after sanitization
@@ -364,7 +372,6 @@ async function sendChatMessage(prompt, retryCount = 0) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Parse JSON response from OpenAI-compatible API
     const data = await response.json();
     let aiResponse = data?.choices?.[0]?.message?.content || '';
 

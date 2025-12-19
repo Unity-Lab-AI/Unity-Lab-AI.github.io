@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 PolliLibPy - Python Library for Pollinations.AI
 ==============================================
 
@@ -25,7 +33,7 @@ Modules:
     - retry_backoff: Exponential backoff retry logic
 """
 
-__version__ = "1.0.0"
+__version__ = "v2.1.5"
 __author__ = "Unity AI Lab"
 __license__ = "MIT"
 

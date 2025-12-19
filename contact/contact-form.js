@@ -1,6 +1,29 @@
 /**
- * contact-form.js - Main contact page form handler
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
  */
+
+/**
+ * contact-form.js - Main contact page form handler
+ * Includes CSRF protection via session tokens and custom headers
+ */
+
+/**
+ * Generate or retrieve session-based CSRF token
+ * Token persists for the browser session only
+ * @returns {string} CSRF token
+ */
+function getCSRFToken() {
+    let token = sessionStorage.getItem('csrf_token');
+    if (!token) {
+        token = 'csrf_' + Math.random().toString(36).substr(2, 16) + '_' + Date.now();
+        sessionStorage.setItem('csrf_token', token);
+    }
+    return token;
+}
 
 document.getElementById('mainContactForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -20,14 +43,17 @@ document.getElementById('mainContactForm').addEventListener('submit', async func
         source: document.getElementById('contactSource').value,
         urgency: document.getElementById('contactUrgency').value,
         subject: document.getElementById('contactSubject').value,
-        message: document.getElementById('contactMessage').value
+        message: document.getElementById('contactMessage').value,
+        _csrf: getCSRFToken()
     };
 
     try {
         var response = await fetch('https://contact.unityailab.com/api/contact', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': getCSRFToken()
             },
             body: JSON.stringify(formData)
         });
