@@ -90,7 +90,9 @@ function shouldExclude(itemPath, itemName) {
   }
 
   // Check if it's a hidden file/folder (starts with .)
-  if (itemName.startsWith('.') && itemName !== '.htaccess' && itemName !== '_headers') {
+  // Allow .htaccess, _headers, .nojekyll, and .claude.zip (download file)
+  const allowedDotFiles = ['.htaccess', '_headers', '.nojekyll', '.claude.zip'];
+  if (itemName.startsWith('.') && !allowedDotFiles.includes(itemName)) {
     return true;
   }
 
