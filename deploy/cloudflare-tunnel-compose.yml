@@ -1,0 +1,73 @@
+# Cloudflare-Tunnel-fronted admin portal stack.
+# Use INSTEAD of the main docker-compose.yml when running on a VPS that you DON'T want
+# to expose to the public internet. The Cloudflare Tunnel daemon connects OUT to
+# Cloudflare and routes inbound traffic for `admin.unityailab.com` to the backend
+# without ever opening port 80/443 on the VPS.
+#
+# Setup:
+#   1. Create the tunnel (founder, one-time): `cloudflared tunnel create admin-portal`
+#   2. Save the credentials JSON to deploy/cloudflared/<TUNNEL_ID>.json
+#   3. Configure DNS: `cloudflared tunnel route dns admin-portal admin.unityailab.com`
+#   4. Set TUNNEL_TOKEN env var (from `cloudflared tunnel token admin-portal`)
+#   5. `docker compose -f deploy/cloudflare-tunnel-compose.yml up -d`
+#
+# vs the main docker-compose.yml (which includes Caddy for direct VPS exposure):
+#   - Cloudflare Tunnel: no firewall holes, no Caddy needed, all TLS handled by Cloudflare
+#   - Caddy: works without Cloudflare, requires open ports 80/443
+# Pick one based on your network setup.
+
+services:
+  server:
+    build: ..
+    image: unity-admin-portal:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: "0.0.0.0"
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-https://admin.unityailab.com}"
+      DATABASE_URL: "${DATABASE_URL:-sqlite:///app/server/data/prod.db}"
+      DEV_AUTH_BYPASS: "false"
+      ADMIN_CLAIM_OPEN: "${ADMIN_CLAIM_OPEN:-false}"
+      JWT_SIGNING_KEY: "${JWT_SIGNING_KEY}"
+      JWT_ISSUER: "admin.unityailab.com"
+      JWT_AUDIENCE: "admin.unityailab.com"
+      CSRF_COOKIE_SECRET: "${CSRF_COOKIE_SECRET}"
+      WEBAUTHN_RP_ID: "admin.unityailab.com"
+      WEBAUTHN_ORIGIN: "https://admin.unityailab.com"
+      FILE_STORAGE_KIND: "${FILE_STORAGE_KIND:-local}"
+      FILE_STORAGE_LOCAL_PATH: "/app/server/data/uploads"
+      R2_ENDPOINT: "${R2_ENDPOINT:-}"
+      R2_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID:-}"
+      R2_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY:-}"
+      R2_BUCKET: "${R2_BUCKET:-}"
+      GITHUB_APP_ID: "${GITHUB_APP_ID:-}"
+      GITHUB_APP_PRIVATE_KEY: "${GITHUB_APP_PRIVATE_KEY:-}"
+      GITHUB_APP_INSTALLATION_ID: "${GITHUB_APP_INSTALLATION_ID:-}"
+      GITHUB_WEBHOOK_HMAC_SECRET: "${GITHUB_WEBHOOK_HMAC_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+    volumes:
+      - server-data:/app/server/data
+      - server-keys:/app/server/local-keys
+    expose:
+      - "3000"
+    networks:
+      - portal
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: "${TUNNEL_TOKEN}"
+    depends_on:
+      - server
+    networks:
+      - portal
+
+volumes:
+  server-data:
+  server-keys:
+
+networks:
+  portal:

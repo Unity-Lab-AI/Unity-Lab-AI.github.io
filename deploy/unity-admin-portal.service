@@ -1,0 +1,38 @@
+# systemd unit for running the Unity AI Lab admin portal directly on a VPS (no Docker).
+# Place at /etc/systemd/system/unity-admin-portal.service
+# Adjust User, WorkingDirectory, EnvironmentFile to match your host.
+#
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now unity-admin-portal
+#   sudo systemctl status unity-admin-portal
+#   sudo journalctl -u unity-admin-portal -f
+
+[Unit]
+Description=Unity AI Lab Admin Portal (Unified Server)
+After=network.target
+
+[Service]
+Type=simple
+User=unity
+Group=unity
+WorkingDirectory=/srv/unity-admin-portal
+EnvironmentFile=/srv/unity-admin-portal/server/.env
+ExecStart=/usr/bin/node node_modules/.bin/tsx server/src/index.ts
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/unity-admin-portal/server/data /srv/unity-admin-portal/server/local-keys
+LimitNOFILE=65536
+
+# Optional: log to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=unity-admin-portal
+
+[Install]
+WantedBy=multi-user.target

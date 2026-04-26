@@ -1,0 +1,53 @@
+name: Deploy marketing site to Cloudflare Pages
+
+# Auto-deploys the marketing site (NOT the admin backend) to Cloudflare Pages on every push to main.
+# Per Docs/CLOUDFLARE_DEPLOYMENT.md.
+#
+# REQUIRED REPO SECRETS (set once at github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/settings/secrets):
+#   CLOUDFLARE_API_TOKEN     — Cloudflare API token with Pages:Edit permission
+#   CLOUDFLARE_ACCOUNT_ID    — Cloudflare account ID (visible in dashboard URL)
+#
+# Pages project name (configured in Cloudflare dashboard, not here): unityailab
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build + deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build static site
+        run: npm run build:static
+
+      - name: Verify dist excludes server/, Docs/, etc.
+        run: |
+          # Belt-and-suspenders — even though copy-assets.js excludes these, double-check
+          for forbidden in server data Docs deploy proxy Dockerfile docker-compose.yml; do
+            if [ -e "dist/$forbidden" ]; then
+              echo "::error::dist/$forbidden was included in the build — leak risk"
+              exit 1
+            fi
+          done
+          echo "✓ no admin-portal artefacts in dist/"
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=unityailab --branch=main

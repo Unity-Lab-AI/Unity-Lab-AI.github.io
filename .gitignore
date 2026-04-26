@@ -12,11 +12,46 @@ test-output.log
 standalone-test-results.log
 *.log
 
-# Claude personal
-.claude/
-CLAUDE.md
+# Claude — workflow infrastructure (.claude/ + CLAUDE.md) IS committed.
+# Per-machine secrets that may end up inside .claude/ stay out via these targeted rules:
+.claude/.env
+.claude/.setup-complete
+.claude/user.json
+.claude/user-context/
+.claude/proxy/.bot.json
+.claude/proxy/.bot.*.json.bak
+.claude/proxy/unity-proxy-*.js
+.claude/proxy/node_modules/
 
 # Local development launchers (don't deploy these)
 START_LOCAL.html
 START_SERVER.bat
 START_SERVER.sh
+
+# Admin portal backend — secrets, env, build output, DB, logs
+server/.env
+server/.env.local
+server/.env.*.local
+server/dist/
+server/data/
+server/*.db
+server/*.db-journal
+server/*.db-wal
+server/*.db-shm
+server/logs/
+server/coverage/
+server/.cache/
+
+# Belt-and-suspenders: any DB / data dir at repo root (in case env paths drift)
+/.env
+/.env.local
+/data/
+/*.db
+/*.db-journal
+/*.db-wal
+/*.db-shm
+
+# Admin portal — local dev artifacts that should never deploy
+server/local-keys/
+server/sessions.db
+admin/dev-config.local.js

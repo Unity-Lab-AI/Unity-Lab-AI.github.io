@@ -1,0 +1,330 @@
+/* Dashboard layout: top bar + 3-column grid.
+   Uses 100dvh (dynamic viewport height) instead of 100vh so the layout fits within the
+   actual visible viewport — Windows taskbar / mobile URL bar / on-screen keyboards are
+   excluded automatically. min-height: 0 on grid + flex children prevents the chat pane
+   from overflowing past the viewport when message content is tall.
+
+   --bottom-safe-area: hard pixel reserve at the bottom of the browser window. Even when
+   100dvh reports a height that includes area "behind" the Windows taskbar (browser
+   maximized past taskbar bounds, fullscreen mode, etc.), this padding guarantees the
+   composer stays clear of the taskbar. Tunable — increase if your taskbar is larger
+   (e.g. high DPI scaling at 200% may want 80–96px). */
+
+:root {
+  --bottom-safe-area: 60px;
+}
+
+body {
+  min-height: 100dvh;
+  padding-bottom: var(--bottom-safe-area);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  height: 48px;
+  flex-shrink: 0;
+}
+.topbar-left, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+.env-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg-3);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--warning);
+  border: 1px solid var(--border);
+}
+.user-info { color: var(--text-muted); font-size: 0.9rem; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  height: calc(100dvh - 48px - var(--bottom-safe-area));
+  min-height: 0;
+}
+
+.sidebar-left, .sidebar-right {
+  background: var(--bg-1);
+  overflow-y: auto;
+  padding: 16px;
+  min-height: 0;
+}
+.sidebar-left { border-right: 1px solid var(--border); }
+.sidebar-right { border-left: 1px solid var(--border); }
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.sidebar-section {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.room-list, .bot-list, .activity-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.room-list li, .bot-list li {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+.room-list li:hover, .bot-list li:hover {
+  background: var(--bg-3);
+}
+.room-list li.active {
+  background: var(--accent-dim);
+  color: var(--text);
+}
+.room-kind, .bot-role {
+  font-size: 0.7rem;
+  background: var(--bg-2);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.bot-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+.bot-status.online { background: var(--success); }
+.bot-status.offline { background: var(--text-dim); }
+
+.bot-row-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bot-delete,
+.room-delete {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 120ms, border-color 120ms, background 120ms;
+}
+.bot-delete:hover,
+.room-delete:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(255, 77, 77, 0.1);
+}
+
+.activity-feed li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.activity-feed li:last-child { border-bottom: none; }
+.activity-feed .ts {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  margin-right: 6px;
+}
+
+.account-actions { display: flex; flex-direction: column; gap: 6px; }
+
+/* Claim window controls */
+.claim-window-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-top: 4px;
+}
+.claim-window-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.claim-window-status .status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+.claim-window-status .status-dot.open { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.claim-window-status .status-dot.closed { background: var(--text-dim); }
+.claim-window-unclaimed {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+
+/* Founder welcome banner */
+.founder-banner {
+  background: linear-gradient(135deg, rgba(255, 51, 102, 0.15), rgba(93, 180, 255, 0.1));
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin: 12px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.founder-banner .text { font-size: 0.9rem; }
+.founder-banner .text strong { color: var(--accent); }
+.founder-banner button { white-space: nowrap; }
+
+/* Chat pane */
+.chat-pane {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-0);
+  min-height: 0;
+  overflow: hidden;
+}
+.chat-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-1);
+  flex-shrink: 0;
+}
+.chat-header h1 { font-size: 1.1rem; margin: 0; }
+.chat-header-right { display: flex; align-items: center; gap: 12px; }
+.presence { color: var(--text-muted); font-size: 0.8rem; }
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.empty-state {
+  margin: auto;
+  color: var(--text-dim);
+  text-align: center;
+}
+.message {
+  padding: 8px 12px;
+  background: var(--bg-1);
+  border-radius: var(--radius);
+  border-left: 2px solid var(--accent-dim);
+}
+.message.bot {
+  border-left-color: var(--info);
+  background: rgba(93, 180, 255, 0.05);
+}
+.message.system {
+  border-left-color: var(--warning);
+  background: rgba(240, 179, 64, 0.05);
+  font-style: italic;
+  color: var(--text-muted);
+}
+.message-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.message-sender { font-weight: 600; color: var(--text); }
+.message-body { white-space: pre-wrap; word-break: break-word; }
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-1);
+  flex-shrink: 0;
+}
+.composer textarea {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-0);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 40px;
+  max-height: 30dvh;
+}
+.composer textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.upload-progress {
+  padding: 6px 20px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.upload-progress progress {
+  flex: 1;
+  height: 6px;
+}
+
+.file-attachment {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.file-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+.file-icon { font-size: 1.1rem; }
+.file-name { font-weight: 600; flex: 1; word-break: break-all; }
+.file-size { font-family: var(--font-mono); font-size: 0.75rem; }

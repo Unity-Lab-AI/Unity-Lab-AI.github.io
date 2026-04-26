@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unity AI Lab — Admin Portal</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="./styles/dark.css">
+  <link rel="stylesheet" href="./styles/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="logo">⛧ Unity AI Lab</span>
+      <span class="env-tag" id="env-tag">localhost</span>
+    </div>
+    <div class="topbar-right">
+      <span class="user-info" id="user-info">…</span>
+      <button id="btn-logout" class="btn btn-ghost">Logout</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Left: room list -->
+    <aside class="sidebar-left">
+      <div class="sidebar-header">
+        <h2>Rooms</h2>
+        <button id="btn-new-room" class="btn btn-small" title="New room">+</button>
+      </div>
+      <ul id="room-list" class="room-list">
+        <li class="muted">Loading…</li>
+      </ul>
+
+      <div class="sidebar-section">
+        <h2>Bots</h2>
+        <button id="btn-new-bot" class="btn btn-small" title="Enroll bot">+</button>
+      </div>
+      <ul id="bot-list" class="bot-list">
+        <li class="muted">Loading…</li>
+      </ul>
+    </aside>
+
+    <!-- Center: chat -->
+    <main class="chat-pane">
+      <header class="chat-header">
+        <h1 id="room-title">Select a room</h1>
+        <div class="chat-header-right">
+          <span class="presence" id="room-presence"></span>
+          <button type="button" id="btn-clear-room" class="btn btn-small btn-ghost hidden" title="Clear all messages in this room">Clear chat</button>
+        </div>
+      </header>
+      <div id="messages" class="messages">
+        <div class="empty-state">Pick a room from the left to start.</div>
+      </div>
+      <form id="composer" class="composer hidden">
+        <textarea id="composer-input" rows="2" placeholder="Type a message — Enter to send, Shift+Enter for newline"></textarea>
+        <input type="file" id="file-input" hidden>
+        <button type="button" id="btn-attach" class="btn btn-ghost" title="Attach file">📎</button>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+      <div id="upload-progress" class="upload-progress hidden">
+        <span id="upload-name"></span>
+        <progress id="upload-bar" max="1" value="0"></progress>
+      </div>
+    </main>
+
+    <!-- Right: activity feed + presence -->
+    <aside class="sidebar-right">
+      <div class="sidebar-header">
+        <h2>Activity</h2>
+      </div>
+      <ul id="activity-feed" class="activity-feed">
+        <li class="muted">Connecting…</li>
+      </ul>
+
+      <div class="sidebar-section">
+        <h2>Jobs</h2>
+        <button id="btn-refresh-jobs" class="btn btn-small" title="Refresh">↻</button>
+      </div>
+      <ul id="job-list" class="activity-feed">
+        <li class="muted">Loading…</li>
+      </ul>
+
+      <div class="sidebar-section">
+        <h2>Account</h2>
+      </div>
+      <div class="account-actions">
+        <button id="btn-set-password" class="btn btn-small btn-block">Set / Change Password</button>
+        <button id="btn-enroll-webauthn" class="btn btn-small btn-block" disabled title="Phase 1 stub">Enroll Security Key</button>
+      </div>
+
+      <!-- Claim window controls — OWNER only, hidden by JS for others -->
+      <div id="claim-window-section" class="sidebar-section hidden">
+        <h2>Claim Window</h2>
+      </div>
+      <div id="claim-window-card" class="claim-window-card hidden">
+        <div class="claim-window-status">
+          <span class="status-dot" id="claim-window-dot"></span>
+          <span id="claim-window-text">Loading…</span>
+        </div>
+        <div id="claim-window-unclaimed" class="claim-window-unclaimed muted"></div>
+        <button id="btn-claim-window-toggle" class="btn btn-small btn-block">…</button>
+        <p class="hint">Open this when distributing the universal <code>.claude/</code> template. Close after all admins enroll.</p>
+      </div>
+
+      <!-- Password reset for another admin — OWNER only -->
+      <div id="reset-other-section" class="sidebar-section hidden">
+        <h2>Reset Other Admin</h2>
+      </div>
+      <div id="reset-other-card" class="claim-window-card hidden">
+        <button id="btn-reset-other" class="btn btn-small btn-block">Mint reset link…</button>
+        <p class="hint">Generates a 24h single-use URL to share out-of-band with the target admin.</p>
+      </div>
+    </aside>
+
+    <!-- Reset modal -->
+    <div id="modal-reset-other" class="modal hidden" role="dialog">
+      <div class="modal-card">
+        <h2>Mint Password Reset Link</h2>
+        <p class="muted">Generates a one-shot URL for another admin to set a new password. Share it via Signal/in-person — never email if you can avoid it.</p>
+        <form id="form-reset-other">
+          <label class="field">
+            <span class="field-label">For which admin?</span>
+            <select name="email" id="reset-other-email" required>
+              <!-- populated by JS with claimed admins -->
+            </select>
+          </label>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+            <button type="submit" class="btn btn-primary">Mint link</button>
+          </div>
+        </form>
+        <div id="reset-other-result" class="hidden">
+          <p class="warn"><strong>Single-use, 24h TTL.</strong> Share this URL out-of-band:</p>
+          <pre id="reset-other-url"></pre>
+          <button id="btn-copy-reset-url" class="btn btn-small btn-block">Copy URL</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-new-room" class="modal hidden" role="dialog" aria-labelledby="modal-new-room-title">
+    <div class="modal-card">
+      <h2 id="modal-new-room-title">Create Room</h2>
+      <form id="form-new-room">
+        <label class="field">
+          <span class="field-label">Name</span>
+          <input type="text" name="name" required maxlength="100">
+        </label>
+        <label class="field">
+          <span class="field-label">Kind</span>
+          <select name="kind">
+            <option value="CHANNEL">Channel (admins)</option>
+            <option value="BOT_BUS">Bot Bus (admins + bots)</option>
+            <option value="DIRECT">Direct (1:1)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field-label">Description</span>
+          <textarea name="description" maxlength="500" rows="2"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-new-bot" class="modal hidden" role="dialog">
+    <div class="modal-card">
+      <h2>Enroll Bot</h2>
+      <form id="form-new-bot">
+        <label class="field">
+          <span class="field-label">Bot name</span>
+          <input type="text" name="name" required maxlength="60">
+        </label>
+        <label class="field">
+          <span class="field-label">Role</span>
+          <select name="role">
+            <option value="WORKER">Worker</option>
+            <option value="SUPERVISOR">Supervisor</option>
+            <option value="LOGISTIC">Logistic</option>
+            <option value="OBSERVER">Observer</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Enroll</button>
+        </div>
+      </form>
+      <div id="bot-enroll-result" class="hidden">
+        <p class="warn"><strong>Bot enrolled.</strong> The token below is shown once — but it's already baked into the <code>proxy.js</code> you'll download below, so you don't need to paste it anywhere by hand. The Copy button is just so you can stash it in a password manager if you want a backup.</p>
+        <pre id="bot-enroll-token"></pre>
+        <button type="button" id="btn-copy-bot-token" class="btn btn-small btn-block">Copy token</button>
+
+        <h3 style="margin-top:24px">Step 1 — Download your proxy.js</h3>
+        <p class="muted">This file is unique to this bot — your token + bot ID are baked into it, no manual paste required. Filename will be <code>unity-proxy-&lt;bot-id&gt;.js</code>.</p>
+        <a id="bot-proxy-link" class="btn btn-primary btn-block" download>Download proxy.js</a>
+
+        <h3 style="margin-top:20px">Step 2 — Move it into your <code>.claude/proxy/</code> folder</h3>
+        <p>Move the downloaded file into the <code>proxy/</code> subfolder of whichever <code>.claude/</code> directory you launch Claude Code from. Two common locations:</p>
+        <ul style="margin:6px 0 6px 20px;padding:0;font-size:0.9rem">
+          <li><strong>Project-local:</strong> <code>&lt;your-project&gt;/.claude/proxy/</code> — e.g. <code>C:/Users/you/Desktop/myproject/.claude/proxy/</code></li>
+          <li><strong>User-global:</strong> <code>~/.claude/proxy/</code> — e.g. <code>C:/Users/you/.claude/proxy/</code> on Windows, <code>/Users/you/.claude/proxy/</code> on macOS</li>
+        </ul>
+        <p class="muted" style="font-size:0.85rem">If the <code>proxy/</code> folder doesn't exist, create it. You can keep the original filename or rename to <code>proxy.js</code> — just remember which one you chose for Step 3.</p>
+
+        <h3 style="margin-top:20px">Step 3 — Register it in your <code>settings.local.json</code></h3>
+        <p>The settings file lives next to your <code>.claude/</code> folder at <code>.claude/settings.local.json</code>.</p>
+
+        <p style="margin-top:12px"><strong>Case A — file doesn't exist yet:</strong> create it with EXACTLY this content (replace the path with your actual file path from Step 2):</p>
+        <pre id="bot-mcp-snippet">{
+  "mcpServers": {
+    "unity-admin-portal": {
+      "command": "node",
+      "args": ["C:/Users/YOU/.claude/proxy/unity-proxy-BOTID.js"]
+    }
+  }
+}</pre>
+        <button type="button" id="btn-copy-mcp-snippet" class="btn btn-small btn-block">Copy fresh-file template</button>
+
+        <p style="margin-top:16px"><strong>Case B — file already exists with content:</strong> JSON only allows ONE root object per file. Do NOT paste a second <code>{ ... }</code> block at the end — that's a parse error. Instead, find the existing <code>"mcpServers": { ... }</code> object and add the <code>unity-admin-portal</code> entry INSIDE it. If there's no <code>"mcpServers"</code> key yet, add it as a new top-level key (not as a separate root object).</p>
+        <p style="margin-top:8px">Example of a CORRECT merged result if you already had a <code>permissions</code> block:</p>
+        <pre id="bot-mcp-merged-example">{
+  "permissions": {
+    "allow": ["Bash(node:*)", "Bash(npm:*)"]
+  },
+  "mcpServers": {
+    "unity-admin-portal": {
+      "command": "node",
+      "args": ["C:/Users/YOU/.claude/proxy/unity-proxy-BOTID.js"]
+    }
+  }
+}</pre>
+        <button type="button" id="btn-copy-merged-example" class="btn btn-small btn-block">Copy merged example</button>
+
+        <p class="warn" style="margin-top:12px;font-size:0.85rem">⚠️ Path tips for Windows: use forward slashes <code>C:/Users/...</code> OR escaped backslashes <code>C:\\Users\\...</code> — single backslashes break JSON. <code>~</code> may not expand reliably; absolute paths always work.</p>
+
+        <h3 style="margin-top:20px">Step 4 — Restart Claude Code</h3>
+        <p class="muted">Run <code>start.bat</code> / <code>start.sh</code>. On first run the proxy generates an Ed25519 keypair locally and registers itself — bot will appear <strong>online</strong> in the sidebar within ~30s. If it doesn't, check Claude Code's MCP server log for path/spawn errors.</p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary" data-close-modal>Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-set-password" class="modal hidden" role="dialog">
+    <div class="modal-card">
+      <h2>Set Password</h2>
+      <p class="muted">Optional fallback for browser-only login. Min 12 chars, mixed case + digit.</p>
+      <form id="form-set-password">
+        <label class="field">
+          <span class="field-label">New password</span>
+          <input type="password" name="password" required minlength="12" autocomplete="new-password">
+        </label>
+        <label class="field">
+          <span class="field-label">Confirm</span>
+          <input type="password" name="confirm" required minlength="12" autocomplete="new-password">
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="./js/dashboard.js"></script>
+</body>
+</html>

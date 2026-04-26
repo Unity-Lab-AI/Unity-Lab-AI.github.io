@@ -1,0 +1,13 @@
+{
+  "name": "unity-proxy-runtime",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Local runtime deps for the Unity AI Lab MCP proxy + companion scripts.",
+  "dependencies": {
+    "@noble/ed25519": "^2.1.0",
+    "@noble/hashes": "^1.5.0",
+    "node-pty": "^1.1.0",
+    "ws": "^8.18.0"
+  }
+}

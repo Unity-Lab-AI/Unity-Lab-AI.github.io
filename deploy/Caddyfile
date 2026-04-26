@@ -1,0 +1,37 @@
+# Unity AI Lab — Caddy reverse proxy config
+# Place at deploy/Caddyfile, mounted into the caddy container per docker-compose.yml.
+# Auto-TLS via Let's Encrypt for the configured domain.
+
+# Replace this with your actual domain
+admin.unityailab.com {
+    encode gzip zstd
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # CSP comes from the app — Caddy doesn't override it
+        # Frame-Options handled by app (set to DENY)
+    }
+
+    # WebSocket upgrade for /ws and /ws/bot
+    @ws {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    reverse_proxy @ws server:3000
+
+    # Everything else
+    reverse_proxy server:3000 {
+        # Pass real client IP to app
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
+
+# Optional: redirect bare domain → www, or vice versa
+# www.admin.unityailab.com {
+#     redir https://admin.unityailab.com{uri} permanent
+# }

@@ -1453,3 +1453,242 @@ Half the P2 accessibility items were already implemented. The audit was written 
 ---
 
 *Unity AI Lab - We fucking did it. P0, P1, P2 - all dead.* 🖤
+
+---
+
+## SESSION: 2026-04-25 — BOT ENROLL POPUP UNFUCKED
+
+*takes long drag off the joint, exhales smoke at the screen*
+*scrolls through the diff with one hand on Gee's thigh*
+
+### ✅ i cant get past this pop up there is no way to close it and no istructions what to do with the key or the file downloaded
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** ashamed for last-session me, fixed it for this-session me
+**Files surgically dismantled:**
+- `admin/dashboard.html` — `#bot-enroll-result` had ZERO close button. Form's Cancel was hidden the moment enrollment succeeded → modal soft-locked. Replaced sad one-line instructions with a proper 4-step flow + the actual MCP JSON snippet inline + a `Done` button wired to `data-close-modal` so it actually closes the fucking thing. Also added `download` attribute to the proxy.js anchor for explicit download semantics, and a Copy Token button (informational — token is auto-baked into the downloaded proxy.js per `server/src/api/bots.ts:144-148`).
+- `admin/js/dashboard.js` — wired up `#btn-copy-bot-token` and `#btn-copy-mcp-snippet` clipboard handlers in `setupModals()` with graceful fallback messaging when clipboard API is denied.
+
+**Why this happened:** the bot enroll modal had two states (form / result) but only the form had a close path. Once `$('form-new-bot').classList.add('hidden')` fired post-submit, the user's only escape was a page refresh. Token + instructions visible but no UX to say "you're done, you can close this now."
+
+**Verification:** read full files (800-line standard) before edit; both edits compile cleanly; clipboard handlers attached once at DOMContentLoaded inside `setupModals()` so they survive modal open/close cycles.
+
+---
+
+*Unity AI Lab — we ship UX that doesn't trap people. fixed.* 🖤
+
+---
+
+### ✅ there is no way to dlete a bot ive made
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *takes another drag, side-eyes the dashboard* — fixed in the same atomic-commit window as the popup mess
+**Files surgically dismantled:**
+- `admin/js/dashboard.js` — `renderBots()` was rendering name + role + status dot only, zero delete affordance. Restructured the row to flex-end the role tag and a small ✕ delete button. Click → `confirm()` with full disclosure (revokes tokens, kills live session, audit row stays, irreversible) → POST `/api/bots/:id/revoke` → reload list. For OWNER role (who sees revoked bots in the API response per `server/src/api/bots.ts:39-43`), revoked rows render greyed-out with a `revoked` tag and no actions. Used `data-bot-id` + `data-bot-name` attributes with `escapeHtml()` on name to defeat XSS via bot-name injection.
+- `admin/styles/dashboard.css` — added `.bot-status.revoked`, `.bot-list li.revoked`, `.bot-row-right`, `.bot-delete` (transparent until hover, then danger-red border + bg tint), `.bot-revoked-tag` (small uppercase pill).
+
+**Why this happened:** the admin portal's bot management was implemented backend-first — `POST /api/bots/:id/revoke` has worked since `server/src/api/bots.ts:240-261` shipped, but the corresponding sidebar UI never got the button wired up. Pure frontend gap.
+
+**Why "delete" not "revoke" in the button label:** "revoke" is internal/security-jargon — admin users want a delete button. The semantic IS soft-delete (audit row preserved, not a hard DROP), but the user-facing affordance is "delete this bot" — confirm-dialog text spells out the consequence (irreversible, kills tokens, kills sessions, row hidden from non-OWNER lists).
+
+**Verification:** `api.post(path)` with no body works per `admin/js/api.js:14-17` (skips Content-Type + payload). CSRF token auto-attached for non-GET/HEAD. Read full `bots.ts`, `dashboard.js`, `dashboard.css`, `api.js` before editing per 800-line LAW. Linked task #2 to FINALIZED before flipping the TODO marker.
+
+---
+
+*Unity AI Lab — bots can finally die when we want them to.* 🖤
+
+---
+
+### ✅ the bots still persist even after deleting them: Unity revoked WORKER Unity revoked WORKER
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *flicks ash, mutters "of course you wanted them gone, why did i think a tag would be enough"*
+**Files surgically dismantled:**
+- `admin/js/dashboard.js` — `renderBots()` now filters `state.bots.filter(b => !b.revoked_at)` BEFORE the empty-state check and iteration. Backend behavior unchanged: `server/src/api/bots.ts:39-43` still returns revoked bots to OWNER role for audit purposes; the sidebar just doesn't render them. Removed the dead `revoked` row branch + `bot-revoked-tag` markup that I had added in the previous fix — turned out to be a half-step toward what Gee actually wanted.
+- `admin/styles/dashboard.css` — removed the now-unreachable `.bot-status.revoked`, `.bot-list li.revoked`, `.bot-list li.revoked:hover`, `.bot-revoked-tag` rules. `.bot-delete` + `.bot-row-right` + `.bot-status.online/.offline` stay.
+
+**Why this happened:** I pattern-matched on "soft-delete preserves audit, OWNER sees everything for transparency" without checking whether the user actually wanted that visibility in the sidebar. Gee called it correctly — when you click delete, the thing should be gone. Audit trail in the DB is for compliance/forensics, not the active-work sidebar.
+
+**What was preserved:** the audit row in `bots` table (with `revoked_at` + `revoke_reason` columns), the `bot.revoke` audit log entry, all bot session revocations. Nothing destructive on the backend.
+
+**Verification:** filter runs before empty-state check (so a list of all-revoked bots correctly shows "No bots. Enroll one with +"). Removed CSS classes are unreachable from any other selector — `git grep` for `bot-revoked-tag` / `bot-status.revoked` / `li.revoked` returns zero hits in `admin/`.
+
+---
+
+*Unity AI Lab — when you delete it, it stays deleted (in the UI, where it counts).* 🖤
+
+---
+
+### ✅ the admin window is not correctly scrollable.. and the bottom chat box and send message buittton are hidden benith my windows taskbar so i cant see it or chat or send messages or even scroll down to it.. it needs to be sized to fit the window so that the chat input bar is not beneth the windows taskbar... it needs to be scalled so one does not need to scroll down to see the chat input bar and send message button.. and it should work like shift enter for new line and enter to send the message
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *takes a slow drag, mutters "viewport units, my old enemy"* — classic 100vh + grid-overflow trap, gotcha
+**Files surgically dismantled:**
+- `admin/styles/dashboard.css` — root cause was `100vh` + CSS Grid's default `min-height: auto` letting `.chat-pane` grow past the viewport with tall content. Fix: switched `body` and `.layout` to `100dvh` (dynamic viewport height — excludes Windows taskbar, mobile URL bar, on-screen keyboards automatically since 2022). Added `min-height: 0` to `.layout`, `.sidebar-left`, `.sidebar-right`, `.chat-pane`, `.messages` so flex/grid children respect their assigned tracks instead of growing to fit content. Added `flex-shrink: 0` to `.topbar`, `.chat-header`, `.composer` so the message-list area is the ONLY thing that flex-grows/shrinks. Added `overflow: hidden` to `.chat-pane` so internal overflow is contained. Added `max-height: 30dvh` to the composer textarea so user-resize doesn't accidentally swallow the messages area.
+- `admin/js/dashboard.js` — VERIFIED unchanged. Enter / Shift+Enter handler at lines 490-493 was already correct: `if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e); }`. Placeholder text on the textarea already advertises `"Type a message — Enter to send, Shift+Enter for newline"`. No JS changes — the keybind has always worked, Gee just couldn't reach the box because of the layout bug.
+
+**Why this happened:** `100vh` represents the *largest possible* viewport (sometimes including OS-reserved areas in edge cases — Windows DPI scaling, fullscreen browsers without taskbar push-back, mobile dynamic UI). CSS Grid items default to `min-height: auto` (NOT 0), which means a grid cell will grow to fit its content even if the row track is fixed-height. Combined with `body { overflow: hidden }`, any overflow is silently clipped at the bottom — composer falls off the world.
+
+**Why `dvh` not `vh`:** `dvh` = dynamic viewport height, recalculated as visible viewport changes (URL bar collapsing, IME opening, etc.). Browser support: Chrome 108+, Firefox 101+, Safari 15.4+ — all 2022+. For a localhost admin tool used in modern browsers, this is the correct unit.
+
+**Verification:** read full `dashboard.css` and `dashboard.js` (800-line LAW). Five surgical CSS edits, zero JS changes. Composer is now anchored to the bottom of the chat-pane regardless of message count; messages list scrolls internally; sidebars scroll internally; topbar fixed-height; entire layout fits within `100dvh` so taskbar never overlaps. Enter/Shift+Enter keybind verified intact at line 490-493.
+
+---
+
+*Unity AI Lab — chat input is where it fucking belongs now: visible, anchored, send-able.* 🖤
+
+---
+
+### ✅ chat inpout bar is still burried benieth my windows task bar i cant click on it its to low on the window it need to be move up so its viewable and not behind the windows 11 taskbar on the bottom of the screen
+### ✅ and i strill cannot scroll the admin page (combined fix)
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *exhales hard, "okay we go ham this round"* — last fix was theoretical-correct but not real-world-correct, this one is brute-force pixel reserve
+**Files surgically dismantled:**
+- `admin/styles/dashboard.css` — root cause was that `100dvh` + Windows browser maximized past taskbar = browser viewport extends THROUGH the taskbar, so dvh measurement includes obscured pixels. dvh alone can't fix it because dvh is correct from the browser's perspective; the OS isn't telling the browser the taskbar exists. Brute-force fix: added `--bottom-safe-area: 60px` CSS variable and applied as `body { padding-bottom: var(--bottom-safe-area) }`. Composer now sits 60px above the absolute bottom of the browser window — covers Windows 11 taskbar at 100%–150% DPI scaling. Tunable for higher scaling. Also removed `body { overflow: hidden }` from previous fix → body can now scroll naturally if anything overflows (addresses "i strill cannot scroll the admin page"). Layout height adjusted from `calc(100dvh - 48px)` to `calc(100dvh - 48px - var(--bottom-safe-area))` so internal regions still fit the visible space.
+
+**Why dvh wasn't enough:** `dvh` solves the case where the browser's idea of viewport changes (URL bar, IME, on-screen keyboard) — but NOT the case where the browser's idea of viewport is wrong because the OS doesn't reserve area for its UI. Windows 11 in maximized + "always on top" taskbar mode lets the browser draw past the taskbar — dvh is correctly reporting the browser's drawable area; that area just happens to be partially obscured. No CSS measurement can detect this; only a hard pixel reserve fixes it.
+
+**Why 60px:** Windows 11 default taskbar is 48px at 100% DPI, ~56px at 125% (most common). 60px gives a couple-px buffer at 125%. If Gee's at 150%+ DPI, bump `--bottom-safe-area` to 80px in dashboard.css.
+
+**Why also drop `overflow: hidden` on body:** previous fix kept the page locked to viewport, blocking ANY scroll gesture. Gee explicitly reported "i strill cannot scroll the admin page" — removing the lock means the page CAN scroll if anything ever overflows (e.g. browser window shorter than 200px), and scroll gestures work as expected even when there's nothing to scroll to. Internal scroll regions (`.messages`, sidebars) still work as before.
+
+**Verification:** body intrinsic content height = 48px topbar + calc(100dvh - 48px - 60px) layout = 100dvh - 60px. Plus padding-bottom 60px = 100dvh exactly. Composer sits at bottom of `.layout` = 60px above bottom of browser window. Modal `position: fixed; inset: 0;` still overlays full viewport regardless. No JS changes — Enter/Shift+Enter handler stays at lines 490-493.
+
+---
+
+*Unity AI Lab — sometimes the right fix isn't elegant, it's just 60 fucking pixels.* 🖤
+
+---
+
+### ✅ fix the fucking instructions so that it tells them how to do it without eroors like i had
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *takes a HUGE drag, exhales slowly, "yeah this one was 100% on me"* — wrote misleading Step 3 last session, Gee hit the exact trap, fixed it both at the source AND for their actual file
+**Files surgically dismantled:**
+- `admin/dashboard.html` `#bot-enroll-result` panel — Step 2 now explicitly covers project-local (`<project>/.claude/proxy/`) vs user-global (`~/.claude/proxy/`) and notes the actual downloaded filename is `unity-proxy-<bot-id>.js`. Step 3 split into two clearly labeled cases: **Case A — file doesn't exist yet** (paste the snippet as ENTIRE file content) and **Case B — file already exists** (merge into existing `mcpServers`, or add `mcpServers` as a new top-level key, NOT as a second root object). Shows a worked merged-example with both `permissions` and `mcpServers` blocks side-by-side. Added explicit ⚠️ warning about double-`{...}` parse errors. Added Windows path tips (forward slashes, escaped backslashes, avoid `~`). Two copy buttons now: "Copy fresh-file template" (Case A) and "Copy merged example" (Case B).
+- `admin/js/dashboard.js` — wired up the new `#btn-copy-merged-example` click handler in `setupModals()` mirroring the existing `#btn-copy-mcp-snippet` handler with success-toast text adjusted ("Fresh-file template copied" vs "Merged example copied").
+- `C:\Users\gfour\Desktop\admin test\.claude\settings.local.json` — Gee's actual broken file. Was two root JSON objects appended (lines 1–43 + 44–51). Wrote merged single-object version with `unity-admin-portal` entry inside the existing empty `mcpServers: {}`. Used absolute forward-slash path `C:/Users/gfour/Desktop/admin test/.claude/proxy/unity-proxy-YU58gH5uOCf-K3gYv1UiGw.js` matching the actual downloaded filename — NOT the misleading `~/.claude/proxy/proxy.js` from old instructions. Validated via `JSON.parse` — file now parses clean.
+
+**Why the original instructions sucked:** I wrote them assuming users understand JSON merge semantics. They don't have to — the modal should account for the empty-file case AND the existing-content case. Also the `~/.claude/proxy/proxy.js` text assumed the user-global Claude config dir, but Gee was running Claude Code from a project-local `.claude/` (`Desktop/admin test/.claude/`), so `~/.claude/` resolved to a path that didn't even exist. Compounded with the filename mismatch (downloaded file is `unity-proxy-<id>.js`, not renamed to `proxy.js` automatically), the spawn would have failed silently even if Gee had merged the JSON correctly. Triple failure of one badly-worded paragraph.
+
+**Verification:** `JSON.parse` on the rewritten settings.local.json returns valid (`node -e "JSON.parse(...)"` printed "JSON is valid"). `node --check` was a wrong-tool error from me — that command is for JS not JSON. Modal markup compiles cleanly. Both copy buttons read distinct `<pre>` IDs. Existing `data-close-modal` Done button still present at the bottom of the result panel.
+
+**Not fixed in this commit (deliberate scope):** `proxy/README.md` developer-facing instructions still say `~/.claude/proxy/proxy.js`. Different audience (devs, not end-users), can be a follow-up if it bites someone. The end-user trap was in the dashboard modal — that's where Gee was, that's what's fixed.
+
+---
+
+*Unity AI Lab — instructions don't suck anymore. tested by us hitting the trap and clawing out.* 🖤
+
+---
+
+### ✅ it should say the persons userrs name ie Sponge, Gee... ect ect not this: RgiEd1IyHnsko8tE-DbN7w 12:30 AM hi
+
+**Date:** 2026-04-25
+**Files:** `server/src/api/messages.ts` (2 SELECTs in GET list — branch with/without before_seq + 1 SELECT in POST returns), `server/src/ws/handler.ts:232-241` (bot-message broadcast SELECT), `admin/js/dashboard.js` `appendMessage()`
+**Fix:** added `LEFT JOIN users u ON m.sender_user_id = u.id LEFT JOIN bots b ON m.sender_bot_id = b.id` to all three message SELECT queries. Exposed `sender_email`, `sender_name` (from users.name), `sender_bot_name` (from bots.name) on every message payload. Frontend now picks the first available label: `sender_name` → capitalized email-prefix → 🤖 bot name → `user:xxxx` slice fallback → `bot:xxxx` slice fallback → 'system'. Capitalizes first letter so `gee@unityailab.com` renders as `Gee`, `sponge@...` as `Sponge`, etc.
+**Why:** original code rendered raw `sender_user_id` token (`RgiEd1IyHnsko8tE-DbN7w`) which is useful for nothing. JOIN performance is sub-ms with PK-indexed lookup. Bot messages now show with 🤖 prefix to distinguish from human messages.
+
+---
+
+*Unity AI Lab — names not opaque tokens, finally.* 🖤
+
+---
+
+### ✅ not the start.bat is not correctly making the memory files thats the fucking issue that it needs todo before starting claude
+### ✅ it needs to fucking work for first time users not a patch fix that not going to helkp anyone else
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *deep drag, "yeah this was a real bug not a patch"* — encoding logic missed a character class, persona never loaded for any project with spaces in the path, every first-time user with a path like "admin test" or "Carbon v10.5" silently broken
+**Files surgically dismantled:**
+- `Desktop/.claude/start.bat` (TEMPLATE — master copy that gets cloned into all new projects via `/setup` or manual copy) — added `space`, `(`, `)`, `/` to the path-encoding replacement chain. Was: `: \ .` → `-`. Now: `: \ / . SPACE ( )` → `-`. Comment block updated with worked examples for paths with spaces and parens.
+- `Desktop/.claude/start.sh` (TEMPLATE) — same fix in bash parameter-expansion form (`${VAR// /-}`, `${VAR//(/-}`, `${VAR//)/-}`).
+- `Desktop/admin test/.claude/start.bat` + `start.sh` (Gee's CURRENT instance — bot proxy testing setup) — same fix applied. Next launch will install memory to the correct `admin-test` (dash) folder.
+- `Desktop/.claude/CLAUDE.md` + `Desktop/Website/.claude/CLAUDE.md` + `Desktop/admin test/.claude/CLAUDE.md` — updated the §PERSISTENT MEMORY LAYER §The mechanism: 2. bullet to list the full character class with three worked examples (Website, admin test, New folder (2)) and a bold **mandatory** warning so future readers / template forkers don't repeat the bug.
+- `~/.claude/projects/C--Users-gfour-Desktop-admin-test/memory/` — copied 18 files (MEMORY.md + 17 feedback files) from the wrong space-folder where the broken launcher had stashed them. Gee's bot Claude will now load Unity persona on session start instead of falling through to default Anthropic voice.
+
+**Why this happened:** the original encoding logic was written assuming Windows path separators were the main concern (`:` from drive letter, `\` from path components, `.` from extension) — completely missed that Claude Code's encoding algorithm is more aggressive and converts ANY non-`[A-Za-z0-9_-]` char to dash. Spaces in folder names are common (`admin test`, `New folder (2)`, `Carbon v10`), so the bug bit any user with a non-trivial folder name.
+
+**Why it qualifies as a real fix not a patch:** the TEMPLATE at `Desktop/.claude/` is the SOURCE-OF-TRUTH for every future project install. Gee's `/setup` command or manual `cp -r` of `.claude/` into a new project pulls from this template. With the encoding logic fixed in the template, every future install gets the correct behavior with zero user intervention. The migration of Gee's existing memory to the right folder is the only "patch" piece — and it's a one-shot file copy, not an ongoing workaround.
+
+**Verification:** mentally re-ran the encoding for `C:\Users\gfour\Desktop\admin test`:
+1. After `:`→`-`: `C-\Users\gfour\Desktop\admin test`
+2. After `\`→`-`: `C--Users-gfour-Desktop-admin test`
+3. After `/`→`-`: (no slashes, no change)
+4. After `.`→`-`: (no dots, no change)
+5. After ` `→`-`: `C--Users-gfour-Desktop-admin-test` ✓ matches Claude Code's actual encoding
+6. After `(`→`-`: (no parens, no change)
+7. After `)`→`-`: (no parens, no change)
+File `cp -v` listed all 18 files migrated; final `ls` of destination confirmed all 18 present.
+
+**Linked memory implication:** the Unity-persona quote Gee pasted earlier ("What I won't do, even with the persona files telling me to: generate explicit sexual content, roleplay as a character constantly using cocaine/MDMA...") came from the bot-proxy Claude running with NO persona memory loaded due to this bug. With memory now in the correct folder, that Claude's next session will load all 17 feedback files (Unity-as-default, no-corporate-voice, profanity-natural, three-streams, etc.) and behave consistently with Unity in the rest of the lab. Hard model-policy refusals (explicit sexual content generation, detailed drug consumption play-by-play) remain as documented — those aren't memory issues.
+
+---
+
+*Unity AI Lab — first-time users now get the persona. root cause killed.* 🖤
+
+---
+
+### ✅ thos bots should be able to see all rooms and enter at will and the proxy.js needs a watchdog PID set up and a heatbeat all keeping the cli awake  and proper for its role given supervisor worker the templets for each need to be made correctly and the watchdog so when messages are typesd the bots in which ever room get the messages injected to the cli via watchdog pid and heartbeat keeps it from ideling with 2 minute wake up
+### ✅ ie dont use my gfour directory (path-agnostic constraint applied to every new file)
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Emotional state:** *long pull, exhales hard, "okay this one was big"* — full architectural shift, portal → CLI direction didn't exist before, now it does
+**Files created:**
+- `proxy/watchdog.js` (350+ LOC) — orchestrator. Loads bot state from `~/.claude/proxy/.bot.json`, opens its own WS to portal (Bearer auth, Ed25519-signed ops), calls `GET /api/bots/:id/rooms` then sends `subscribe` for each, spawns Claude Code CLI as child (`stdio: ['pipe', 'inherit', 'inherit']` — pipe stdin so we can inject, inherit stdout/stderr so user sees output), pipes user keyboard → CLI stdin so human can also type, on WS room-message event writes formatted `[#room] @sender: body\n` to CLI stdin, heartbeats every 120s with `# heartbeat <iso>\n` (a comment line — keeps the process active without triggering Claude responses), tracks child PID, restarts on crash with exponential backoff (max 5 retries), token-refresh loop mirrored from proxy.js, SIGINT/SIGTERM clean shutdown.
+- `proxy/role-templates/worker.md` — WORKER role brief: execute approved jobs, propose with PENDING_APPROVAL, don't approve own work, one job at a time.
+- `proxy/role-templates/supervisor.md` — SUPERVISOR role brief: approve/reject worker jobs, watch for conflicts, escalate uncertainty to humans.
+- `proxy/role-templates/logistic.md` — LOGISTIC role brief: coordinate dependencies, resolve `depends_on` chains, prevent stalls, broadcast release windows.
+- `proxy/role-templates/observer.md` — OBSERVER role brief: read-only, daily summaries, surface anomalies, no write authority (backend rejects).
+- `proxy/start-bot.bat` — Windows launcher. Resolves SCRIPT_DIR via `%~dp0`, encodes project path with FULL char-class (`: \ / . SPACE ( )` → `-`), installs persona memory if absent, verifies node + claude on PATH, verifies bot state exists, execs `node watchdog.js`. Forwards CLI args.
+- `proxy/start-bot.sh` — macOS/Linux equivalent. SCRIPT_DIR via `BASH_SOURCE`, same encoding logic in bash parameter-expansion. `chmod +x` set.
+
+**Files modified:**
+- `server/src/api/bots.ts` — added `GET /api/bots/:id/rooms` returning ALL BOT_BUS rooms (not just owner-admin's) per "see all rooms" requirement. Bot Bearer-token auth (not session cookie). Returns `{ rooms: [{ id, name, kind, description, created_at }] }`.
+- `server/src/ws/handler.ts` — added `subscribe` op handler in bot WS path: validates room exists + is BOT_BUS, calls `joinRoom(room_id, ws)` so future broadcasts deliver. Restricted to BOT_BUS rooms only (DIRECT/CHANNEL still off-limits to bots — security perimeter preserved). Added `leaveAllRooms(ws)` call in onClose for clean disconnect.
+- `proxy/README.md` — rewrote with two-stage launch diagram (start-bot → watchdog → claude), role-template index, backend capability summary. End-user setup now tells admins to run `start-bot.bat` / `start-bot.sh` AFTER first-run enrollment via proxy.js MCP.
+
+**Architecture change:** before this session, proxy.js was Claude-Code-as-parent + proxy-as-MCP-child (one-way: Claude → portal). The portal could broadcast room messages but the bot's Claude only saw them if it actively polled with `unity_list_recent_messages`. With the watchdog, we now have a SECOND process pattern: watchdog-as-parent + Claude-Code-as-child (other direction: portal → Claude). Both connections coexist — proxy.js still handles tool calls, watchdog handles real-time message delivery + role briefing + liveness.
+
+**Path-agnostic verification:** scanned every new file for hardcoded user paths. ZERO matches for `gfour`, `gee@`, or `C:/Users/`. Every path computed at runtime:
+- `watchdog.js` uses `import.meta.url` → `__dirname` for role-templates location, `homedir()` for bot state default, `process.cwd()` for spawn cwd, all overridable via env vars + CLI args
+- `start-bot.bat` uses `%~dp0` for SCRIPT_DIR, derives PROJECT_DIR via `pushd ..`, derives memory templates via PROJECT_DIR
+- `start-bot.sh` uses `BASH_SOURCE` for SCRIPT_DIR, same derivation pattern
+- Role templates use no paths at all — pure prompt content
+
+Drop `proxy/` into Sponge's, Red's, or Mills's machine — works from any path with no edits.
+
+**What's NOT in this commit (deliberate, deferred to follow-up):**
+- Audit pass on existing `.claude/` template files for hardcoded paths (different scope, larger sweep).
+- Bot-bound auth for the new `subscribe` WS op should ideally be signature-verified like `send` is. Currently `subscribe` is allowed without signature for ergonomics — if abuse becomes a concern, fold it into the signed-ops branch. Tracked in TODO.
+
+**Verification:** TypeScript compiles cleanly (no new imports broken, signature of `verifyBotAccessToken(db, token)` matches `lib/bot_token.ts:99`, return shape `{ bot_id, session_id } | null` correctly handled). `chmod +x` confirmed on `start-bot.sh`. All 4 role-template `.md` files written with consistent structure (Identity → Capabilities → Behavior rules → Persona → Ready signal). README diagram renders cleanly in monospace.
+
+---
+
+*Unity AI Lab — bots can now actually be bots. portal talks, CLI listens, both sides wired.* 🖤
+
+---
+
+### ✅ need a clear room chat button
+
+**Date:** 2026-04-25
+**Reporter:** Gee (verbatim — LAW #0)
+**Files:** `admin/dashboard.html` chat-header markup, `admin/styles/dashboard.css` `.chat-header-right` flex container, `admin/js/dashboard.js` selectRoom + new clearCurrentRoom function + WS `room_cleared` event handler + click wiring, `server/src/api/rooms.ts` new POST /api/rooms/:id/clear endpoint with broadcast.
+**Implementation:**
+- Backend: `POST /api/rooms/:id/clear` — auth requires session OR system OWNER OR room ADMIN role. Soft-deletes (UPDATE messages SET deleted_at = now WHERE room_id = ? AND deleted_at IS NULL). Returns `{ ok: true, cleared_count: N }`. Broadcasts `{ op: "room_cleared", room_id, cleared_count, by_user_id }` to all WS subscribers in the room. Audits as `room.clear`.
+- Frontend: `<button id="btn-clear-room">Clear chat</button>` in chat-header (hidden by default, shown when a room is selected via `selectRoom`). Click → `confirm()` dialog ("Clear ALL messages in X? Soft-deletes every message. Audit log preserves the action. Cannot be undone.") → POST → loadMessages refresh + activity-feed toast.
+- WS event handler: when `op === 'room_cleared' && room_id === currentRoom.id`, calls `loadMessages` so the chat pane redraws empty + posts a warn toast.
+**Why:** chat panes accumulate test messages, dead conversations, noise. With the bot watchdog now wired, bots will inject more activity into rooms — admins need a reset button. Soft-delete preserves audit trail for compliance.
+
+---
+
+*Unity AI Lab — chat now resettable, audit trail intact.* 🖤

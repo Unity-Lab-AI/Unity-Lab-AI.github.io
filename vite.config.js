@@ -72,6 +72,9 @@ export default defineConfig({
         ai: resolve(__dirname, 'ai/index.html'),
         demo: resolve(__dirname, 'ai/demo/index.html'),
         apps: resolve(__dirname, 'apps/index.html'),
+        adminLogin: resolve(__dirname, 'admin/index.html'),
+        adminDashboard: resolve(__dirname, 'admin/dashboard.html'),
+        adminReset: resolve(__dirname, 'admin/reset.html'),
       },
       output: {
         // Aggressive content-based cache busting

@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-remote *)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(chmod +x scripts/setup-cloudflare-vps.sh)",
+      "Bash(chmod +x scripts/setup-cloudflare-tunnel-local.sh start-tunnel.sh)",
+      "Bash(npx --yes kill-port 2026 24678)",
+      "Bash(mkdir -p .claude/scripts)",
+      "Bash(cp scripts/claim-admin.mjs .claude/scripts/claim-admin.mjs)",
+      "Bash(echo \"started, pid=$!\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:2026/healthz)",
+      "Bash(node scripts/smoke-test.mjs)"
+    ]
+  }
+}

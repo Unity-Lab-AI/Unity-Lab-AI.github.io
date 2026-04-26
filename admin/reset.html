@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unity AI Lab — Reset Password</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="./styles/dark.css">
+  <link rel="stylesheet" href="./styles/login.css">
+</head>
+<body>
+  <main class="login-shell">
+    <div class="login-card">
+      <header class="login-header">
+        <h1>Reset Password</h1>
+        <p class="subtitle" id="reset-subtitle">Verifying token…</p>
+      </header>
+
+      <div id="status-banner" class="banner hidden"></div>
+
+      <form id="form-reset" class="form hidden">
+        <p class="panel-desc">
+          Reset password for <strong id="reset-target-email">…</strong>.
+        </p>
+        <label class="field">
+          <span class="field-label">New password</span>
+          <input type="password" name="password" required minlength="12" autocomplete="new-password" placeholder="min 12 chars, mixed case + digit">
+        </label>
+        <label class="field">
+          <span class="field-label">Confirm new password</span>
+          <input type="password" name="confirm" required minlength="12" autocomplete="new-password">
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" name="remember_me" checked>
+          <span>Sign me in on this browser (30 days)</span>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">Set new password</button>
+        <p class="hint">This will sign out all your other browser sessions for security.</p>
+      </form>
+
+      <footer class="login-footer">
+        <a href="/admin/" class="link-muted">← Back to login</a>
+        <span class="version">v0.0.1 dev</span>
+      </footer>
+    </div>
+  </main>
+
+  <script type="module" src="./js/reset.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+# Unity AI Lab — Production stack
+# Run on a VPS with: docker compose up -d
+#
+# Reverse proxy: Caddy (auto-TLS via Let's Encrypt for admin.unityailab.com)
+# Server: the unified Node + Hono process (port 3000 internal)
+# DB: SQLite by default (volume-mounted). Swap to Postgres by uncommenting `db` and setting DATABASE_URL.
+# Backups: included as a separate one-shot container (run via `docker compose run --rm backup`).
+
+services:
+  server:
+    build: .
+    image: unity-admin-portal:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: "0.0.0.0"
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-https://admin.unityailab.com}"
+      DATABASE_URL: "${DATABASE_URL:-sqlite:///app/server/data/prod.db}"
+      DEV_AUTH_BYPASS: "false"
+      ADMIN_CLAIM_OPEN: "${ADMIN_CLAIM_OPEN:-false}"
+      JWT_SIGNING_KEY: "${JWT_SIGNING_KEY}"
+      JWT_ISSUER: "${JWT_ISSUER:-admin.unityailab.com}"
+      JWT_AUDIENCE: "${JWT_AUDIENCE:-admin.unityailab.com}"
+      CSRF_COOKIE_SECRET: "${CSRF_COOKIE_SECRET}"
+      WEBAUTHN_RP_ID: "${WEBAUTHN_RP_ID:-admin.unityailab.com}"
+      WEBAUTHN_ORIGIN: "${WEBAUTHN_ORIGIN:-https://admin.unityailab.com}"
+      FILE_STORAGE_KIND: "${FILE_STORAGE_KIND:-local}"
+      FILE_STORAGE_LOCAL_PATH: "/app/server/data/uploads"
+      R2_ENDPOINT: "${R2_ENDPOINT:-}"
+      R2_ACCESS_KEY_ID: "${R2_ACCESS_KEY_ID:-}"
+      R2_SECRET_ACCESS_KEY: "${R2_SECRET_ACCESS_KEY:-}"
+      R2_BUCKET: "${R2_BUCKET:-}"
+      GITHUB_APP_ID: "${GITHUB_APP_ID:-}"
+      GITHUB_APP_PRIVATE_KEY: "${GITHUB_APP_PRIVATE_KEY:-}"
+      GITHUB_APP_INSTALLATION_ID: "${GITHUB_APP_INSTALLATION_ID:-}"
+      GITHUB_WEBHOOK_HMAC_SECRET: "${GITHUB_WEBHOOK_HMAC_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      LOG_PRETTY: "false"
+    volumes:
+      - server-data:/app/server/data
+      - server-keys:/app/server/local-keys
+    expose:
+      - "3000"
+    networks:
+      - portal
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - server
+    networks:
+      - portal
+
+  # Optional: Postgres. Uncomment + set DATABASE_URL=postgresql://...
+  # db:
+  #   image: postgres:16-alpine
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_USER: admin_portal
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: admin_portal
+  #   volumes:
+  #     - pg-data:/var/lib/postgresql/data
+  #   networks:
+  #     - portal
+
+  # One-shot backup runner: docker compose run --rm backup
+  backup:
+    image: alpine:latest
+    profiles: ["backup"]
+    volumes:
+      - server-data:/data:ro
+      - ./backups:/backups
+    command: |
+      sh -c '
+        set -e
+        STAMP=$(date +%Y%m%d-%H%M%S)
+        cd /data
+        tar czf /backups/admin-portal-data-$STAMP.tar.gz .
+        echo "backup written: /backups/admin-portal-data-$STAMP.tar.gz"
+      '
+
+volumes:
+  server-data:
+  server-keys:
+  caddy-data:
+  caddy-config:
+  # pg-data:
+
+networks:
+  portal:

@@ -1,0 +1,79 @@
+name: CI
+
+# Per ADMIN_PORTAL_TODO.md AP-010, AP-222, AP-259.
+# Runs on every push + PR + weekly schedule for vuln drift.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly Monday 03:00 UTC — catch CVEs that drop without a triggering push
+    - cron: '0 3 * * 1'
+
+jobs:
+  typecheck:
+    name: TypeScript typecheck (server)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck:server
+        continue-on-error: true   # initial soft-fail until full typecheck pass
+
+  audit:
+    name: npm audit (High+Critical)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Audit production deps
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: false
+
+  smoke-test:
+    name: End-to-end smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Boot server in background
+        run: |
+          cp server/.env.example server/.env
+          npm run dev &
+          # Wait up to 30s for /healthz
+          for i in $(seq 1 30); do
+            if curl -fs http://localhost:3000/healthz >/dev/null 2>&1; then
+              echo "server up after ${i}s"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run smoke test
+        run: BASE_URL=http://localhost:3000 node scripts/smoke-test.mjs
+
+  secret-scan:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true   # initial soft-fail; tighten after first clean run

@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(node --check:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(find:*)",
+      "Bash(sed:*)",
+      "Bash(dir:*)",
+      "Bash(echo:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git gc:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(pip list:*)",
+      "Bash(cd:*)",
+      "Bash(cp:*)",
+      "Bash(touch:*)",
+      "Bash(curl:*)",
+      "Bash(start:*)",
+      "Bash(powershell:*)",
+      "Bash(chmod:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {},
+  "_comment": "Project-agnostic Claude Code settings template. Customize the allow-list with bash commands your project actually needs. Add MCP servers, hooks, and env vars as needed. Never paste API keys here — use environment variables or a separate gitignored config.",
+  "mcpServers": {
+    "unity-admin-portal": {
+      "command": "node",
+      "args": [".claude/proxy/launcher.js"]
+    }
+  }
+}

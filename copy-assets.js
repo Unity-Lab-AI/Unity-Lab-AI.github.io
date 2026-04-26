@@ -49,6 +49,29 @@ const EXCLUDE = [
   'CLAUDE.md',
   'README.md',
 
+  // Admin portal backend + deployment artefacts (NEVER ship to static hosting)
+  'server',
+  'data',
+  'proxy',
+  'deploy',
+  'Dockerfile',
+  'docker-compose.yml',
+  'SECURITY.md',
+  'Docs',                    // Phase 0/architecture docs — internal only
+  '.claude',
+  '.claude.zip',
+  'ADMIN_PORTAL_TODO.md',
+  'LOCAL_TESTING.md',
+  'NOW.md',
+  'TODO.md',
+  'ARCHITECTURE.md',
+  'FINALIZED.md',
+  'ROADMAP.md',
+  'SKILL_TREE.md',
+  'README-BASIC.md',
+  'README-NERD.md',
+  'USER-README.md',
+
   // Archived/legacy content (not needed in production)
   'Archived',
   'playwright-report',

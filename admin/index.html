@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unity AI Lab — Admin Login</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="./styles/dark.css">
+  <link rel="stylesheet" href="./styles/login.css">
+</head>
+<body>
+  <main class="login-shell">
+    <div class="login-card">
+      <header class="login-header">
+        <h1>Unity AI Lab</h1>
+        <p class="subtitle">Admin Portal</p>
+      </header>
+
+      <div id="status-banner" class="banner hidden"></div>
+
+      <nav class="tabs" role="tablist">
+        <button id="tab-claude" class="tab active" role="tab" data-tab="claude">Sign in</button>
+        <button id="tab-dev" class="tab hidden" role="tab" data-tab="dev">Dev</button>
+      </nav>
+
+      <!-- Claude-required panel — the ONLY public-facing auth path -->
+      <section id="panel-claude" class="panel active">
+        <p class="panel-desc">
+          <strong>Browser login is disabled.</strong> The only way to sign in is via your local
+          <code>.claude/</code> template.
+        </p>
+        <ol class="instr-list">
+          <li>On your local machine, open the folder where <code>.claude/</code> is installed.</li>
+          <li>Run <code>.claude\start.bat</code> (Windows) or <code>.claude/start.sh</code> (macOS/Linux).</li>
+          <li>The setup wizard will ask which admin you are + your password.</li>
+          <li>It will then open <strong>this</strong> page (well, the dashboard) in your browser, already signed in.</li>
+        </ol>
+        <p class="hint">
+          Don't have <code>.claude/</code>? Ask the founder to send you the universal template (Signal/in-person — never email).
+        </p>
+      </section>
+
+      <!-- Dev bypass panel (localhost-only — backend rejects if request comes through any proxy) -->
+      <section id="panel-dev" class="panel">
+        <p class="panel-desc">Dev mode — pick an admin to log in as. <strong>Localhost only.</strong> The backend rejects this if reached through Cloudflare or any reverse proxy.</p>
+        <div id="dev-admin-list" class="admin-grid">
+          <!-- populated by JS -->
+        </div>
+        <label class="checkbox">
+          <input type="checkbox" id="dev-remember" checked>
+          <span>Stay signed in (30 days)</span>
+        </label>
+      </section>
+
+      <footer class="login-footer">
+        <a href="/" class="link-muted">← Back to public site</a>
+        <span class="version" id="version-text">v0.0.1 dev</span>
+      </footer>
+    </div>
+  </main>
+
+  <script type="module" src="./js/auth.js"></script>
+</body>
+</html>
