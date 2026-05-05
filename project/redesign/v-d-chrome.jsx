@@ -1,12 +1,12 @@
 // Variation D — Navbar & Visitor Counter
 
 const NAV_LINKS = [
-  { href: './ai', label: 'AI' },
-  { href: './about', label: 'About' },
-  { href: './apps', label: 'Apps' },
-  { href: './services', label: 'Services' },
-  { href: './projects', label: 'Projects' },
-  { href: './contact', label: 'Contact' },
+  { href: './ai.html', label: 'AI' },
+  { href: './about.html', label: 'About' },
+  { href: './apps.html', label: 'Apps' },
+  { href: './services.html', label: 'Services' },
+  { href: './projects.html', label: 'Projects' },
+  { href: './contact.html', label: 'Contact' },
 ];
 
 const GothicNavbar = () => {

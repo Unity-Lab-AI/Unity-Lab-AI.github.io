@@ -1,0 +1,247 @@
+<!doctype html>
+<!--
+  Unity AI Lab — Text Chat
+  https://www.unityailab.com/apps/textDemo/text.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Text Chat — Unity AI Lab</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #030001;
+      color: var(--bone, #e8e2d4);
+      font-family: var(--font-body, Inter, sans-serif);
+      min-height: 100vh;
+    }
+
+    /* ── Gothic App Nav ── */
+    .app-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: rgba(3,0,0,0.97);
+      border-bottom: 1px solid rgba(220,20,60,0.2);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 1000;
+      gap: 12px;
+    }
+    .app-nav-brand {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      color: var(--bone, #e8e2d4);
+      font-size: 15px;
+      letter-spacing: 4px;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+    .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .app-nav-back {
+      margin-left: auto;
+      color: var(--crimson-red, #dc143c);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid rgba(220,20,60,0.35);
+      padding: 5px 14px;
+      transition: background .15s;
+    }
+    .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+
+    /* ── Layout ── */
+    .chat-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 80px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .chat-header { margin-bottom: 24px; }
+    .chat-title {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--bone, #e8e2d4);
+      margin-bottom: 8px;
+    }
+    .chat-subtitle {
+      font-size: 13px;
+      color: rgba(232,226,212,0.45);
+      letter-spacing: 1px;
+    }
+
+    /* ── Main container ── */
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* ── Model selects ── */
+    .selects-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    select#model, select#imageModel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      cursor: pointer;
+      border-radius: 2px;
+      outline: none;
+      flex: 1;
+      min-width: 180px;
+    }
+    select option { background: #0a0003; color: var(--bone, #e8e2d4); }
+
+    /* ── Chat output ── */
+    #chatOutput {
+      flex: 1;
+      min-height: 400px;
+      max-height: 60vh;
+      overflow-y: auto;
+      background: rgba(232,226,212,0.02);
+      border: 1px solid rgba(220,20,60,0.12);
+      border-radius: 2px;
+      padding: 16px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--bone, #e8e2d4);
+    }
+    #chatOutput.empty { color: rgba(232,226,212,0.3); font-style: italic; }
+    #chatOutput::-webkit-scrollbar { width: 4px; }
+    #chatOutput::-webkit-scrollbar-thumb { background: rgba(220,20,60,0.3); border-radius: 2px; }
+    #chatOutput .user-message { color: rgba(220,20,60,0.9); margin: 10px 0 4px; font-weight: 500; }
+    #chatOutput .ai-message { margin: 4px 0 10px; padding-left: 12px; border-left: 2px solid rgba(220,20,60,0.2); }
+    #chatOutput img { max-width: 100%; margin: 8px 0; border: 1px solid rgba(220,20,60,0.2); }
+
+    /* ── Form ── */
+    #chatForm {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #userInput {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 12px 14px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px;
+      resize: vertical;
+      outline: none;
+      border-radius: 2px;
+      min-height: 80px;
+    }
+    #userInput:focus { border-color: rgba(220,20,60,0.5); background: rgba(255,255,255,0.06); }
+    #userInput::placeholder { color: rgba(232,226,212,0.3); }
+    .form-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    #sendButton {
+      background: var(--crimson-red, #dc143c);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      font-family: var(--font-body, Inter, sans-serif);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background .15s;
+    }
+    #sendButton:hover { background: #b80e30; }
+    #clearChatBtn {
+      background: rgba(220,20,60,0.08);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: rgba(232,226,212,0.7);
+      padding: 10px 20px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background .15s;
+    }
+    #clearChatBtn:hover { background: rgba(220,20,60,0.15); }
+  </style>
+</head>
+<body>
+
+  <nav class="app-nav" role="navigation" aria-label="App navigation">
+    <a href="/" class="app-nav-brand">UNITYAILAB</a>
+    <span class="app-nav-sep">✦</span>
+    <span class="app-nav-title">Text Chat</span>
+    <a href="/apps.html" class="app-nav-back">← Apps</a>
+  </nav>
+
+  <div class="chat-wrapper">
+    <div class="chat-header">
+      <h1 class="chat-title">AI Text Chat</h1>
+      <p class="chat-subtitle">Unfiltered conversation · no apology layer</p>
+    </div>
+
+    <div id="main-container">
+      <div class="selects-row">
+        <select id="model" aria-label="AI model">
+          <option value="unity" selected>Unity AI</option>
+          <option value="evil">Evil Mode</option>
+          <option value="openai">OpenAI GPT-4o-mini</option>
+          <option value="openai-large">OpenAI GPT-4o</option>
+          <option value="llama">Llama 3.3 70B</option>
+          <option value="mistral">Mistral Small 3</option>
+          <option value="gemini">Gemini 2.0 Flash</option>
+          <option value="deepseek">DeepSeek-V3</option>
+          <option value="qwen-reasoning">Qwen QWQ 32B</option>
+        </select>
+        <select id="imageModel" aria-label="Image model">
+          <option value="flux" selected>Flux (Default)</option>
+          <option value="flux-pro">Flux Pro</option>
+          <option value="turbo">Turbo</option>
+        </select>
+      </div>
+
+      <div id="chatOutput" class="empty" aria-label="Chat output" aria-live="polite">
+        Chat will appear here…
+      </div>
+
+      <form id="chatForm" novalidate>
+        <textarea
+          id="userInput"
+          placeholder="Type your question or prompt… (Enter to send, Shift+Enter for new line)"
+          aria-label="Message input"
+          rows="3"
+        ></textarea>
+        <div class="form-actions">
+          <button type="submit" id="sendButton">Send Message</button>
+          <button type="button" id="clearChatBtn">Clear Chat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+  <script src="../../redesign/pollylib.js"></script>
+  <script src="./text.js"></script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<!--
+  Unity AI Lab — Persona Chat
+  https://www.unityailab.com/apps/personaDemo/persona.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Persona Chat — Unity AI Lab</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #030001;
+      color: var(--bone, #e8e2d4);
+      font-family: var(--font-body, Inter, sans-serif);
+      min-height: 100vh;
+    }
+
+    /* ── Gothic App Nav ── */
+    .app-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0; height: 60px;
+      background: rgba(3,0,0,0.97);
+      border-bottom: 1px solid rgba(220,20,60,0.2);
+      display: flex; align-items: center;
+      padding: 0 20px; z-index: 1000; gap: 12px;
+    }
+    .app-nav-brand {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      color: var(--bone, #e8e2d4); font-size: 15px;
+      letter-spacing: 4px; text-decoration: none; text-transform: uppercase;
+    }
+    .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+    .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .app-nav-back {
+      margin-left: auto; color: var(--crimson-red, #dc143c); text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid rgba(220,20,60,0.35); padding: 5px 14px; transition: background .15s;
+    }
+    .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+
+    /* ── Layout ── */
+    .persona-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 24px 40px;
+    }
+    .persona-header { margin-bottom: 20px; }
+    .persona-title {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700; letter-spacing: 2px;
+      color: var(--bone, #e8e2d4); margin-bottom: 8px;
+    }
+    .persona-subtitle { font-size: 13px; color: rgba(232,226,212,0.45); letter-spacing: 1px; }
+
+    /* ── Settings panel ── */
+    #settingsToggle {
+      background: rgba(220,20,60,0.08);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: rgba(232,226,212,0.7);
+      padding: 8px 18px; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; margin-bottom: 12px;
+      transition: background .15s;
+    }
+    #settingsToggle:hover { background: rgba(220,20,60,0.15); }
+    #settingsPanel {
+      display: none;
+      background: rgba(232,226,212,0.03);
+      border: 1px solid rgba(220,20,60,0.15);
+      border-radius: 2px;
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .model-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 8px 12px; font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      cursor: pointer; border-radius: 2px; outline: none; flex: 1; min-width: 160px;
+    }
+    .model-select option { background: #0a0003; color: var(--bone, #e8e2d4); }
+    .audio-controls { display: flex; gap: 8px; align-items: center; }
+    .replay-button {
+      background: rgba(220,20,60,0.08);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: rgba(232,226,212,0.7);
+      padding: 7px 14px; font-size: 12px;
+      cursor: pointer; border-radius: 2px; transition: background .15s;
+    }
+    .replay-button:hover { background: rgba(220,20,60,0.18); }
+    .replay-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Chat output ── */
+    #chatOutput {
+      min-height: 360px;
+      max-height: 55vh;
+      overflow-y: auto;
+      background: rgba(232,226,212,0.02);
+      border: 1px solid rgba(220,20,60,0.12);
+      border-radius: 2px;
+      padding: 16px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px; line-height: 1.7;
+      color: var(--bone, #e8e2d4);
+      margin-bottom: 12px;
+    }
+    #chatOutput::-webkit-scrollbar { width: 4px; }
+    #chatOutput::-webkit-scrollbar-thumb { background: rgba(220,20,60,0.3); border-radius: 2px; }
+    #chatOutput .user-message { color: rgba(220,20,60,0.9); margin: 10px 0 4px; font-weight: 500; }
+    #chatOutput .ai-message { margin: 4px 0 10px; padding-left: 12px; border-left: 2px solid rgba(220,20,60,0.2); }
+    #chatOutput img { max-width: 100%; margin: 8px 0; border: 1px solid rgba(220,20,60,0.2); }
+
+    /* ── Form ── */
+    #chatForm { display: flex; flex-direction: column; gap: 10px; }
+    #userInput {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 12px 14px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px; resize: vertical; outline: none; border-radius: 2px; min-height: 80px;
+    }
+    #userInput:focus { border-color: rgba(220,20,60,0.5); background: rgba(255,255,255,0.06); }
+    #userInput::placeholder { color: rgba(232,226,212,0.3); }
+    .form-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    #generateButton {
+      background: var(--crimson-red, #dc143c); color: #fff;
+      border: none; padding: 10px 24px;
+      font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; transition: background .15s;
+    }
+    #generateButton:hover { background: #b80e30; }
+    #directImageButton {
+      background: rgba(220,20,60,0.08);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: rgba(232,226,212,0.7);
+      padding: 10px 20px; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; transition: background .15s;
+    }
+    #directImageButton:hover { background: rgba(220,20,60,0.15); }
+
+    .pollinations-credit {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(232,226,212,0.25);
+      letter-spacing: 1px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="app-nav" role="navigation" aria-label="App navigation">
+    <a href="/" class="app-nav-brand">UNITYAILAB</a>
+    <span class="app-nav-sep">✦</span>
+    <span class="app-nav-title">Persona Chat</span>
+    <a href="/apps.html" class="app-nav-back">← Apps</a>
+  </nav>
+
+  <div class="persona-wrapper">
+    <div class="persona-header">
+      <h1 class="persona-title">Persona Chat</h1>
+      <p class="persona-subtitle">Switch AI personalities · voice · image generation</p>
+    </div>
+
+    <div class="container">
+      <button id="settingsToggle" aria-expanded="false" aria-controls="settingsPanel">Show Settings</button>
+
+      <div id="settingsPanel" role="region" aria-label="Settings">
+        <select id="textModel" class="model-select" aria-label="Text model"></select>
+        <select id="imageModel" class="model-select" aria-label="Image model"></select>
+        <select id="aspectRatio" class="model-select" aria-label="Aspect ratio">
+          <option value="16:9">16:9 — Landscape</option>
+          <option value="4:3">4:3 — Standard</option>
+          <option value="1:1" selected>1:1 — Square</option>
+          <option value="3:4">3:4 — Portrait</option>
+        </select>
+        <select id="ttsVoice" class="model-select" aria-label="TTS voice">
+          <option value="alloy" selected>Alloy</option>
+          <option value="echo">Echo</option>
+          <option value="fable">Fable</option>
+          <option value="onyx">Onyx</option>
+          <option value="nova">Nova</option>
+          <option value="shimmer">Shimmer</option>
+        </select>
+        <div class="audio-controls">
+          <button type="button" id="muteButton" class="replay-button">🔊 TTS On</button>
+          <button type="button" id="replayTTSButton" class="replay-button" disabled>🔄 Replay</button>
+        </div>
+      </div>
+
+      <div id="chatOutput" aria-label="Chat output" aria-live="polite">Chat will appear here…</div>
+
+      <form id="chatForm" novalidate>
+        <textarea
+          id="userInput"
+          rows="3"
+          placeholder="Type your message… (Enter to send, Shift+Enter for new line)"
+          aria-label="Message input"
+        ></textarea>
+        <div class="form-actions">
+          <button type="submit" id="generateButton">Send to AI</button>
+          <button type="button" id="directImageButton">Direct Image Generation</button>
+        </div>
+      </form>
+
+      <div class="pollinations-credit">Powered by Pollinations.AI</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+  <script src="../../redesign/pollylib.js"></script>
+  <script src="./persona.js"></script>
+</body>
+</html>

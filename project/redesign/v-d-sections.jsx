@@ -638,12 +638,12 @@ const GothicFooter = () => {
       <div className="vD-foot-block">
         <div className="vD-foot-k">NAVIGATE</div>
         <ul className="vD-foot-nav">
-          <li><a href="./ai">AI</a></li>
-          <li><a href="./about">About</a></li>
-          <li><a href="./apps">Apps</a></li>
-          <li><a href="./services">Services</a></li>
-          <li><a href="./projects">Projects</a></li>
-          <li><a href="./contact">Contact</a></li>
+          <li><a href="./ai.html">AI</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./apps.html">Apps</a></li>
+          <li><a href="./services.html">Services</a></li>
+          <li><a href="./projects.html">Projects</a></li>
+          <li><a href="./contact.html">Contact</a></li>
         </ul>
       </div>
       <div className="vD-foot-block">
@@ -684,7 +684,7 @@ const GothicFooter = () => {
       <p className="vD-foot-meta">
         <a href="https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io">Source</a>
         <span aria-hidden="true">·</span>
-        <a href="./contact">Contact</a>
+        <a href="./contact.html">Contact</a>
         <span aria-hidden="true">·</span>
         <a href="https://pollinations.ai">Powered by Pollinations.AI</a>
         <span aria-hidden="true">·</span>

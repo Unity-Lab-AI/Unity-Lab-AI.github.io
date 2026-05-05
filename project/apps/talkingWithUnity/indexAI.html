@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--
+  Unity AI Lab — Talking With Unity (Voice App)
+  https://www.unityailab.com/apps/talkingWithUnity/indexAI.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Voice Chat — Unity AI Lab</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+
+    <!-- Gothic fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+
+    <!-- App-specific styles -->
+    <link rel="stylesheet" href="./styleAI.css?v=20241217b">
+
+    <style>
+        /* ── Gothic palette compat vars ── */
+        :root {
+          --primary-black: #030001;
+          --light-grey: var(--bone, #e8e2d4);
+          --crimson: var(--crimson-red, #dc143c);
+          --white: #e8e2d4;
+          --gradient-red: linear-gradient(135deg, #dc143c 0%, #b80e30 100%);
+          --accent-red: #b80e30;
+        }
+
+        body, html {
+            background: #030001;
+            color: var(--bone, #e8e2d4);
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Gothic App Nav ── */
+        .app-nav {
+          position: fixed; top: 0; left: 0; right: 0; height: 56px;
+          background: rgba(3,0,0,0.97);
+          border-bottom: 1px solid rgba(220,20,60,0.2);
+          display: flex; align-items: center; padding: 0 20px; z-index: 2000; gap: 12px;
+        }
+        .app-nav-brand {
+          font-family: 'Cormorant Garamond', serif;
+          color: #e8e2d4; font-size: 15px; letter-spacing: 4px;
+          text-decoration: none; text-transform: uppercase;
+        }
+        .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+        .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+        .app-nav-back {
+          margin-left: auto; color: #dc143c; text-decoration: none;
+          font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+          border: 1px solid rgba(220,20,60,0.35); padding: 4px 14px; transition: background .15s;
+        }
+        .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+
+        .app-shell {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 56px;
+        }
+
+        .status-banner {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(3, 0, 1, 0.97);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(220, 20, 60, 0.2);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .mute-indicator {
+            background: var(--gradient-red);
+            color: #e8e2d4;
+            border: 2px solid #dc143c;
+            border-radius: 2px;
+            padding: 10px 25px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .mute-indicator:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .mute-indicator[data-state="listening"] {
+            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+            border-color: #00ff00;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 130px 20px 20px;
+            position: relative;
+        }
+
+        .image-stage {
+            max-width: 90%;
+            max-height: 70vh;
+            margin: 20px auto;
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid rgba(220, 20, 60, 0.2);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+            background: rgba(3, 0, 1, 0.8);
+            transition: all 0.5s ease;
+        }
+
+        .image-stage[data-state="loading"] { opacity: 0.5; filter: blur(5px); }
+        .image-stage[data-state="loaded"] { opacity: 1; filter: blur(0); }
+
+        .image-stage img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .voice-stage {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .voice-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(3, 0, 1, 0.8);
+            border: 3px solid #dc143c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3);
+            cursor: pointer;
+        }
+
+        .voice-circle.is-speaking {
+            animation: pulse-speaking 1s ease-in-out infinite;
+            border-color: #dc143c;
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.6);
+        }
+
+        .voice-circle.is-listening {
+            border-color: #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+        }
+
+        .voice-circle.is-error {
+            border-color: #ff4444;
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.6);
+        }
+
+        @keyframes pulse-speaking {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #dc143c;
+            opacity: 0;
+        }
+
+        .voice-circle.is-speaking .pulse-ring {
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .sr-only {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
+        }
+
+        .no-js-banner {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            border-radius: 2px;
+            padding: 15px; margin: 20px;
+            text-align: center; color: #ff4444;
+            font-family: 'Inter', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .voice-stage { gap: 30px; }
+            .voice-circle { width: 80px; height: 80px; }
+            .layout { padding: 120px 15px 15px; }
+            .image-stage { max-width: 95%; max-height: 60vh; }
+        }
+    </style>
+</head>
+
+<body class="no-js">
+
+    <nav class="app-nav" role="navigation" aria-label="App navigation">
+      <a href="/" class="app-nav-brand">UNITYAILAB</a>
+      <span class="app-nav-sep">✦</span>
+      <span class="app-nav-title">Unity Voice Chat</span>
+      <a href="/apps/talkingWithUnity/" class="app-nav-back">← Back</a>
+    </nav>
+
+    <noscript>
+        <div class="no-js-banner" role="alert">
+            <strong>JavaScript is disabled.</strong>
+            The live Unity assistant requires JavaScript.
+        </div>
+    </noscript>
+
+    <div class="app-shell">
+        <header class="status-banner" role="status" aria-live="polite">
+            <button id="mute-indicator" class="mute-indicator" data-state="muted" type="button">
+                <span class="indicator-text">Tap or click anywhere to unmute</span>
+            </button>
+        </header>
+
+        <main class="layout" aria-live="polite">
+            <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true" title="Ask Unity to generate an image">
+                <img id="hero-image" alt="" loading="lazy" decoding="async" />
+            </figure>
+
+            <section class="voice-stage" role="group" aria-label="Voice activity monitors">
+                <button id="muteUnityBtn" class="voice-circle ai" data-role="ai" data-muted="false" aria-label="Unity is idle" title="Click to mute/unmute Unity's voice">
+                    <div class="pulse-ring"></div>
+                    <span class="mute-icon">🔊</span>
+                </button>
+                <button id="muteMicBtn" class="voice-circle user" data-role="user" data-muted="true" aria-label="Microphone is muted" title="Click to mute/unmute your microphone">
+                    <div class="pulse-ring"></div>
+                    <span class="mute-icon">🔇</span>
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <script src="../../redesign/pollylib.js"></script>
+    <script src="indexAI.js" defer></script>
+    <script defer src="./app.js?v=20241217b"></script>
+</body>
+</html>

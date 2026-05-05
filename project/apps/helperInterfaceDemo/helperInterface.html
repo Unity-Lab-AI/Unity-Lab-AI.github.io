@@ -1,0 +1,252 @@
+<!doctype html>
+<!--
+  Unity AI Lab — Helper Interface
+  https://www.unityailab.com/apps/helperInterfaceDemo/helperInterface.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Helper Interface — Unity AI Lab</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #030001;
+      color: var(--bone, #e8e2d4);
+      font-family: var(--font-body, Inter, sans-serif);
+      height: 100%; overflow: hidden;
+    }
+
+    /* ── Gothic App Nav ── */
+    .app-nav {
+      position: fixed; top: 0; left: 0; right: 0; height: 60px;
+      background: rgba(3,0,0,0.97);
+      border-bottom: 1px solid rgba(220,20,60,0.2);
+      display: flex; align-items: center; padding: 0 20px; z-index: 1000; gap: 12px;
+    }
+    .app-nav-brand {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      color: var(--bone, #e8e2d4); font-size: 15px; letter-spacing: 4px;
+      text-decoration: none; text-transform: uppercase;
+    }
+    .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+    .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .app-nav-back {
+      margin-left: auto; color: var(--crimson-red, #dc143c); text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid rgba(220,20,60,0.35); padding: 5px 14px; transition: background .15s;
+    }
+    .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+
+    /* ── Main layout ── */
+    .chat-container {
+      display: flex; flex-direction: column;
+      height: 100vh; padding-top: 60px;
+    }
+    .app-header {
+      padding: 10px 20px 8px;
+      border-bottom: 1px solid rgba(220,20,60,0.12);
+      background: rgba(3,0,1,0.8);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .app-title {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      font-size: 18px; font-weight: 700; letter-spacing: 2px; color: var(--bone, #e8e2d4);
+    }
+
+    /* ── Split view ── */
+    .chat-layout {
+      display: flex; flex: 1; overflow: hidden;
+    }
+    .chat-main {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+      border-right: 1px solid rgba(220,20,60,0.12);
+    }
+    .chat-box {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-box::-webkit-scrollbar { width: 4px; }
+    .chat-box::-webkit-scrollbar-thumb { background: rgba(220,20,60,0.3); border-radius: 2px; }
+
+    .message {
+      max-width: 85%; padding: 10px 14px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px; line-height: 1.65; border-radius: 2px;
+    }
+    .user-message {
+      align-self: flex-end;
+      background: rgba(220,20,60,0.1);
+      border: 1px solid rgba(220,20,60,0.3);
+      color: var(--bone, #e8e2d4);
+    }
+    .ai-message {
+      align-self: flex-start; max-width: 92%;
+      background: rgba(232,226,212,0.04);
+      border: 1px solid rgba(232,226,212,0.08);
+      color: var(--bone, #e8e2d4);
+    }
+    .ai-message pre { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 2px; overflow-x: auto; margin: 8px 0; }
+    .ai-message code { font-family: var(--font-mono, 'JetBrains Mono', monospace); font-size: 12px; }
+    .ai-message p { margin-bottom: 6px; }
+    .ai-message p:last-child { margin-bottom: 0; }
+    .ai-message img { max-width: 100%; margin: 6px 0; border: 1px solid rgba(220,20,60,0.2); }
+
+    /* ── Code panel ── */
+    .code-panel {
+      width: 42%; display: flex; flex-direction: column; overflow: hidden;
+      background: rgba(0,0,0,0.3);
+    }
+    .code-panel-header {
+      padding: 8px 14px;
+      border-bottom: 1px solid rgba(220,20,60,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(3,0,0,0.6);
+    }
+    .code-panel-title {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(232,226,212,0.5);
+    }
+    .code-panel-content {
+      flex: 1; overflow-y: auto; padding: 14px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace); font-size: 12px;
+    }
+    .code-panel-content::-webkit-scrollbar { width: 4px; }
+    .code-panel-content::-webkit-scrollbar-thumb { background: rgba(220,20,60,0.3); border-radius: 2px; }
+    .code-panel-empty { color: rgba(232,226,212,0.25); font-style: italic; font-size: 12px; }
+
+    /* ── Input / Controls ── */
+    .input-area {
+      border-top: 1px solid rgba(220,20,60,0.15);
+      padding: 12px 16px 8px;
+      background: rgba(3,0,1,0.97);
+    }
+    #chat-input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 10px 14px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px; resize: none; outline: none; border-radius: 2px;
+      min-height: 60px; max-height: 140px;
+    }
+    #chat-input:focus { border-color: rgba(220,20,60,0.5); background: rgba(255,255,255,0.06); }
+    #chat-input::placeholder { color: rgba(232,226,212,0.3); }
+    .controls {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px 12px;
+      background: rgba(3,0,1,0.97);
+      border-top: 1px solid rgba(220,20,60,0.08); flex-wrap: wrap;
+    }
+    .control-btn {
+      background: rgba(220,20,60,0.08);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 6px 12px; font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      cursor: pointer; border-radius: 2px; transition: background .15s;
+    }
+    .control-btn:hover { background: rgba(220,20,60,0.18); }
+    .menu-controls { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+    select.model-select, select.image-model-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 6px 10px; font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      cursor: pointer; border-radius: 2px; outline: none;
+    }
+    select option { background: #0a0003; color: var(--bone, #e8e2d4); }
+
+    /* ── View toggle ── */
+    .chat-layout.view-chat .code-panel { display: none; }
+    .chat-layout.view-chat .chat-main { border-right: none; }
+    .chat-layout.view-code .chat-main { display: none; }
+    .chat-layout.view-code .code-panel { width: 100%; }
+
+    @media (max-width: 768px) {
+      .code-panel { display: none; }
+      .chat-main { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="app-nav" role="navigation" aria-label="App navigation">
+    <a href="/" class="app-nav-brand">UNITYAILAB</a>
+    <span class="app-nav-sep">✦</span>
+    <span class="app-nav-title">Helper Interface</span>
+    <a href="/apps.html" class="app-nav-back">← Apps</a>
+  </nav>
+
+  <div class="chat-container">
+    <div class="app-header">
+      <h1 class="app-title">AI Helper Interface</h1>
+    </div>
+
+    <div id="chat-layout" class="chat-layout">
+      <div class="chat-main">
+        <div id="chat-box" class="chat-box" aria-label="Chat messages" aria-live="polite"></div>
+      </div>
+
+      <div class="code-panel" aria-label="Code display">
+        <div class="code-panel-header">
+          <span class="code-panel-title">Code Display</span>
+          <div>
+            <button class="control-btn" onclick="clearCodePanel()" aria-label="Clear code panel">Clear</button>
+          </div>
+        </div>
+        <div id="code-panel-content" class="code-panel-content">
+          <div class="code-panel-empty">No code to display</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <textarea
+        id="chat-input"
+        placeholder="Ask for code help, explain code, debug… (Enter to send, Shift+Enter for new line)"
+        aria-label="Message input"
+        rows="2"
+      ></textarea>
+    </div>
+
+    <div class="controls" role="toolbar" aria-label="Chat controls">
+      <button id="voice-toggle" class="control-btn" title="Toggle voice" aria-label="Toggle voice">🔊</button>
+      <button id="clear-chat" class="control-btn" title="Clear chat" aria-label="Clear chat">🗑</button>
+      <div class="menu-controls">
+        <select class="image-model-select" aria-label="Image model">
+          <option value="flux" selected>Flux (Default)</option>
+        </select>
+        <select class="model-select" aria-label="AI model">
+          <option value="unity" selected>Unity AI</option>
+          <option value="openai-large">OpenAI GPT-4o</option>
+          <option value="qwen-coder">Qwen 2.5 Coder 32B</option>
+          <option value="deepseek">DeepSeek-V3</option>
+          <option value="deepseek-reasoning">DeepSeek-R1</option>
+          <option value="gemini">Gemini 2.0 Flash</option>
+          <option value="llama">Llama 3.3 70B</option>
+          <option value="mistral">Mistral Small 3</option>
+          <option value="phi">Phi-4 Instruct</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../../redesign/pollylib.js"></script>
+  <script src="./helperInterface.js"></script>
+</body>
+</html>

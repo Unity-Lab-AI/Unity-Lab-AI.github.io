@@ -1,0 +1,261 @@
+<!doctype html>
+<!--
+  Unity AI Lab — AI Slideshow
+  https://www.unityailab.com/apps/slideshowDemo/slideshow.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>AI Slideshow — Unity AI Lab</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #030001;
+      color: var(--bone, #e8e2d4);
+      font-family: var(--font-body, Inter, sans-serif);
+      min-height: 100vh;
+    }
+
+    /* ── Gothic App Nav ── */
+    .app-nav {
+      position: fixed; top: 0; left: 0; right: 0; height: 60px;
+      background: rgba(3,0,0,0.97);
+      border-bottom: 1px solid rgba(220,20,60,0.2);
+      display: flex; align-items: center; padding: 0 20px; z-index: 1000; gap: 12px;
+    }
+    .app-nav-brand {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      color: var(--bone, #e8e2d4); font-size: 15px; letter-spacing: 4px;
+      text-decoration: none; text-transform: uppercase;
+    }
+    .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+    .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .app-nav-back {
+      margin-left: auto; color: var(--crimson-red, #dc143c); text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid rgba(220,20,60,0.35); padding: 5px 14px; transition: background .15s;
+    }
+    .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+
+    /* ── Slideshow wrapper ── */
+    .slideshow-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 78px 20px 40px;
+    }
+    .slideshow-header {
+      text-align: center;
+      padding: 16px 0 20px;
+      border-bottom: 1px solid rgba(220,20,60,0.12);
+      margin-bottom: 20px;
+    }
+    .slideshow-title {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700; letter-spacing: 2px; color: var(--bone, #e8e2d4); margin-bottom: 6px;
+    }
+    .app-subtitle { font-size: 13px; color: rgba(232,226,212,0.45); letter-spacing: 1px; }
+
+    /* ── Slideshow image ── */
+    #slideshow-container {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(220,20,60,0.15);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; margin-bottom: 14px;
+      position: relative;
+    }
+    #slideshow-image {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+      transition: opacity .5s ease;
+    }
+
+    /* ── Thumbnails ── */
+    #thumbnail-history {
+      margin-bottom: 16px;
+      border: 1px solid rgba(220,20,60,0.12);
+      background: rgba(0,0,0,0.3);
+      padding: 8px;
+    }
+    .thumbnail-container {
+      display: flex; gap: 8px; overflow-x: auto; padding: 4px;
+    }
+    .thumbnail-container::-webkit-scrollbar { height: 4px; }
+    .thumbnail-container::-webkit-scrollbar-thumb { background: rgba(220,20,60,0.3); border-radius: 2px; }
+    .thumbnail-container img {
+      width: 80px; height: 50px; object-fit: cover;
+      cursor: pointer; border: 1px solid rgba(220,20,60,0.15);
+      transition: border-color .15s, transform .15s;
+      flex-shrink: 0;
+    }
+    .thumbnail-container img:hover { border-color: rgba(220,20,60,0.5); transform: scale(1.05); }
+
+    /* ── Controls ── */
+    #controls { padding: 16px; background: rgba(232,226,212,0.02); border: 1px solid rgba(220,20,60,0.12); border-radius: 2px; }
+    .control-row { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; flex-wrap: wrap; }
+    .control-row:last-child { margin-bottom: 0; }
+
+    textarea#prompt-textarea {
+      flex: 1; min-width: 200px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 10px 14px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 12px; resize: vertical; outline: none; border-radius: 2px; min-height: 60px;
+    }
+    textarea#prompt-textarea:focus { border-color: rgba(220,20,60,0.5); background: rgba(255,255,255,0.06); }
+    textarea#prompt-textarea::placeholder { color: rgba(232,226,212,0.3); }
+
+    .unity-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 8px 12px; font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      cursor: pointer; border-radius: 2px; outline: none;
+    }
+    .unity-select option { background: #0a0003; color: var(--bone, #e8e2d4); }
+
+    .button-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .unity-btn-primary {
+      background: var(--crimson-red, #dc143c); color: #fff;
+      border: none; padding: 9px 20px; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; transition: background .15s;
+    }
+    .unity-btn-primary:hover { background: #b80e30; }
+    .unity-btn-secondary {
+      background: rgba(220,20,60,0.08);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: rgba(232,226,212,0.8);
+      padding: 9px 18px; font-size: 12px;
+      letter-spacing: 1px; cursor: pointer; border-radius: 2px; transition: background .15s;
+    }
+    .unity-btn-secondary:hover { background: rgba(220,20,60,0.15); }
+
+    #loading-status {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 12px; color: rgba(220,20,60,0.7); padding: 4px 0;
+    }
+
+    .checkbox-group { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .checkbox-label {
+      display: flex; gap: 6px; align-items: center;
+      font-size: 12px; color: rgba(232,226,212,0.6); cursor: pointer;
+    }
+    .checkbox-label input[type="checkbox"] { accent-color: var(--crimson-red, #dc143c); }
+
+    input#intervalInput {
+      width: 70px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      padding: 7px 10px; font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      border-radius: 2px; outline: none;
+    }
+
+    /* ── Fullscreen overlay ── */
+    #fullscreen-container {
+      display: none;
+      position: fixed; inset: 0;
+      background: #000; z-index: 9999;
+      cursor: pointer;
+    }
+    #fullscreen-container.active { display: flex; align-items: center; justify-content: center; }
+    #fullscreen-image { max-width: 100%; max-height: 100%; object-fit: contain; }
+  </style>
+</head>
+<body>
+
+  <nav class="app-nav" role="navigation" aria-label="App navigation">
+    <a href="/" class="app-nav-brand">UNITYAILAB</a>
+    <span class="app-nav-sep">✦</span>
+    <span class="app-nav-title">AI Slideshow</span>
+    <a href="/apps.html" class="app-nav-back">← Apps</a>
+  </nav>
+
+  <div class="slideshow-wrapper">
+    <div class="slideshow-header">
+      <h1 class="slideshow-title">AI Slideshow</h1>
+      <p class="app-subtitle">Real-time AI-generated imagery · automatic · continuous</p>
+    </div>
+
+    <div id="slideshow-container" aria-label="Slideshow display">
+      <img id="slideshow-image" alt="AI Generated Slideshow Image" />
+    </div>
+
+    <div id="thumbnail-history" aria-label="Image history">
+      <div class="thumbnail-container"></div>
+    </div>
+
+    <div id="controls" role="region" aria-label="Slideshow controls">
+      <div class="control-row">
+        <textarea
+          id="prompt-textarea"
+          class="unity-textarea"
+          placeholder="Enter an image prompt — or leave blank and let Unity decide…"
+          aria-label="Image prompt"
+          rows="2"
+        ></textarea>
+        <div class="button-group">
+          <button id="toggleButton" class="unity-btn-primary">Stop</button>
+          <button id="fullscreenButton" class="unity-btn-secondary">Fullscreen</button>
+        </div>
+        <div id="loading-status" aria-live="polite"></div>
+      </div>
+
+      <div class="control-row">
+        <select id="model-select" class="unity-select" aria-label="Image model">
+          <option value="flux" selected>Flux (Default)</option>
+          <option value="flux-pro">Flux Pro</option>
+          <option value="flux-realism">Flux Realism</option>
+          <option value="turbo">Turbo</option>
+          <option value="any-dark">Any Dark</option>
+        </select>
+        <select id="aspect-ratio" class="unity-select" aria-label="Aspect ratio">
+          <option value="16:9" selected>16:9 — Landscape</option>
+          <option value="4:3">4:3 — Standard</option>
+          <option value="1:1">1:1 — Square</option>
+          <option value="3:4">3:4 — Portrait</option>
+          <option value="9:16">9:16 — Vertical</option>
+        </select>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="private-mode" /> Private
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="enhance-mode" checked /> Enhance
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="refine-mode" /> Refine
+          </label>
+        </div>
+        <label class="checkbox-label">
+          Interval (s):
+          <input type="number" id="intervalInput" min="5" value="30" aria-label="Interval in seconds" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen overlay -->
+  <div id="fullscreen-container" role="dialog" aria-label="Fullscreen image" aria-modal="true">
+    <img id="fullscreen-image" alt="Fullscreen AI Generated Image" />
+  </div>
+
+  <script src="../../redesign/pollylib.js"></script>
+  <script src="./slideshow.js"></script>
+</body>
+</html>
