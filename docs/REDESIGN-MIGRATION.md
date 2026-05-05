@@ -167,7 +167,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P1-07 | Rewrite `/sitemap.xml` for new URL set; audit `/sitemap-images.xml` | [x] | 9 URLs, .html canonical form, sitemap-images audited (9→2 verified refs), notes-p1-sitemap.md logs decision |
 | P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [x] | 51 files, 9 subfolders + README, byte-identical, robots.txt already disallows /_archive/ |
 | P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [x] | 16 files, robots.txt already disallows /docs/ |
-| P1-10 | Move `/chats/` → `/.claude/archive/chats/` | [ ] | |
+| P1-10 | Move `/chats/` → `/.claude/archive/chats/` | [x] | 3 chat transcripts off site root |
 | P1-11 | Open PR `feature/redesign-P1` → `dev-re-design` | [ ] | |
 
 ### Person 2 — `feature/redesign-P2`
