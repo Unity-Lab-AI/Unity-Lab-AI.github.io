@@ -158,7 +158,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| P1-01 | Branch `feature/redesign-P1` from `dev-re-design` | [ ] | |
+| P1-01 | Branch `feature/redesign-P1` from `dev-re-design` | [x] | branch exists, tree clean, on branch since session start |
 | P1-02 | Copy global chrome bundle (8 files) to `/redesign/` | [ ] | shared-tokens, variations, v-d-chrome, v-d-sections, v-d, v-d-smoke, gothic-init, sigils |
 | P1-03 | Copy `/index.html` + verify renders | [ ] | |
 | P1-04 | Copy `/about.html` + about assets + `/about/index.html` stub | [ ] | |
