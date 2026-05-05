@@ -162,7 +162,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P1-02 | Copy global chrome bundle (8 files) to `/redesign/` | [x] | shared-tokens, variations, v-d-chrome, v-d-sections, v-d, v-d-smoke, gothic-init, sigils — all byte-identical |
 | P1-03 | Copy `/index.html` + verify renders | [x] | gothic V-D landing hoisted, byte-identical, smoke test on Sponge |
 | P1-04 | Copy `/about.html` + about assets + `/about/index.html` stub | [x] | gothic V2 cathedral + 5 assets + redirect stub. Orphans (about.js, about-contact.js) preserved. Smoke test on Sponge. |
-| P1-05 | Copy `/contact.html` + contact assets + `/contact/index.html` stub | [ ] | |
+| P1-05 | Copy `/contact.html` + contact assets + `/contact/index.html` stub | [x] | gothic V1 contact + 3 assets + redirect stub. Orphan (contact-form.js) preserved. Smoke test on Sponge. |
 | P1-06 | Copy root configs (`_headers`, `favicon.ico`, `manifest.json`, `humans.txt`, `robots.txt`) | [ ] | diff each first |
 | P1-07 | Rewrite `/sitemap.xml` for new URL set; audit `/sitemap-images.xml` | [ ] | |
 | P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [ ] | |
