@@ -1,0 +1,109 @@
+/* Apps V1 — extends codex-shared chrome.
+   3-up grid of app cards on desktop, 2 on tablet, 1 on mobile. */
+
+.apV1-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+}
+
+.apV1-card {
+  position: relative;
+  padding: 28px 28px 24px;
+  background:
+    linear-gradient(180deg, rgba(220,20,60,0.05) 0%, rgba(220,20,60,0.01) 100%),
+    rgba(8,2,3,0.7);
+  border: 1px solid rgba(220,20,60,0.3);
+  display: flex; flex-direction: column; gap: 16px;
+  transition: border-color .25s, transform .25s, box-shadow .25s;
+}
+.apV1-card::before {
+  content: ''; position: absolute; inset: 8px;
+  border: 1px solid rgba(220,20,60,0.1);
+  pointer-events: none;
+}
+.apV1-card:hover {
+  border-color: var(--crimson-red);
+  box-shadow: 0 0 40px rgba(220,20,60,0.18) inset;
+  transform: translateY(-3px);
+}
+
+.apV1-card-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 14px;
+}
+.apV1-card-iconcol {
+  color: var(--crimson-red);
+  filter: drop-shadow(0 0 12px rgba(220,20,60,0.5));
+}
+.apV1-card-num {
+  font-family: var(--font-display); font-size: 12px; letter-spacing: 4px;
+  color: var(--crimson-red); font-weight: 700;
+  padding: 4px 10px; border: 1px solid rgba(220,20,60,0.5);
+}
+
+.apV1-card h3 {
+  font-family: var(--font-display); font-size: 22px; color: var(--white);
+  font-weight: 700; letter-spacing: 1px; margin: 4px 0 0;
+}
+.apV1-card-tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+}
+.apV1-card-lede {
+  font-family: 'Cormorant Garamond', serif; font-size: 16px; line-height: 1.55;
+  color: var(--bone); font-style: italic; margin: 4px 0 0;
+}
+
+.apV1-card-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+}
+.apV1-tag {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px;
+  color: var(--crimson-red); text-transform: uppercase;
+  white-space: nowrap;
+  padding: 3px 9px;
+  background: rgba(220,20,60,0.08);
+  border: 1px solid rgba(220,20,60,0.4);
+}
+
+.apV1-card-foot {
+  margin-top: auto; padding-top: 14px;
+  border-top: 1px solid rgba(220,20,60,0.25);
+}
+.apV1-card-cta {
+  font-family: var(--font-display); font-size: 11px; letter-spacing: 4px;
+  color: var(--crimson-red); font-weight: 700; text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px;
+  transition: color .2s, letter-spacing .2s;
+}
+.apV1-card-cta:hover { color: var(--white); letter-spacing: 5px; }
+
+/* CTA section */
+.apV1-cta { text-align: center; padding: 40px 0 20px; }
+.apV1-cta .codex-h { margin-bottom: 18px; }
+.apV1-cta-actions {
+  display: inline-flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+}
+.apV1-btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-display); font-size: 12px; letter-spacing: 4px;
+  font-weight: 700; text-transform: uppercase;
+  padding: 14px 28px;
+  text-decoration: none; cursor: pointer;
+  transition: all .2s;
+  border: 1px solid var(--crimson-red);
+}
+.apV1-btn-primary  { background: var(--crimson-red); color: var(--white); }
+.apV1-btn-primary:hover  { background: var(--white); color: var(--crimson-red); border-color: var(--white); letter-spacing: 5px; }
+.apV1-btn-secondary { background: transparent; color: var(--bone); border-color: rgba(220,20,60,0.5); }
+.apV1-btn-secondary:hover { background: rgba(220,20,60,0.12); border-color: var(--crimson-red); color: var(--white); }
+
+/* responsive */
+@media (max-width: 1100px) {
+  .apV1-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .apV1-grid { grid-template-columns: 1fr; gap: 18px; }
+  .apV1-card { padding: 22px; }
+  .apV1-btn { font-size: 11px; letter-spacing: 3px; padding: 12px 22px; }
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — Four Directions · Unity AI Lab</title>
+
+  <!-- Fonts (match production) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+
+  <link rel="stylesheet" href="redesign/shared-tokens.css" />
+  <link rel="stylesheet" href="redesign/about.css" />
+
+  <style>
+    /* Page chrome */
+    html, body { margin: 0; background: #f0eee9; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+    #root { width: 100vw; min-height: 100vh; }
+    /* Inside an artboard, stretch the about page to fill it */
+    .ab-artboard { width: 100%; min-height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Canvas + sigils + content + shared primitives -->
+  <script type="text/babel" src="redesign/design-canvas.jsx"></script>
+  <script type="text/babel" src="redesign/sigils.jsx"></script>
+  <script type="text/babel" src="redesign/about-data.jsx"></script>
+  <script type="text/babel" src="redesign/about-shared.jsx"></script>
+
+  <!-- Four directions -->
+  <script type="text/babel" src="redesign/about-a-dossier.jsx"></script>
+  <script type="text/babel" src="redesign/about-b-reliquary.jsx"></script>
+  <script type="text/babel" src="redesign/about-c-cathedral.jsx"></script>
+  <script type="text/babel" src="redesign/about-d-manifest.jsx"></script>
+
+  <!-- Mount -->
+  <script type="text/babel" data-presets="env,react">
+    const { DesignCanvas, DCSection, DCArtboard } = window;
+    const { DossierAbout, ReliquaryAbout, CathedralAbout, ManifestAbout } = window;
+
+    // Fixed page width matches the production landing's container — 1240px page wrap
+    // plus comfortable bleed for backgrounds, so each artboard reads like a real page.
+    const W = 1240;
+    const H = 4200;   // tall — about page is long-form
+
+    const App = () => (
+      <DesignCanvas projectName="ABOUT · CODEX 00 · FOUR DIRECTIONS">
+        <DCSection
+          id="about-directions"
+          title="About page · four directions"
+          subtitle="Same content, four design languages. Click any artboard's expand icon to view fullscreen."
+        >
+          <DCArtboard id="dossier" label="A · Dossier — classified file" width={W} height={H}>
+            <div className="ab-page"><DossierAbout /></div>
+          </DCArtboard>
+          <DCArtboard id="reliquary" label="B · Reliquary — sigil-led, glass-case" width={W} height={H}>
+            <div className="ab-page"><ReliquaryAbout /></div>
+          </DCArtboard>
+          <DCArtboard id="cathedral" label="C · Cathedral — full-bleed, ceremonial" width={W} height={H}>
+            <div className="ab-page"><CathedralAbout /></div>
+          </DCArtboard>
+          <DCArtboard id="manifest" label="D · Crew Manifest — voyage ledger" width={W} height={H}>
+            <div className="ab-page"><ManifestAbout /></div>
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

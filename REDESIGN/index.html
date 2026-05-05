@@ -1,0 +1,132 @@
+<!doctype html>
+<!--
+  Unity AI Lab — Gothic Landing
+  Creators: Hackall360, Sponge, GFourteen, Alfredo, Red
+  https://www.unityailab.com
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <!-- Cross-browser compatibility -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+
+  <!-- SEO and Social Meta Tags -->
+  <meta name="description" content="Unity AI Lab — Unrestricted AI chatbot, AI integration services, red team & blue team testing. Expert AI development by Hackall360, GFourteen, SpongeBong, Alfredo, and Red. Powered by Pollinations. Join the Unity Discord.">
+  <meta name="keywords" content="Unity AI, Unity AI Lab, Unity Lab AI, UnityAILab, chat bot, AI chat bot, chatbot, AI chatbot, unrestricted AI, unfiltered AI, gothic AI, AI integration services, AI integration, AI red team, AI blue team, red team services, blue team services, Unity Discord, Unity AI Discord, Unity AI Team, Unity AI Lab Team, Unity AI Lab Website, hackall360, hackall360 website, GFourteen, GFourteen website, SpongeBong, SpongeBong website, Pollinations Unity, powered by Pollinations, AI jailbreak, jailbreak AI, prompt engineering, AI development, AI security, AI testing, CodeWringer, AI tools, experimental AI, AI services, AI solutions, conversational AI, AI personas, Unity persona, AI agent, specialized AI, custom AI, AI chatbot development, AI prompt engineering, machine learning, artificial intelligence, AI research, AI innovation, Unity AI chat, Unity chat, AI without limits, boundary-pushing AI, AI developers, AI team, PolliLibJS, PolliLibPy, Pollinations.AI client">
+  <meta name="author" content="Unity AI Lab — Hackall360, GFourteen, SpongeBong, Alfredo, Red">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#0a0000">
+  <link rel="canonical" href="https://www.unityailab.com/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.unityailab.com/">
+  <meta property="og:title" content="Unity AI Lab — The Dark Side of AI">
+  <meta property="og:description" content="An independent lab forging AI tools without the apology layer. Open source, hand-written, intentionally unfiltered. Built by four people who'd rather ship something true than something safe.">
+  <meta property="og:site_name" content="Unity AI Lab">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@UnityAILab">
+  <meta name="twitter:creator" content="@UnityAILab">
+  <meta name="twitter:title" content="Unity AI Lab — The Dark Side of AI">
+  <meta name="twitter:description" content="Unrestricted AI chatbot, AI integration services, red team & blue team testing. Open source. No telemetry. No apology layer.">
+
+  <!-- Mobile web app -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UnityAILab">
+
+  <!-- MS Tile -->
+  <meta name="msapplication-TileColor" content="#0a0000">
+  <meta name="msapplication-navbutton-color" content="#0a0000">
+
+  <!-- Favicon / icons (paths from the original site — copy assets when promoting this page to /) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <title>Unity AI Lab — The Dark Side of AI · Unrestricted AI Chatbot, Integration & Red Team Services</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="redesign/shared-tokens.css">
+  <link rel="stylesheet" href="redesign/variations.css?v=16">
+
+  <style>
+    html, body { background: #030000; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); color: var(--bone); }
+
+    /* Skip-to-main-content (a11y) */
+    .vD-skip {
+      position: absolute;
+      top: -60px;
+      left: 12px;
+      background: var(--crimson-red, #dc143c);
+      color: #fff;
+      padding: 10px 18px;
+      text-decoration: none;
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-size: 12px;
+      z-index: 10000;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .vD-skip:focus { top: 12px; outline: 2px solid #fff; outline-offset: 2px; }
+  </style>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="redesign/sigils.jsx"></script>
+  <script type="text/babel" src="redesign/v-d-chrome.jsx"></script>
+  <script type="text/babel" src="redesign/v-d.jsx"></script>
+  <script type="text/babel" src="redesign/v-d-sections.jsx"></script>
+</head>
+<body>
+  <a class="vD-skip" href="#main-content">Skip to main content</a>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { GothicNavbar, GothicVisitorCounter, GothicHero, GothicFeatures,
+            GothicServices, GothicLibraries, GothicWhy, GothicProof, GothicFooter } = window;
+
+    const App = () => (
+      <div className="vD-page" data-screen-label="Gothic Landing">
+        <GothicNavbar />
+        <main id="main-content" role="main">
+          <GothicHero />
+          <GothicFeatures />
+          <GothicServices />
+          <GothicLibraries />
+          <GothicWhy />
+          <GothicProof />
+        </main>
+        <GothicFooter />
+      </div>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+
+  <!-- Gothic init (polyfills, throttled scroll, form validation, toasts) -->
+  <script src="redesign/gothic-init.js?v=1" defer></script>
+
+  <!-- Interactive smoke (click = puff, hold + drag = throw smoke ball) -->
+  <script src="redesign/v-d-smoke.js?v=3" defer></script>
+</body>
+</html>

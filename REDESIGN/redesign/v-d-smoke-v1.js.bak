@@ -1,0 +1,509 @@
+/**
+ * Unity AI Lab — Gothic Landing
+ * Interactive smoke / ash particle system
+ *
+ * Click   = puff explodes at cursor
+ * Hold    = charge a smoke ball that follows cursor
+ * Drag+go = throw the ball; it bounces off walls and explodes on text
+ *
+ * Adapted from js/smoke-effect.js (v2.1.5) — ES-module export removed,
+ * palette retuned to gothic crimson/ash, runs on touch + desktop.
+ */
+(function () {
+  'use strict';
+
+  function initGothicSmoke() {
+    if (document.getElementById('vD-smoke-canvas')) return; // idempotent
+
+    var canvas = document.createElement('canvas');
+    canvas.id = 'vD-smoke-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    canvas.style.cssText =
+      'position:fixed;top:0;left:0;width:100%;height:100%;' +
+      'pointer-events:none;z-index:9999;';
+    document.body.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+
+    // perf limits
+    var MAX_PARTICLES = 500;
+    var POOL = 1000;
+    var MAX_PUFFS = 6;
+    var HARD_LIMIT_PUFFS = 10;
+    var HARD_LIMIT_BALLS = 10;
+
+    var particles = [];
+    var pool = [];
+    var puffs = [];
+    var balls = [];
+
+    // mouse / touch state
+    var mx = 0, my = 0, lmx = 0, lmy = 0;
+    var mvx = 0, mvy = 0;
+    var lastMove = Date.now();
+    var moving = false;
+    var down = false;
+    var downT = 0, downX = 0, downY = 0;
+    var charging = null;
+
+    var textCache = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      cacheText();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var measureCanvas = document.createElement('canvas');
+    var mctx = measureCanvas.getContext('2d');
+
+    function cacheText() {
+      textCache = [];
+      if (!mctx) return;
+      var els = document.querySelectorAll(
+        'h1, h2, h3, h4, h5, h6, p, a, span, li, button, ' +
+        '.vD-nav-links a, .vD-h2, .vD-title, .vD-srv h3, .vD-feat h3'
+      );
+      var buf = 200;
+      var i;
+      for (i = 0; i < els.length; i++) {
+        var el = els[i];
+        var rect = el.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        if (rect.bottom < -buf || rect.top > window.innerHeight + buf) continue;
+        if (rect.right < -buf || rect.left > window.innerWidth + buf) continue;
+
+        var text = (el.textContent || '').trim();
+        if (!text) continue;
+
+        var style = window.getComputedStyle(el);
+        mctx.font = style.fontSize + ' ' + style.fontFamily;
+        var metrics = mctx.measureText(text);
+        var fontSize = parseFloat(style.fontSize) || 16;
+        var tw = Math.min(metrics.width, rect.width);
+        var th = Math.min(fontSize * 1.2, rect.height);
+        var tx = rect.left + (parseFloat(style.paddingLeft) || 0);
+        var ty = rect.top + (parseFloat(style.paddingTop) || 0);
+
+        textCache.push({
+          x: tx, y: ty, width: tw, height: th,
+          centerX: tx + tw / 2, centerY: ty + th / 2,
+          influenceRange: Math.max(tw, th) / 2 + 30,
+        });
+      }
+    }
+    cacheText();
+
+    var lastScrollCache = 0;
+    window.addEventListener('scroll', function () {
+      var now = Date.now();
+      if (now - lastScrollCache > 500) {
+        cacheText();
+        lastScrollCache = now;
+      }
+    }, { passive: true });
+    setInterval(cacheText, 3000);
+
+    function blank() {
+      return {
+        x: 0, y: 0, vx: 0, vy: 0,
+        size: 0, maxSize: 0, alpha: 0, life: 0,
+        decayRate: 0, growRate: 0, type: 'normal',
+        rotation: 0, rotSpeed: 0,
+        active: false, accumulated: false,
+        targetX: 0, targetY: 0,
+      };
+    }
+    for (var i = 0; i < POOL; i++) pool.push(blank());
+
+    function take(x, y, vx, vy, size, type) {
+      var p;
+      for (var k = 0; k < pool.length; k++) {
+        if (!pool[k].active) { p = pool[k]; break; }
+      }
+      if (!p) p = particles.shift() || blank();
+
+      p.active = true;
+      p.x = x; p.y = y;
+      p.vx = vx !== undefined ? vx : (Math.random() - 0.5) * 0.5;
+      p.vy = vy !== undefined ? vy : -Math.random() * 1.5 - 0.5;
+      p.size = size || Math.random() * 15 + 8;
+      p.maxSize = p.size * 3.5;
+      p.alpha = 0.7;
+      p.life = 1.0;
+      p.type = type || 'normal';
+
+      var puffOver = puffs.length;
+      var dissipationMul = puffOver > MAX_PUFFS
+        ? Math.min(3.0, 1 + (puffOver - MAX_PUFFS) * 0.5) : 1.0;
+      p.decayRate = type === 'puff' ? (0.003 * dissipationMul)
+        : (type === 'wisp' ? 0.008 : 0.005);
+      p.growRate = type === 'puff' ? 0.9 : (type === 'wisp' ? 0.2 : 0.35);
+      p.rotation = Math.random() * Math.PI * 2;
+      p.rotSpeed = (Math.random() - 0.5) * 0.03;
+      p.accumulated = false;
+      p.targetX = mx; p.targetY = my;
+      return p;
+    }
+
+    function step(p) {
+      if (!p.active) return false;
+
+      if (p.accumulated) {
+        var dx = p.targetX - p.x, dy = p.targetY - p.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 5) { p.vx = dx * 0.08; p.vy = dy * 0.08; }
+        else { p.vx *= 0.95; p.vy *= 0.95; }
+      } else {
+        var ddx = mx - p.x, ddy = my - p.y;
+        var dd = Math.sqrt(ddx * ddx + ddy * ddy);
+        if (dd < 150 && moving && !down) {
+          var f = (150 - dd) / 150 * 0.3;
+          p.vx += (ddx / dd) * f * mvx * 0.01;
+          p.vy += (ddy / dd) * f * mvy * 0.01;
+        }
+
+        // text deflection
+        for (var ti = 0; ti < textCache.length; ti++) {
+          var t = textCache[ti];
+          var maxD = t.influenceRange + p.size;
+          if (Math.abs(p.x - t.centerX) > maxD || Math.abs(p.y - t.centerY) > maxD) continue;
+          var tdx = p.x - t.centerX, tdy = p.y - t.centerY;
+          var tdsq = tdx * tdx + tdy * tdy;
+          var infSq = t.influenceRange * t.influenceRange;
+          if (tdsq < infSq) {
+            var td = Math.sqrt(tdsq);
+            if (td < 0.001) td = 0.001;
+            if (p.x >= t.x && p.x <= t.x + t.width &&
+                p.y >= t.y && p.y <= t.y + t.height) {
+              p.vx += (tdx / td) * 0.8;
+              p.vy += (tdy / td) * 0.8;
+            } else {
+              var ang = Math.atan2(tdy, tdx);
+              var curl = (t.influenceRange - td) / t.influenceRange * 0.15;
+              p.vx += Math.cos(ang + Math.PI / 2) * curl;
+              p.vy += Math.sin(ang + Math.PI / 2) * curl;
+              p.vx += (tdx / td) * curl * 0.5;
+              p.vy += (tdy / td) * curl * 0.5;
+            }
+          }
+        }
+
+        p.vx *= 0.98;
+        p.vy -= 0.02;
+        p.vx += (Math.random() - 0.5) * 0.02;
+      }
+
+      p.y += p.vy;
+      p.x += p.vx;
+
+      var damp = 0.6, m = p.size;
+      if (p.x - m < 0) { p.x = m; p.vx = Math.abs(p.vx) * damp; p.life -= 0.05; }
+      if (p.x + m > canvas.width) { p.x = canvas.width - m; p.vx = -Math.abs(p.vx) * damp; p.life -= 0.05; }
+      if (p.y - m < 0) { p.y = m; p.vy = Math.abs(p.vy) * damp; p.life -= 0.05; }
+      if (p.y + m > canvas.height) { p.y = canvas.height - m; p.vy = -Math.abs(p.vy) * damp; p.life -= 0.05; }
+
+      if (p.size < p.maxSize) p.size += p.growRate;
+      p.life -= p.decayRate;
+      p.alpha = p.life * 0.7;
+      p.rotation += p.rotSpeed;
+
+      return p.life > 0;
+    }
+
+    // Gothic palette: warm ash with the faintest crimson core
+    function draw(p) {
+      if (!p.active) return;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      var g = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
+      if (p.type === 'wisp') {
+        g.addColorStop(0,   'rgba(168, 150, 142, ' + p.alpha + ')');
+        g.addColorStop(0.3, 'rgba(120, 96, 92, '  + (p.alpha * 0.7) + ')');
+        g.addColorStop(0.6, 'rgba(72, 50, 50, '   + (p.alpha * 0.4) + ')');
+        g.addColorStop(1,   'rgba(28, 16, 18, 0)');
+      } else if (p.type === 'puff') {
+        g.addColorStop(0,   'rgba(180, 158, 150, ' + p.alpha + ')');
+        g.addColorStop(0.35,'rgba(132, 80, 78, '  + (p.alpha * 0.65) + ')');
+        g.addColorStop(0.7, 'rgba(70, 30, 36, '   + (p.alpha * 0.3)  + ')');
+        g.addColorStop(1,   'rgba(20, 8, 12, 0)');
+      } else {
+        g.addColorStop(0,   'rgba(150, 132, 126, ' + p.alpha + ')');
+        g.addColorStop(0.4, 'rgba(108, 78, 76, '  + (p.alpha * 0.6) + ')');
+        g.addColorStop(0.7, 'rgba(60, 32, 36, '   + (p.alpha * 0.3) + ')');
+        g.addColorStop(1,   'rgba(18, 8, 10, 0)');
+      }
+      ctx.fillStyle = g;
+      ctx.globalCompositeOperation = 'screen';
+      ctx.fillRect(-p.size, -p.size, p.size * 2, p.size * 2);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.restore();
+    }
+
+    function ChargingBall(x, y) {
+      this.x = x; this.y = y;
+      this.size = 15;
+      this.maxSize = 100;
+      this.alpha = 0.8;
+      this.growth = 0.8;
+    }
+    ChargingBall.prototype.update = function (cx, cy) {
+      this.x = cx; this.y = cy;
+      if (this.size < this.maxSize) {
+        this.size += this.growth;
+        this.growth *= 0.99;
+      }
+      if (Math.random() < 0.3 && particles.length < MAX_PARTICLES) {
+        var ang = Math.random() * Math.PI * 2;
+        var d = this.size * 0.7;
+        var p = take(
+          this.x + Math.cos(ang) * d,
+          this.y + Math.sin(ang) * d,
+          (Math.random() - 0.5) * 0.5,
+          -Math.random() * 0.5,
+          Math.random() * 8 + 5,
+          'wisp'
+        );
+        particles.push(p);
+      }
+    };
+    ChargingBall.prototype.draw = function () {
+      ctx.save();
+      var pulse = Math.sin(Date.now() * 0.005) * 0.1 + 0.9;
+      var s = this.size * pulse;
+
+      // crimson outer halo (gothic tint)
+      var halo = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, s * 1.6);
+      halo.addColorStop(0,   'rgba(220, 60, 70, '  + (this.alpha * 0.32) + ')');
+      halo.addColorStop(0.5, 'rgba(150, 40, 50, '  + (this.alpha * 0.18) + ')');
+      halo.addColorStop(1,   'rgba(60, 12, 18, 0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath(); ctx.arc(this.x, this.y, s * 1.6, 0, Math.PI * 2); ctx.fill();
+
+      // ash core
+      var core = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, s);
+      core.addColorStop(0,   'rgba(190, 170, 162, ' + this.alpha + ')');
+      core.addColorStop(0.5, 'rgba(140, 96, 92, '  + (this.alpha * 0.7) + ')');
+      core.addColorStop(1,   'rgba(70, 30, 36, '   + (this.alpha * 0.3) + ')');
+      ctx.fillStyle = core;
+      ctx.beginPath(); ctx.arc(this.x, this.y, s, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    };
+
+    function SmokeBall(x, y, vx, vy, size) {
+      this.x = x; this.y = y;
+      this.vx = vx; this.vy = vy;
+      this.size = size || 35;
+      this.alpha = 0.9;
+      this.active = true;
+      this.gravity = 0.15;
+      this.drag = 0.98;
+      this.smoke = Math.floor((size || 35) / 5);
+    }
+    SmokeBall.prototype.update = function () {
+      this.vy += this.gravity;
+      this.vx *= this.drag; this.vy *= this.drag;
+      this.x += this.vx; this.y += this.vy;
+      this.alpha *= 0.98;
+
+      var bounce = 0.7, hit = false;
+      if (this.x - this.size < 0) { this.x = this.size; this.vx = Math.abs(this.vx) * bounce; hit = true; }
+      if (this.x + this.size > canvas.width) { this.x = canvas.width - this.size; this.vx = -Math.abs(this.vx) * bounce; hit = true; }
+      if (this.y - this.size < 0) { this.y = this.size; this.vy = Math.abs(this.vy) * bounce; hit = true; }
+      if (this.y + this.size > canvas.height) { this.y = canvas.height - this.size; this.vy = -Math.abs(this.vy) * bounce; hit = true; }
+
+      // explode on text
+      for (var ti = 0; ti < textCache.length; ti++) {
+        var t = textCache[ti];
+        if (this.x + this.size > t.x && this.x - this.size < t.x + t.width &&
+            this.y + this.size > t.y && this.y - this.size < t.y + t.height) {
+          this.explode();
+          return false;
+        }
+      }
+
+      if (Math.random() < 0.4 && particles.length < MAX_PARTICLES) {
+        particles.push(take(
+          this.x + (Math.random() - 0.5) * this.size * 0.5,
+          this.y + (Math.random() - 0.5) * this.size * 0.5,
+          this.vx * 0.3 + (Math.random() - 0.5) * 0.5,
+          this.vy * 0.3 + (Math.random() - 0.5) * 0.5,
+          Math.random() * 10 + 5,
+          'wisp'
+        ));
+      }
+
+      var sp = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+      if (sp < 0.5 && hit) { this.explode(); return false; }
+      if (this.alpha < 0.1) { this.explode(); return false; }
+      return this.active;
+    };
+    SmokeBall.prototype.draw = function () {
+      ctx.save();
+      for (var i = 0; i < 2; i++) {
+        var ls = this.size * (1 + i * 0.3);
+        var la = this.alpha * (1 - i * 0.5);
+        var g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, ls);
+        // i=0 → core, i=1 → outer crimson halo
+        if (i === 0) {
+          g.addColorStop(0,   'rgba(180, 158, 150, ' + la + ')');
+          g.addColorStop(0.5, 'rgba(132, 80, 78, '  + (la * 0.6) + ')');
+          g.addColorStop(1,   'rgba(60, 24, 28, 0)');
+        } else {
+          g.addColorStop(0,   'rgba(220, 70, 80, ' + (la * 0.7) + ')');
+          g.addColorStop(0.5, 'rgba(140, 40, 50, ' + (la * 0.4) + ')');
+          g.addColorStop(1,   'rgba(40, 10, 14, 0)');
+        }
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(this.x, this.y, ls, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    };
+    SmokeBall.prototype.explode = function () {
+      var n = Math.min(30 + this.smoke * 2, 50);
+      for (var i = 0; i < n; i++) {
+        if (particles.length >= MAX_PARTICLES) break;
+        if (puffs.length >= HARD_LIMIT_PUFFS) {
+          var oldest = puffs.shift(); if (oldest) oldest.active = false;
+        }
+        var ang = (Math.PI * 2 * i) / n;
+        var sp = Math.random() * 2 + 1;
+        var p = take(
+          this.x, this.y,
+          Math.cos(ang) * sp + this.vx * 0.3,
+          Math.sin(ang) * sp + this.vy * 0.3,
+          Math.random() * 25 + 15,
+          'puff'
+        );
+        particles.push(p);
+        puffs.push(p);
+      }
+      this.active = false;
+    };
+
+    function setMouse(x, y) {
+      lmx = mx; lmy = my;
+      mx = x; my = y;
+      var t = Date.now(), dt = t - lastMove;
+      if (dt > 0) {
+        mvx = (mx - lmx) / dt * 16;
+        mvy = (my - lmy) / dt * 16;
+      }
+      lastMove = t;
+      moving = true;
+    }
+
+    function quickPuff(cx, cy) {
+      var n = Math.min(20, MAX_PARTICLES - particles.length);
+      for (var i = 0; i < n; i++) {
+        if (puffs.length >= HARD_LIMIT_PUFFS) {
+          var oldest = puffs.shift(); if (oldest) oldest.active = false;
+        }
+        var ang = (Math.PI * 2 * i) / n;
+        var sp = Math.random() * 2.5 + 1;
+        var p = take(
+          cx + (Math.random() - 0.5) * 10,
+          cy + (Math.random() - 0.5) * 10,
+          Math.cos(ang) * sp,
+          Math.sin(ang) * sp - 0.8,
+          Math.random() * 18 + 10,
+          'puff'
+        );
+        particles.push(p); puffs.push(p);
+      }
+    }
+
+    function release(x, y) {
+      if (!charging) return;
+      var holdT = Date.now() - downT;
+      var dist = Math.hypot(x - downX, y - downY);
+      var sp = Math.hypot(mvx, mvy);
+      if (holdT < 200 && dist < 10) {
+        quickPuff(x, y);
+      } else if (dist > 30 && sp > 2) {
+        if (balls.length >= HARD_LIMIT_BALLS) balls.shift();
+        balls.push(new SmokeBall(charging.x, charging.y, mvx * 0.8, mvy * 0.8, charging.size));
+      } else {
+        var b = new SmokeBall(charging.x, charging.y, 0, 0, charging.size);
+        b.explode();
+      }
+      charging = null;
+    }
+
+    document.addEventListener('mousemove', function (e) { setMouse(e.clientX, e.clientY); });
+    document.addEventListener('mousedown', function (e) {
+      down = true; downT = Date.now(); downX = e.clientX; downY = e.clientY;
+      charging = new ChargingBall(e.clientX, e.clientY);
+    });
+    document.addEventListener('mouseup', function (e) {
+      if (!down) return;
+      down = false;
+      release(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchstart', function (e) {
+      if (!e.touches.length) return;
+      var t = e.touches[0];
+      down = true; downT = Date.now(); downX = t.clientX; downY = t.clientY;
+      setMouse(t.clientX, t.clientY);
+      charging = new ChargingBall(t.clientX, t.clientY);
+    }, { passive: true });
+    document.addEventListener('touchmove', function (e) {
+      if (!e.touches.length) return;
+      var t = e.touches[0];
+      setMouse(t.clientX, t.clientY);
+    }, { passive: true });
+    document.addEventListener('touchend', function () {
+      if (down) release(mx, my);
+      down = false; moving = false;
+    }, { passive: true });
+
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (charging && down) {
+        charging.update(mx, my);
+        charging.draw();
+      }
+
+      var keep = [], keepPuffs = [];
+      for (var i = 0; i < particles.length; i++) {
+        if (step(particles[i])) {
+          draw(particles[i]);
+          keep.push(particles[i]);
+          if (particles[i].type === 'puff' && particles[i].active) keepPuffs.push(particles[i]);
+        } else {
+          particles[i].active = false;
+        }
+      }
+      particles = keep;
+      puffs = keepPuffs;
+
+      var keepBalls = [];
+      for (var k = 0; k < balls.length; k++) {
+        if (balls[k].update()) {
+          balls[k].draw();
+          keepBalls.push(balls[k]);
+        }
+      }
+      balls = keepBalls;
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  // boot once DOM is ready and React has had a frame to render
+  function boot() {
+    // wait one rAF so the React tree is in the DOM before we cache text bounds
+    requestAnimationFrame(function () { requestAnimationFrame(initGothicSmoke); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
