@@ -168,7 +168,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [x] | 51 files, 9 subfolders + README, byte-identical, robots.txt already disallows /_archive/ |
 | P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [x] | 16 files, robots.txt already disallows /docs/ |
 | P1-10 | Move `/chats/` → `/.claude/archive/chats/` | [x] | 3 chat transcripts off site root |
-| P1-11 | Open PR `feature/redesign-P1` → `dev-re-design` | [ ] | |
+| P1-11 | Open PR `feature/redesign-P1` → `dev-re-design` | [x] | PR #44 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/44 |
 
 ### Person 2 — `feature/redesign-P2`
 
