@@ -1,0 +1,42 @@
+/* Unity AI Lab — redesign tokens
+   Built on existing styles.css palette, extended with mono font + scale
+*/
+@font-face {
+    font-family: 'Trajan Pro';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Trajan Pro Regular'), url('../fonts/trajan-pro/TrajanPro-Regular.woff') format('woff');
+}
+@font-face {
+    font-family: 'Trajan Pro';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Trajan Pro Bold'), url('../fonts/trajan-pro/TrajanPro-Bold.woff') format('woff');
+}
+
+:root {
+    --primary-black: #0a0a0a;
+    --secondary-black: #1a1a1a;
+    --tertiary-black: #141414;
+    --dark-grey: #2a2a2a;
+    --mid-grey: #4a4a4a;
+    --crimson-red: #dc143c;
+    --blood-red: #8b0000;
+    --accent-red: #ff0033;
+    --ember: #ff5a3c;
+    --bone: #e8e2d4;
+    --light-grey: #cccccc;
+    --muted-grey: #6a6a6a;
+    --white: #ffffff;
+    --gradient-red: linear-gradient(135deg, #8b0000 0%, #dc143c 50%, #ff0033 100%);
+
+    --font-display: 'Trajan Pro', 'Cormorant Garamond', serif;
+    --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--primary-black); color: var(--light-grey); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+::selection { background: var(--crimson-red); color: var(--white); }
