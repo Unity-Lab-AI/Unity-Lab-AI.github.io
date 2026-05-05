@@ -22,7 +22,19 @@
 
 ## P1 - HIGH PRIORITY
 
-*No active P1 tasks*
+### [~] Redesign-merge integration pass (PR #44 + PR #45 → dev-re-design)
+**Status:** IN PROGRESS — 2026-05-06
+**Branch:** `dev-re-design` (current)
+**User direction (verbatim, LAW #0):**
+> "There are 2 PRs on this repo, #44 & #45, these are for P1 & P2 - These need merging together on the current repo branch. There is also additional iformation on the PRs pull requests; as well as known problems markdown files. I need you to go throught and complete the pull requests going into the branch please maks eure the redisign is upto specifications. I need you to make sure everything is wired up and properly follows the redisign specifications, thank you."
+
+**Scope:**
+- Merge `feature/redesign-P1` (#44) into `dev-re-design`
+- Merge `feature/redesign-P2` (#45) into `dev-re-design`
+- Verify redesign is up to specifications per `Docs/REDESIGN-MIGRATION.md`
+- Verify everything is wired up and properly follows the redesign specifications
+- Read PR bodies + `docs/KNOWN-PROBLEMS.md` + all `/docs/redesign/notes-p[12]-*.md`
+- Smoke test before declaring complete
 
 ---
 
