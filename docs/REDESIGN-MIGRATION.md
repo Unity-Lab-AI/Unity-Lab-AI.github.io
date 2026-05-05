@@ -158,17 +158,17 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| P1-01 | Branch `feature/redesign-P1` from `dev-re-design` | [ ] | |
-| P1-02 | Copy global chrome bundle (8 files) to `/redesign/` | [ ] | shared-tokens, variations, v-d-chrome, v-d-sections, v-d, v-d-smoke, gothic-init, sigils |
-| P1-03 | Copy `/index.html` + verify renders | [ ] | |
-| P1-04 | Copy `/about.html` + about assets + `/about/index.html` stub | [ ] | |
-| P1-05 | Copy `/contact.html` + contact assets + `/contact/index.html` stub | [ ] | |
-| P1-06 | Copy root configs (`_headers`, `favicon.ico`, `manifest.json`, `humans.txt`, `robots.txt`) | [ ] | diff each first |
-| P1-07 | Rewrite `/sitemap.xml` for new URL set; audit `/sitemap-images.xml` | [ ] | |
-| P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [ ] | |
-| P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [ ] | |
-| P1-10 | Move `/chats/` → `/.claude/archive/chats/` | [ ] | |
-| P1-11 | Open PR `feature/redesign-P1` → `dev-re-design` | [ ] | |
+| P1-01 | Branch `feature/redesign-P1` from `dev-re-design` | [x] | branch exists, tree clean, on branch since session start |
+| P1-02 | Copy global chrome bundle (8 files) to `/redesign/` | [x] | shared-tokens, variations, v-d-chrome, v-d-sections, v-d, v-d-smoke, gothic-init, sigils — all byte-identical |
+| P1-03 | Copy `/index.html` + verify renders | [x] | gothic V-D landing hoisted, byte-identical, smoke test on Sponge |
+| P1-04 | Copy `/about.html` + about assets + `/about/index.html` stub | [x] | gothic V2 cathedral + 5 assets + redirect stub. Orphans (about.js, about-contact.js) preserved. Smoke test on Sponge. |
+| P1-05 | Copy `/contact.html` + contact assets + `/contact/index.html` stub | [x] | gothic V1 contact + 3 assets + redirect stub. Orphan (contact-form.js) preserved. Smoke test on Sponge. |
+| P1-06 | Copy root configs (`_headers`, `favicon.ico`, `manifest.json`, `humans.txt`, `robots.txt`) | [x] | 2 diffs documented in notes-p1-config-diffs.md (humans.txt contact email, robots.txt /_archive+/docs disallow) |
+| P1-07 | Rewrite `/sitemap.xml` for new URL set; audit `/sitemap-images.xml` | [x] | 9 URLs, .html canonical form, sitemap-images audited (9→2 verified refs), notes-p1-sitemap.md logs decision |
+| P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [x] | 51 files, 9 subfolders + README, byte-identical, robots.txt already disallows /_archive/ |
+| P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [x] | 16 files, robots.txt already disallows /docs/ |
+| P1-10 | Move `/chats/` → `/.claude/archive/chats/` | [x] | 3 chat transcripts off site root |
+| P1-11 | Open PR `feature/redesign-P1` → `dev-re-design` | [x] | PR #44 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/44 |
 
 ### Person 2 — `feature/redesign-P2`
 

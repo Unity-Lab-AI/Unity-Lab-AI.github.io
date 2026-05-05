@@ -21,6 +21,8 @@
 User-agent: *
 Allow: /
 Disallow: /Archived/
+Disallow: /_archive/
+Disallow: /docs/
 Disallow: /playwright-report/
 Disallow: /test-results/
 Disallow: /*.min.js$

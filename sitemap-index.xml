@@ -15,13 +15,13 @@
   <!-- Main pages sitemap -->
   <sitemap>
     <loc>https://www.unityailab.com/sitemap.xml</loc>
-    <lastmod>2025-12-17</lastmod>
+    <lastmod>2026-05-05</lastmod>
   </sitemap>
-  
+
   <!-- Images sitemap for visual content SEO -->
   <sitemap>
     <loc>https://www.unityailab.com/sitemap-images.xml</loc>
-    <lastmod>2025-12-17</lastmod>
+    <lastmod>2026-05-05</lastmod>
   </sitemap>
 
 </sitemapindex>
