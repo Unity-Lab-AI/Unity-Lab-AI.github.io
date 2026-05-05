@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Unity AI Lab Sitemap Index
+  https://www.unityailab.com/
+  
+  Master sitemap index linking to all individual sitemaps for comprehensive
+  search engine coverage of AI chatbot, text generation, image generation,
+  voice AI, and enterprise AI services.
+  
+  Keywords: AI lab sitemap, artificial intelligence, machine learning,
+  generative AI, LLM, AI chatbot, ChatGPT alternative, free AI tools
+-->
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Main pages sitemap -->
+  <sitemap>
+    <loc>https://www.unityailab.com/sitemap.xml</loc>
+    <lastmod>2025-12-17</lastmod>
+  </sitemap>
+  
+  <!-- Images sitemap for visual content SEO -->
+  <sitemap>
+    <loc>https://www.unityailab.com/sitemap-images.xml</loc>
+    <lastmod>2025-12-17</lastmod>
+  </sitemap>
+
+</sitemapindex>

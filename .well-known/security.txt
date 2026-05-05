@@ -1,0 +1,50 @@
+# Unity AI Lab Security Policy
+# https://www.unityailab.com/.well-known/security.txt
+#
+# If you have discovered a security vulnerability, we appreciate your help
+# in disclosing it to us in a responsible manner.
+
+# Contact Information
+Contact: mailto:unityailabcontact@gmail.com
+Contact: https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/security/advisories
+
+# Encryption (Optional - add PGP key if available)
+# Encryption: https://www.unityailab.com/.well-known/pgp-key.txt
+
+# Acknowledgments
+Acknowledgments: https://www.unityailab.com/security-thanks.html
+
+# Policy
+Policy: https://www.unityailab.com/security-policy.html
+
+# Preferred Languages
+Preferred-Languages: en
+
+# Canonical URL
+Canonical: https://www.unityailab.com/.well-known/security.txt
+
+# Expiration Date (update annually)
+Expires: 2026-12-31T23:59:59.000Z
+
+# Hiring (if you have security positions)
+# Hiring: https://www.unityailab.com/careers/
+
+# --- Additional Information ---
+#
+# Unity AI Lab specializes in AI security testing including:
+# - Red Team AI Security Assessments
+# - Blue Team AI Defense Strategies
+# - AI Jailbreak Research
+# - Prompt Injection Testing
+# - AI Model Security Audits
+#
+# We welcome responsible disclosure of vulnerabilities in:
+# - Our website (unityailab.com)
+# - Our AI applications and demos
+# - Our open source projects on GitHub
+#
+# Scope:
+# - In scope: *.unityailab.com, Unity-Lab-AI GitHub repositories
+# - Out of scope: Third-party services (Pollinations.AI, Discord, etc.)
+#
+# Thank you for helping keep Unity AI Lab secure!

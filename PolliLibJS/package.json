@@ -1,0 +1,27 @@
+{
+  "name": "pollilibjs",
+  "version": "2.1.5",
+  "description": "JavaScript library for interacting with the Pollinations.AI API",
+  "main": "index.js",
+  "scripts": {
+    "test": "node pollylib.js"
+  },
+  "keywords": [
+    "pollinations",
+    "ai",
+    "text-generation",
+    "image-generation",
+    "llm",
+    "api"
+  ],
+  "author": "Unity AI Lab - Hackall360, Sponge, GFourteen",
+  "homepage": "https://www.unityailab.com",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io"
+  }
+}
