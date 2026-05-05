@@ -183,7 +183,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P2-07 | Copy `/ai.html` + ai assets + `/ai/index.html` stub | [x] | preserve `/ai/demo/` untouched |
 | P2-08 | Copy `/apps.html` + apps assets + `/apps/index.html` stub | [x] | preserve `/apps/<8 demos>/` untouched |
 | P2-09 | Fix `/redesign/apps-data.jsx` URL paths | [x] | 8 demo URLs + 2 cross-page URLs |
-| P2-10 | Investigate `/apps.html` loading `about.css` + `about-v2.css` | [ ] | log result to `/docs/redesign/notes-p2-apps-about-css.md` |
+| P2-10 | Investigate `/apps.html` loading `about.css` + `about-v2.css` | [x] | log result to `/docs/redesign/notes-p2-apps-about-css.md` |
 | P2-11 | Open PR `feature/redesign-P2` → `dev-re-design` | [ ] | |
 
 ### Post-work integration (NOT during dual-person work)
