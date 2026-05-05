@@ -1,0 +1,162 @@
+/* Projects V1 — extends codex-shared chrome.
+   Project grid + status pills + CTA. Card glyph styles mirror sV1 cards. */
+
+/* grid */
+.pV1-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+}
+
+/* card */
+.pV1-card {
+  position: relative; padding: 36px 32px 28px;
+  background:
+    linear-gradient(180deg, rgba(220,20,60,0.06) 0%, rgba(220,20,60,0.02) 100%),
+    rgba(8,2,3,0.7);
+  border: 1px solid rgba(220,20,60,0.35);
+  display: flex; flex-direction: column; gap: 18px;
+  transition: border-color .25s, transform .25s, box-shadow .25s;
+}
+.pV1-card::before {
+  content: ''; position: absolute; inset: 8px;
+  border: 1px solid rgba(220,20,60,0.12);
+  pointer-events: none;
+}
+.pV1-card:hover {
+  border-color: var(--crimson-red);
+  box-shadow: 0 0 50px rgba(220,20,60,0.18) inset;
+  transform: translateY(-3px);
+}
+
+/* card head: icon column + title column */
+.pV1-card-head {
+  display: grid; grid-template-columns: 64px 1fr; gap: 22px;
+  align-items: start;
+}
+.pV1-card-iconcol {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: var(--crimson-red);
+  filter: drop-shadow(0 0 14px rgba(220,20,60,0.5));
+}
+.pV1-card-num {
+  font-family: var(--font-display); font-size: 12px; letter-spacing: 6px;
+  color: var(--crimson-red); font-weight: 700;
+}
+.pV1-card-icon { color: var(--crimson-red); }
+
+.pV1-card-titlecol { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pV1-card-titlerow {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+  flex-wrap: wrap;
+}
+.pV1-card h3 {
+  font-family: var(--font-display); font-size: 26px; color: var(--white);
+  font-weight: 700; letter-spacing: 1px; margin: 0;
+}
+.pV1-card-tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+}
+
+/* lede */
+.pV1-card-lede {
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; line-height: 1.55;
+  color: var(--bone); font-style: italic; margin: 0;
+}
+
+/* bullets */
+.pV1-card-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pV1-card-bullets li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--light-grey);
+}
+.pV1-bullet-mark {
+  flex: 0 0 14px;
+  color: var(--crimson-red);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.5;
+  font-family: 'Cormorant Garamond', 'Apple Color Emoji', 'Segoe UI Symbol', serif;
+}
+
+/* tag row */
+.pV1-card-tagrow {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.pV1-tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;
+  color: var(--crimson-red); text-transform: uppercase;
+  white-space: nowrap;
+  padding: 4px 12px;
+  background: rgba(220,20,60,0.08);
+  border: 1px solid rgba(220,20,60,0.45);
+}
+
+/* status pill (top-right of title row) */
+.pV1-status {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 3px;
+  font-weight: 700; text-transform: uppercase;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.pV1-status-tag-live        { background: var(--crimson-red); color: var(--white); }
+.pV1-status-tag-open-source { background: rgba(220,20,60,0.15); color: var(--crimson-red); border: 1px solid var(--crimson-red); }
+.pV1-status-tag-research    { background: transparent; color: var(--bone); border: 1px solid rgba(220,20,60,0.4); }
+.pV1-status-tag-in-dev      { background: transparent; color: var(--muted-grey); border: 1px dashed rgba(220,20,60,0.5); }
+.pV1-status-tag-achievement { background: rgba(255,255,255,0.06); color: var(--white); border: 1px solid rgba(255,255,255,0.4); }
+
+/* card foot — CTA */
+.pV1-card-foot {
+  display: flex; gap: 18px; align-items: center;
+  margin-top: auto;
+  padding-top: 14px; border-top: 1px solid rgba(220,20,60,0.25);
+}
+.pV1-card-cta {
+  font-family: var(--font-display); font-size: 11px; letter-spacing: 4px;
+  color: var(--crimson-red); font-weight: 700; text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px;
+  transition: color .2s, letter-spacing .2s;
+}
+.pV1-card-cta:hover { color: var(--white); letter-spacing: 5px; }
+
+/* CTA section at bottom */
+.pV1-cta { text-align: center; padding: 40px 0 20px; }
+.pV1-cta .codex-h { margin-bottom: 18px; }
+.pV1-cta .codex-section-lede { margin: 0 auto 32px; }
+.pV1-cta-button {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-display); font-size: 13px; letter-spacing: 5px;
+  font-weight: 700; text-transform: uppercase;
+  padding: 16px 36px;
+  border: 1px solid var(--crimson-red);
+  background: var(--crimson-red); color: var(--white);
+  text-decoration: none;
+  transition: all .2s;
+}
+.pV1-cta-button:hover {
+  background: var(--white); color: var(--crimson-red);
+  border-color: var(--white); letter-spacing: 6px;
+}
+
+/* responsive */
+@media (max-width: 1100px) {
+  .pV1-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .pV1-card { padding: 28px 22px 22px; }
+  .pV1-card-head { grid-template-columns: 48px 1fr; gap: 16px; }
+  .pV1-card h3 { font-size: 22px; }
+  .pV1-cta-button { font-size: 11px; letter-spacing: 4px; padding: 14px 24px; }
+}

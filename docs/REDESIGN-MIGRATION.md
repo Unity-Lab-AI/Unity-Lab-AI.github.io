@@ -174,17 +174,17 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| P2-01 | Branch `feature/redesign-P2` from `dev-re-design` | [ ] | |
-| P2-02 | Copy `/redesign/codex-shared.css` | [ ] | |
-| P2-03 | Move `REDESIGN/docs/` + `HANDOFF.md` + `diff-from-original.md` + `README.md` → `/docs/redesign/` | [ ] | |
-| P2-04 | Copy `/Unity Web Design.html` + uwd-* assets + variation jsx | [ ] | |
-| P2-05 | Copy `/services.html` + services assets + write fresh `/services/index.html` stub | [ ] | services stub missing from REDESIGN — write from `about/index.html` template |
-| P2-06 | Copy `/projects.html` + projects assets + `/projects/index.html` stub | [ ] | |
-| P2-07 | Copy `/ai.html` + ai assets + `/ai/index.html` stub | [ ] | preserve `/ai/demo/` untouched |
-| P2-08 | Copy `/apps.html` + apps assets + `/apps/index.html` stub | [ ] | preserve `/apps/<8 demos>/` untouched |
-| P2-09 | Fix `/redesign/apps-data.jsx` URL paths | [ ] | 8 demo URLs + 2 cross-page URLs |
-| P2-10 | Investigate `/apps.html` loading `about.css` + `about-v2.css` | [ ] | log result to `/docs/redesign/notes-p2-apps-about-css.md` |
-| P2-11 | Open PR `feature/redesign-P2` → `dev-re-design` | [ ] | |
+| P2-01 | Branch `feature/redesign-P2` from `dev-re-design` | [x] | |
+| P2-02 | Copy `/redesign/codex-shared.css` | [x] | |
+| P2-03 | Move `REDESIGN/docs/` + `HANDOFF.md` + `diff-from-original.md` + `README.md` → `/docs/redesign/` | [x] | |
+| P2-04 | Copy `/Unity Web Design.html` + uwd-* assets + variation jsx | [x] | |
+| P2-05 | Copy `/services.html` + services assets + write fresh `/services/index.html` stub | [x] | services stub missing from REDESIGN — write from `about/index.html` template |
+| P2-06 | Copy `/projects.html` + projects assets + `/projects/index.html` stub | [x] | Outbound GitHub URLs flagged in notes-p2-projects-outbound-links.md per HANDOFF item 8 |
+| P2-07 | Copy `/ai.html` + ai assets + `/ai/index.html` stub | [x] | preserve `/ai/demo/` untouched |
+| P2-08 | Copy `/apps.html` + apps assets + `/apps/index.html` stub | [x] | preserve `/apps/<8 demos>/` untouched |
+| P2-09 | Fix `/redesign/apps-data.jsx` URL paths | [x] | 8 demo URLs + 2 cross-page URLs |
+| P2-10 | Investigate `/apps.html` loading `about.css` + `about-v2.css` | [x] | log result to `/docs/redesign/notes-p2-apps-about-css.md` |
+| P2-11 | Open PR `feature/redesign-P2` → `dev-re-design` | [x] | https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/45 |
 
 ### Post-work integration (NOT during dual-person work)
 
