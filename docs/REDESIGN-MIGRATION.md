@@ -174,8 +174,8 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| P2-01 | Branch `feature/redesign-P2` from `dev-re-design` | [ ] | |
-| P2-02 | Copy `/redesign/codex-shared.css` | [ ] | |
+| P2-01 | Branch `feature/redesign-P2` from `dev-re-design` | [x] | |
+| P2-02 | Copy `/redesign/codex-shared.css` | [x] | |
 | P2-03 | Move `REDESIGN/docs/` + `HANDOFF.md` + `diff-from-original.md` + `README.md` → `/docs/redesign/` | [ ] | |
 | P2-04 | Copy `/Unity Web Design.html` + uwd-* assets + variation jsx | [ ] | |
 | P2-05 | Copy `/services.html` + services assets + write fresh `/services/index.html` stub | [ ] | services stub missing from REDESIGN — write from `about/index.html` template |
