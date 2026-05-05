@@ -163,7 +163,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P1-03 | Copy `/index.html` + verify renders | [x] | gothic V-D landing hoisted, byte-identical, smoke test on Sponge |
 | P1-04 | Copy `/about.html` + about assets + `/about/index.html` stub | [x] | gothic V2 cathedral + 5 assets + redirect stub. Orphans (about.js, about-contact.js) preserved. Smoke test on Sponge. |
 | P1-05 | Copy `/contact.html` + contact assets + `/contact/index.html` stub | [x] | gothic V1 contact + 3 assets + redirect stub. Orphan (contact-form.js) preserved. Smoke test on Sponge. |
-| P1-06 | Copy root configs (`_headers`, `favicon.ico`, `manifest.json`, `humans.txt`, `robots.txt`) | [ ] | diff each first |
+| P1-06 | Copy root configs (`_headers`, `favicon.ico`, `manifest.json`, `humans.txt`, `robots.txt`) | [x] | 2 diffs documented in notes-p1-config-diffs.md (humans.txt contact email, robots.txt /_archive+/docs disallow) |
 | P1-07 | Rewrite `/sitemap.xml` for new URL set; audit `/sitemap-images.xml` | [ ] | |
 | P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [ ] | |
 | P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [ ] | |
