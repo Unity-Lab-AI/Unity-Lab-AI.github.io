@@ -179,7 +179,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P2-03 | Move `REDESIGN/docs/` + `HANDOFF.md` + `diff-from-original.md` + `README.md` → `/docs/redesign/` | [x] | |
 | P2-04 | Copy `/Unity Web Design.html` + uwd-* assets + variation jsx | [x] | |
 | P2-05 | Copy `/services.html` + services assets + write fresh `/services/index.html` stub | [x] | services stub missing from REDESIGN — write from `about/index.html` template |
-| P2-06 | Copy `/projects.html` + projects assets + `/projects/index.html` stub | [ ] | |
+| P2-06 | Copy `/projects.html` + projects assets + `/projects/index.html` stub | [x] | Outbound GitHub URLs flagged in notes-p2-projects-outbound-links.md per HANDOFF item 8 |
 | P2-07 | Copy `/ai.html` + ai assets + `/ai/index.html` stub | [ ] | preserve `/ai/demo/` untouched |
 | P2-08 | Copy `/apps.html` + apps assets + `/apps/index.html` stub | [ ] | preserve `/apps/<8 demos>/` untouched |
 | P2-09 | Fix `/redesign/apps-data.jsx` URL paths | [ ] | 8 demo URLs + 2 cross-page URLs |
