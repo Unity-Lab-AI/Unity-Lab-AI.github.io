@@ -165,8 +165,8 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P1-05 | Copy `/contact.html` + contact assets + `/contact/index.html` stub | [x] | gothic V1 contact + 3 assets + redirect stub. Orphan (contact-form.js) preserved. Smoke test on Sponge. |
 | P1-06 | Copy root configs (`_headers`, `favicon.ico`, `manifest.json`, `humans.txt`, `robots.txt`) | [x] | 2 diffs documented in notes-p1-config-diffs.md (humans.txt contact email, robots.txt /_archive+/docs disallow) |
 | P1-07 | Rewrite `/sitemap.xml` for new URL set; audit `/sitemap-images.xml` | [x] | 9 URLs, .html canonical form, sitemap-images audited (9→2 verified refs), notes-p1-sitemap.md logs decision |
-| P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [ ] | |
-| P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [ ] | |
+| P1-08 | Move `REDESIGN/_archive/` → `/_archive/` | [x] | 51 files, 9 subfolders + README, byte-identical, robots.txt already disallows /_archive/ |
+| P1-09 | Move `REDESIGN/screenshots/` → `/docs/redesign/screenshots/` | [x] | 16 files, robots.txt already disallows /docs/ |
 | P1-10 | Move `/chats/` → `/.claude/archive/chats/` | [ ] | |
 | P1-11 | Open PR `feature/redesign-P1` → `dev-re-design` | [ ] | |
 
