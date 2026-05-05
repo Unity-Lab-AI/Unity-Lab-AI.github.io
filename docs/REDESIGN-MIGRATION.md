@@ -177,7 +177,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | P2-01 | Branch `feature/redesign-P2` from `dev-re-design` | [x] | |
 | P2-02 | Copy `/redesign/codex-shared.css` | [x] | |
 | P2-03 | Move `REDESIGN/docs/` + `HANDOFF.md` + `diff-from-original.md` + `README.md` → `/docs/redesign/` | [x] | |
-| P2-04 | Copy `/Unity Web Design.html` + uwd-* assets + variation jsx | [ ] | |
+| P2-04 | Copy `/Unity Web Design.html` + uwd-* assets + variation jsx | [x] | |
 | P2-05 | Copy `/services.html` + services assets + write fresh `/services/index.html` stub | [ ] | services stub missing from REDESIGN — write from `about/index.html` template |
 | P2-06 | Copy `/projects.html` + projects assets + `/projects/index.html` stub | [ ] | |
 | P2-07 | Copy `/ai.html` + ai assets + `/ai/index.html` stub | [ ] | preserve `/ai/demo/` untouched |
