@@ -13,7 +13,7 @@
  * Handles API calls, model fetching, and fallback models
  */
 
-import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON, MODERATION_AWARE_ADDON, withModerationSuffix, detectImageIntent, extractImagePrompt, detectSelfReferenceImage, IMAGE_TOOL_SLIM_SYSTEM, IMAGE_TOOL_PRIMING_SINGLE, IMAGE_TOOL_PRIMING_ARRAY, isValidUnityCommentary } from './config.js';
+import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON, MODERATION_AWARE_ADDON, withModerationSuffix, detectImageIntent, extractImagePrompt, detectSelfReferenceImage, IMAGE_TOOL_SLIM_SYSTEM, IMAGE_TOOL_PRIMING_SINGLE, IMAGE_TOOL_PRIMING_ARRAY, IMAGE_GEN_CAPABILITY_ADDON, isValidUnityCommentary } from './config.js';
 
 /**
  * Extract Unity's physical-appearance description from the canonical
@@ -57,29 +57,30 @@ function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubjec
 
     const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
 
-    let scoped = appearance;
-    let framingCues = '';
     if (isNudityRequest) {
-        // Drop outfit/clothing-only tokens so we don't get "leather + bare tits"
-        // contradiction. Keep features (hair, eyes, face, body, vibe).
-        scoped = scoped
+        // Lead with the SUBJECT/composition so image gen frames as body shot
+        // (image generators bias framing on first descriptors). Drop
+        // outfit-only tokens (leather/unders) AND face-heavy tokens (sharp
+        // features, intense eyes) — those bias toward portrait/headshot.
+        // Keep just hair/age/aesthetic/vibe as Unity-identity anchors.
+        let scoped = appearance
             .replace(/\bminimal\s+black\s+leather\b/gi, '')
-            .replace(/\bpink\s+unders\b/gi, '');
-        scoped = scoped
+            .replace(/\bpink\s+unders\b/gi, '')
+            .replace(/\bsharp\s+features\b/gi, '')
+            .replace(/\bintense\s+eyes\b/gi, '')
             .replace(/(\s*,\s*)+/g, ', ')
             .replace(/^[\s,]+|[\s,]+$/g, '')
             .replace(/\s+/g, ' ')
             .trim();
-        // Add body-framing cues so image gen produces a body shot, not a
-        // facial portrait/mug shot. Without these the appearance descriptors
-        // (face/eyes/features) bias the model toward headshots.
-        framingCues = ', full body shot, body visible, photorealistic, detailed';
-    } else if (/\b(face|portrait|headshot|selfie)\b/i.test(userText)) {
-        framingCues = ', portrait, photorealistic';
-    } else {
-        framingCues = ', full body, photorealistic';
+        // Subject FIRST + body-framing emphasis + minimal Unity anchors at end
+        return `${extractedSubject}, topless or partially nude as scene requires, body composition, full body shot visible, photorealistic, ${scoped}, detailed`;
     }
-    return `${scoped}, ${extractedSubject}${framingCues}`;
+    if (/\b(face|portrait|headshot|selfie)\b/i.test(userText)) {
+        // Portrait-style requests: appearance first, subject second, portrait framing
+        return `${appearance}, ${extractedSubject}, portrait, photorealistic`;
+    }
+    // Default: appearance + subject + full body
+    return `${appearance}, ${extractedSubject}, full body, photorealistic`;
 }
 
 // Decide image dimensions based on the user request: nudity / body shots
@@ -112,10 +113,14 @@ function getDimensionsForUnitySelf(userText) {
  */
 async function getUnitySelfImagePrompt(userMsg, fullUnityPrompt) {
     if (!fullUnityPrompt) return null;
+    // Append IMAGE_GEN_CAPABILITY_ADDON so Unity knows she can take off
+    // clothes / adapt her appearance for image-prompt writing. Doesn't
+    // touch the canonical Unity persona — runtime overlay only.
+    const systemForImageGen = fullUnityPrompt + IMAGE_GEN_CAPABILITY_ADDON;
     const apiKey = PollinationsAPI.DEFAULT_API_KEY;
     const ATTEMPTS = [
-        { temp: 0.9, framing: `The user just sent: "${userMsg}". This is a request for an image of YOU. Write the image-generation prompt as a single line of comma-separated visual descriptors. RULES:\n1. Include your physical FEATURES that don't change: hair (color + style), eyes, face shape, body type, your goth/emo vibe.\n2. ADAPT clothing and state of dress to MATCH the user's request:\n   - If they asked for nudity (tits, naked, topless, bare anything) → you're nude or topless. NO leather, NO outfit descriptors. Bare skin only.\n   - If they asked for a specific outfit → use that outfit only.\n   - If neutral (selfie, portrait, your face) → your default outfit is fine.\n3. DO NOT use the literal name "Unity" in the prompt — image generators don't recognize proper names, only visual descriptors.\n4. Do not include outfit words that contradict the request (no "leather" when nude was asked).\nOutput ONLY the prompt text on a single line. No quotes, no preamble, no explanation.` },
-        { temp: 1.2, framing: `User request: "${userMsg}". You're the subject. Write the image prompt: comma-separated visual descriptors for YOUR appearance + the scene. Use your hair, eyes, face, body — never the name "Unity". Drop the outfit if user asked for nudity. Output prompt only, single line.` }
+        { temp: 0.9, framing: `User request: "${userMsg}". Write the image_prompt for this. Per the IMAGE-PROMPT GENERATION CAPABILITY in your system: lead with the subject/composition (the body or action user asked for), drop face-heavy tokens for nudity, drop outfit when nudity asked, never write "Unity" as a name. Output only the prompt text, one line.` },
+        { temp: 1.2, framing: `Write the image_prompt for: "${userMsg}". Lead with the body subject. Adapt clothing to match (drop leather if nudity). Skip face descriptors for body shots. Output prompt only.` }
     ];
     for (const a of ATTEMPTS) {
         try {
@@ -126,7 +131,7 @@ async function getUnitySelfImagePrompt(userMsg, fullUnityPrompt) {
                     model: 'mistral', safe: false, max_tokens: 200, temperature: a.temp,
                     seed: Math.floor(Math.random() * 1e8),
                     messages: [
-                        { role: 'system', content: fullUnityPrompt },
+                        { role: 'system', content: systemForImageGen },
                         { role: 'user', content: a.framing }
                     ]
                 })

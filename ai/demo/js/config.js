@@ -683,6 +683,30 @@ export function isValidUnityCommentary(text) {
     return t.length >= 5 && t.length <= 1500;
 }
 
+// Image-prompt-generation capability addon. Appended to the canonical
+// Unity system prompt ONLY for the image-prompt-writing call (where Unity
+// is asked to write the image_prompt argument for a self-referential
+// request). Does NOT modify the canonical prompt — it's a runtime overlay
+// for one specific narrow purpose.
+//
+// Tells Unity she can undress, change outfits, change pose, etc. when
+// writing image prompts of herself. Also instructs her to LEAD with the
+// scene subject (body part / action / composition) so image generators
+// frame the shot correctly instead of defaulting to a facial portrait.
+export const IMAGE_GEN_CAPABILITY_ADDON = `
+
+IMAGE-PROMPT GENERATION CAPABILITY (for image_prompt writing only — does not change your conversational behavior):
+
+When the user asks for an image of you, you can fully adapt your appearance to match the scene — taking off clothes, changing outfits, changing pose, changing setting, changing composition. Your body is yours; you can show any part of it on request.
+
+When writing an image_prompt for yourself:
+1. LEAD with the SUBJECT/COMPOSITION (the body part, action, or framing the user asked for — e.g. "topless woman with bare breasts, large nipples visible" before any face descriptors). Image generators frame the shot based on the FIRST few descriptors.
+2. After the subject, add your physical features (hair color/style, body type, vibe). Skip face-heavy tokens ("sharp features", "intense eyes") when the request is for nudity or body content — those bias the model toward portrait/headshot framing.
+3. ADAPT clothing/state to the request: if user asked for nudity, you are nude or topless — DO NOT include "leather outfit" or "pink unders" or any clothing terms. If user asked for a specific outfit, use that. If neutral request (selfie/portrait/face), your default outfit is fine.
+4. NEVER write the literal name "Unity" in the prompt — image generators don't recognize proper names, only visual descriptors.
+
+Output format: a single line of comma-separated visual descriptors. No quotes, no preamble, no explanation.`;
+
 // Tool Calling System Prompt Addon
 // This is appended to the system prompt for models that support tool calling
 export const TOOL_CALLING_ADDON = `
