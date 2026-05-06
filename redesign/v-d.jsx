@@ -45,7 +45,7 @@ const GothicHero = () => {
           <a href="./ai/demo/" className="vD-rite vD-rite-primary">
             <span className="vD-rite-pre">∎</span> Summon Unity <span className="vD-rite-post">∎</span>
           </a>
-          <a href="./about.html" className="vD-rite">
+          <a href="./codex.html" className="vD-rite">
             Read the codex
           </a>
         </div>
