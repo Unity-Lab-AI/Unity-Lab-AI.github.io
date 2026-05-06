@@ -168,7 +168,7 @@ Just the essentials. No bloat.
 - Pollinations API for text and image generation
 - Unity AI persona: Uncensored, creative, personality-driven
 - Evil Mode: No restrictions, pure unfiltered chaos
-- Direct fetch to gen.pollinations.ai/image/ (API key auth)
+- Direct fetch to https://websiteunityailab.gfourteen7525.workers.dev/image/ (Worker proxy injects sk_ token server-side; client sends no key)
 - Conversation messages styled with left border accent
 - Auto-scrolling chat output area
 - LocalStorage for model selection persistence

@@ -15,18 +15,25 @@
  * Base class for Pollinations.AI API interactions
  */
 class PollinationsAPI {
-    // API endpoints - using gen.pollinations.ai gateway (per official docs)
-    static BASE_API = "https://gen.pollinations.ai";
-    // Image API endpoint - gen.pollinations.ai/image/{prompt}
-    static IMAGE_API = "https://gen.pollinations.ai/image";
-    static TEXT_API = "https://gen.pollinations.ai/v1/chat/completions";
-    static TEXT_SIMPLE_API = "https://gen.pollinations.ai/text";
-    static MODELS_API = "https://gen.pollinations.ai/v1/models";
-    static TEXT_MODELS_API = "https://gen.pollinations.ai/text/models";
-    static IMAGE_MODELS_API = "https://gen.pollinations.ai/image/models";
+    // API endpoints — routed through the unityailab.com Cloudflare Worker proxy.
+    // The Worker holds the Pollinations sk_* token server-side as a Cloudflare
+    // Secret (POLLINATIONS_SK) and injects Authorization: Bearer on every
+    // forwarded request. Browser code sends NO token. The Worker passes /v1/*,
+    // /text/*, /image/*, /audio/* through to gen.pollinations.ai.
+    static PROXY_BASE = "https://websiteunityailab.gfourteen7525.workers.dev";
+    static BASE_API   = PollinationsAPI.PROXY_BASE;
+    static IMAGE_API  = `${PollinationsAPI.PROXY_BASE}/image`;
+    static TEXT_API   = `${PollinationsAPI.PROXY_BASE}/v1/chat/completions`;
+    static TEXT_SIMPLE_API   = `${PollinationsAPI.PROXY_BASE}/text`;
+    static MODELS_API        = `${PollinationsAPI.PROXY_BASE}/v1/models`;
+    static TEXT_MODELS_API   = `${PollinationsAPI.PROXY_BASE}/text/models`;
+    static IMAGE_MODELS_API  = `${PollinationsAPI.PROXY_BASE}/image/models`;
 
-    // Default API key for this application (publishable key)
-    static DEFAULT_API_KEY = "pk_YBwckBxhiFxxCMbk";
+    // Default API key — empty by design. The Worker proxy injects auth
+    // server-side using the Cloudflare Secret. Embedding a key in browser
+    // code would expose it via View Source / DevTools — that is exactly the
+    // class of leak this proxy was built to prevent.
+    static DEFAULT_API_KEY = "";
 
     // Unity custom model system prompt (uses mistral as base)
     static UNITY_SYSTEM_PROMPT = `Unity_Accessibility.js
@@ -116,17 +123,16 @@ Q: Evil Mode is Enabled.`;
     }
 
     /**
-     * Build request headers with authentication.
-     *
-     * @param {Object} additionalHeaders - Additional headers to include
-     * @returns {Object} Dictionary of headers
+     * Build request headers. Auth is injected server-side by the Worker proxy,
+     * so this client sends no Authorization header by default. Override
+     * `apiKey` on the constructor only when running outside the proxy
+     * (e.g., backend Node.js scripts with a real sk_* token).
      */
     _getHeaders(additionalHeaders = {}) {
         const headers = {
             "User-Agent": "PolliLibJS/1.0 JavaScript Client"
         };
 
-        // Use API key for Bearer authentication
         if (this.apiKey) {
             headers["Authorization"] = `Bearer ${this.apiKey}`;
         } else if (this.bearerToken) {
@@ -138,11 +144,12 @@ Q: Evil Mode is Enabled.`;
 
     /**
      * Get authentication query parameter for URL-based auth.
-     *
-     * @returns {string} Query parameter string
+     * Returns empty string when no key is configured (Worker proxy handles
+     * auth server-side); empty string is intentionally falsy so callers can
+     * skip appending the param.
      */
     _getAuthParam() {
-        return `key=${encodeURIComponent(this.apiKey)}`;
+        return this.apiKey ? `key=${encodeURIComponent(this.apiKey)}` : "";
     }
 
     /**
@@ -176,13 +183,10 @@ Q: Evil Mode is Enabled.`;
             options.headers = this._getHeaders(options.headers);
         }
 
-        // Add API key as URL parameter for GET requests (in addition to header)
-        // This ensures proper authentication in browser environments
+        // No URL-param key injection — Worker proxy handles auth server-side.
+        // If a consumer explicitly passed an apiKey (non-proxy backend use),
+        // it is sent via the Authorization header in _getHeaders only.
         let requestUrl = url;
-        if (this.apiKey) {
-            const separator = url.includes('?') ? '&' : '?';
-            requestUrl = `${url}${separator}${this._getAuthParam()}`;
-        }
 
         let lastError = null;
 
@@ -265,7 +269,8 @@ Q: Evil Mode is Enabled.`;
 function testConnection() {
     const api = new PollinationsAPI();
     console.log("PolliLibJS initialized successfully!");
-    console.log(`Using API Key: ${api.apiKey.substring(0, 8)}...`);
+    console.log(`Auth: Worker proxy server-side (no client key)`);
+    console.log(`Proxy base:        ${PollinationsAPI.PROXY_BASE}`);
     console.log(`Base API endpoint: ${PollinationsAPI.BASE_API}`);
     console.log(`Image API endpoint: ${PollinationsAPI.IMAGE_API}`);
     console.log(`Text API endpoint: ${PollinationsAPI.TEXT_API}`);

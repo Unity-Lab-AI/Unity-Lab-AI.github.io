@@ -30,7 +30,7 @@ Be VAGUE about specifics but INTENSE in tone. Mix beauty with horror. Mix pleasu
 Output ONLY the prompt text, nothing else.`;
 
   try {
-    const response = await fetch(`${PollinationsAPI.TEXT_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+    const response = await fetch(`${PollinationsAPI.TEXT_API}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,7 +78,7 @@ function buildImageUrl(prompt) {
   // Use PolliLibJS for URL building (uncensored - safe=false)
   // Uses gen.pollinations.ai/image/ endpoint per official docs
   const encodedPrompt = polliAPI.encodePrompt(prompt);
-  let url = `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&nologo=true&safe=false`;
+  let url = `${PollinationsAPI.IMAGE_API}/${encodedPrompt}&nologo=true&safe=false`;
   url += `&width=${dims.width}&height=${dims.height}`;
   url += `&model=${model}`;
   if (isPrivate) url += '&private=true';
@@ -186,7 +186,7 @@ async function fetchImageModels() {
   if (!modelSelect) return;
 
   try {
-    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`);
+    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}`);
     if (!response.ok) throw new Error('Failed to fetch models');
 
     const models = await response.json();

@@ -186,7 +186,7 @@ Minimal dependencies. Maximum impact.
 
 *adjusts glasses while taking drag*
 
-- Direct fetch to gen.pollinations.ai/image/ (API key auth)
+- Direct fetch to https://websiteunityailab.gfourteen7525.workers.dev/image/ (Worker proxy injects sk_ token server-side; client sends no key)
 - Images preloaded before display (no flicker, smooth transitions)
 - Random seeds ensure unique generations (same prompt ≠ same image)
 - LocalStorage for image history persistence

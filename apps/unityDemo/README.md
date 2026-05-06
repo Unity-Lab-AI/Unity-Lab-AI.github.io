@@ -251,7 +251,7 @@ Standard stack. Reliable. Proven.
 - Pollinations API for text and image generation
 - Custom Unity and Evil Mode personas (uncensored)
 - Code language auto-detection via syntax patterns
-- Direct fetch to gen.pollinations.ai/image/ (API key auth)
+- Direct fetch to https://websiteunityailab.gfourteen7525.workers.dev/image/ (Worker proxy injects sk_ token server-side; client sends no key)
 - Conversation history (last 10 messages for context)
 - LocalStorage for persistence
 - Keyboard shortcuts for power users

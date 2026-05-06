@@ -126,7 +126,7 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
         const encodedPrompt = encodeURIComponent(prompt.trim());
 
         // Build URL per Pollinations docs
-        let imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?` +
+        let imageUrl = `https://websiteunityailab.gfourteen7525.workers.dev/image/${encodedPrompt}?` +
             `model=${model}&width=${width}&height=${height}&seed=${seed}&` +
             `enhance=${settings.imageEnhance}&nologo=true&safe=false&private=true&key=${API_KEY}`;
 
@@ -174,7 +174,7 @@ export async function generateImageFromCommand(prompt, settings, addMessage, sho
         // Build image URL with safe=false for uncensored content
         // Using gen.pollinations.ai/image/ endpoint per official docs
         // API key REQUIRED in query param for browser <img src=""> loading
-        let imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}`;
+        let imageUrl = `https://websiteunityailab.gfourteen7525.workers.dev/image/${encodeURIComponent(prompt)}`;
         imageUrl += `?key=${API_KEY}`;
         imageUrl += `&model=${imageModel}`;
         imageUrl += `&width=${width}`;

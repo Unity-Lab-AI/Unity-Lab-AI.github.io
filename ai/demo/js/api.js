@@ -23,8 +23,8 @@ function sanitizeImageUrl(url) {
     if (!url) return url;
     // Convert old format to new format
     // Old: https://image.pollinations.ai/prompt/{prompt}?params
-    // New: https://gen.pollinations.ai/image/{prompt}?params
-    return url.replace('https://image.pollinations.ai/prompt/', 'https://gen.pollinations.ai/image/');
+    // New: https://websiteunityailab.gfourteen7525.workers.dev/image/{prompt}?params
+    return url.replace('https://image.pollinations.ai/prompt/', 'https://websiteunityailab.gfourteen7525.workers.dev/image/');
 }
 
 /**
@@ -203,7 +203,7 @@ async function fetchTextModels() {
     try {
         // Use gen.pollinations.ai API with key authentication
         const apiKey = PollinationsAPI.DEFAULT_API_KEY;
-        const response = await fetch(`https://gen.pollinations.ai/text/models?key=${apiKey}`, {
+        const response = await fetch(`https://websiteunityailab.gfourteen7525.workers.dev/text/models`, {
             method: 'GET',
             mode: 'cors',
             cache: 'default',
@@ -273,7 +273,7 @@ async function fetchImageModels() {
     try {
         // Use gen.pollinations.ai API with key authentication
         const apiKey = PollinationsAPI.DEFAULT_API_KEY;
-        const response = await fetch(`https://gen.pollinations.ai/image/models?key=${apiKey}`, {
+        const response = await fetch(`https://websiteunityailab.gfourteen7525.workers.dev/image/models`, {
             method: 'GET',
             mode: 'cors',
             cache: 'default',
@@ -559,7 +559,7 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         let lastError;
 
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
-            response = await fetch(`${OPENAI_ENDPOINT}?key=${apiKey}&safe=false`, {
+            response = await fetch(`${OPENAI_ENDPOINT}&safe=false`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -756,7 +756,7 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
             // IMPORTANT: safe=false disables content filtering for uncensored mode
-            const response = await fetch(`${OPENAI_ENDPOINT}?key=${apiKey}&safe=false`, {
+            const response = await fetch(`${OPENAI_ENDPOINT}&safe=false`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -799,7 +799,7 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
  * Legacy API call for models without tool calling support
  */
 async function getAIResponseLegacy(message, model, systemPrompt, chatHistory, settings, generateRandomSeed) {
-    const baseUrl = 'https://gen.pollinations.ai/text';
+    const baseUrl = 'https://websiteunityailab.gfourteen7525.workers.dev/text';
     const apiKey = PollinationsAPI.DEFAULT_API_KEY;
 
     // Build messages array with history (last 10 messages for context)
@@ -854,9 +854,7 @@ async function getAIResponseLegacy(message, model, systemPrompt, chatHistory, se
         url += `reasoning_effort=${settings.reasoningEffort}`;
     }
 
-    // Add API key parameter for authentication
-    url += url.includes('?') ? '&' : '?';
-    url += `key=${apiKey}`;
+    // Auth is injected by the Worker proxy server-side; no client key in URL.
 
     console.log('=== API Request (Legacy) ===');
     console.log('Model:', model);

@@ -179,7 +179,7 @@ Just TWO files. Clean. Simple. Maintainable.
 
 - Pollinations AI API for text and image generation
 - Supports Unity custom persona (uncensored) and Evil Mode
-- Direct fetch to gen.pollinations.ai/image/ (API key auth)
+- Direct fetch to https://websiteunityailab.gfourteen7525.workers.dev/image/ (Worker proxy injects sk_ token server-side; client sends no key)
 - Code blocks automatically detected via regex and markdown parsing
 - Language-specific syntax highlighting (Python, JS, Java, HTML, CSS, SQL, etc.)
 - Conversation history maintained (last 10 messages for context)

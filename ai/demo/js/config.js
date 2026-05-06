@@ -16,10 +16,10 @@
 // ===================================
 
 // OpenAI-compatible endpoint for tool calling
-export const OPENAI_ENDPOINT = 'https://gen.pollinations.ai/v1/chat/completions';
+export const OPENAI_ENDPOINT = 'https://websiteunityailab.gfourteen7525.workers.dev/v1/chat/completions';
 
 // API Key for authentication (publishable key)
-export const API_KEY = 'pk_YBwckBxhiFxxCMbk';
+export const API_KEY = '';
 
 // ===================================
 // Tool Definitions for Function Calling

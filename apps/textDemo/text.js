@@ -96,7 +96,7 @@ let conversationHistory = [];
 // Fetch and populate text models
 async function fetchTextModels() {
   try {
-    const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`);
+    const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}`);
     if (!response.ok) throw new Error('Failed to fetch text models');
     const models = await response.json();
 
@@ -138,7 +138,7 @@ async function fetchTextModels() {
 // Fetch and populate image models
 async function fetchImageModels() {
   try {
-    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`);
+    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}`);
     if (!response.ok) throw new Error('Failed to fetch image models');
     const models = await response.json();
 
@@ -171,7 +171,7 @@ function generateImageUrl(prompt) {
   const imageModel = imageModelSelect.value || 'flux';
   const encodedPrompt = encodeURIComponent(prompt);
   const seed = Math.floor(Math.random() * 1000000);
-  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
+  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}&width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
 }
 
 // Store for generated images to insert after sanitization
@@ -359,7 +359,7 @@ async function sendChatMessage(prompt, retryCount = 0) {
 
   try {
     // Use direct fetch with API key authentication
-    const response = await fetch(`${PollinationsAPI.TEXT_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+    const response = await fetch(`${PollinationsAPI.TEXT_API}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

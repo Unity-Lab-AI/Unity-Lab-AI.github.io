@@ -136,13 +136,13 @@ async function playNextVoiceChunk(settings, generateRandomSeed, retryCount = 0, 
 
     try {
         // Get API key from PollinationsAPI (global) or fallback
-        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
+        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : '';
 
         // Use the voice from settings (populated from API fetch)
         const voice = settings.voice;
 
         // Use POST to gen.pollinations.ai/v1/chat/completions with audio modality
-        const ttsEndpoint = 'https://gen.pollinations.ai/v1/chat/completions';
+        const ttsEndpoint = 'https://websiteunityailab.gfourteen7525.workers.dev/v1/chat/completions';
 
         console.log('🔊 TTS voice:', voice, '| chunk:', currentChunk.substring(0, 30) + '...');
 

@@ -195,7 +195,7 @@ async function main() {
     console.log("=".repeat(60));
 
     const vision = new ImageToText();
-    const exampleImageUrl = "https://gen.pollinations.ai/image/a%20cat%20sitting%20on%20a%20windowsill?width=512&height=512&seed=42";
+    const exampleImageUrl = "https://websiteunityailab.gfourteen7525.workers.dev/image/a%20cat%20sitting%20on%20a%20windowsill?width=512&height=512&seed=42";
 
     console.log("\n1. Analyze Image from URL:");
     console.log("-".repeat(60));

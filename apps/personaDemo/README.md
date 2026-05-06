@@ -228,7 +228,7 @@ All the tools needed, nothing extra.
 *adjusts glasses*
 
 - **TTS**: Pollinations audio API, WAV format, base64 data
-- **Images**: Direct fetch to gen.pollinations.ai/image/ (API key auth)
+- **Images**: Direct fetch to https://websiteunityailab.gfourteen7525.workers.dev/image/ (Worker proxy injects sk_ token server-side; client sends no key)
 - **Audio**: Returned as base64, played in browser via Audio element
 - **Context**: Conversation history maintained with system prompts
 - **Personas**: Custom Unity and Evil personas built-in

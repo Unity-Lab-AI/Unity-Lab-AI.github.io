@@ -489,7 +489,7 @@ async function sendMessage(message) {
       requestBody.seed = Math.floor(Math.random() * 1000000);
     }
     // Use direct fetch with API key authentication
-    const response = await fetch(`${PollinationsAPI.TEXT_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+    const response = await fetch(`${PollinationsAPI.TEXT_API}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -618,7 +618,7 @@ async function fetchModels() {
   modelSelect.innerHTML = "";
   try {
     // Use direct fetch with API key authentication
-    const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`);
+    const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}`);
     if (!response.ok) throw new Error("Failed to fetch models");
     const models = await response.json();
 
@@ -704,7 +704,7 @@ async function fetchImageModels() {
   if (!imageModelSelect) return;
 
   try {
-    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`);
+    const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}`);
     if (!response.ok) throw new Error('Failed to fetch image models');
     const models = await response.json();
 
@@ -736,7 +736,7 @@ function generateImageUrl(description) {
   const imageModel = imageModelSelect ? imageModelSelect.value : 'flux';
   const encodedPrompt = encodeURIComponent(description);
   const seed = Math.floor(Math.random() * 1000000);
-  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
+  return `${PollinationsAPI.IMAGE_API}/${encodedPrompt}&width=512&height=512&model=${imageModel}&nologo=true&safe=false&seed=${seed}`;
 }
 
 // Strip image generation patterns from text (for TTS)
@@ -809,7 +809,7 @@ function processMessage(text) {
     // Use gen.pollinations.ai/image/ endpoint directly (per official docs)
     let fixedUrl = url;
     // Normalize old image.pollinations.ai URLs to new format
-    fixedUrl = fixedUrl.replace('https://image.pollinations.ai/prompt/', 'https://gen.pollinations.ai/image/');
+    fixedUrl = fixedUrl.replace('https://image.pollinations.ai/prompt/', 'https://websiteunityailab.gfourteen7525.workers.dev/image/');
     window.pendingChatImages.push({ url: fixedUrl, alt: 'Generated Image' });
     return ''; // Remove URL from text
   });
@@ -879,7 +879,7 @@ async function getImageDescription(imageUrl) {
       jsonMode: false
     };
     // Use direct fetch with API key authentication
-    const response = await fetch(`${PollinationsAPI.TEXT_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+    const response = await fetch(`${PollinationsAPI.TEXT_API}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1277,7 +1277,7 @@ async function getModelAvatar(modelName = "unity") {
   };
   const prompt = prompts[modelName] || "artificial_intelligence_portrait_digital";
   const seed = Math.floor(Date.now() / (1000 * 60 * 60));
-  const avatarUrl = `${PollinationsAPI.IMAGE_API}/${polliAPI.encodePrompt(prompt)}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=flux&nologo=true&seed=${seed}`;
+  const avatarUrl = `${PollinationsAPI.IMAGE_API}/${polliAPI.encodePrompt(prompt)}&width=512&height=512&model=flux&nologo=true&seed=${seed}`;
   localStorage.setItem(storageKey, avatarUrl);
   return avatarUrl;
 }

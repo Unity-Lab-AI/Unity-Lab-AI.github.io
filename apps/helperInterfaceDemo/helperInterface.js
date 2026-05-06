@@ -532,7 +532,7 @@ async function executeImageGeneration(args) {
     const seed = Math.floor(Math.random() * 1000000);
     const encodedPrompt = encodeURIComponent(prompt.trim());
 
-    const imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?` +
+    const imageUrl = `https://websiteunityailab.gfourteen7525.workers.dev/image/${encodedPrompt}?` +
         `model=${model}&width=${width}&height=${height}&seed=${seed}&` +
         `enhance=true&nologo=true&safe=false&private=true&key=${API_KEY}`;
 
@@ -955,7 +955,7 @@ async function fetchModels() {
     try {
       console.log('🌐 [MODELS] Fetching from API...');
       const apiKey = PollinationsAPI.DEFAULT_API_KEY;
-      const response = await fetch(`https://gen.pollinations.ai/text/models?key=${apiKey}`, {
+      const response = await fetch(`https://websiteunityailab.gfourteen7525.workers.dev/text/models`, {
         method: 'GET',
         mode: 'cors',
         cache: 'default',
@@ -1098,7 +1098,7 @@ async function fetchImageModels() {
     try {
       console.log('🌐 [IMAGE MODELS] Fetching from API...');
       const apiKey = PollinationsAPI.DEFAULT_API_KEY;
-      const response = await fetch(`https://gen.pollinations.ai/image/models?key=${apiKey}`, {
+      const response = await fetch(`https://websiteunityailab.gfourteen7525.workers.dev/image/models`, {
         method: 'GET',
         mode: 'cors',
         cache: 'default',
@@ -1280,7 +1280,7 @@ async function getImageDescription(imageUrl) {
     };
 
     // Use direct fetch with API key authentication
-    const response = await fetch(`${PollinationsAPI.TEXT_API}?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+    const response = await fetch(`${PollinationsAPI.TEXT_API}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1756,7 +1756,7 @@ async function getModelAvatar(modelName = "unity") {
 
   const prompt = prompts[modelName] || "artificial_intelligence_portrait_digital";
   const seed = Math.floor(Date.now() / (1000 * 60 * 60));
-  const avatarUrl = `${PollinationsAPI.IMAGE_API}/${polliAPI.encodePrompt(prompt)}?key=${PollinationsAPI.DEFAULT_API_KEY}&width=512&height=512&model=flux&nologo=true&seed=${seed}`;
+  const avatarUrl = `${PollinationsAPI.IMAGE_API}/${polliAPI.encodePrompt(prompt)}&width=512&height=512&model=flux&nologo=true&seed=${seed}`;
 
   localStorage.setItem(storageKey, avatarUrl);
   return avatarUrl;
