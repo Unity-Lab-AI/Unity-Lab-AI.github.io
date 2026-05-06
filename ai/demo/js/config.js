@@ -536,6 +536,9 @@ export function detectImageIntent(text) {
 export function extractImagePrompt(text) {
     if (!text || typeof text !== 'string') return text || '';
     let s = text.trim();
+    // Pass 0: strip vocative prefix ("Unity, ", "hey Unity, ", "yo Unity ", etc.)
+    s = s.replace(/^(hey|yo|ok|okay|hi|hello|please)\s+/i, '');
+    s = s.replace(/^unity[,!\s]+/i, '');
     // Pass 1: leading verb
     s = s.replace(/^(show|draw|sketch|paint|render|generate|gen|make|create|illustrate|depict|visualize|imagine|give)\s+/i, '');
     // Pass 2: pronoun (me/us/my) — only one
