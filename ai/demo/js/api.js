@@ -517,6 +517,9 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
     const toolsToUse = isUnityModel ? TOOLS_SINGLE : TOOLS_ARRAY;
 
     // Build request payload
+    // safe: false in the body disables Pollinations content filtering for this
+    // request. Sending it as a query param on /v1/chat/completions does NOT work
+    // — the new gen.pollinations.ai surface only honors `safe` as a body field.
     const payload = {
         model: model,
         messages: [
@@ -525,7 +528,8 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         ],
         max_tokens: 4000,
         tools: toolsToUse,
-        tool_choice: 'auto'
+        tool_choice: 'auto',
+        safe: false
     };
 
     // Conditional temperature parameter
@@ -559,7 +563,7 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         let lastError;
 
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
-            response = await fetch(`${OPENAI_ENDPOINT}?safe=false`, {
+            response = await fetch(OPENAI_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -732,7 +736,8 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
             ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
             ...chatHistory
         ],
-        max_tokens: 4000
+        max_tokens: 4000,
+        safe: false
     };
 
     // Conditional temperature parameter (same logic as initial request)
@@ -755,8 +760,8 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-            // IMPORTANT: safe=false disables content filtering for uncensored mode
-            const response = await fetch(`${OPENAI_ENDPOINT}?safe=false`, {
+            // safe:false in the payload disables Pollinations content filtering
+            const response = await fetch(OPENAI_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
