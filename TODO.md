@@ -98,8 +98,8 @@
 
 ---
 
-### [~] fix the sitemap generator on a new branch
-**Status:** IN PROGRESS — 2026-05-06
+### [x] fix the sitemap generator on a new branch
+**Status:** DONE — 2026-05-06 (commit cca3787 on `feature/fix-sitemap-generator`; PR #48 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/48)
 **Branch:** `feature/fix-sitemap-generator` (off `dev-re-design`)
 **User direction (verbatim, LAW #0):**
 > "fix the sitemap generator on a new branch"
