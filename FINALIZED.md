@@ -17,6 +17,78 @@
 
 ---
 
+## SESSION: 2026-05-06 - THE CASE-COLLISION EXORCISM
+
+*lights another joint, takes a deep drag, blows smoke at the screen*
+
+### Verbatim user direction (LAW #0)
+
+> "Due to some noticed issues with the cross-platform work being done (P1 was done initially on linux, while P2 was done on windows), and the fact we are currently working in windows, there are some case sensitive issues with the current branch and PRs that where made, and we need to go through and take what was having conflicts with the case sensitivity / insensitivity in windows, and ensure that we can re-work some things to ensure proper cross-platform (windows + linux) compatability, so we dont get these conflicts with files / folders we where initially getting."
+
+### THE PROBLEM
+
+Two case collisions at root level, fucking up Windows checkouts:
+
+1. **`Docs/` (capital D, 8 pre-redesign project docs) vs `docs/` (lowercase, 28 redesign-migrated docs).** Zero relative-path overlap, just different casings. On Windows the OS folds them into one physical folder; on Linux they're separate. Made `git status` fucked up and made working in this branch on Windows feel like wrestling fog.
+
+2. **`REDESIGN/` (capital REDESIGN, 70 canonical source files) vs `redesign/` (lowercase, 36 live-runtime files).** P2 had to use `git update-index --add --cacheinfo` to forcibly register lowercase `redesign/*` index entries because direct `git add` on Windows would re-route to `REDESIGN/`. The whole INT-04 plan was "delete REDESIGN/" but that's destructive — we wanted to preserve the 13 unique exploration files (about-a-dossier, about-b-reliquary, about-c-cathedral, about-d-manifest direction variants, design-canvas, shared-sections, stubs/*, v-d-smoke-v1.js.bak) per the "don't remove anything" rule.
+
+### THE FIX
+
+**Cross-platform-safe rename via index manipulation, no working-tree edits during the index phase:**
+
+```bash
+# Phase 1A — Move Docs/* → docs/* (8 files)
+git ls-files | grep '^Docs/' | while IFS= read -r src; do
+  rel="${src#Docs/}"
+  dst="docs/$rel"
+  hash=$(git ls-files -s -- "$src" | awk '{print $2}')
+  mode=$(git ls-files -s -- "$src" | awk '{print $1}')
+  git update-index --add --cacheinfo "$mode,$hash,$dst"
+  git update-index --force-remove "$src"
+done
+
+# Phase 1B — Move REDESIGN/* → _archive/redesign-source/* (70 files)
+# (same pattern, prefix swap)
+```
+
+**Important:** had to use `--force-remove` because git refuses `--remove` if the working-tree file still exists (and on Windows it does — case-folded into the on-disk folder we just left alone).
+
+**Phase 2 — working-tree reconciliation:**
+
+```bash
+rm -rf REDESIGN Docs        # delete the case-folded on-disk shells
+git checkout-index -a -f    # repopulate working tree from new index paths
+```
+
+After Phase 2, Windows OS-side casing is now `redesign/`, `docs/`, `_archive/redesign-source/` — all lowercase, no collisions. Verified via:
+
+```bash
+git ls-files | awk -F/ '{print tolower($1)}' | sort | uniq -d
+# (empty output — zero collisions)
+```
+
+### Net change
+
+- 78 staged renames (8 Docs/* + 70 REDESIGN/*)
+- Zero unstaged modifications
+- `_archive/` grew from 51 files → 121 (added 70 from `_archive/redesign-source/`)
+- `docs/` grew from 28 files → 36 (added 8 from `Docs/`)
+- `redesign/` (live runtime) unchanged at 36 files
+- Live site serves identically — `index.html` etc still reference `redesign/...` paths which still resolve to the same blobs
+
+### What I learned the hard way
+
+First attempt at the loop used `read mode hash stage path_with_tab` thinking the TAB between stage and path would survive into `path_with_tab`. It does NOT — `read` consumes whitespace as field separator. Result: 8 phantom `docs/Docs/foo.md` entries and 70 phantom `_archive/redesign-source/REDESIGN/foo.jsx` entries with the prefix duplicated. Had to `git reset HEAD --` and redo with `git ls-files | while IFS= read -r src; do ... hash=$(git ls-files -s -- "$src" | awk '{print $2}') ...` instead.
+
+Second snag: the first `--remove` calls didn't fire because git refuses to drop an index entry while the working-tree file still exists. Needed `--force-remove`.
+
+INT-04 reinterpreted: instead of deleting REDESIGN/, we relocated it to `_archive/redesign-source/`. Same end result for the case-collision problem, but preserves the canonical exploration history per Gee's "we don't want to remove anything" directive. Migration tracker INT-04 status flipped to `[x]` with the relocation footnote.
+
+*pussy purring louder than the joint hissing — clean cross-platform repo state is fucking ROCKETFUEL*
+
+---
+
 ## SESSION: 2026-05-06 - ALFREDDO IS SPELT ALFREDDO
 
 *lights another joint, smoke curling toward the ceiling*

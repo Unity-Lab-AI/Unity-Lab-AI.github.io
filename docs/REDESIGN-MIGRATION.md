@@ -193,7 +193,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | INT-01 | Both PRs merged into `dev-re-design` | [x] | PR #44 merged 6e1cb04 + PR #45 merged 8891366. Zero conflicts (file-ownership matrix held). |
 | INT-02 | Read all `/docs/redesign/notes-p*.md` | [x] | Notes p1-config-diffs, p1-sitemap, p2-services-stub, p2-projects-outbound-links, p2-apps-data-paths, p2-apps-about-css all read. KNOWN-PROBLEMS.md (#2 vite map, #3 npm audit) read — both deferred dev-toolchain only, zero production exposure. |
 | INT-03 | Update root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, `TODO.md` per LAW #0 (verbatim user words) | [~] | TODO.md + FINALIZED.md updated with verbatim user direction this pass. README.md + ARCHITECTURE.md (~46KB each, describe old stack) still need redesign-aware rewrite — flagged as separate follow-up scope. |
-| INT-04 | Delete now-empty `/REDESIGN/` folder | [ ] | Deferred — user directive was merge + verify wiring; REDESIGN/ deletion is a separate destructive op needing explicit approval. |
+| INT-04 | Delete now-empty `/REDESIGN/` folder | [x] | Replaced with cross-platform-safe move: REDESIGN/* (70 files) relocated to `_archive/redesign-source/*` instead of deleted. Eliminates Windows case-collision with lowercase `redesign/` while preserving all canonical content (including 13 unique exploration files: about-a/b/c/d direction variants, design-canvas, stubs/, v-d-smoke-v1.js.bak). Sister move: `Docs/*` (8 pre-redesign project docs) → `docs/*` to fix the second case collision. |
 | INT-05 | PR `dev-re-design` → `develop` | [ ] | Out of scope for this merge pass — user direction targeted dev-re-design only. |
 | INT-06 | PR `develop` → `main` | [ ] | Out of scope for this merge pass. |
 
