@@ -365,8 +365,14 @@ async function sendChatMessage(prompt, retryCount = 0) {
     safe: false
   };
 
-  chatOutput.innerHTML += sanitizeHTML(`<p><strong>User:</strong> ${processResponse(prompt)}</p>`);
-  scrollToBottom();
+  // Only render the user message on the FIRST attempt. On retries
+  // (retryCount > 0) we don't re-render — that would visually duplicate the
+  // user's message every retry attempt, which looks like the user typed it
+  // 2-3 times when it was actually one send + internal retries.
+  if (retryCount === 0) {
+    chatOutput.innerHTML += sanitizeHTML(`<p><strong>User:</strong> ${processResponse(prompt)}</p>`);
+    scrollToBottom();
+  }
 
   const thinkingElement = document.createElement('p');
   thinkingElement.id = 'ai-thinking';
