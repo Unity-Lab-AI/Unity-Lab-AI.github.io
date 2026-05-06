@@ -1,0 +1,361 @@
+/* About V2 — fused "best-of" direction.
+   Cathedral's clean canvas + Dossier's classified chrome
+   + Reliquary's glass-case cards + Manifest's stamped section bands
+   and tabular crew listing. */
+
+/* ============================================================ canvas */
+.aV2 {
+  background: #030001;
+  color: var(--light-grey);
+  font-family: var(--font-body);
+  position: relative;
+  overflow: hidden;
+}
+/* Cathedral-style edge rules */
+.aV2::before, .aV2::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, transparent 0%, rgba(220,20,60,0.35) 8%, rgba(220,20,60,0.35) 92%, transparent 100%);
+  pointer-events: none;
+}
+.aV2::before { left: 56px; }
+.aV2::after  { right: 56px; }
+
+/* ============================================================ classified mast (Dossier) */
+.aV2-mast {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 80px;
+  border-bottom: 1px solid rgba(220,20,60,0.3);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 4px;
+  color: var(--bone); text-transform: uppercase;
+  background: rgba(8,2,3,0.6);
+}
+.aV2-mast-classification { color: var(--crimson-red); font-weight: 700; }
+
+/* meta strip */
+.aV2-meta {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+  padding: 22px 80px 28px;
+  border-bottom: 1px solid rgba(220,20,60,0.2);
+  font-family: var(--font-mono); font-size: 11px;
+}
+.aV2-meta dt {
+  color: var(--muted-grey); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 6px; font-size: 10px;
+}
+.aV2-meta dd { color: var(--bone); font-size: 13px; }
+.aV2-redact {
+  background: var(--crimson-red); color: transparent;
+  padding: 0 6px; user-select: none;
+}
+
+/* ============================================================ cover (Cathedral typography + Dossier stamps) */
+.aV2-cover {
+  position: relative;
+  padding: 110px 120px 96px;
+  text-align: center;
+  border-bottom: 1px solid rgba(220,20,60,0.35);
+}
+.aV2-cover-vline {
+  display: none;
+}
+.aV2-cover-fileno {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 6px;
+  color: var(--crimson-red); margin-bottom: 32px; text-transform: uppercase;
+  position: relative; z-index: 1;
+}
+.aV2-cover h1 {
+  font-family: var(--font-display); font-size: 88px; line-height: 0.95;
+  color: var(--white); font-weight: 700; letter-spacing: 2px;
+  white-space: pre-line; margin-bottom: 36px;
+  text-shadow: 0 0 50px rgba(220,20,60,0.4);
+  position: relative; z-index: 1;
+}
+.aV2-cover-rule {
+  width: 80px; height: 1px; background: var(--crimson-red);
+  margin: 0 auto 36px; position: relative; z-index: 1;
+}
+.aV2-cover-lede {
+  font-family: 'Cormorant Garamond', serif; font-size: 24px; line-height: 1.7;
+  color: var(--bone); font-style: italic;
+  max-width: 740px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+/* rotated stamps */
+.aV2-stamp {
+  position: absolute;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 13px; letter-spacing: 4px;
+  color: var(--crimson-red);
+  border: 2px solid var(--crimson-red);
+  padding: 10px 18px;
+  background: rgba(220,20,60,0.05);
+  z-index: 2;
+}
+.aV2-stamp-tr { top: 60px; right: 100px; transform: rotate(8deg); }
+.aV2-stamp-bl { bottom: 60px; left: 100px; transform: rotate(-6deg); }
+
+/* ============================================================ stats strip (Cathedral spacing) */
+.aV2-stats {
+  padding: 56px 120px;
+  border-bottom: 1px solid rgba(220,20,60,0.2);
+}
+
+/* ============================================================ section + stamped band header (Manifest) */
+.aV2-section {
+  padding: 80px 120px 88px;
+  border-bottom: 1px solid rgba(220,20,60,0.2);
+}
+.aV2-section:last-child { border-bottom: none; }
+.aV2-band {
+  display: flex; align-items: baseline; justify-content: space-between;
+  border-top: 2px solid var(--crimson-red);
+  border-bottom: 1px solid rgba(220,20,60,0.4);
+  padding: 14px 0;
+  margin-bottom: 40px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 4px;
+  color: var(--bone); text-transform: uppercase;
+}
+.aV2-band-num { color: var(--crimson-red); font-weight: 700; }
+.aV2-band-name {
+  font-family: var(--font-display); font-size: 16px; letter-spacing: 4px;
+  color: var(--white); font-weight: 700;
+}
+
+.aV2-section-head { margin-bottom: 32px; }
+.aV2-h {
+  font-family: var(--font-display); font-size: 52px; font-weight: 700;
+  color: var(--white); letter-spacing: 1.5px; line-height: 1.05;
+  text-shadow: 0 0 30px rgba(220,20,60,0.25);
+}
+
+.aV2-paragraphs p {
+  font-family: 'Cormorant Garamond', serif; font-size: 21px; line-height: 1.7;
+  color: var(--bone); margin-bottom: 22px;
+  max-width: 880px;
+}
+.aV2-paragraphs p:last-child { margin-bottom: 0; }
+
+.aV2-pull {
+  margin: 36px 0 0;
+  border-left: 2px solid var(--crimson-red);
+  padding: 8px 0 8px 32px;
+  max-width: 820px;
+}
+.aV2-pull p {
+  font-family: 'Cormorant Garamond', serif; font-size: 26px; font-style: italic;
+  color: var(--white); line-height: 1.5;
+}
+.aV2-pull-attr {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px;
+  color: var(--crimson-red); margin-top: 12px; text-transform: uppercase;
+}
+
+/* ============================================================ expertise — glass-case cards (Reliquary) */
+.aV2-expertise {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  margin-top: 8px;
+}
+.aV2-relic {
+  position: relative; padding: 36px 28px 28px;
+  background:
+    linear-gradient(180deg, rgba(220,20,60,0.06) 0%, rgba(220,20,60,0.02) 100%),
+    rgba(8,2,3,0.7);
+  border: 1px solid rgba(220,20,60,0.35);
+  cursor: pointer; transition: background .25s, border-color .25s, transform .25s, box-shadow .25s;
+  display: flex; flex-direction: column;
+  text-align: center; gap: 14px; min-height: 320px;
+  outline: none;
+}
+.aV2-relic::before {
+  content: ''; position: absolute; inset: 8px;
+  border: 1px solid rgba(220,20,60,0.12);
+  pointer-events: none;
+}
+/* corner brackets */
+.aV2-relic::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(to right, var(--crimson-red) 1px, transparent 1px) 0 0 / 14px 1px no-repeat,
+    linear-gradient(to bottom, var(--crimson-red) 1px, transparent 1px) 0 0 / 1px 14px no-repeat,
+    linear-gradient(to right, var(--crimson-red) 1px, transparent 1px) 100% 0 / 14px 1px no-repeat,
+    linear-gradient(to bottom, var(--crimson-red) 1px, transparent 1px) 100% 0 / 1px 14px no-repeat,
+    linear-gradient(to right, var(--crimson-red) 1px, transparent 1px) 0 100% / 14px 1px no-repeat,
+    linear-gradient(to bottom, var(--crimson-red) 1px, transparent 1px) 0 calc(100% - 14px) / 1px 14px no-repeat,
+    linear-gradient(to right, var(--crimson-red) 1px, transparent 1px) 100% 100% / 14px 1px no-repeat,
+    linear-gradient(to bottom, var(--crimson-red) 1px, transparent 1px) 100% calc(100% - 14px) / 1px 14px no-repeat;
+  pointer-events: none;
+}
+.aV2-relic:hover, .aV2-relic:focus-visible {
+  border-color: var(--crimson-red);
+  box-shadow: 0 0 50px rgba(220,20,60,0.18) inset;
+  transform: translateY(-4px);
+}
+.aV2-relic-glow {
+  position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%);
+  width: 60%; height: 80px;
+  background: radial-gradient(ellipse, rgba(220,20,60,0.5), transparent 70%);
+  opacity: 0; transition: opacity .3s;
+}
+.aV2-relic:hover .aV2-relic-glow { opacity: 1; }
+.aV2-relic-icon {
+  color: var(--crimson-red);
+  filter: drop-shadow(0 0 14px rgba(220,20,60,0.5));
+  margin-bottom: 4px;
+}
+.aV2-relic-num {
+  font-family: var(--font-display); font-size: 12px; letter-spacing: 6px;
+  color: var(--crimson-red); font-weight: 700;
+}
+.aV2-relic h4 {
+  font-family: var(--font-display); font-size: 22px; color: var(--white);
+  font-weight: 700; letter-spacing: 1.5px;
+}
+.aV2-relic p {
+  font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic;
+  color: var(--light-grey); line-height: 1.55;
+}
+.aV2-relic-cta {
+  margin-top: auto; padding-top: 12px;
+  font-family: var(--font-display); font-size: 11px; letter-spacing: 4px;
+  color: var(--crimson-red); font-weight: 700;
+}
+
+/* ============================================================ mission emphasis card */
+.aV2-mission {
+  background: rgba(8,2,3,0.6);
+  padding: 48px 56px;
+  border: 1px solid rgba(220,20,60,0.35);
+  border-left-width: 4px;
+  max-width: 980px;
+}
+.aV2-mission p {
+  font-family: 'Cormorant Garamond', serif; font-size: 22px; line-height: 1.75;
+  color: var(--bone); margin-bottom: 18px;
+}
+.aV2-mission p:last-child { margin-bottom: 0; }
+
+/* ============================================================ crew table (Manifest) */
+.aV2-crew-table {
+  width: 100%; border-collapse: collapse;
+  background: rgba(8,2,3,0.6);
+  border: 1px solid rgba(220,20,60,0.4);
+}
+.aV2-crew-table thead th {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 4px;
+  color: var(--crimson-red); text-transform: uppercase; font-weight: 700;
+  text-align: left; padding: 16px 22px;
+  border-bottom: 1px solid rgba(220,20,60,0.5);
+  background: rgba(0,0,0,0.5);
+}
+.aV2-crew-row td {
+  padding: 24px 22px;
+  border-bottom: 1px solid rgba(220,20,60,0.15);
+  vertical-align: top;
+}
+.aV2-crew-row:last-child td { border-bottom: none; }
+.aV2-cell-handle {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--crimson-red); letter-spacing: 1px;
+  width: 150px;
+}
+.aV2-cell-portrait {
+  width: 60px; color: var(--crimson-red);
+  filter: drop-shadow(0 0 8px rgba(220,20,60,0.4));
+}
+.aV2-cell-name {
+  font-family: var(--font-display); font-size: 22px; color: var(--white);
+  font-weight: 700; letter-spacing: 1px;
+}
+.aV2-cell-role {
+  font-family: var(--font-display); font-size: 11px; letter-spacing: 4px;
+  color: var(--crimson-red); display: block; margin-top: 4px;
+}
+.aV2-cell-bio {
+  font-family: 'Cormorant Garamond', serif; font-size: 16px; font-style: italic;
+  color: var(--light-grey); line-height: 1.55;
+}
+.aV2-cell-roles { display: flex; gap: 6px; flex-wrap: wrap; }
+.aV2-cell-roles span {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;
+  color: var(--bone); padding: 4px 10px;
+  border: 1px solid rgba(220,20,60,0.4);
+  text-transform: uppercase;
+}
+
+/* Stack crew table on narrow viewports — at desktop widths it stays tabular */
+@media (max-width: 1100px) {
+  .aV2-crew-table { display: block; border: 1px solid rgba(220,20,60,0.4); }
+  .aV2-crew-table thead { display: none; }
+  .aV2-crew-table tbody { display: block; }
+  .aV2-crew-row {
+    display: block;
+    position: relative;
+    padding: 24px 22px 24px 110px; /* leave room for portrait on the left */
+    border-bottom: 1px solid rgba(220,20,60,0.25);
+    min-height: 120px;
+  }
+  .aV2-crew-row:last-child { border-bottom: none; }
+  /* Every td flows as a block, full width — kills any horizontal-table overlap */
+  .aV2-crew-row td {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: none;
+    margin-bottom: 10px;
+  }
+  .aV2-crew-row td:last-child { margin-bottom: 0; }
+
+  /* 1st cell: handle */
+  .aV2-crew-row td:nth-child(1) {
+    margin-bottom: 6px;
+  }
+  /* 2nd cell: portrait — float to the left gutter */
+  .aV2-crew-row td:nth-child(2) {
+    position: absolute;
+    left: 22px;
+    top: 24px;
+    width: 60px;
+    margin: 0;
+  }
+  /* 3rd cell: name + role */
+  .aV2-crew-row td:nth-child(3) { margin-bottom: 12px; }
+  /* 4th cell: bio */
+  .aV2-crew-row td:nth-child(4) { margin-bottom: 14px; }
+  /* 5th cell: role badges — already block, just give it breathing room above */
+  .aV2-crew-row td:nth-child(5) { margin-top: 4px; }
+}
+
+/* ============================================================ contact split */
+.aV2-contact-grid {
+  display: grid; grid-template-columns: 300px 1fr; gap: 56px; align-items: start;
+}
+.aV2-contact-aside {
+  border-left: 2px solid var(--crimson-red);
+  padding-left: 28px;
+}
+.aV2-contact-aside-kicker {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 4px;
+  color: var(--crimson-red); margin-bottom: 16px; text-transform: uppercase;
+}
+.aV2-contact-aside p {
+  font-family: 'Cormorant Garamond', serif; font-size: 19px; line-height: 1.6;
+  color: var(--bone); font-style: italic; margin-bottom: 18px;
+}
+.aV2-contact-aside-mail {
+  font-family: var(--font-mono); font-size: 13px; color: var(--bone);
+  letter-spacing: 0.5px; word-break: break-all;
+  display: inline-block; padding: 8px 0;
+  border-top: 1px solid rgba(220,20,60,0.3);
+  border-bottom: 1px solid rgba(220,20,60,0.3);
+}
+
+/* ============================================================ end-of-file footer band (Dossier) */
+.aV2-eof {
+  padding: 24px 80px;
+  border-top: 1px solid rgba(220,20,60,0.3);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+  background: rgba(8,2,3,0.6);
+}
+.aV2-eof strong { color: var(--crimson-red); font-weight: 700; }

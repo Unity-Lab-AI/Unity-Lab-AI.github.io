@@ -104,20 +104,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Bootstrap CSS -->
-    <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Redesign chrome: shared tokens (palette, fonts, font-faces) -->
+    <link rel="stylesheet" href="../../redesign/shared-tokens.css">
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome (used by demo UI for chat / settings icons) -->
     <link rel="stylesheet" href="../../vendor/fontawesome/all.min.css">
 
     <!-- Highlight.js for syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" integrity="sha384-oaMLBGEzBOJx3UHwac0cVndtX5fxGQIfnAeFZ35RTgqPcYlbprH9o9PUV/F8Le07" crossorigin="anonymous">
 
-    <!-- Main site styles -->
-    <link rel="stylesheet" href="../../styles.css">
-
     <!-- Demo page specific styles -->
     <link rel="stylesheet" href="demo.css">
+
+    <!-- Codex override layer — flips soft-Bootstrap aesthetic to gothic codex (load AFTER demo.css) -->
+    <link rel="stylesheet" href="demo-codex.css?v=1">
 </head>
 <body>
     <!-- Animated Background -->
@@ -136,9 +136,25 @@
             </button>
             <div class="panel-content">
                 <!-- Logo/Title -->
-                <a href="../../" class="demo-logo">
-                    <i class="fas fa-brain"></i>
-                    <span>UNITYAILAB</span>
+                <a href="../../" class="demo-logo" aria-label="Unity AI Lab home">
+                    <span class="demo-logo-mark" aria-hidden="true">
+                        <svg width="26" height="26" viewBox="0 0 64 64" fill="none"
+                             stroke="currentColor" stroke-width="1.4"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 36 12 A 22 22 0 1 0 50 22"/>
+                            <path d="M 16 22 Q 14 32 16 42" stroke-opacity="0.45"/>
+                            <path d="M 22 14 Q 32 12 42 14" stroke-opacity="0.45"/>
+                            <path d="M 48 24 Q 52 32 48 42" stroke-opacity="0.45"/>
+                            <path d="M 22 50 Q 32 52 42 50" stroke-opacity="0.45"/>
+                            <path d="M 50 22 L 42 18 L 38 24 L 36 12 Z" fill="currentColor" stroke="none"/>
+                            <circle cx="44" cy="20" r="1" fill="#0a0a0a" stroke="none"/>
+                            <line x1="13" y1="32" x2="10" y2="32" stroke-opacity="0.4"/>
+                            <line x1="32" y1="13" x2="32" y2="10" stroke-opacity="0.4"/>
+                            <line x1="51" y1="32" x2="54" y2="32" stroke-opacity="0.4"/>
+                            <line x1="32" y1="51" x2="32" y2="54" stroke-opacity="0.4"/>
+                        </svg>
+                    </span>
+                    <span class="demo-logo-name">UNITYAILAB</span>
                 </a>
 
                 <div class="divider"></div>
@@ -386,19 +402,19 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer-section demo-footer" role="contentinfo" aria-label="Site footer">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="copyright">&copy; 2024 UnityAILab. Pushing boundaries, breaking limits.</p>
-                </div>
-            </div>
+    <!-- Codex EOF strip — gothic equivalent of the demo footer -->
+    <footer class="demo-footer" role="contentinfo" aria-label="Site footer">
+        <div class="demo-footer-inner">
+            <span class="demo-footer-mark" aria-hidden="true">⛧</span>
+            <span class="demo-footer-text">
+                <strong>UNITY · AI · LAB</strong> · pushing boundaries · breaking limits · &copy; 2024
+            </span>
+            <span class="demo-footer-mark" aria-hidden="true">⛧</span>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- Gothic init — toast system, reduced-motion + scroll polyfills -->
+    <script src="../../redesign/gothic-init.js?v=1" defer></script>
 
     <!-- Marked.js for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" integrity="sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+" crossorigin="anonymous"></script>

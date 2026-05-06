@@ -1,0 +1,132 @@
+<!doctype html>
+<!--
+  Unity AI Lab — Services (Codex 01)
+  Creators: Hackall360, Sponge, GFourteen, Alfredo, Red
+  https://www.unityailab.com/services
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+
+  <!-- SEO -->
+  <meta name="description" content="Services — Unity AI Lab. Seven engagements: AI integration, red/blue team, software development, training, inferencing, prototyping, automation. Self-hosted by default. Open-source where the contract allows." />
+  <meta name="keywords" content="Unity AI Lab services, AI integration, red team, blue team, AI security, prompt injection audit, AI training, inferencing, AI prototyping, AI automation, agentic systems" />
+  <meta name="author" content="Unity AI Lab — Hackall360, GFourteen, SpongeBong, Alfredo, Red" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="theme-color" content="#0a0000" />
+  <link rel="canonical" href="https://www.unityailab.com/services" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.unityailab.com/services" />
+  <meta property="og:title" content="Services — Unity AI Lab" />
+  <meta property="og:description" content="Seven engagements. All unconventional. Self-hosted by default; open-source where the contract allows." />
+  <meta property="og:site_name" content="Unity AI Lab" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UnityAILab" />
+  <meta name="twitter:creator" content="@UnityAILab" />
+  <meta name="twitter:title" content="Services — Unity AI Lab" />
+  <meta name="twitter:description" content="Seven engagements. All unconventional. Self-hosted by default; open-source where the contract allows." />
+
+  <!-- Mobile web app -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="UnityAILab" />
+
+  <!-- MS Tile -->
+  <meta name="msapplication-TileColor" content="#0a0000" />
+  <meta name="msapplication-navbutton-color" content="#0a0000" />
+
+  <!-- Favicon / icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <title>Services — Unity AI Lab · Seven engagements. All unconventional.</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets — about-v2 base for shared form styles + sV1 -->
+  <link rel="stylesheet" href="redesign/shared-tokens.css" />
+  <link rel="stylesheet" href="redesign/variations.css?v=16" />
+  <link rel="stylesheet" href="redesign/about.css" />
+  <link rel="stylesheet" href="redesign/about-v2.css" />
+  <link rel="stylesheet" href="redesign/services-v1.css?v=2" />
+
+  <style>
+    html, body { background: #030001; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); color: var(--bone); }
+
+    /* Skip link */
+    .vD-skip {
+      position: absolute; top: -60px; left: 12px;
+      background: var(--crimson-red, #dc143c); color: #fff;
+      padding: 10px 18px; text-decoration: none;
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      letter-spacing: 3px; text-transform: uppercase; font-size: 12px;
+      z-index: 10000; border: 1px solid rgba(255,255,255,0.4);
+    }
+    .vD-skip:focus { top: 12px; outline: 2px solid #fff; outline-offset: 2px; }
+
+    /* Push the services-page content below the fixed navbar */
+    .services-page-wrap { padding-top: 70px; }
+  </style>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Site chrome (navbar + footer) -->
+  <script type="text/babel" src="redesign/sigils.jsx"></script>
+  <script type="text/babel" src="redesign/v-d-chrome.jsx"></script>
+  <script type="text/babel" src="redesign/v-d.jsx"></script>
+  <script type="text/babel" src="redesign/v-d-sections.jsx"></script>
+
+  <!-- Shared About primitives (contact form, sigil divider, etc.) -->
+  <script type="text/babel" src="redesign/about-shared.jsx"></script>
+
+  <!-- Services content -->
+  <script type="text/babel" src="redesign/services-data.jsx"></script>
+  <script type="text/babel" src="redesign/services-v1.jsx"></script>
+</head>
+<body>
+  <a class="vD-skip" href="#main-content">Skip to main content</a>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { GothicNavbar, GothicFooter, ServicesV1 } = window;
+
+    const App = () => (
+      <div className="vD-page services-page-wrap" data-screen-label="Services — V1">
+        <GothicNavbar />
+        <main id="main-content" role="main">
+          <ServicesV1 />
+        </main>
+        <GothicFooter />
+      </div>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+
+  <!-- Gothic init (polyfills, throttled scroll, form validation, toasts) -->
+  <script src="redesign/gothic-init.js?v=1" defer></script>
+
+  <!-- Interactive smoke (matches landing) -->
+  <script src="redesign/v-d-smoke.js?v=3" defer></script>
+</body>
+</html>

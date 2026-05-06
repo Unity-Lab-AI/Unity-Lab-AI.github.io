@@ -316,10 +316,10 @@ Want to add to this beautiful disaster? Here's how:
 ### Quick Links
 
 - **CLAUDE.md** - [Complete dev guide](./CLAUDE.md) (v2.1.5, everything you need)
-- **TODO.md** - [Master TODO](./Docs/TODO/TODO.md) (what we're working on)
-- **API Docs** - [Pollinations API](./Docs/Pollinations_API_Documentation.md) (comprehensive reference)
-- **API Coverage** - [What's implemented](./Docs/API_COVERAGE.md) (feature checklist)
-- **Test Guide** - [How to test](./Docs/TEST_GUIDE.md) (validation methods)
+- **TODO.md** - [Master TODO](./docs/TODO/TODO.md) (what we're working on)
+- **API Docs** - [Pollinations API](./docs/Pollinations_API_Documentation.md) (comprehensive reference)
+- **API Coverage** - [What's implemented](./docs/API_COVERAGE.md) (feature checklist)
+- **Test Guide** - [How to test](./docs/TEST_GUIDE.md) (validation methods)
 
 ### External Resources
 

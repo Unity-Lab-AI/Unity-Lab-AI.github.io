@@ -270,7 +270,7 @@ This project follows the licensing of the parent repository.
 
 - [Pollinations.AI Documentation](https://github.com/pollinations/pollinations)
 - [Pollinations.AI Authentication](https://auth.pollinations.ai)
-- [API Documentation](../Docs/Pollinations_API_Documentation.md)
+- [API Documentation](../docs/Pollinations_API_Documentation.md)
 
 ## Notes
 

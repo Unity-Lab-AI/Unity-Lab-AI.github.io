@@ -1,196 +1,228 @@
 /**
- * Unity AI Lab
- * Creators: Hackall360, Sponge, GFourteen
+ * Unity AI Lab — Apps Shared Navigation (gothic redesign chrome)
+ * Creators: Hackall360, Sponge, GFourteen, Alfreddo, Red
  * https://www.unityailab.com
  * unityailabcontact@gmail.com
- * Version: v2.1.5
+ * Version: v2.1.6
+ *
+ * Vanilla-DOM port of <GothicNavbar /> from redesign/v-d-chrome.jsx — no
+ * React, no Babel. Apps stay fast + framework-free, but inherit the same
+ * crimson/bone palette + Trajan Pro display type + ouroboros sigil mark
+ * the rest of the redesigned site uses.
+ *
+ * Auto-loaded assets (so per-app HTML stays lean):
+ *   • redesign/shared-tokens.css   — CSS custom properties (palette, fonts)
+ *   • redesign/variations.css      — `.vD-nav-*` styles, layout chrome
+ *   • redesign/gothic-init.js      — polyfills, scroll throttle, toast system
+ *   • vendor/bootstrap.min.css/.js — apps still use .row/.col-* + .btn
+ *   • vendor/fontawesome/all.min.css — used by app UIs (chat icons, etc.)
  */
-
-(function() {
+(function () {
     'use strict';
 
-    // Determine base URL based on environment
     function getBaseURL() {
-        const hostname = window.location.hostname;
-        // Production: www.unityailab.com or unityailab.com
-        if (hostname.includes('unityailab.com')) {
-            return '/';
-        }
-        // GitHub Pages: unity-lab-ai.github.io
-        if (hostname.includes('github.io')) {
-            return '/';
-        }
-        // Local development: localhost, 127.0.0.1, or file://
+        // Always serve from site root — works on www.unityailab.com,
+        // unity-lab-ai.github.io, and local dev servers alike.
         return '/';
     }
 
-    const BASE_URL = getBaseURL();
+    var BASE_URL = getBaseURL();
 
-    // Navigation HTML - using absolute paths from site root
-    const navHTML = `
-        <nav class="navbar navbar-expand-lg navbar-dark" role="navigation" aria-label="Main navigation">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand gothic-logo" href="${BASE_URL}">
-                    <i class="fas fa-brain" aria-hidden="true"></i>
-                    <span>UNITYAILAB</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#unityNavbar" aria-controls="unityNavbar" aria-expanded="false" aria-label="Toggle navigation menu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="unityNavbar">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="${BASE_URL}ai">AI</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="${BASE_URL}about">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="${BASE_URL}apps">Apps</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="${BASE_URL}services">Services</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="${BASE_URL}projects">Projects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="${BASE_URL}contact">Contact</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    `;
+    var NAV_LINKS = [
+        { href: BASE_URL + 'ai',       label: 'AI' },
+        { href: BASE_URL + 'about',    label: 'About' },
+        { href: BASE_URL + 'apps',     label: 'Apps' },
+        { href: BASE_URL + 'services', label: 'Services' },
+        { href: BASE_URL + 'projects', label: 'Projects' },
+        { href: BASE_URL + 'contact',  label: 'Contact' },
+    ];
 
-    // Inject navigation on DOM ready
+    // Static SVG mirror of Sigils.Unity (ouroboros) from redesign/sigils.jsx —
+    // inlined so apps can render the brand mark without React/Babel.
+    var UNITY_SIGIL_SVG =
+        '<svg width="26" height="26" viewBox="0 0 64 64" fill="none" ' +
+        'stroke="currentColor" stroke-width="1.4" stroke-linecap="round" ' +
+        'stroke-linejoin="round" aria-hidden="true">' +
+        '<path d="M 36 12 A 22 22 0 1 0 50 22"/>' +
+        '<path d="M 16 22 Q 14 32 16 42" stroke-opacity="0.45"/>' +
+        '<path d="M 22 14 Q 32 12 42 14" stroke-opacity="0.45"/>' +
+        '<path d="M 48 24 Q 52 32 48 42" stroke-opacity="0.45"/>' +
+        '<path d="M 22 50 Q 32 52 42 50" stroke-opacity="0.45"/>' +
+        '<path d="M 50 22 L 42 18 L 38 24 L 36 12 Z" fill="currentColor" stroke="none"/>' +
+        '<circle cx="44" cy="20" r="1" fill="#0a0a0a" stroke="none"/>' +
+        '<line x1="13" y1="32" x2="10" y2="32" stroke-opacity="0.4"/>' +
+        '<line x1="32" y1="13" x2="32" y2="10" stroke-opacity="0.4"/>' +
+        '<line x1="51" y1="32" x2="54" y2="32" stroke-opacity="0.4"/>' +
+        '<line x1="32" y1="51" x2="32" y2="54" stroke-opacity="0.4"/>' +
+        '</svg>';
+
+    function renderNavbar() {
+        var path = (window.location.pathname || '').replace(/\/+$/, '').toLowerCase();
+        var links = NAV_LINKS.map(function (l) {
+            var slug = l.href.replace(/^\//, '').toLowerCase();
+            var matchPath  = '/' + slug;
+            var matchHtml  = matchPath + '.html';
+            var matchChild = matchPath + '/';
+            var isActive = slug && (
+                path === matchPath ||
+                path === matchHtml ||
+                path.indexOf(matchChild) === 0
+            );
+            var attrs = isActive ? ' aria-current="page" class="is-active"' : '';
+            return '<li><a href="' + l.href + '"' + attrs + '>' + l.label + '</a></li>';
+        }).join('');
+
+        return '' +
+            '<nav class="vD-nav" role="navigation" aria-label="Main navigation">' +
+              '<div class="vD-nav-inner">' +
+                '<a href="' + BASE_URL + '" class="vD-nav-brand" aria-label="Unity AI Lab home">' +
+                  '<span class="vD-nav-mark">' + UNITY_SIGIL_SVG + '</span>' +
+                  '<span class="vD-nav-name">UNITYAILAB</span>' +
+                '</a>' +
+                '<button class="vD-nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false">' +
+                  '<span></span><span></span><span></span>' +
+                '</button>' +
+                '<ul class="vD-nav-list">' + links + '</ul>' +
+              '</div>' +
+            '</nav>';
+    }
+
     function injectNavigation() {
-        // Create navigation wrapper
-        const navWrapper = document.createElement('div');
-        navWrapper.id = 'unity-nav-wrapper';
-        navWrapper.innerHTML = navHTML;
+        // Skip if a redesigned React-rendered nav is already on the page.
+        if (document.querySelector('nav.vD-nav')) return;
 
-        // Insert at beginning of body
-        document.body.insertBefore(navWrapper, document.body.firstChild);
+        var wrap = document.createElement('div');
+        wrap.id = 'unity-nav-wrapper';
+        wrap.innerHTML = renderNavbar();
+        document.body.insertBefore(wrap, document.body.firstChild);
 
-        // Add body class
-        document.body.classList.add('unity-nav-active');
-
-        // Add background elements if they don't exist
+        // Add background ambience layers if missing — same .unity-* names
+        // the legacy shared-theme expected, kept for backwards compat.
         if (!document.querySelector('.unity-background-overlay')) {
-            const bgOverlay = document.createElement('div');
-            bgOverlay.className = 'unity-background-overlay';
-            document.body.insertBefore(bgOverlay, document.body.firstChild);
-
-            const redStreaks = document.createElement('div');
-            redStreaks.className = 'unity-red-streaks';
-            document.body.insertBefore(redStreaks, document.body.firstChild);
+            var bg = document.createElement('div');
+            bg.className = 'unity-background-overlay';
+            document.body.insertBefore(bg, document.body.firstChild);
+            var streaks = document.createElement('div');
+            streaks.className = 'unity-red-streaks';
+            document.body.insertBefore(streaks, document.body.firstChild);
         }
 
-        // Hide existing home links
+        document.body.classList.add('unity-nav-active');
         hideHomeLinks();
+        bindNavBehavior(wrap);
+    }
 
-        // Initialize scroll effect
-        initScrollEffect();
+    function bindNavBehavior(wrap) {
+        var nav = wrap.querySelector('.vD-nav');
+        if (!nav) return;
 
-        // Initialize Bootstrap collapse if available
-        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
-            const collapseElementList = document.querySelectorAll('.navbar-collapse');
-            collapseElementList.forEach(el => new bootstrap.Collapse(el, { toggle: false }));
+        // Scroll-state class — mirrors GothicNavbar's React effect at >30px.
+        var onScroll = function () {
+            if (window.scrollY > 30) nav.classList.add('vD-nav-scrolled');
+            else nav.classList.remove('vD-nav-scrolled');
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        // Mobile menu toggle.
+        var toggle = wrap.querySelector('.vD-nav-toggle');
+        var list = wrap.querySelector('.vD-nav-list');
+        if (toggle && list) {
+            toggle.addEventListener('click', function () {
+                var open = list.classList.toggle('open');
+                toggle.classList.toggle('on', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            // Close mobile menu on link click.
+            var links = list.querySelectorAll('a');
+            for (var i = 0; i < links.length; i++) {
+                links[i].addEventListener('click', function () {
+                    list.classList.remove('open');
+                    toggle.classList.remove('on');
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
+            }
         }
     }
 
-    // Hide existing "home" links/buttons in apps
+    // Hide each app's pre-existing "↩ HOME" / "Back to home" links so the
+    // injected nav is the single source of truth for navigation.
     function hideHomeLinks() {
-        const selectors = [
+        var selectors = [
             '.home-link',
             'a[href="../"]',
             'a[href="./"]',
-            'button:contains("HOME")',
-            'a:contains("↩ HOME")',
             '[id*="home-btn"]',
             '[class*="home-btn"]'
         ];
-
-        selectors.forEach(selector => {
+        selectors.forEach(function (sel) {
             try {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(el => {
-                    if (el.textContent.toLowerCase().includes('home') ||
-                        el.innerHTML.includes('↩')) {
+                var els = document.querySelectorAll(sel);
+                for (var i = 0; i < els.length; i++) {
+                    var el = els[i];
+                    var text = (el.textContent || '').toLowerCase();
+                    var html = (el.innerHTML || '');
+                    if (text.indexOf('home') !== -1 || html.indexOf('↩') !== -1) {
                         el.classList.add('unity-hidden-home');
                     }
-                });
-            } catch (e) {
-                // Ignore invalid selectors
-            }
-        });
-    }
-
-    // Scroll effect for navbar
-    function initScrollEffect() {
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('#unity-nav-wrapper .navbar');
-            if (navbar) {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
                 }
-            }
+            } catch (e) { /* invalid selector — ignore */ }
         });
     }
 
-    // Load required CSS if not already loaded
-    function loadCSS() {
-        // Check if shared theme is already loaded
-        const existingLink = document.querySelector('link[href*="shared-theme.css"]');
-        if (!existingLink) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = BASE_URL + 'apps/shared-theme.css';
-            document.head.appendChild(link);
-        }
+    function ensureStylesheet(href) {
+        var existing = document.querySelector('link[href*="' + href.split('/').pop() + '"]');
+        if (existing) return;
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        document.head.appendChild(link);
+    }
 
-        // Load Bootstrap if not present
+    function ensureScript(src, opts) {
+        opts = opts || {};
+        var existing = document.querySelector('script[src*="' + src.split('/').pop() + '"]');
+        if (existing) return;
+        var s = document.createElement('script');
+        s.src = src;
+        if (opts.defer) s.defer = true;
+        document.body.appendChild(s);
+    }
+
+    function loadAssets() {
+        // Redesign chrome assets — these define `.vD-nav-*` styles + tokens
+        // + gothic-init's polyfills & toast system.
+        ensureStylesheet(BASE_URL + 'redesign/shared-tokens.css');
+        ensureStylesheet(BASE_URL + 'redesign/variations.css');
+        ensureScript(BASE_URL + 'redesign/gothic-init.js', { defer: true });
+
+        // Apps shared theme (slim utility classes + scrollbar/selection +
+        // background overlay). Re-listed here so apps that hand-load it
+        // don't get a duplicate, and apps that didn't still get it.
+        ensureStylesheet(BASE_URL + 'apps/shared-theme.css');
+
+        // Bootstrap CSS+JS — apps still use .row/.col-*/.btn for layout.
+        // FontAwesome — used by app UIs (chat icons, settings gear, etc.).
         if (!document.querySelector('link[href*="bootstrap"]')) {
-            const bootstrapLink = document.createElement('link');
-            bootstrapLink.rel = 'stylesheet';
-            bootstrapLink.href = BASE_URL + 'vendor/bootstrap/bootstrap.min.css';
-            document.head.appendChild(bootstrapLink);
+            ensureStylesheet(BASE_URL + 'vendor/bootstrap/bootstrap.min.css');
         }
-
-        // Load Font Awesome if not present
         if (!document.querySelector('link[href*="fontawesome"]') &&
             !document.querySelector('link[href*="font-awesome"]')) {
-            const faLink = document.createElement('link');
-            faLink.rel = 'stylesheet';
-            faLink.href = BASE_URL + 'vendor/fontawesome/all.min.css';
-            document.head.appendChild(faLink);
+            ensureStylesheet(BASE_URL + 'vendor/fontawesome/all.min.css');
+        }
+        if (typeof window.bootstrap === 'undefined') {
+            ensureScript(BASE_URL + 'vendor/bootstrap/bootstrap.bundle.min.js', { defer: true });
         }
     }
 
-    // Load required scripts
-    function loadScripts() {
-        // Load Bootstrap JS if not present
-        if (typeof bootstrap === 'undefined') {
-            const script = document.createElement('script');
-            script.src = BASE_URL + 'vendor/bootstrap/bootstrap.bundle.min.js';
-            document.body.appendChild(script);
-        }
-    }
-
-    // Initialize on DOM ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCSS();
-            loadScripts();
-            injectNavigation();
-        });
-    } else {
-        loadCSS();
-        loadScripts();
+    function boot() {
+        loadAssets();
         injectNavigation();
     }
 
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
 })();

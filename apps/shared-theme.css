@@ -1,54 +1,42 @@
 /**
- * Unity AI Lab
- * Creators: Hackall360, Sponge, GFourteen
+ * Unity AI Lab — Apps Shared Theme (gothic redesign chrome)
+ * Creators: Hackall360, Sponge, GFourteen, Alfreddo, Red
  * https://www.unityailab.com
  * unityailabcontact@gmail.com
- * Version: v2.1.5
+ * Version: v2.1.6
+ *
+ * Slim utility layer for the 8 app demos. The heavy lifting lives in:
+ *   • redesign/shared-tokens.css — palette, fonts, font-faces (single source)
+ *   • redesign/variations.css    — `.vD-nav-*` styles (matches GothicNavbar)
+ * Both are auto-loaded by apps/shared-nav.js, so per-app HTML stays lean.
+ *
+ * What this file DOES:
+ *   • Background ambience (.unity-background-overlay + .unity-red-streaks)
+ *   • Scrollbar + selection theming
+ *   • Body padding for the fixed gothic navbar
+ *   • Legacy .unity-* utility classes still referenced by app pages
+ *     (.unity-btn, .unity-card, .unity-panel, .unity-input, .unity-select,
+ *      .unity-textarea, .unity-chat-container, .unity-message-*, .app-* etc.)
+ *
+ * What this file NO LONGER does (moved upstream):
+ *   • :root token declarations           → redesign/shared-tokens.css
+ *   • @font-face Trajan Pro                → redesign/shared-tokens.css
+ *   • #unity-nav-wrapper Bootstrap navbar  → redesign/variations.css `.vD-nav-*`
+ *   • Navbar scroll-state JS               → apps/shared-nav.js
  */
 
-/* Shared Theme CSS for Unity AI Lab Apps */
-/* This file provides consistent theming across all legacy apps */
-
-/* Trajan Pro Font - CDN + local fallback */
-@font-face {
-    font-family: 'Trajan Pro';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Trajan Pro Regular'),
-         url('https://font.download/cdn/webfont/trajan-pro/TrajanPro-Regular.woff') format('woff'),
-         url('../fonts/trajan-pro/TrajanPro-Regular.woff') format('woff');
-}
-
-@font-face {
-    font-family: 'Trajan Pro';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Trajan Pro Bold'),
-         url('https://font.download/cdn/webfont/trajan-pro/TrajanPro-Bold.woff') format('woff'),
-         url('../fonts/trajan-pro/TrajanPro-Bold.woff') format('woff');
-}
-
-/* Root Variables - Unity AI Lab Theme */
+/* App-only token extension — gradient not present in shared-tokens.css. */
 :root {
-    --primary-black: #0a0a0a;
-    --secondary-black: #1a1a1a;
-    --dark-grey: #2a2a2a;
-    --crimson-red: #dc143c;
-    --blood-red: #8b0000;
-    --accent-red: #ff0033;
-    --light-grey: #cccccc;
-    --white: #ffffff;
     --gradient-dark: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #0a0a0a 100%);
-    --gradient-red: linear-gradient(135deg, #8b0000 0%, #dc143c 50%, #ff0033 100%);
 }
 
-/* Background Effects */
+/* ===================================
+   Background Ambience
+   =================================== */
 .unity-background-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: radial-gradient(ellipse at center, rgba(26, 26, 26, 0.8) 0%, rgba(10, 10, 10, 1) 100%);
     z-index: -2;
     pointer-events: none;
@@ -56,10 +44,8 @@
 
 .unity-red-streaks {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background:
         linear-gradient(90deg, transparent 0%, transparent 48%, rgba(220, 20, 60, 0.03) 50%, transparent 52%, transparent 100%),
         linear-gradient(180deg, transparent 0%, transparent 48%, rgba(220, 20, 60, 0.02) 50%, transparent 52%, transparent 100%);
@@ -70,193 +56,72 @@
 }
 
 @keyframes streaksMove {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 80px 80px;
-    }
+    0%   { background-position: 0 0; }
+    100% { background-position: 80px 80px; }
 }
 
-/* Navigation - Injected via JavaScript */
-#unity-nav-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10000;
-}
-
-#unity-nav-wrapper .navbar {
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(220, 20, 60, 0.2);
-    padding: 1rem 0;
-    transition: all 0.3s ease;
-    padding-top: calc(1rem + env(safe-area-inset-top));
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-}
-
-#unity-nav-wrapper .navbar.scrolled {
-    box-shadow: 0 5px 30px rgba(220, 20, 60, 0.3);
-}
-
-#unity-nav-wrapper .gothic-logo {
-    font-family: 'Trajan Pro', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #ffffff !important;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-}
-
-#unity-nav-wrapper .gothic-logo i {
-    color: #dc143c;
-    font-size: 1.8rem;
-}
-
-#unity-nav-wrapper .nav-link {
-    font-family: 'Trajan Pro', serif;
-    color: #cccccc !important;
-    font-weight: 600;
-    margin: 0 15px;
-    padding: 8px 15px !important;
-    position: relative;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    text-decoration: none;
-}
-
-#unity-nav-wrapper .nav-link::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 2px;
-    background: linear-gradient(135deg, #8b0000 0%, #dc143c 50%, #ff0033 100%);
-    transition: width 0.3s ease;
-}
-
-#unity-nav-wrapper .nav-link:hover,
-#unity-nav-wrapper .nav-link.active {
-    color: #dc143c !important;
-}
-
-#unity-nav-wrapper .nav-link:hover::before {
-    width: 80%;
-}
-
-/* Navbar Toggle */
-#unity-nav-wrapper .navbar-toggler {
-    border-color: rgba(220, 20, 60, 0.5);
-    padding: 0.5rem 0.75rem;
-}
-
-#unity-nav-wrapper .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(220, 20, 60, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-}
-
-/* Content adjustment for fixed navbar */
-body.unity-nav-active {
-    padding-top: 80px;
-}
-
-/* Mobile responsive */
-@media (max-width: 991px) {
-    #unity-nav-wrapper .nav-link {
-        margin: 5px 0;
-        font-size: 0.85rem;
-        padding: 8px 12px !important;
-    }
-
-    #unity-nav-wrapper .navbar-collapse {
-        background: rgba(26, 26, 26, 0.95);
-        padding: 15px;
-        margin-top: 10px;
-        border: 1px solid rgba(220, 20, 60, 0.2);
-        border-radius: 8px;
-    }
-
-    body.unity-nav-active {
-        padding-top: 70px;
-    }
-}
-
-/* Utility class to hide original home links */
-.unity-hidden-home {
-    display: none !important;
-}
-
-/* Scrollbar theming */
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--primary-black);
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #8b0000 0%, #dc143c 50%, #ff0033 100%);
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--crimson-red);
-}
-
-/* Firefox Scrollbar */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: #dc143c #0a0a0a;
-}
-
-/* Selection */
-::selection {
-    background: var(--crimson-red);
-    color: var(--white);
-}
-
-::-moz-selection {
-    background: var(--crimson-red);
-    color: var(--white);
+@media (prefers-reduced-motion: reduce) {
+    .unity-red-streaks { animation: none; }
 }
 
 /* ===================================
-   Common App Styling Components
+   Body padding for fixed gothic navbar
+   (mirrors `.vD-page` from variations.css)
    =================================== */
+body.unity-nav-active {
+    padding-top: 70px;
+}
 
-/* Base App Container */
+@media (max-width: 1024px) {
+    body.unity-nav-active {
+        padding-top: 62px;
+    }
+}
+
+/* Utility class shared-nav.js uses to suppress per-app legacy home links. */
+.unity-hidden-home { display: none !important; }
+
+/* ===================================
+   Scrollbar + Selection
+   =================================== */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--primary-black); }
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-red);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--crimson-red); }
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--crimson-red) var(--primary-black);
+}
+
+::selection      { background: var(--crimson-red); color: var(--white); }
+::-moz-selection { background: var(--crimson-red); color: var(--white); }
+
+/* ===================================
+   App Shell — content container chrome
+   =================================== */
 .app-container {
     max-width: 1400px;
     margin: 80px auto 40px;
     padding: 30px;
     background: rgba(26, 26, 26, 0.9);
-    border-radius: 12px;
+    border-radius: 4px;
     border: 1px solid rgba(220, 20, 60, 0.2);
     box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
 }
 
-/* App Header */
 .app-header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid rgba(220, 20, 60, 0.2);
+    border-bottom: 1px solid rgba(220, 20, 60, 0.2);
 }
 
 .app-title {
-    font-family: 'Trajan Pro', serif;
+    font-family: var(--font-display);
     font-size: 2.5rem;
     font-weight: 700;
     color: var(--white);
@@ -267,22 +132,25 @@ body.unity-nav-active {
 }
 
 .app-subtitle {
-    font-family: 'Trajan Pro', serif;
-    font-size: 1.1rem;
-    color: var(--light-grey);
-    letter-spacing: 1px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--bone);
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
-/* Common Button Styles */
+/* ===================================
+   Gothic Buttons
+   =================================== */
 .unity-btn {
     padding: 12px 30px;
-    font-family: 'Trajan Pro', serif;
+    font-family: var(--font-display);
     font-size: 0.9rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid var(--crimson-red);
-    border-radius: 8px;
+    letter-spacing: 2px;
+    border: 1px solid var(--crimson-red);
+    border-radius: 0;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(220, 20, 60, 0.2);
@@ -295,7 +163,7 @@ body.unity-nav-active {
 }
 
 .unity-btn-primary:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(220, 20, 60, 0.4);
     border-color: var(--accent-red);
 }
@@ -307,7 +175,7 @@ body.unity-nav-active {
 
 .unity-btn-primary:disabled {
     background: var(--dark-grey);
-    border-color: #444;
+    border-color: var(--mid-grey);
     cursor: not-allowed;
     box-shadow: none;
     opacity: 0.6;
@@ -315,28 +183,31 @@ body.unity-nav-active {
 
 .unity-btn-secondary {
     background: transparent;
-    color: var(--crimson-red);
+    color: var(--bone);
     border-color: var(--crimson-red);
 }
 
 .unity-btn-secondary:hover {
     background: rgba(220, 20, 60, 0.1);
-    transform: translateY(-3px);
+    color: var(--white);
+    transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
 }
 
-/* Form Elements */
+/* ===================================
+   Form Elements
+   =================================== */
 .unity-input,
 .unity-select,
 .unity-textarea {
     width: 100%;
     padding: 12px 15px;
-    font-family: 'Trajan Pro', serif;
+    font-family: var(--font-body);
     font-size: 0.95rem;
     background: rgba(26, 26, 26, 0.8);
-    color: var(--light-grey);
+    color: var(--bone);
     border: 1px solid rgba(220, 20, 60, 0.3);
-    border-radius: 8px;
+    border-radius: 2px;
     transition: all 0.3s ease;
     outline: none;
 }
@@ -351,7 +222,8 @@ body.unity-nav-active {
 
 .unity-input::placeholder,
 .unity-textarea::placeholder {
-    color: rgba(204, 204, 204, 0.5);
+    color: rgba(232, 226, 212, 0.45);
+    font-style: italic;
 }
 
 .unity-select {
@@ -364,15 +236,15 @@ body.unity-nav-active {
     cursor: pointer;
 }
 
-.unity-select:hover {
-    border-color: var(--crimson-red);
-}
+.unity-select:hover { border-color: var(--crimson-red); }
 
-/* Card Components */
+/* ===================================
+   Cards + Panels
+   =================================== */
 .unity-card {
     background: rgba(42, 42, 42, 0.6);
     padding: 25px;
-    border-radius: 10px;
+    border-radius: 4px;
     border: 1px solid rgba(220, 20, 60, 0.2);
     transition: all 0.3s ease;
     margin-bottom: 20px;
@@ -381,17 +253,19 @@ body.unity-nav-active {
 .unity-card:hover {
     border-color: var(--crimson-red);
     box-shadow: 0 8px 25px rgba(220, 20, 60, 0.2);
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }
 
 .unity-card-header {
-    font-family: 'Trajan Pro', serif;
+    font-family: var(--font-display);
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--white);
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(220, 20, 60, 0.2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .unity-card-body {
@@ -399,30 +273,31 @@ body.unity-nav-active {
     line-height: 1.6;
 }
 
-/* Panel/Settings Components */
 .unity-panel {
     background: rgba(21, 21, 21, 0.9);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 4px;
     border: 1px solid rgba(220, 20, 60, 0.2);
     margin-bottom: 20px;
 }
 
 .unity-panel-header {
-    font-family: 'Trajan Pro', serif;
-    font-size: 1.2rem;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--crimson-red);
     margin-bottom: 15px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 3px;
 }
 
-/* Chat/Message Components */
+/* ===================================
+   Chat / Message Components
+   =================================== */
 .unity-chat-container {
     background: rgba(21, 21, 21, 0.8);
     border: 1px solid rgba(220, 20, 60, 0.2);
-    border-radius: 10px;
+    border-radius: 4px;
     padding: 20px;
     height: 500px;
     overflow-y: auto;
@@ -432,7 +307,7 @@ body.unity-nav-active {
 .unity-message {
     margin-bottom: 15px;
     padding: 12px 15px;
-    border-radius: 8px;
+    border-radius: 2px;
     line-height: 1.6;
 }
 
@@ -444,68 +319,53 @@ body.unity-nav-active {
 
 .unity-message-ai {
     background: rgba(42, 42, 42, 0.6);
-    border-left: 3px solid var(--light-grey);
+    border-left: 3px solid var(--bone);
     color: var(--light-grey);
 }
 
-/* Image/Media Containers */
+/* ===================================
+   Misc utilities
+   =================================== */
 .unity-media-container {
     width: 100%;
     background: rgba(21, 21, 21, 0.8);
     border: 1px solid rgba(220, 20, 60, 0.2);
-    border-radius: 10px;
+    border-radius: 4px;
     overflow: hidden;
     margin-bottom: 20px;
 }
-
 .unity-media-container img {
     width: 100%;
     height: auto;
     display: block;
 }
 
-/* Control Groups */
 .unity-control-group {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
     margin-bottom: 20px;
 }
-
 .unity-control-group > * {
     flex: 1;
     min-width: 200px;
 }
 
-/* Typography Utilities */
-.unity-text-primary {
-    color: var(--crimson-red);
-}
+.unity-text-primary   { color: var(--crimson-red); }
+.unity-text-secondary { color: var(--light-grey); }
+.unity-text-white     { color: var(--white); }
+.unity-text-center    { text-align: center; }
 
-.unity-text-secondary {
-    color: var(--light-grey);
-}
-
-.unity-text-white {
-    color: var(--white);
-}
-
-.unity-text-center {
-    text-align: center;
-}
-
-/* Spacing Utilities */
 .unity-mt-1 { margin-top: 10px; }
 .unity-mt-2 { margin-top: 20px; }
 .unity-mt-3 { margin-top: 30px; }
 .unity-mb-1 { margin-bottom: 10px; }
 .unity-mb-2 { margin-bottom: 20px; }
 .unity-mb-3 { margin-bottom: 30px; }
-.unity-p-1 { padding: 10px; }
-.unity-p-2 { padding: 20px; }
-.unity-p-3 { padding: 30px; }
+.unity-p-1  { padding: 10px; }
+.unity-p-2  { padding: 20px; }
+.unity-p-3  { padding: 30px; }
 
-/* Loading Indicator */
 .unity-loading {
     display: inline-block;
     width: 20px;
@@ -515,41 +375,28 @@ body.unity-nav-active {
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Responsive Adjustments */
+/* ===================================
+   Responsive
+   =================================== */
 @media (max-width: 768px) {
     .app-container {
         margin: 70px 15px 20px;
         padding: 20px;
     }
-
     .app-title {
         font-size: 1.8rem;
         letter-spacing: 2px;
     }
-
     .app-subtitle {
-        font-size: 0.95rem;
+        font-size: 0.8rem;
     }
-
     .unity-btn {
         padding: 10px 20px;
         font-size: 0.85rem;
     }
-
-    .unity-control-group {
-        flex-direction: column;
-    }
-
-    .unity-control-group > * {
-        min-width: 100%;
-    }
-
-    .unity-chat-container {
-        height: 400px;
-    }
+    .unity-control-group { flex-direction: column; }
+    .unity-control-group > * { min-width: 100%; }
+    .unity-chat-container { height: 400px; }
 }
