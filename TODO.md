@@ -98,6 +98,34 @@
 
 ---
 
+### [x] fix the sitemap generator on a new branch
+**Status:** DONE — 2026-05-06 (commit cca3787 on `feature/fix-sitemap-generator`; PR #48 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/48)
+**Branch:** `feature/fix-sitemap-generator` (off `dev-re-design`)
+**User direction (verbatim, LAW #0):**
+> "fix the sitemap generator on a new branch"
+
+**Problem (discovered while validating GitHub Pages deploy pipeline post-PR-46/47-merge):**
+`generate-sitemap.js` produces a regressed `sitemap.xml` that overwrites the hand-curated post-redesign canonical from P1-07 on every `npm run build`. Specifically the generator drops:
+- The `.html` extension canonical URLs for the 7 redesign pages — reverts `ai.html`, `about.html`, `services.html`, `projects.html`, `apps.html`, `contact.html` back to trailing-slash directory paths
+- `/apps/` URL entirely (was `/apps.html` priority 0.8)
+- `/downloads/` URL with the Moana `<image:image>` block (priority 0.5)
+- `<?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>` declaration (kills human-readable XSL view)
+- `xmlns:xsi` + `xmlns:image` namespace declarations + `xsi:schemaLocation`
+- Explanatory comment block referencing `docs/redesign/notes-p1-sitemap.md`
+- Per-URL inline `<!-- comments -->`
+
+`docs/redesign/notes-p1-sitemap.md` line 66-68 ("Build pipeline note") explicitly anticipated this: "If the build pipeline is later wired up, that script may overwrite this file unless its template is updated to match." That's exactly what's happening now that the deploy workflow runs `npm run build`.
+
+**Scope:**
+- Patch `generate-sitemap.js` to emit the canonical 9-URL post-redesign structure (matching `sitemap.xml` byte-for-byte modulo `<lastmod>` dates)
+- Re-emit the XML stylesheet declaration, multi-namespace `<urlset>`, top-level rationale comment, per-URL inline comments, and the `/downloads/` `<image:image>` block
+- Verify output via `node generate-sitemap.js && git diff sitemap.xml` — diff should show ONLY `<lastmod>` date deltas
+- Update `docs/redesign/notes-p1-sitemap.md` "Build pipeline note" section to mark this fix as shipped
+- Atomic commit: generator patch + regenerated sitemap.xml (date bump) + docs in one
+- Open PR back into `dev-re-design`
+
+---
+
 ## P2 - MEDIUM PRIORITY
 
 *No active P2 tasks*
