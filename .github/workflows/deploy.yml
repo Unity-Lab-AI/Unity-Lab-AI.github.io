@@ -78,10 +78,10 @@ jobs:
 
       - name: Copy additional files to dist
         run: |
-          echo "📋 Copying additional files using copy-assets.js..."
-          # Use the centralized copy-assets.js script for consistency
-          # This script maintains the list of all files/directories to copy
-          node copy-assets.js
+          echo "📋 Copying additional files using scripts/copy-assets.js..."
+          # Path: relocated from root to scripts/ on 2026-05-06 (commit 7a183d4)
+          # along with cache-bust.js and generate-sitemap.js.
+          node scripts/copy-assets.js
 
           echo ""
           echo "📦 Final dist contents:"
