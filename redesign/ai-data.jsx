@@ -28,8 +28,8 @@ const AI_DATA = {
       'Experimental capabilities open by default',
       'No registration, no email, no tracking pixel',
     ],
-    primary: { label: 'Launch the demo', href: './demo/', icon: 'arrow' },
-    secondary: { label: 'See all our apps', href: '../apps' },
+    primary: { label: 'Launch the demo', href: './ai/demo/', icon: 'arrow' },
+    secondary: { label: 'See all our apps', href: './apps' },
   },
 
   // What you get + caveats — replaces the disabled column with something useful.
@@ -63,8 +63,8 @@ const AI_DATA = {
   cta: {
     title: 'Ready to talk to Unity?',
     lede: 'The demo is one click away. If you want a custom build \u2014 your own persona, your own hardware, your own data \u2014 send word.',
-    primary: { label: 'Launch the demo', href: './demo/' },
-    secondary: { label: 'Inquire about a build', href: '../contact' },
+    primary: { label: 'Launch the demo', href: './ai/demo/' },
+    secondary: { label: 'Inquire about a build', href: './contact' },
   },
 };
 

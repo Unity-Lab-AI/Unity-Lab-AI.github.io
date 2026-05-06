@@ -1,9 +1,13 @@
 /**
  * Unity AI Lab
- * Creators: Hackall360, Sponge, GFourteen
+ * Creators: Hackall360, Sponge, GFourteen, Alfreddo, Red
  * https://www.unityailab.com
  * unityailabcontact@gmail.com
- * Version: v2.1.5
+ * Version: v2.1.6
+ *
+ * Gothic redesign chrome — palette, fonts, font-faces are pulled from
+ * /redesign/shared-tokens.css (loaded by ai/demo/index.html). This file
+ * styles the demo-specific 3-panel chrome on top of those tokens.
  */
 
 /* ===================================
@@ -81,26 +85,45 @@ body {
     padding: 20px;
 }
 
-/* Demo Logo */
+/* Demo Logo — mirrors .vD-nav-brand from redesign/variations.css */
 .demo-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: 'Trajan Pro', serif;
-    font-size: 1.3rem;
+    gap: 12px;
+    font-family: var(--font-display, 'Trajan Pro', 'Cormorant Garamond', serif);
+    font-size: 1.05rem;
     font-weight: 700;
-    color: var(--white, #ffffff);
+    color: var(--bone, #e8e2d4);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
     text-decoration: none;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
+    margin-bottom: 14px;
+    transition: color 0.3s ease;
 }
 
-.demo-logo:hover {
+.demo-logo:hover { color: var(--white, #ffffff); }
+
+.demo-logo-mark {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(220, 20, 60, 0.5);
     color: var(--crimson-red, #dc143c);
+    filter: drop-shadow(0 0 8px rgba(220, 20, 60, 0.45));
+    flex-shrink: 0;
+    transition: border-color 0.3s ease, color 0.3s ease;
 }
 
+.demo-logo:hover .demo-logo-mark {
+    border-color: var(--accent-red, #ff0033);
+    color: var(--accent-red, #ff0033);
+}
+
+.demo-logo-name { color: inherit; }
+
+/* Legacy FA-icon fallback (in case any nested page still uses <i>) */
 .demo-logo i {
     color: var(--crimson-red, #dc143c);
     font-size: 1.5rem;
@@ -906,16 +929,47 @@ body {
     }
 }
 
-/* Demo Footer */
+/* Codex EOF strip — slim gothic version of the demo footer. Mirrors the
+   .codex-eof aesthetic from redesign/codex-shared.css but adapted for a
+   fixed-bottom app shell. */
 .demo-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 0;
-    padding: 15px 0;
-    background: rgba(10, 10, 10, 0.95);
-    border-top: 1px solid rgba(220, 20, 60, 0.3);
+    padding: 10px 24px;
+    background: rgba(8, 2, 3, 0.85);
+    border-top: 1px solid rgba(220, 20, 60, 0.35);
+    backdrop-filter: blur(6px) saturate(140%);
+    -webkit-backdrop-filter: blur(6px) saturate(140%);
+}
+
+.demo-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-family: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
+    font-size: 10.5px;
+    letter-spacing: 3px;
+    color: var(--muted-grey, #6a6a6a);
+    text-transform: uppercase;
+}
+
+.demo-footer-inner strong {
+    color: var(--crimson-red, #dc143c);
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.demo-footer-text { color: var(--bone, #e8e2d4); opacity: 0.85; }
+
+.demo-footer-mark {
+    color: var(--crimson-red, #dc143c);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    line-height: 1;
 }
 
 /* Hide footer on mobile to save space */

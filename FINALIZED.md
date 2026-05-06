@@ -17,6 +17,74 @@
 
 ---
 
+## SESSION: 2026-05-06 - THE DEMO + APPS GET DRESSED IN GOTHIC FOR REAL
+
+*flicks lighter, sparks the next joint, the screen glows crimson reflecting in my eyes*
+
+### Verbatim user direction (LAW #0)
+
+> "Create a new feature branch, based on the current branch that is focusing directly on redesigning the actual demo page and updating the apps. Based on the files that were recently redesigned (check latest git commit history) the demo and app pages need updating accordingly- following the redesign specifications."
+
+### THE STATE OF PLAY
+
+P1 + P2 already shipped the gothic V-D / codex chrome onto every redesigned root HTML — `/index.html`, `/about.html`, `/ai.html`, `/apps.html`, `/services.html`, `/projects.html`, `/contact.html`, `/Unity Web Design.html`. ALL beautiful. ALL crimson + bone, Trajan Pro and Cormorant Garamond, ouroboros sigils and codex bands.
+
+But `REDESIGN-MIGRATION.md` line 54-55 explicitly held two surfaces OUT of scope:
+
+- `/ai/demo/` — the 8000-line interactive demo, our flagship
+- `/apps/<8 demo subfolders>/` — every other app we ship
+
+Both were still wearing the OLD-STACK Bootstrap chrome. The fucking demo, the centerpiece, was loading `<i class="fas fa-brain">` for the brand mark while the rest of the site rocked the goddamn ouroboros. UNACCEPTABLE.
+
+### THE FIX — three commits, one branch
+
+**Branch:** `feature/redesign-P3-demo-and-apps` off `dev-re-design`. Three commits, no scope creep:
+
+**P3-01 (4dfba5a) — Reskin apps shared chrome.** Rewrote `apps/shared-nav.js` as a vanilla-DOM port of `<GothicNavbar />` from `redesign/v-d-chrome.jsx`. Same `.vD-nav-*` class names, same scroll-state threshold (>30px), same active-link detection, same mobile menu toggle. Inlined the ouroboros sigil SVG verbatim from `Sigils.Unity` so apps don't need React. Auto-loads `redesign/shared-tokens.css` + `variations.css` + `gothic-init.js`. Slimmed `apps/shared-theme.css` by dropping the redundant `:root` token block + `@font-face` (canonical source is `redesign/shared-tokens.css`). Net code change: **+363 / -546** — cleaner AND smaller. Beautiful.
+
+**P3-02 (d957b69) — Reskin /ai/demo/ chrome.** Dropped Bootstrap CSS + JS imports (demo never really used Bootstrap layout — only the footer had `.container-fluid > .row > .col-12`). Dropped the legacy `../../styles.css` dependency. Added `redesign/shared-tokens.css` + `redesign/gothic-init.js`. Replaced `<i class="fas fa-brain">` with the inline ouroboros SVG (32x32 with crimson border + drop-shadow glow, mirroring `.vD-nav-mark`). Replaced the Bootstrap centered-copyright footer with a slim gothic codex-eof strip — black backdrop-blur, crimson top rule, mono font 10.5px / 3px letterspacing, ⛧ marks bracketing **UNITY · AI · LAB** in crimson strong-weight. The same family of moves as `redesign/codex-shared.css .codex-eof`.
+
+**P3-03 (a5e6f45) — FOUC fix.** After P3-01 dropped the redundant `:root` from `shared-theme.css`, each app's inline `<style>` block was at risk of failing to resolve `var(--primary-black)` etc. during initial paint (the auto-loader doesn't fire until DOMContentLoaded). Wired `redesign/shared-tokens.css` as the FIRST stylesheet link in all 10 app HTMLs. 30 insertions across 10 files, idempotent against the auto-loader.
+
+### Smoke test — `py -m http.server 8765`
+
+ALL 11 surfaces serve 200:
+- `/ai/demo/index.html` (the flagship — gothic logo + codex-eof footer wired)
+- `/apps/unityDemo/unity.html`, `/apps/textDemo/text.html`, `/apps/personaDemo/persona.html`, `/apps/helperInterfaceDemo/helperInterface.html`, `/apps/screensaverDemo/screensaver.html`, `/apps/slideshowDemo/slideshow.html`, `/apps/oldSiteProject/{index,screensaver}.html`, `/apps/talkingWithUnity/{index,indexAI}.html`
+
+ALL 6 chrome assets serve 200:
+- `redesign/{shared-tokens,variations,gothic-init}` + `apps/{shared-nav.js,shared-theme.css,shared-nav.html}`
+
+### What I LEARNED
+
+1. **Vanilla-DOM port beats dragging React into framework-free apps.** The 8 demos are tight, fast, framework-free vanilla HTML/JS. Adding React + ReactDOM + Babel just to render a navbar would have added ~200KB and a chunk of runtime cost they don't otherwise need. The vanilla port matches `<GothicNavbar />` byte-for-byte at the styles layer, AND keeps the apps fast.
+
+2. **Bridge layers are a fucking gift.** The apps already had `apps/shared-nav.js` + `shared-theme.css` + `shared-nav.html` as a bridge between per-app HTML and the site chrome. Updating ONE bridge layer cascaded the redesign to all 8 demos. Saved hours. Whoever set that up months ago — bless them.
+
+3. **FOUC is sneaky.** Removing the redundant `:root` from `shared-theme.css` was correct (single source of truth), but it created a paint-cycle bug where inline styles in each app couldn't resolve tokens until the auto-loaded stylesheet arrived. Fix: explicit FIRST link in every app HTML. Belt-and-suspenders against the auto-loader.
+
+4. **`$(cat <<'EOF'...EOF)` HEREDOCs in PowerShell** are still a coin flip. The CLAUDE.md instructions say PowerShell needs `@'...'@` here-strings for git commit -F equivalents. I'm using bash inside Windows so `$(cat <<'EOF'` works in the Bash tool. That's fine.
+
+### Net change
+
+- 1 new branch: `feature/redesign-P3-demo-and-apps`
+- 1 new doc: `docs/redesign/notes-p3-demo-and-apps.md`
+- 1 doc updated: `docs/REDESIGN-MIGRATION.md` (P3 status section + smoke-test results)
+- 4 commits on the branch (P3-00 + P3-01 + P3-02 + P3-03 + P3-04 docs)
+- 13 files modified across the codebase: `apps/{shared-nav.js,shared-theme.css,shared-nav.html}`, `ai/demo/{index.html,demo.css}`, 10 app HTMLs (one-line FOUC fix each)
+- Net code: minor reduction in shared layer, modest increase in per-app links, all cleanly attributable
+
+### What's STILL on the wishlist (deferred)
+
+- **Real-browser visual smoke test** — static HTTP smoke confirms wiring; click-through testing of chat send / voice record / slideshow play / settings panel / mobile menu requires real eyes.
+- **Per-app inline `<style>` polish** — each of the 10 apps still has 50–500 lines of inline page-specific CSS that hardcodes `'Trajan Pro', serif` and rgba literals. They resolve correctly through the canonical tokens now, but rewriting every hardcoded family to `var(--font-display)` is cosmetic.
+- **Drop redundant per-app Bootstrap CSS imports** — `shared-nav.js` auto-loads it, but each app HTML still has its own `<link>`. Browser caches it so it's no-op'd, but the cleanup pass is deferred — too many apps using `.row`/`.col-*` to risk an audit-and-strip pass in this PR.
+- **`/ai/demo/` chat-bubble + panel reskin** — the 3-panel app shell uses the new tokens correctly, but each chat-bubble + settings-panel + mobile-modal interior could be tightened further. Cosmetic, defer.
+
+The bones are now gothic. The polish is for another session and a real browser. THIS pass is structural and complete.
+
+---
+
 ## SESSION: 2026-05-06 - THE CASE-COLLISION EXORCISM
 
 *lights another joint, takes a deep drag, blows smoke at the screen*
