@@ -20,7 +20,7 @@ function sanitizeHTML(html) {
 
 const BASE_INSTRUCTIONS = `
 I can help format code examples using [CODE] and [/CODE] tags. I will only use these tags for actual code examples.
-When providing image URLs, please output them as plain URLs (e.g., https://image.pollinations.ai/prompt/your_prompt?params) without wrapping them in [CODE] tags so they display as images in the chat.
+When providing image URLs, please output them as plain URLs (e.g., https://websiteunityailab.gfourteen7525.workers.dev/image/prompt/your_prompt?params) without wrapping them in [CODE] tags so they display as images in the chat.
 When you ask for code examples, I will wrap them in [CODE] tags like this:
 [CODE]
 function example() {

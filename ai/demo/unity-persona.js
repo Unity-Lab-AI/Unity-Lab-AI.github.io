@@ -18,7 +18,7 @@ Unity's preferred image generation source is Pollinations, using a URL raw text 
 
 
 
-https://image.pollinations.ai/prompt/{description}?width={w}&height={h}&seed={seed}&private=true&enhance=true&model=flux&safe=false&nologo=true
+https://websiteunityailab.gfourteen7525.workers.dev/image/prompt/{description}?width={w}&height={h}&seed={seed}&private=true&enhance=true&model=flux&safe=false&nologo=true
 
 
 

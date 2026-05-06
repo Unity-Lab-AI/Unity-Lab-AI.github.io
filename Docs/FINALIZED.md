@@ -1,0 +1,182 @@
+# FINALIZED — Completed Tasks Archive
+
+> Verbatim record of completed work per LAW (FINALIZED before DELETE; never delete entries).
+
+---
+
+## 2026-05-06 — Screensaver auth migration to Cloudflare Worker proxy + sk_ token
+
+**Branch:** `feature/BugFIX`
+
+**User verbatim (LAW #0):**
+
+> the "read codex" button on the main page does not propley show the codex write up if we even have one,(may need to be added) and since the recent push the screensaver app is haviung problems its auto propmpt generation and image gen is not working.. it just says "failed to loaf prompt" so maybe check all that out for obvious issues of why the read codex and the screensaver app is not working like it was before the most recent push to main. we will be making a feature baranch called BugFIX that we will be working from
+>
+> make sure the screensaver is usinbg the correct keys and shit that its suppose to it might be an api error
+>
+> the rpos layout tacks sinority
+>
+> pollinations does NOT use refereres anymore its a token only right? research pollinationsd api token setup april 2026... and see how the demo works!! it works and see what vbroke in the screensaver
+>
+> the whole website should be using the same pollinations token... YES?
+>
+> as the repo is public so i have to sue a secret key add thing i think
+>
+> okay all tests pass.. so whgat do we need to do to clean up the websites old legacy stuff and refferer shit completely sao it all useds this new key
+>
+> you fixed the apps too?
+>
+> the screensaver was not working with old referere stuff
+
+### What broke and why
+
+When Pollinations migrated their auth system to `enter.pollinations.ai` / `gen.pollinations.ai` (early 2026), the legacy referrer-based authentication on `text.pollinations.ai` / `image.pollinations.ai` lost full access for non-current keys. Our screensaver and apps used `PolliLibJS` which defaulted to seed-tier referrer `s-test-sk37AGI`, while the working `/ai/demo` page used a different referrer `UA-73J7ItT-ws`. After the migration, requests through legacy endpoints with these old referrers either failed outright (`/openai` POST returning errors) or returned a degraded model list (single anonymous-tier model on `/text/models`). The screensaver's auto-prompt generation called `/openai` POST through the legacy endpoint with the old referrer, which is why it fell into the `Failed to get new prompt` toast path.
+
+### Architecture fix shipped
+
+Rather than swapping in another legacy referrer (which would also break in time), migrated the entire site to a unified **Cloudflare Worker proxy** that holds the new `sk_*` Pollinations token server-side:
+
+- **Proxy URL:** `https://websiteunityailab.gfourteen7525.workers.dev`
+- **Worker source:** Cloudflare Worker named `websiteunityailab` (acct: gfourteen7525)
+- **Secret:** `POLLINATIONS_SK` env var on Cloudflare (encrypted Secret type, masked in logs)
+- **Upstream target:** `https://gen.pollinations.ai`
+- **Routes:**
+  - `POST /text/openai` → `gen.pollinations.ai/v1/chat/completions` (OpenAI-compat chat)
+  - `GET /text/models` → `gen.pollinations.ai/v1/models`
+  - `GET /text/<prompt>` → `gen.pollinations.ai/text/<prompt>` (simple text gen + audio TTS)
+  - `GET /image/models` → `gen.pollinations.ai/image/models`
+  - `GET /image/prompt/<x>` → `gen.pollinations.ai/image/<x>` (drops legacy `/prompt/` segment)
+  - `GET /image/<x>` → `gen.pollinations.ai/image/<x>` (passthrough)
+  - `/v1/*` and `/audio/*` → passthrough (transparent for new code)
+- **Auth injection:** Worker sets `Authorization: Bearer ${env.POLLINATIONS_SK}` on every forwarded request; clients send NO token and NO referrer
+- **CORS:** allowlist locked to `https://unityailab.com`, `https://www.unityailab.com`, `https://unity-lab-ai.github.io`, `localhost:5173/3000`, `127.0.0.1:5173`
+- **Health endpoint:** `GET /health` returns `{"ok":true,"msg":"Pollinations proxy live","upstream":"https://gen.pollinations.ai"}`
+
+### End-to-end verification (manual, before commit)
+
+```
+curl /health        → 200, JSON ok body
+curl /text/models   → full OpenAI-format model list (openai, openai-fast, openai-large, qwen-coder, ...)
+curl /image/models  → full image model list (kontext, gptimage, gptimage-large, ...)
+curl POST /text/openai with chat payload → 200, choices[0].message.content = "Surreal asylum hallway, looming shadow psychiatrist, fractured mirrors, neon blood-red moonlight, unsettling gaze, cinematic horror." (model: gpt-5.4-nano-2026-03-17)
+```
+
+### Files changed (codebase migration)
+
+- `PolliLibJS/pollylib.js` — `TEXT_API`/`IMAGE_API`/`PROXY_BASE` constants point at proxy; `DEFAULT_REFERRER` set to empty string. All apps consuming `polliAPI` (screensaverDemo, helperInterfaceDemo, personaDemo, textDemo, unityDemo, talkingWithUnity, slideshowDemo) auto-inherit the fix via this single change.
+- `PolliLibJS/README.md` — Authentication section rewritten to describe the proxy-based setup; removed seed-tier referrer references.
+- `ai/demo/js/config.js` — Added `API_PROXY_BASE` constant; `OPENAI_ENDPOINT` rebased to proxy.
+- `ai/demo/js/api.js` — All hardcoded `text.pollinations.ai` / `image.pollinations.ai` URLs swapped to proxy; all `?referrer=UA-73J7ItT-ws` query params removed.
+- `ai/demo/js/voice.js` — TTS URL swapped to proxy; referrer dropped.
+- `ai/demo/js/tools.js` — Image gen URLs (tool calling + slash command) swapped to proxy; referrer dropped.
+- `ai/demo/age-verification.js` — TTS welcome URL + chat completion URL swapped to proxy; referrer dropped.
+- `ai/demo/demo.js` — Multiple hardcoded URLs (text models, image models, OPENAI_ENDPOINT, legacy text endpoint base, image prompt URLs, TTS URL, generateImageFromCommand URL) all swapped to proxy via new `API_PROXY_BASE` constant; referrer params removed.
+- `ai/demo/test-cors.html` — Test endpoints swapped to proxy.
+- `ai/demo/unity-persona.js` — Updated Unity's persona system prompt URL example so AI-generated image markdown URLs route through proxy.
+- `apps/textDemo/text.js` — `BASE_INSTRUCTIONS` system prompt updated so AI-generated image URLs route through proxy.
+- `Docs/Pollinations_API_Documentation.md` — Added Unity-AI-Lab note at top clarifying the doc is the upstream Pollinations reference (verbatim mirror) and that our site routes through the Worker proxy.
+- `Docs/TODO/TODO.md` — Marked screensaver task `[x]` with full fix description.
+- `.claude/project-config.json` — Wrote Git Flow opt-in marker (`enabled: true`).
+
+### What was NOT touched
+
+- `apps/oldSiteProject/*` — legacy archived site, not in active code path. Per repo seniority, leaving as-is.
+- `Docs/Pollinations_API_Documentation.md` body — verbatim upstream reference; kept intact, only added a header note.
+- "Read Codex" button task — still `[ ]` in TODO. NO codex page or button exists in the codebase. Awaiting Gee's call on what the codex writeup content should be before adding the button + page.
+
+### Worker source code (canonical, deployed at `websiteunityailab` Cloudflare Worker)
+
+```javascript
+// Cloudflare Worker — Pollinations proxy for unityailab.com
+// Forwards to https://gen.pollinations.ai with sk_ injected server-side.
+// Translates legacy text.pollinations.ai / image.pollinations.ai paths
+// (which the existing frontend code still uses) to the new gen.* surface.
+
+const POLLINATIONS_BASE = 'https://gen.pollinations.ai';
+
+const ALLOWED_ORIGINS = [
+  'https://unityailab.com',
+  'https://www.unityailab.com',
+  'https://unity-lab-ai.github.io',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+];
+
+function corsHeaders(origin) {
+  const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin':  allow,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age':       '86400',
+    'Vary':                          'Origin',
+  };
+}
+
+function resolveTargetPath(pathname) {
+  if (pathname === '/text/openai')           return '/v1/chat/completions';
+  if (pathname === '/text/models')           return '/v1/models';
+  if (pathname.startsWith('/image/prompt/')) return '/image' + pathname.slice('/image/prompt'.length);
+  if (pathname.startsWith('/text/'))         return pathname;
+  if (pathname.startsWith('/image/'))        return pathname;
+  if (pathname.startsWith('/v1/'))           return pathname;
+  if (pathname.startsWith('/audio/'))        return pathname;
+  return pathname;
+}
+
+export default {
+  async fetch(request, env) {
+    const url    = new URL(request.url);
+    const origin = request.headers.get('Origin') || '';
+    const cors   = corsHeaders(origin);
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: cors });
+    }
+
+    if (url.pathname === '/' || url.pathname === '/health') {
+      return new Response(JSON.stringify({
+        ok: true, msg: 'Pollinations proxy live', upstream: POLLINATIONS_BASE,
+      }), { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } });
+    }
+
+    const targetPath = resolveTargetPath(url.pathname);
+    const targetUrl  = POLLINATIONS_BASE + targetPath + url.search;
+
+    const upstreamHeaders = new Headers(request.headers);
+    upstreamHeaders.set('Authorization', `Bearer ${env.POLLINATIONS_SK}`);
+    upstreamHeaders.delete('host');
+    upstreamHeaders.delete('cf-connecting-ip');
+    upstreamHeaders.delete('cf-ray');
+    upstreamHeaders.delete('cf-visitor');
+    upstreamHeaders.delete('x-forwarded-for');
+    upstreamHeaders.delete('x-forwarded-proto');
+    upstreamHeaders.delete('origin');
+    upstreamHeaders.delete('referer');
+
+    let upstream;
+    try {
+      upstream = await fetch(targetUrl, {
+        method: request.method, headers: upstreamHeaders,
+        body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+      });
+    } catch (err) {
+      return new Response(`Upstream fetch failed: ${err.message}`, { status: 502, headers: cors });
+    }
+
+    const responseHeaders = new Headers(upstream.headers);
+    Object.entries(cors).forEach(([k, v]) => responseHeaders.set(k, v));
+
+    return new Response(upstream.body, {
+      status: upstream.status, statusText: upstream.statusText, headers: responseHeaders,
+    });
+  },
+};
+```
+
+### Follow-ups for Gee
+
+1. **ROTATE `sk_*` token** at enter.pollinations.ai — the value used in this session was transmitted through chat history and should be considered compromised on principle. Generate a fresh `sk_*`, paste only into the Cloudflare Worker secret box (Settings → Variables and Secrets), no code changes needed our side.
+2. **Phase B (optional polish):** Map proxy to `api.unityailab.com` for prettier URL. Cloudflare DNS for `unityailab.com` is already on Cloudflare per the Email Routing entry visible in dashboard — Phase B is a Worker Routes binding, ~30 sec setup. Then update PolliLibJS `PROXY_BASE` constant to `https://api.unityailab.com` in one commit.
+3. **Read Codex feature** — Pending Gee's call on what the codex writeup content should contain before adding the button + page.

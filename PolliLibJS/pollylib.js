@@ -7,12 +7,20 @@
  * Base class for Pollinations.AI API interactions
  */
 class PollinationsAPI {
-    // API endpoints
-    static IMAGE_API = "https://image.pollinations.ai";
-    static TEXT_API = "https://text.pollinations.ai";
+    // API endpoints — routed through the unityailab.com Cloudflare Worker proxy.
+    // The proxy holds the Pollinations sk_ token server-side and translates
+    // legacy /openai, /models, /prompt/* paths to the new gen.pollinations.ai
+    // /v1/chat/completions, /v1/models, /image/* surface. Auth is injected by
+    // the Worker; clients send NO token and NO referrer.
+    static PROXY_BASE = "https://websiteunityailab.gfourteen7525.workers.dev";
+    static IMAGE_API  = `${PollinationsAPI.PROXY_BASE}/image`;
+    static TEXT_API   = `${PollinationsAPI.PROXY_BASE}/text`;
 
-    // Default referrer for this application (seed tier)
-    static DEFAULT_REFERRER = "s-test-sk37AGI";
+    // Referrer-based auth was deprecated when Pollinations migrated to
+    // enter.pollinations.ai / gen.pollinations.ai. Kept as empty string so any
+    // legacy `?referrer=${polliAPI.referrer}` call sites produce a harmless
+    // empty query param the upstream API ignores.
+    static DEFAULT_REFERRER = "";
 
     /**
      * Initialize the Pollinations API client.

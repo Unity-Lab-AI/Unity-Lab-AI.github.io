@@ -61,23 +61,25 @@ example();
 
 ## Authentication
 
-PolliLibJS uses referrer-based authentication by default with the referrer `s-test-sk37AGI` (seed tier).
+**As of 2026-05, this library is wired for the unityailab.com Cloudflare Worker proxy.**
 
-You can customize the referrer:
+`TEXT_API` and `IMAGE_API` point at `https://websiteunityailab.gfourteen7525.workers.dev/text` and `.../image` respectively. The Worker holds the Pollinations `sk_*` token server-side as a Cloudflare Secret env var (`POLLINATIONS_SK`) and injects `Authorization: Bearer sk_*` on every forwarded request, then proxies to the new `gen.pollinations.ai` API surface. Clients send NO token and NO referrer.
+
+Referrer-based authentication was deprecated when Pollinations migrated auth to `enter.pollinations.ai` / `gen.pollinations.ai`. The old `text.pollinations.ai` / `image.pollinations.ai` endpoints with `?referrer=...` are legacy and don't recognize new `sk_*` keys.
+
+If you need to use this library against a different Pollinations app's proxy or a different deployment, override the static URLs:
 
 ```javascript
-const { PollinationsAPI } = require('pollilibjs');
-
-const api = new PollinationsAPI({
-    referrer: "your-referrer-here"
-});
+PollinationsAPI.PROXY_BASE = "https://your-worker.workers.dev";
+PollinationsAPI.TEXT_API   = `${PollinationsAPI.PROXY_BASE}/text`;
+PollinationsAPI.IMAGE_API  = `${PollinationsAPI.PROXY_BASE}/image`;
 ```
 
-Or use a bearer token for backend applications:
+For non-proxy use cases (Node.js backend with a real `sk_*` token in env), the `bearerToken` constructor option is still wired through:
 
 ```javascript
 const api = new PollinationsAPI({
-    bearerToken: "your-token-here"
+    bearerToken: "sk_your_token_here"  // server-side only — never put in browser code
 });
 ```
 
@@ -236,7 +238,7 @@ node PolliLibJS/pollylib.js
 | Flower    | 1 request / 3s       | Paid tier                      |
 | Nectar    | No limits            | Enterprise                     |
 
-**Current Configuration**: This library uses the `s-test-sk37AGI` seed tier referrer.
+**Current Configuration**: This library routes ALL requests through the unityailab.com Cloudflare Worker proxy (`https://websiteunityailab.gfourteen7525.workers.dev`) which authenticates server-side with an `sk_*` Pollinations key. Browser code never sees the token. Rate limits are governed by the upstream `sk_*` tier on the Worker.
 
 ## Best Practices
 

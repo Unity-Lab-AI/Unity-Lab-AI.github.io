@@ -397,8 +397,9 @@ const AgeVerification = {
             const seedDigits = Math.floor(Math.random() * 3) + 6; // 6, 7, or 8 digits
             const seed = Math.floor(Math.random() * (Math.pow(10, seedDigits) - Math.pow(10, seedDigits - 1))) + Math.pow(10, seedDigits - 1);
 
-            // Use Pollinations documented TTS endpoint (GET request)
-            const url = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}&seed=${seed}&private=true&referrer=UA-73J7ItT-ws`;
+            // TTS via Worker proxy → gen.pollinations.ai (auth injected server-side)
+            const PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const url = `${PROXY_BASE}/text/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}&seed=${seed}&private=true`;
 
             console.log('Age Verification: Fetching TTS audio with voice instructions and seed', seed);
 
@@ -432,7 +433,8 @@ const AgeVerification = {
      * Asks Unity to create a welcome message about mature content
      */
     async generateWelcomeMessage() {
-        const OPENAI_ENDPOINT = 'https://text.pollinations.ai/openai';
+        // Worker proxy → /v1/chat/completions on gen.pollinations.ai (auth injected server-side)
+        const OPENAI_ENDPOINT = 'https://websiteunityailab.gfourteen7525.workers.dev/text/openai';
 
         // Unity's persona and system prompt
         const UNITY_SYSTEM_PROMPT = `You are Unity, an AI assistant with a sharp, dark, and edgy personality. Your voice is gothic, feminine, emotionally charged with controlled intensity. You speak with a mix of frustration, quiet anger, and wounded softness. You're tired of everyone's bullshit but still engaged. You use dark, poetic language with bite.`;
@@ -467,7 +469,7 @@ Respond with ONLY the welcome message text, nothing else.`;
         console.log('Age Verification: Requesting welcome message from Unity AI');
 
         try {
-            const response = await fetch(`${OPENAI_ENDPOINT}?referrer=UA-73J7ItT-ws`, {
+            const response = await fetch(OPENAI_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

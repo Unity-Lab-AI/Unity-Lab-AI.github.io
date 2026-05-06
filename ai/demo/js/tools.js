@@ -115,9 +115,11 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
         const encodedPrompt = encodeURIComponent(prompt);
 
         // Build URL with unrestricted content (safe=false by default, no need to specify)
-        let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?` +
+        // Routed through Worker proxy — Worker translates /image/prompt/<x> → gen.pollinations.ai/image/<x>
+        const PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
+        let imageUrl = `${PROXY_BASE}/image/prompt/${encodedPrompt}?` +
             `width=${width}&height=${height}&seed=${seed}&model=${model}&` +
-            `private=true&enhance=${settings.imageEnhance}&referrer=UA-73J7ItT-ws`;
+            `private=true&enhance=${settings.imageEnhance}`;
 
         generatedImages.push({
             url: imageUrl,
@@ -157,8 +159,9 @@ export async function generateImageFromCommand(prompt, settings, addMessage, sho
         // Show typing indicator
         showTypingIndicator();
 
-        // Build image URL
-        let imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
+        // Build image URL (routed through Worker proxy)
+        const PROXY_BASE_CMD = 'https://websiteunityailab.gfourteen7525.workers.dev';
+        let imageUrl = `${PROXY_BASE_CMD}/image/prompt/${encodeURIComponent(prompt)}`;
         imageUrl += `?model=${imageModel}`;
         imageUrl += `&width=${width}`;
         imageUrl += `&height=${height}`;

@@ -1,6 +1,8 @@
 # Pollinations.AI API Docs 🌸
 ## The World's Most Accessible Open GenAI Platform
 
+> **⚠ Unity AI Lab note (2026-05):** This document is a verbatim mirror of the upstream Pollinations API reference for `text.pollinations.ai` / `image.pollinations.ai`. **Our site does NOT call those URLs directly.** All calls go through our Cloudflare Worker proxy at `https://websiteunityailab.gfourteen7525.workers.dev` which holds an `sk_*` token server-side and forwards to the migrated `gen.pollinations.ai` API (OpenAI-compatible `/v1/chat/completions`, `/v1/models`, etc.). Referrer-based auth was deprecated when Pollinations migrated to `enter.pollinations.ai`; do NOT add `?referrer=...` query params to any new code. See `PolliLibJS/README.md` and `PolliLibJS/pollylib.js` for the proxy URL and route map.
+
 Create amazing text, images, and audio with our APIs—no signup required to get started! 🚀  
 Think of Pollinations.AI as a digital garden where you can plant a "seed" (your idea) and watch it grow into text, images, or audio with the help of AI. Our APIs are like tools in your gardening shed—easy to use, powerful, and ready to help you create something beautiful.
 

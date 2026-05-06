@@ -5,7 +5,7 @@
  * Handles API calls, model fetching, and fallback models
  */
 
-import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON } from './config.js';
+import { OPENAI_ENDPOINT, API_PROXY_BASE, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON } from './config.js';
 
 // Available models (populated from API)
 let availableTextModels = [];
@@ -86,8 +86,8 @@ export async function fetchModels() {
  */
 async function fetchTextModels() {
     try {
-        // Remove forbidden headers (User-Agent, Referer) - browsers don't allow setting these
-        const response = await fetch('https://text.pollinations.ai/models?referrer=UA-73J7ItT-ws', {
+        // Routed through Worker proxy — auth is injected server-side, no referrer needed.
+        const response = await fetch(`${API_PROXY_BASE}/text/models`, {
             method: 'GET',
             mode: 'cors',
             cache: 'default',
@@ -131,9 +131,8 @@ async function fetchTextModels() {
  */
 async function fetchImageModels() {
     try {
-        // Remove forbidden headers (User-Agent, Referer) - browsers don't allow setting these
-        // Note: No custom headers to avoid CORS preflight (image endpoint only allows Content-Type)
-        const response = await fetch('https://image.pollinations.ai/models?referrer=UA-73J7ItT-ws', {
+        // Routed through Worker proxy — auth is injected server-side, no referrer needed.
+        const response = await fetch(`${API_PROXY_BASE}/image/models`, {
             method: 'GET',
             mode: 'cors',
             cache: 'default'
@@ -387,8 +386,8 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
     console.log('Payload:', JSON.stringify(payload, null, 2));
 
     try {
-        // Make API call to OpenAI endpoint
-        const response = await fetch(`${OPENAI_ENDPOINT}?referrer=UA-73J7ItT-ws`, {
+        // Make API call to Worker proxy → /v1/chat/completions
+        const response = await fetch(OPENAI_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -475,7 +474,7 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
     console.log('Temperature included:', !isOpenAI ? settings.textTemperature : 'default (1)');
     console.log('Seed:', seed);
 
-    const response = await fetch(`${OPENAI_ENDPOINT}?referrer=UA-73J7ItT-ws`, {
+    const response = await fetch(OPENAI_ENDPOINT, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -500,7 +499,7 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
  * Legacy API call for models without tool calling support
  */
 async function getAIResponseLegacy(message, model, systemPrompt, chatHistory, settings, generateRandomSeed) {
-    const baseUrl = 'https://text.pollinations.ai';
+    const baseUrl = `${API_PROXY_BASE}/text`;
 
     // Build messages array with history (last 10 messages for context)
     const recentHistory = chatHistory.slice(-10);
@@ -554,9 +553,7 @@ async function getAIResponseLegacy(message, model, systemPrompt, chatHistory, se
         url += `reasoning_effort=${settings.reasoningEffort}`;
     }
 
-    // Add referrer parameter for authentication
-    url += url.includes('?') ? '&' : '?';
-    url += 'referrer=UA-73J7ItT-ws';
+    // Auth is injected by the Worker proxy server-side; no referrer needed.
 
     console.log('=== API Request (Legacy) ===');
     console.log('Model:', model);

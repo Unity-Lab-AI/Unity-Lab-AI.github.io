@@ -200,6 +200,21 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 
 ## Current Focus Areas
 
+### 🐛 **Active BugFIX Branch** (`feature/BugFIX`)
+
+> **User verbatim (LAW #0):**
+>
+> > pull to this Website2 folder the repo :https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io and check the support documents... the problems we are having is that the "read codex" button on the main page does not propley show the codex write up if we even have one,(may need to be added) and since the recent push the screensaver app is haviung problems its auto propmpt generation and image gen is not working.. it just says "failed to loaf prompt" so maybe check all that out for obvious issues of why the read codex and the screensaver app is not working like it was before the most recent push to main. we will be making a feature baranch called BugFIX that we will be working from
+> >
+> > make sure the screensaver is usinbg the correct keys and shit that its suppose to it might be an api error
+> >
+> > the rpos layout tacks sinority
+
+- [x] **Screensaver: auto-prompt generation + image gen not working — "failed to loaf prompt" since recent push to main.** Root cause (after research): Pollinations migrated auth from referrer-based on `text.pollinations.ai`/`image.pollinations.ai` to token-based on `gen.pollinations.ai` via `enter.pollinations.ai`. The legacy referrers (`s-test-sk37AGI`, `UA-73J7ItT-ws`) lost full access after the migration; that's why screensaver's `/openai` POST and `/models` GET stopped working. Fix shipped: stood up a Cloudflare Worker proxy at `https://websiteunityailab.gfourteen7525.workers.dev` holding `sk_*` token server-side as Cloudflare Secret env var (`POLLINATIONS_SK`); Worker translates legacy `/text/openai` → `gen.pollinations.ai/v1/chat/completions`, `/image/prompt/<x>` → `gen.pollinations.ai/image/<x>`, etc., injecting `Authorization: Bearer sk_*` on every forwarded request. Migrated `PolliLibJS/pollylib.js` `TEXT_API`/`IMAGE_API` constants to the proxy URL, replaced every hardcoded `text.pollinations.ai`/`image.pollinations.ai` + `?referrer=UA-73J7ItT-ws` in `ai/demo/{js/api.js, js/voice.js, js/tools.js, js/config.js, demo.js, age-verification.js, test-cors.html, unity-persona.js}` and `apps/textDemo/text.js` with the proxy URL, dropped all referrer query params. Apps using `polliAPI` (`apps/screensaverDemo`, `helperInterfaceDemo`, `personaDemo`, `textDemo`, `unityDemo`, `talkingWithUnity`, `slideshowDemo`) auto-inherited the fix via the `PollinationsAPI.TEXT_API`/`IMAGE_API` constant change. End-to-end verified via `curl /text/models` (full OpenAI model list), `curl /image/models` (full image model list), `curl POST /text/openai` with chat completion payload (returned `gpt-5.4-nano-2026-03-17` generated prompt). Updated `PolliLibJS/README.md` + `Docs/Pollinations_API_Documentation.md` header note.
+- [ ] **"Read Codex" button on main page does not propley show the codex write up if we even have one,(may need to be added).** Investigation: `index.html` has NO "Read Codex" button (hero only has "Try the Unity Demo" + "Explore Our Projects"). NO codex page exists. NO "codex" string anywhere in the codebase. Both the button AND the codex content/page need to be added — pending Gee's call on what the codex writeup should contain.
+
+---
+
 ### ✅ **Recently Completed**
 - [x] PolliLibJS full implementation (100%)
 - [x] PolliLibPy full implementation (100%)

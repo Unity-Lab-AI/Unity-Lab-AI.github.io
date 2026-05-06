@@ -134,12 +134,13 @@ async function playNextVoiceChunk(settings, generateRandomSeed) {
         // Combine instructions with text - tell TTS to only speak the text
         const fullPrompt = `${instructions} Only speak the following text: "${chunk}"`;
 
-        // Build URL with voice settings
-        let url = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}`;
+        // Build URL with voice settings (routed through Worker proxy → gen.pollinations.ai)
+        const PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
+        let url = `${PROXY_BASE}/text/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}`;
 
         // Use settings seed or generate random seed for TTS
         const seed = (settings.seed !== -1) ? settings.seed : generateRandomSeed();
-        url += `&seed=${seed}&private=true&referrer=UA-73J7ItT-ws`;
+        url += `&seed=${seed}&private=true`;
 
         console.log('Voice playback chunk:', chunk.substring(0, 50) + '...', 'Seed:', seed);
 

@@ -7,8 +7,13 @@
 // API Endpoints
 // ===================================
 
-// OpenAI-compatible endpoint for tool calling
-export const OPENAI_ENDPOINT = 'https://text.pollinations.ai/openai';
+// Cloudflare Worker proxy holding the Pollinations sk_ token server-side.
+// The proxy translates /text/openai → gen.pollinations.ai/v1/chat/completions
+// and /image/prompt/<x> → gen.pollinations.ai/image/<x>. Clients send no auth.
+export const API_PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
+
+// OpenAI-compatible endpoint for tool calling (routed through proxy)
+export const OPENAI_ENDPOINT = `${API_PROXY_BASE}/text/openai`;
 
 // ===================================
 // Tool Definitions for Function Calling

@@ -7,8 +7,13 @@
 // Configuration and State
 // ===================================
 
-// OpenAI-compatible endpoint for tool calling
-const OPENAI_ENDPOINT = 'https://text.pollinations.ai/openai';
+// Cloudflare Worker proxy holding the Pollinations sk_ token server-side.
+// The proxy translates /text/openai → gen.pollinations.ai/v1/chat/completions
+// and /image/prompt/<x> → gen.pollinations.ai/image/<x>. Clients send no auth.
+const API_PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
+
+// OpenAI-compatible endpoint for tool calling (routed through proxy)
+const OPENAI_ENDPOINT = `${API_PROXY_BASE}/text/openai`;
 
 // Tool Definitions for Function Calling
 
@@ -653,8 +658,8 @@ const DemoApp = {
     // Fetch text models from Pollinations API
     async fetchTextModels() {
         try {
-            // Remove forbidden headers (User-Agent, Referer) - browsers don't allow setting these
-            const response = await fetch('https://text.pollinations.ai/models?referrer=UA-73J7ItT-ws', {
+            // Routed through Worker proxy — auth is injected server-side, no referrer needed.
+            const response = await fetch(`${API_PROXY_BASE}/text/models`, {
                 method: 'GET',
                 mode: 'cors',
                 cache: 'default',
@@ -703,9 +708,8 @@ const DemoApp = {
     // Fetch image models from Pollinations API
     async fetchImageModels() {
         try {
-            // Remove forbidden headers (User-Agent, Referer) - browsers don't allow setting these
-            // Note: No custom headers to avoid CORS preflight (image endpoint only allows Content-Type)
-            const response = await fetch('https://image.pollinations.ai/models?referrer=UA-73J7ItT-ws', {
+            // Routed through Worker proxy — auth is injected server-side, no referrer needed.
+            const response = await fetch(`${API_PROXY_BASE}/image/models`, {
                 method: 'GET',
                 mode: 'cors',
                 cache: 'default'
@@ -1469,8 +1473,8 @@ const DemoApp = {
         console.log('Payload:', JSON.stringify(payload, null, 2));
 
         try {
-            // Make API call to OpenAI endpoint
-            const response = await fetch(`${OPENAI_ENDPOINT}?referrer=UA-73J7ItT-ws`, {
+            // Make API call to Worker proxy → /v1/chat/completions
+            const response = await fetch(OPENAI_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1627,9 +1631,10 @@ const DemoApp = {
             const encodedPrompt = encodeURIComponent(prompt);
 
             // Build URL with unrestricted content (safe=false by default, no need to specify)
-            let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?` +
+            // Routed through Worker proxy — Worker translates /image/prompt/<x> → gen.pollinations.ai/image/<x>
+            let imageUrl = `${API_PROXY_BASE}/image/prompt/${encodedPrompt}?` +
                 `width=${width}&height=${height}&seed=${seed}&model=${model}&` +
-                `private=true&enhance=${this.settings.imageEnhance}&referrer=UA-73J7ItT-ws`;
+                `private=true&enhance=${this.settings.imageEnhance}`;
 
             generatedImages.push({
                 url: imageUrl,
@@ -1675,7 +1680,7 @@ const DemoApp = {
         console.log('Temperature included:', !isOpenAI ? this.settings.textTemperature : 'default (1)');
         console.log('Seed:', seed);
 
-        const response = await fetch(`${OPENAI_ENDPOINT}?referrer=UA-73J7ItT-ws`, {
+        const response = await fetch(OPENAI_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1696,9 +1701,9 @@ const DemoApp = {
         return finalMessage.content;
     },
 
-    // Legacy API call for models without tool calling support
+    // Legacy API call for models without tool calling support (routed through Worker proxy)
     async getAIResponseLegacy(message, model, systemPrompt) {
-        const baseUrl = 'https://text.pollinations.ai';
+        const baseUrl = `${API_PROXY_BASE}/text`;
 
         // Build messages array with history (last 10 messages for context)
         const recentHistory = this.chatHistory.slice(-10);
@@ -1748,9 +1753,7 @@ const DemoApp = {
             url += `reasoning_effort=${this.settings.reasoningEffort}`;
         }
 
-        // Add referrer parameter for authentication
-        url += url.includes('?') ? '&' : '?';
-        url += 'referrer=UA-73J7ItT-ws';
+        // Auth is injected by the Worker proxy server-side; no referrer needed.
 
         console.log('=== API Request (Legacy) ===');
         console.log('Model:', model);
@@ -1789,11 +1792,11 @@ const DemoApp = {
         return typeof model === 'object' ? model : null;
     },
 
-    // Generate image with Pollinations API (with safe mode support)
+    // Generate image with Pollinations API via Worker proxy (translates /image/prompt/<x>)
     async generateImage(prompt) {
         try {
-            // Build image generation URL with all parameters
-            const baseUrl = 'https://image.pollinations.ai/prompt';
+            // Build image generation URL with all parameters (routed through Worker proxy)
+            const baseUrl = `${API_PROXY_BASE}/image/prompt`;
 
             // Encode the prompt
             const encodedPrompt = encodeURIComponent(prompt);
@@ -1821,8 +1824,7 @@ const DemoApp = {
                 url += '&enhance=true';
             }
 
-            // Add referrer parameter for authentication
-            url += '&referrer=UA-73J7ItT-ws';
+            // Auth is injected by the Worker proxy server-side; no referrer needed.
 
             console.log('Generating image with unrestricted content');
 
@@ -2161,12 +2163,12 @@ const DemoApp = {
             // Combine instructions with text - tell TTS to only speak the text
             const fullPrompt = `${instructions} Only speak the following text: "${chunk}"`;
 
-            // Build URL with voice settings
-            let url = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}`;
+            // Build URL with voice settings (routed through Worker proxy)
+            let url = `${API_PROXY_BASE}/text/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}`;
 
             // Use settings seed or generate random seed for TTS
             const seed = (this.settings.seed !== -1) ? this.settings.seed : this.generateRandomSeed();
-            url += `&seed=${seed}&private=true&referrer=UA-73J7ItT-ws`;
+            url += `&seed=${seed}&private=true`;
 
             console.log('Voice playback chunk:', chunk.substring(0, 50) + '...', 'Seed:', seed);
 
@@ -3397,8 +3399,8 @@ const DemoApp = {
             // Show typing indicator
             this.showTypingIndicator();
 
-            // Build image URL
-            let imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
+            // Build image URL (routed through Worker proxy)
+            let imageUrl = `${API_PROXY_BASE}/image/prompt/${encodeURIComponent(prompt)}`;
             imageUrl += `?model=${imageModel}`;
             imageUrl += `&width=${width}`;
             imageUrl += `&height=${height}`;
