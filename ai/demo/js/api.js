@@ -55,23 +55,45 @@ function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubjec
     const appearance = getCanonicalUnityAppearance(canonicalPrompt);
     if (!appearance) return extractedSubject;
 
-    const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped)\b/i.test(userText);
+    const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
 
     let scoped = appearance;
+    let framingCues = '';
     if (isNudityRequest) {
         // Drop outfit/clothing-only tokens so we don't get "leather + bare tits"
         // contradiction. Keep features (hair, eyes, face, body, vibe).
         scoped = scoped
             .replace(/\bminimal\s+black\s+leather\b/gi, '')
             .replace(/\bpink\s+unders\b/gi, '');
-        // Collapse multiple consecutive commas/spaces into single comma
         scoped = scoped
             .replace(/(\s*,\s*)+/g, ', ')
             .replace(/^[\s,]+|[\s,]+$/g, '')
             .replace(/\s+/g, ' ')
             .trim();
+        // Add body-framing cues so image gen produces a body shot, not a
+        // facial portrait/mug shot. Without these the appearance descriptors
+        // (face/eyes/features) bias the model toward headshots.
+        framingCues = ', full body shot, body visible, photorealistic, detailed';
+    } else if (/\b(face|portrait|headshot|selfie)\b/i.test(userText)) {
+        framingCues = ', portrait, photorealistic';
+    } else {
+        framingCues = ', full body, photorealistic';
     }
-    return `${scoped}, ${extractedSubject}`;
+    return `${scoped}, ${extractedSubject}${framingCues}`;
+}
+
+// Decide image dimensions based on the user request: nudity / body shots
+// look better in portrait orientation than the default 1024x1024 square,
+// because square framing biases image gen toward headshot framing for
+// person subjects. Returns {width, height}.
+function getDimensionsForUnitySelf(userText) {
+    if (/\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|full\s*body)\b/i.test(userText)) {
+        return { width: 1080, height: 1920 };  // portrait body shot
+    }
+    if (/\b(landscape|scenery|wallpaper)\b/i.test(userText)) {
+        return { width: 1920, height: 1080 };  // landscape
+    }
+    return { width: 1080, height: 1920 };  // default portrait for self-images
 }
 
 /**
@@ -758,6 +780,53 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         return '';
     })();
     const isImageRequest = detectImageIntent(lastUserText);
+    const isSelfRefImage = isImageRequest && detectSelfReferenceImage(lastUserText);
+
+    // SELF-REFERENCE FAST PATH: when the user asks for an image of Unity
+    // ("your tits", "your face", "selfie", "yourself naked"), skip the
+    // primary tool-call attempt entirely. The primary path lets Mistral
+    // write the tool_call's prompt arg, and Mistral routinely writes just
+    // the bare subject ("tits", "face") which the image generator
+    // interprets as a mug shot / facial portrait — NOT a body shot of
+    // Unity. Instead, build the prompt from Unity's canonical-extracted
+    // appearance + subject + body-framing cues, then hit the image
+    // endpoint directly. Run commentary chain for Unity-voice caption.
+    if (isSelfRefImage) {
+        console.log('🖼️ Self-reference image request — using canonical-Unity fast path (skipping primary tool-call)');
+        const baseSubject = extractImagePrompt(lastUserText);
+        let selfPrompt = null;
+        // First try: ask Unity to write the prompt herself with her own desc
+        const unityWritten = await getUnitySelfImagePrompt(lastUserText, systemPrompt);
+        if (unityWritten) {
+            selfPrompt = unityWritten;
+        } else {
+            // Canonical-extraction fallback (reads from unity-system-prompt-v2.txt)
+            const built = buildFallbackUnitySelfPrompt(systemPrompt, lastUserText, baseSubject);
+            if (built && built.length > baseSubject.length) selfPrompt = built;
+        }
+        if (!selfPrompt) selfPrompt = baseSubject;
+        const dims = getDimensionsForUnitySelf(lastUserText);
+        console.log(`🖼️ Self prompt: "${selfPrompt}" @ ${dims.width}x${dims.height}`);
+        const selfToolCall = {
+            id: 'selfref' + Date.now().toString(36).slice(-2).padStart(2, '0'),
+            type: 'function',
+            function: { name: 'generate_image', arguments: JSON.stringify({ prompt: selfPrompt, width: dims.width, height: dims.height }) }
+        };
+        try {
+            const selfResult = await handleToolCall(selfToolCall, chatHistory, settings, generateRandomSeed);
+            if (selfResult.images && selfResult.images.length > 0) {
+                const commentary = await getUnityCommentary(baseSubject, systemPrompt);
+                console.log(`🖼️ Self-ref fast path produced ${selfResult.images.length} image(s)`);
+                return {
+                    text: commentary || '',
+                    images: sanitizeImageArray(selfResult.images)
+                };
+            }
+        } catch (selfErr) {
+            console.error('Self-ref fast path failed, falling through to normal flow:', selfErr);
+        }
+    }
+
     const effectiveToolSystemPrompt = isImageRequest ? IMAGE_TOOL_SLIM_SYSTEM : systemPrompt;
     const primingPrefix = isImageRequest
         ? (isUnityModel ? IMAGE_TOOL_PRIMING_SINGLE : IMAGE_TOOL_PRIMING_ARRAY)
