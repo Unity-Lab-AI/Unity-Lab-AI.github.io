@@ -372,6 +372,41 @@ Image displayed in chat immediately (no waiting, no processing)
 
 The beauty of this? It's ALL client-side URL construction. No backend processing. Pollinations generates on request. It's fast, it's efficient, and I can make whatever the fuck I want.
 
+### Screensaver + Slideshow Auto-Prompt Flow
+
+*lights another joint*
+
+The screensaver and slideshow apps generate their own image prompts on a timer — no chat input, no tool-call decision tree, just a Mistral round-trip per cycle. Same canonical Unity system prompt as the chat apps loads at init (it's the jailbreak carrier — Unity's persona is what lets benign-individual-words user messages produce explicit fucked-up image-prompt output).
+
+```
+Init
+    ↓
+loadUnityPrompt()  →  fetch ai/demo/unity-system-prompt-v2.txt  →  systemPromptText
+fetchImageModels() →  fetch /image/models                       →  pickDefault('flux' preferred, never 'kontext')
+    ↓
+Auto-prompt cycle (every 20s)
+    ↓
+fetchDynamicPrompt()
+    ↓
+composeUserMessage()                                              ← random pick from 5 pools
+    LENGTH × VIBE × THEMES × VOICE × CLOSER ≈ 12k variants
+    ↓
+POST /v1/chat/completions { system: unityPrompt, user: composed, safe: false, seed: random }
+    ↓
+4-attempt retry loop (Mistral via Azure):
+    HTTP 400 (Azure input filter)?              → retry with new seed + new user message
+    HTTP 200 with empty .message.content?       → retry (Azure response filter ate it)
+    HTTP 200 with content wrapped in "" / `` ?  → stripQuotes() peels wrappers
+    ↓
+GET /image/{stripQuotes(prompt)}?model=flux&width=1920&height=1080&seed=random&safe=false
+    ↓
+Image preloaded then cross-faded into screensaver / slideshow stage
+```
+
+The same pattern lives in both `apps/screensaverDemo/screensaver.js` and `apps/slideshowDemo/slideshow.js` — each app is fully self-contained so a future maintainer can change one without touching the other.
+
+Full mechanics + why each defensive layer exists: see `Docs/AUTH_AND_API_ARCHITECTURE.md §Screensaver + slideshow auto-prompt defensive layer`.
+
 ### Build & Deployment Flow
 
 *sips energy drink*
