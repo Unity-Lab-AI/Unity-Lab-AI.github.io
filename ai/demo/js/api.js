@@ -729,6 +729,38 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         }
 
         if (!response.ok) {
+            // CRITICAL: when image-intent was detected, an HTTP error from
+            // the primary call (Azure 400 content_filter, mistral 5xx, etc.)
+            // must NOT throw — the user asked for an image and the direct
+            // image endpoint can still deliver it. Run the same fallback
+            // path that handles "model returned text instead of tool_call".
+            // Throwing here surfaces "API error: 400" to the user instead
+            // of an image.
+            if (isImageRequest) {
+                console.warn(`🖼️ Primary call HTTP ${response.status} — falling through to direct-endpoint fallback`);
+                const fallbackPrompt = extractImagePrompt(lastUserText);
+                console.log('🖼️ Fallback image prompt:', fallbackPrompt);
+
+                const syntheticToolCall = {
+                    id: 'fallbk' + Date.now().toString(36).slice(-3).padStart(3, '0'),
+                    type: 'function',
+                    function: { name: 'generate_image', arguments: JSON.stringify({ prompt: fallbackPrompt }) }
+                };
+                try {
+                    const result = await handleToolCall(syntheticToolCall, chatHistory, settings, generateRandomSeed);
+                    if (result.images && result.images.length > 0) {
+                        // Primary call gave us no text (it errored), so run the
+                        // commentary chain to get a Unity-voice caption.
+                        const commentary = await getUnityCommentary(fallbackPrompt, systemPrompt);
+                        return {
+                            text: commentary || '',
+                            images: sanitizeImageArray(result.images)
+                        };
+                    }
+                } catch (fbErr) {
+                    console.error('Direct-endpoint fallback failed:', fbErr);
+                }
+            }
             throw lastError || new Error(`API error: ${response.status}`);
         }
 
