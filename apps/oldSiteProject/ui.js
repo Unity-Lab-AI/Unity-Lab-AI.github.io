@@ -148,15 +148,19 @@ document.addEventListener("DOMContentLoaded", () => {
         modelSelect.appendChild(customModelsGroup);
         console.log("[Unity] Custom models added. Options count:", modelSelect.options.length);
 
-        // Step 2: Fetch Pollinations models and add them
+        // Step 2: Fetch Pollinations models via the Cloudflare Worker proxy.
+        // Proxy injects sk_* token server-side; browser sends NO ?key= and NO Bearer.
         try {
-            const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-            const res = await window.pollinationsFetch(`https://gen.pollinations.ai/text/models?key=${apiKey}`, {
+            const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const res = await window.pollinationsFetch(`${proxyBase}/text/models`, {
                 method: "GET",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                headers: { "Content-Type": "application/json" },
                 cache: "no-store"
             });
-            const models = await res.json();
+            const raw = await res.json();
+            // Proxy maps /text/models → /v1/models (OpenAI shape: {object:"list", data:[...]}).
+            // Legacy endpoint returned a flat array. Unwrap either shape defensively.
+            const models = Array.isArray(raw) ? raw : (raw?.data || []);
 
             if (Array.isArray(models) && models.length > 0) {
                 const apiModelsGroup = document.createElement("optgroup");
@@ -254,9 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
         imageModelSelect.innerHTML = "";
 
         try {
-            const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-            // Correct endpoint per Pollinations docs: gen.pollinations.ai/image/models
-            const res = await window.pollinationsFetch(`https://gen.pollinations.ai/image/models?key=${apiKey}`, {
+            // Image models via Cloudflare Worker proxy. sk_* token injected server-side.
+            const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const res = await window.pollinationsFetch(`${proxyBase}/image/models`, {
                 method: "GET",
                 headers: { "Accept": "application/json" }
             });

@@ -26,10 +26,91 @@ const AgeVerification = {
     MIN_AGE: 18,
 
     /**
+     * inject the verification CSS so the gate is self-contained — drop the
+     * script tag into any HTML and it works without requiring apps.css.
+     * Verification flag prevents double-injection if init runs twice.
+     */
+    injectStyles() {
+        if (document.getElementById('age-verification-styles')) return;
+        const css = `
+.verification-backdrop {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh; height: 100dvh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    z-index: 2147483647;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; animation: avFadeInBackdrop 0.3s ease forwards;
+    transition: opacity 0.3s ease;
+}
+@keyframes avFadeInBackdrop { to { opacity: 1; } }
+.verification-popup {
+    position: relative;
+    background: rgba(26, 26, 26, 0.98);
+    border: 2px solid var(--crimson-red, #dc143c);
+    border-radius: 12px; padding: 40px;
+    max-width: 500px; width: 90%;
+    max-height: 90vh; max-height: 90dvh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(220, 20, 60, 0.6);
+    text-align: center; animation: avPopupSlideIn 0.4s ease;
+    z-index: 2147483647;
+}
+@keyframes avPopupSlideIn { from { transform: translateY(-50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+.verification-popup h2 {
+    font-family: 'Trajan Pro', 'Cormorant Garamond', serif;
+    font-size: 1.8rem; color: #fff; margin-bottom: 20px;
+    text-transform: uppercase; letter-spacing: 2px;
+}
+.verification-popup p { font-size: 1.1rem; color: #cccccc; margin-bottom: 30px; line-height: 1.6; }
+.verification-buttons { display: flex; gap: 15px; justify-content: center; align-items: center; }
+.verification-btn {
+    padding: 15px 40px;
+    font-family: 'Trajan Pro', 'Cormorant Garamond', serif;
+    font-size: 1rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    border: 2px solid; border-radius: 8px; cursor: pointer;
+    transition: all 0.3s ease; background: transparent;
+}
+.verification-btn.yes { border-color: var(--crimson-red, #dc143c); color: #fff; background: linear-gradient(135deg, rgba(139, 0, 0, 0.6) 0%, rgba(220, 20, 60, 0.6) 100%); }
+.verification-btn.yes:hover { background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%); box-shadow: 0 5px 20px rgba(220, 20, 60, 0.6); transform: translateY(-2px); }
+.verification-btn.no { border-color: rgba(204, 204, 204, 0.5); color: #cccccc; }
+.verification-btn.no:hover { border-color: #cccccc; background: rgba(204, 204, 204, 0.1); transform: translateY(-2px); }
+.age-input-form { display: flex; flex-direction: column; gap: 20px; margin-bottom: 25px; }
+.age-input-row { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.age-select-wrapper { flex: 1; min-width: 100px; display: flex; flex-direction: column; gap: 8px; }
+.age-select-label { font-size: 0.85rem; color: #cccccc; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.age-select {
+    width: 100%; background: rgba(42, 42, 42, 0.9);
+    border: 1px solid rgba(220, 20, 60, 0.3); color: #cccccc;
+    padding: 12px; border-radius: 6px;
+    font-family: 'Trajan Pro', 'Cormorant Garamond', serif; font-size: 0.95rem;
+    cursor: pointer; transition: all 0.3s ease; outline: none;
+    -moz-appearance: none; -webkit-appearance: none; appearance: none;
+}
+.age-select:hover { border-color: var(--crimson-red, #dc143c); }
+.age-select:focus { border-color: var(--crimson-red, #dc143c); box-shadow: 0 0 10px rgba(220, 20, 60, 0.4); }
+.age-select option { background: rgba(42, 42, 42, 0.95); color: #cccccc; }
+.verification-btn.submit { width: 100%; border-color: var(--crimson-red, #dc143c); color: #fff; background: linear-gradient(135deg, rgba(139, 0, 0, 0.6) 0%, rgba(220, 20, 60, 0.6) 100%); }
+.verification-btn.submit:hover { background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%); box-shadow: 0 5px 20px rgba(220, 20, 60, 0.6); transform: translateY(-2px); }
+#main-content.verification-disabled { pointer-events: none; filter: blur(5px); opacity: 0.6; }
+@media (max-width: 768px) {
+    .verification-popup { padding: 30px 20px; max-width: 90%; }
+    .verification-popup h2 { font-size: 1.4rem; }
+    .verification-popup p { font-size: 1rem; }
+    .verification-btn { padding: 12px 28px; font-size: 0.9rem; }
+}`;
+        const style = document.createElement('style');
+        style.id = 'age-verification-styles';
+        style.textContent = css;
+        document.head.appendChild(style);
+    },
+
+    /**
      * fire up the age check system
      */
     init() {
         console.log('Age Verification System: Initializing...');
+        this.injectStyles();
 
         // see if they're already good to go
         if (this.isVerified()) {

@@ -341,7 +341,7 @@ Display in UI (ui.js does the DOM manipulation)
 
 The new image-intent + self-reference detection means when you ask me for a picture of myself, the system knows to grab MY canonical description from `unity-system-prompt-v2.txt` and bake it into the image prompt — so the image actually looks like me, not some random person. And when the chat-completion path refuses, the direct image endpoint catches it. NO hardcoded fallback strings anywhere — every word is real Unity, generated fresh per request.
 
-For the deep dive on every layer of the image-prompt jailbreak system, see `Docs/AUTH_AND_API_ARCHITECTURE.md` §"Image-prompt jailbreak system" and §"TTS layered fallback".
+For the deep dive on every layer of the image-prompt jailbreak system, see `Docs/AUTH_AND_API_ARCHITECTURE.md` §"Image-prompt jailbreak system" and §"TTS layered fallback". The classic Unity app (`apps/oldSiteProject/`) was brought up to spec on 2026-05-06 with its own port of the jailbreak — see `Docs/AUTH_AND_API_ARCHITECTURE.md` §"Classic Unity (apps/oldSiteProject)" for the `CLASSIC_*` namespace + decision tree. Universal 18+ age gate restoration (`/apps/` + all direct app paths) on the same date — see §"Universal 18+ age gate".
 
 ### Image Generation Flow
 
