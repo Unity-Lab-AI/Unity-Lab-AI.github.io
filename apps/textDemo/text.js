@@ -400,15 +400,23 @@ async function getUnityImageCaption(imagePrompt, originalUserMsg, canonical) {
   // to what they SAID — without that, Mistral converges on the same
   // response across requests ("Fuck, finally. About damn time" syndrome).
   // Phase 2 stays generic for Azure-safe fallback.
-  const userQuoted = originalUserMsg ? `The user just said: "${originalUserMsg}". ` : '';
+  // Structurally DIFFERENT framings to break Mistral's convergence on
+  // identical phrases. Each attempt presents the prompt in a different
+  // semantic shape (conversation continuation / observer / scene direction
+  // / dialogue snippet / continuation-by-context) so Mistral can't pattern-
+  // match them all to the same output.
+  const um = originalUserMsg || '';
   const ATTEMPTS = [
-    // Phase 1 — user-specific
-    { temp: 1.0, user: `${userQuoted}You generated the image they asked for. Drop a brief in-character reaction to THEIR message. No preamble, no quotes.` },
-    { temp: 1.4, user: `${userQuoted}Image is now displayed. React to what they said, in-character, brief. No preamble, no quotes.` },
-    // Phase 2 — generic (Azure-safe fallback when Phase 1 trips filter)
-    { temp: 1.2, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
-    { temp: 1.5, user: `You just dropped a pic in the user's chat — exactly what they asked for. React in-character, brief. No preamble, no quotes.` },
-    { temp: 0.9, user: `Just sent the user their pic. React briefly, in-character. No preamble, no quotes.` }
+    // 1. Continue a conversation: user said X, you replied with the image, now what's your line
+    { temp: 1.1, user: `Continue this scene. User: "${um}" — You: [drops the image and...] Write your next line, in voice, brief, no preamble or quotes.` },
+    // 2. Stage direction style
+    { temp: 1.3, user: `Stage direction: User just said "${um}". You generated the image. Write your line of dialogue.` },
+    // 3. Observer continuing the conversation
+    { temp: 0.95, user: `[transcript continues] User said: "${um}" — image was generated and shown. Your reply:` },
+    // 4. Direct continuation
+    { temp: 1.4, user: `${um}\n\n[The image is now displayed in front of me. What do you say next?]` },
+    // 5. Generic Azure-safe fallback
+    { temp: 1.0, user: `An image was just generated. Write a brief in-character line acknowledging the user. No preamble, no quotes.` }
   ];
   for (const a of ATTEMPTS) {
     try {

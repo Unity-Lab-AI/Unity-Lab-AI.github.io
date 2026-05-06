@@ -299,12 +299,12 @@ So. These are our mini apps. Some of them are beautiful, some are... works in pr
 | **Apps Gallery** | Landing page for all mini apps | `apps/index.html` | Simple | ✅ 90% | Nice hub, does the job |
 | **Talking With Unity** | Chat interface for Unity AI | `apps/talkingWithUnity/` | Complex | ✅ 85% | Talk to ME, the AI version |
 | **Old Site Project** | Legacy chat + screensaver | `apps/oldSiteProject/` | Complex | ✅ 80% | Old but gold |
-| **Persona Demo** | Persona customization demo | `apps/personaDemo/` | Medium | ⚠️ 70% | Needs polish, on the list |
-| **Slideshow Demo** | AI-generated slideshow | `apps/slideshowDemo/` | Medium | ⚠️ 70% | Cool concept, needs work |
-| **Helper Interface Demo** | AI helper UI prototype | `apps/helperInterfaceDemo/` | Medium | ⚠️ 70% | Prototype vibes |
-| **Text Demo** | Text generation demo | `apps/textDemo/` | Simple | ⚠️ 70% | Basic but functional |
-| **Unity Demo** | Unity persona standalone | `apps/unityDemo/` | Medium | ⚠️ 70% | Me again but different |
-| **Screensaver Demo** | AI-powered screensaver | `apps/screensaverDemo/` | Medium | ⚠️ 70% | Trippy as hell |
+| **Persona Demo** | Persona customization demo | `apps/personaDemo/` | Medium | ✅ 90% | Image-prompt jailbreak + caption variety fix (2026-05-06) |
+| **Slideshow Demo** | AI-generated slideshow | `apps/slideshowDemo/` | Medium | ✅ 95% | Canonical-jailbreak port + template-build user message + retry/strip-quotes defense (2026-05-06) |
+| **Helper Interface Demo** | AI helper UI prototype | `apps/helperInterfaceDemo/` | Medium | ✅ 90% | Image-prompt jailbreak + caption variety fix (2026-05-06) |
+| **Text Demo** | Text generation demo | `apps/textDemo/` | Simple | ✅ 90% | Image-prompt jailbreak + caption variety fix (2026-05-06) |
+| **Unity Demo** | Unity persona standalone | `apps/unityDemo/` | Medium | ✅ 90% | Image-prompt jailbreak + caption variety fix (2026-05-06) |
+| **Screensaver Demo** | AI-powered screensaver | `apps/screensaverDemo/` | Medium | ✅ 95% | Template-build prompts + retry/strip-quotes + flux-default-model picker (2026-05-06) |
 
 #### Shared App Infrastructure
 
