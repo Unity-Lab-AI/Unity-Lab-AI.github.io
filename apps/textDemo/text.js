@@ -396,9 +396,18 @@ function buildFallbackUnitySelfPrompt(canonical, userText, subject) {
 // should fall back to displaying the image with no caption.
 async function getUnityImageCaption(imagePrompt, originalUserMsg, canonical) {
   if (!canonical) return null;
+  // Thread the USER's actual message into Phase 1 framings so Unity reacts
+  // to what they SAID — without that, Mistral converges on the same
+  // response across requests ("Fuck, finally. About damn time" syndrome).
+  // Phase 2 stays generic for Azure-safe fallback.
+  const userQuoted = originalUserMsg ? `The user just said: "${originalUserMsg}". ` : '';
   const ATTEMPTS = [
-    { temp: 1.0, user: `An image has been generated for the user showing: "${imagePrompt}". Drop a brief in-character reaction. No preamble, no quotes.` },
-    { temp: 1.4, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
+    // Phase 1 — user-specific
+    { temp: 1.0, user: `${userQuoted}You generated the image they asked for. Drop a brief in-character reaction to THEIR message. No preamble, no quotes.` },
+    { temp: 1.4, user: `${userQuoted}Image is now displayed. React to what they said, in-character, brief. No preamble, no quotes.` },
+    // Phase 2 — generic (Azure-safe fallback when Phase 1 trips filter)
+    { temp: 1.2, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 1.5, user: `You just dropped a pic in the user's chat — exactly what they asked for. React in-character, brief. No preamble, no quotes.` },
     { temp: 0.9, user: `Just sent the user their pic. React briefly, in-character. No preamble, no quotes.` }
   ];
   for (const a of ATTEMPTS) {
@@ -456,9 +465,10 @@ async function sendSelfImageRequest(prompt) {
   const seed = Math.floor(Math.random() * 1e6);
   const imageUrl = `${PollinationsAPI.IMAGE_API}/${encodeURIComponent(imagePromptText)}?model=flux&width=${dims.w}&height=${dims.h}&seed=${seed}&enhance=true&nologo=true&safe=false`;
 
-  // Fetch the Unity-voice caption in parallel
-  const captionPromise = getUnityImageCaption(imagePromptText, prompt, unitySystemPrompt);
-  const caption = await captionPromise;
+  // Fetch the Unity-voice caption — pass the user's original message so
+  // Unity reacts to what they SAID (not generic "you sent a pic" which
+  // converges Mistral on identical responses across different prompts).
+  const caption = await getUnityImageCaption(imagePromptText, prompt, unitySystemPrompt);
 
   // Remove thinking
   document.getElementById('ai-thinking')?.remove();

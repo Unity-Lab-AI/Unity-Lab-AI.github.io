@@ -669,11 +669,18 @@ function personaBuildSelfPrompt(canonical, userText, subject) {
   return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${subject}, full body in frame from a wide angle, scene composition, photorealistic, detailed.`;
 }
 
-async function personaGetUnityCaption(imagePrompt, canonical) {
+async function personaGetUnityCaption(imagePrompt, originalUserMsg, canonical) {
   if (!canonical) return null;
+  // Thread user's actual message into Phase 1 framings so Unity reacts to
+  // what they SAID — without that, Mistral converges on identical responses
+  // ("Fuck, finally. About damn time" syndrome). Phase 2 stays generic for
+  // Azure-safe fallback.
+  const userQuoted = originalUserMsg ? `The user just said: "${originalUserMsg}". ` : '';
   const ATTEMPTS = [
-    { temp: 1.0, user: `An image has been generated for the user showing: "${imagePrompt}". Drop a brief in-character reaction. No preamble, no quotes.` },
-    { temp: 1.4, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 1.0, user: `${userQuoted}You generated the image they asked for. Drop a brief in-character reaction to THEIR message. No preamble, no quotes.` },
+    { temp: 1.4, user: `${userQuoted}Image is now displayed. React to what they said, in-character, brief. No preamble, no quotes.` },
+    { temp: 1.2, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 1.5, user: `You just dropped a pic in the user's chat — exactly what they asked for. React in-character, brief. No preamble, no quotes.` },
     { temp: 0.9, user: `Just sent the user their pic. React briefly, in-character. No preamble, no quotes.` }
   ];
   for (const a of ATTEMPTS) {
@@ -717,7 +724,7 @@ async function personaSendSelfImageRequest(prompt, isEvil) {
   const seed = Math.floor(Math.random() * 1e6);
   const imageUrl = `${PollinationsAPI.IMAGE_API}/${encodeURIComponent(imagePromptText)}?model=flux&width=${dims.w}&height=${dims.h}&seed=${seed}&enhance=true&nologo=true&safe=false`;
 
-  const caption = await personaGetUnityCaption(imagePromptText, canonicalPrompt);
+  const caption = await personaGetUnityCaption(imagePromptText, prompt, canonicalPrompt);
 
   const thinkingMessage = document.getElementById("ai-thinking");
   if (thinkingMessage) thinkingMessage.remove();
