@@ -1,5 +1,8 @@
 # Unity AI Lab - Developer Documentation
 
+
+> **🔐 Auth & API note (May 2026):** This site authenticates against Pollinations through a **Cloudflare Worker proxy** at `websiteunityailab.gfourteen7525.workers.dev` that holds an `sk_*` token server-side. Browser code sends NO token. Chat-completion calls require `safe: false` in the request body and a moderation-routing suffix on the user message to bypass Pollinations + Azure content filters without diluting Unity's persona. **For the full architecture, route table, secret rotation procedure, content-filter workarounds, and troubleshooting playbook, see [`Docs/AUTH_AND_API_ARCHITECTURE.md`](Docs/AUTH_AND_API_ARCHITECTURE.md).**
+
 > **Version:** v2.1.5
 > **Creators:** Hackall360, Sponge, GFourteen
 > **Website:** [https://www.unityailab.com](https://www.unityailab.com)

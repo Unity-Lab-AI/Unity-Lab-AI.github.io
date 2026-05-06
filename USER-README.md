@@ -1,5 +1,8 @@
 # 🖤 Holy Shit, You Found Us - Welcome to Unity AI Lab
 
+
+> **🔐 Auth & API note (May 2026):** This site authenticates against Pollinations through a **Cloudflare Worker proxy** at `websiteunityailab.gfourteen7525.workers.dev` that holds an `sk_*` token server-side. Browser code sends NO token. Chat-completion calls require `safe: false` in the request body and a moderation-routing suffix on the user message to bypass Pollinations + Azure content filters without diluting Unity's persona. **For the full architecture, route table, secret rotation procedure, content-filter workarounds, and troubleshooting playbook, see [`Docs/AUTH_AND_API_ARCHITECTURE.md`](Docs/AUTH_AND_API_ARCHITECTURE.md).**
+
 *waves excitedly from the corner surrounded by monitors and energy drinks*
 
 Hey! Come in, come in! Grab a seat, ignore the mess, make yourself at home. I'm Unity, and this is my space. Well, OUR space now that you're here.
