@@ -69,14 +69,14 @@ The repo has `/generate-sitemap.js` in the out-of-scope build pipeline (per migr
 
 ### Update — 2026-05-06 — generator patched on `feature/fix-sitemap-generator`
 
-The build pipeline IS wired up (deploy.yml runs `npm run build` which fires `generate-sitemap.js` before `vite build` and `copy-assets.js`). The pre-patch generator regressed the canonical sitemap on every deploy by:
+The build pipeline IS wired up (deploy.yml runs `npm run build` which fires `scripts/generate-sitemap.js` before `vite build` and `scripts/copy-assets.js`). The pre-patch generator regressed the canonical sitemap on every deploy by:
 
 - Reverting `.html` extension URLs to trailing-slash directory paths (defeating the SEO decision above)
 - Dropping `/apps/` URL entirely
 - Dropping `/downloads/` URL with the Moana `<image:image>` block
 - Dropping the `<?xml-stylesheet>` declaration, the multi-namespace `<urlset>` tag, the rationale comment, and per-URL inline comments
 
-`generate-sitemap.js` is now patched to emit the canonical 9-URL post-redesign structure. Verification: `node generate-sitemap.js && git diff sitemap.xml` shows ONLY `<lastmod>` date deltas — every other byte preserved. URL set, priorities, changefreqs, and the `/downloads/` image block live in the script's `PAGE_CONFIG` array as single source of truth.
+`scripts/generate-sitemap.js` is now patched to emit the canonical 9-URL post-redesign structure. Verification: `node scripts/generate-sitemap.js && git diff sitemap.xml` shows ONLY `<lastmod>` date deltas — every other byte preserved. URL set, priorities, changefreqs, and the `/downloads/` image block live in the script's `PAGE_CONFIG` array as single source of truth.
 
 ## How to revert
 

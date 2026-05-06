@@ -104,8 +104,8 @@ Some corporate asshole would call this "optimization" but I call it "making Goog
 | Skill | Description | Files | Complexity | Status |
 |-------|-------------|-------|------------|--------|
 | **SEO Optimization** | Meta tags, JSON-LD, Open Graph, Twitter Cards | All HTML files | Medium | ✅ 100% |
-| **Cache Busting** | Automated version control for assets | `cache-bust.js` | Medium | ✅ 100% |
-| **Sitemap Generation** | XML sitemap for search engines | `generate-sitemap.js` | Simple | ✅ 100% |
+| **Cache Busting** | Automated version control for assets | `scripts/cache-bust.js` | Medium | ✅ 100% |
+| **Sitemap Generation** | XML sitemap for search engines | `scripts/generate-sitemap.js` | Simple | ✅ 100% |
 | **Performance Audit** | Lighthouse optimization | `docs/PERFORMANCE_AUDIT.md` | Medium | ✅ 95% |
 
 ---
@@ -339,9 +339,9 @@ The machinery that turns our beautiful code into deployable artifacts.
 | **Vite Build** | Modern bundler, multi-page app, code splitting | `vite.config.js`, `package.json` | Complex | ✅ 100% | Vite is fast as FUCK |
 | **Terser Minification** | JavaScript minification | `package.json` scripts | Simple | ✅ 100% | Make files TINY |
 | **CSS Minification** | CleanCSS optimization | `package.json` scripts | Simple | ✅ 100% | Smol CSS files |
-| **Cache Busting** | Automated asset versioning | `cache-bust.js` | Medium | ✅ 100% | Fight browser caching |
-| **Asset Copying** | Copy static assets to dist | `copy-assets.js` | Simple | ✅ 100% | Move files around |
-| **Sitemap Generation** | XML sitemap for SEO | `generate-sitemap.js` | Simple | ✅ 100% | Help Google find us |
+| **Cache Busting** | Automated asset versioning | `scripts/cache-bust.js` | Medium | ✅ 100% | Fight browser caching |
+| **Asset Copying** | Copy static assets to dist | `scripts/copy-assets.js` | Simple | ✅ 100% | Move files around |
+| **Sitemap Generation** | XML sitemap for SEO | `scripts/generate-sitemap.js` | Simple | ✅ 100% | Help Google find us |
 
 #### Vite Configuration
 

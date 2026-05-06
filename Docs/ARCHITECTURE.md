@@ -381,7 +381,7 @@ Alright, this is the part where we take all my beautiful code and turn it into a
 ```
 npm run build (one command to rule them all)
     ↓
-1. node generate-sitemap.js
+1. node scripts/generate-sitemap.js
    └─→ Scans all pages in the site
    └─→ Creates sitemap.xml with priorities and last modified dates
    └─→ Google can crawl my shit properly (SEO game strong)
@@ -393,13 +393,13 @@ npm run build (one command to rule them all)
    └─→ Terser minification (2-pass for maximum compression)
    └─→ Outputs everything to dist/ (clean output directory)
     ↓
-3. node copy-assets.js
+3. node scripts/copy-assets.js
    └─→ Copies remaining assets in blacklist mode (smart as fuck)
    └─→ Excludes: node_modules, .git, Archived, etc (no garbage)
    └─→ Preserves directory structure (organized)
    └─→ Only copies what's needed (efficient)
     ↓
-4. node cache-bust.js
+4. node scripts/cache-bust.js
    └─→ Generates MD5 build hash (unique identifier for this build)
    └─→ Injects cache-control meta tags (FUCK browser cache)
    └─→ Adds ?v=hash query params to all resources

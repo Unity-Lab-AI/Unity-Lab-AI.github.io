@@ -5,11 +5,11 @@
   "main": "js/init.js",
   "scripts": {
     "dev": "vite",
-    "build": "node generate-sitemap.js && vite build && node copy-assets.js && node cache-bust.js",
+    "build": "node scripts/generate-sitemap.js && vite build && node scripts/copy-assets.js && node scripts/cache-bust.js",
     "preview": "vite preview",
-    "sitemap": "node generate-sitemap.js",
-    "cache-bust": "node cache-bust.js",
-    "copy-assets": "node copy-assets.js",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "cache-bust": "node scripts/cache-bust.js",
+    "copy-assets": "node scripts/copy-assets.js",
     "minify": "npx terser js/init.js -c -m -o script.min.js && npx cleancss -o styles.min.css styles.css",
     "build:legacy": "npm run minify && ./update-version.sh"
   },

@@ -45,12 +45,12 @@ The generator was running on every push to main via `deploy.yml → npm run buil
 
 **Branch:** `feature/fix-sitemap-generator` off `dev-re-design`. Single atomic commit.
 
-**`generate-sitemap.js` rewrite.** Replaced the simple `PAGE_CONFIG` object with a structured array of 9 entries — each carrying `url`, `priority`, `changefreq`, `comment`, and (for `/downloads/`) an embedded `image` sub-object. New `renderUrlEntry()` emits the per-URL `<!-- comment -->` + `<url>` block + optional `<image:image>` child. New top-level template emits the `<?xml-stylesheet?>` declaration, the rationale comment, and the multi-namespace `<urlset>` opening tag verbatim from the canonical. Single source of truth: edit `PAGE_CONFIG` to add/remove URLs or shift weights, the rest of the structure is fixed.
+**`scripts/generate-sitemap.js` rewrite.** Replaced the simple `PAGE_CONFIG` object with a structured array of 9 entries — each carrying `url`, `priority`, `changefreq`, `comment`, and (for `/downloads/`) an embedded `image` sub-object. New `renderUrlEntry()` emits the per-URL `<!-- comment -->` + `<url>` block + optional `<image:image>` child. New top-level template emits the `<?xml-stylesheet?>` declaration, the rationale comment, and the multi-namespace `<urlset>` opening tag verbatim from the canonical. Single source of truth: edit `PAGE_CONFIG` to add/remove URLs or shift weights, the rest of the structure is fixed.
 
 **Verification (the only test that matters):**
 
 ```
-$ node generate-sitemap.js && git diff sitemap.xml
+$ node scripts/generate-sitemap.js && git diff sitemap.xml
 ```
 
 The diff returned **9 hunks, all `<lastmod>` date deltas, nothing else.** Every URL preserved. Every namespace preserved. Every comment preserved. The Moana `<image:image>` block preserved. The script now ships the canonical post-redesign sitemap with fresh dates on every build.
@@ -68,7 +68,7 @@ The diff returned **9 hunks, all `<lastmod>` date deltas, nothing else.** Every 
 ### Net change
 
 - 1 new branch: `feature/fix-sitemap-generator`
-- 1 file rewritten: `generate-sitemap.js` (~98 → ~175 lines, structured config + image-entry support)
+- 1 file rewritten: `scripts/generate-sitemap.js` (~98 → ~175 lines, structured config + image-entry support)
 - 1 file regenerated: `sitemap.xml` (lastmod date bump only — every other byte identical)
 - 2 docs updated: `docs/redesign/notes-p1-sitemap.md` (build-pipeline note resolved) + `TODO.md` + `FINALIZED.md`
 

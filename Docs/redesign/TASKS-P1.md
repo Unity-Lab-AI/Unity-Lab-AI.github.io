@@ -220,7 +220,7 @@ md5sum /REDESIGN/favicon.ico /favicon.ico  # binary diff
 ```
 
 **Action:**
-- Edit `/sitemap.xml` directly (don't run `generate-sitemap.js` — it's in the out-of-scope build pipeline)
+- Edit `/sitemap.xml` directly (don't run `scripts/generate-sitemap.js` — it's in the out-of-scope build pipeline)
 - Use `<lastmod>` of the migration date (today)
 - `<priority>` 1.0 for `/`, 0.9 for `/ai` and `/ai/demo`, 0.8 for `/about`/`/services`/`/projects`/`/apps`, 0.7 for `/contact`, 0.5 for `/downloads`
 - Audit `/sitemap-images.xml` — drop refs to assets that no longer exist, add new screenshot refs if applicable
