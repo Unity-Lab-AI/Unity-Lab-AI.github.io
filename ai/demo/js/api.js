@@ -418,7 +418,7 @@ export async function loadUnitySystemPrompt() {
  */
 export async function loadEvilSystemPrompt() {
     try {
-        const response = await fetch('../../docs/evil.txt');
+        const response = await fetch('evil-system-prompt-v1.txt');
         if (!response.ok) {
             throw new Error(`Failed to load Evil prompt: ${response.status}`);
         }

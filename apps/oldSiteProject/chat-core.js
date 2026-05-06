@@ -522,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Load Evil persona prompt
             if (!window.evilSystemPrompt) {
                 try {
-                    const res = await fetch("../../docs/evil.txt", { cache: "no-store" });
+                    const res = await fetch("../../ai/demo/evil-system-prompt-v1.txt", { cache: "no-store" });
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     const text = await res.text();
                     // Extract just the prompt content (remove JS export wrapper)

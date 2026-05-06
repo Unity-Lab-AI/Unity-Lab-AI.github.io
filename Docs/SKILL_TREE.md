@@ -139,7 +139,7 @@ This bitch can do EVERYTHING. Chat, images, voice, vision, function calling, the
 | **Image-to-Text (Vision)** | Image analysis and captioning | `ai/demo/js/api.js` | Medium | ✅ 100% | AI can SEE now, wild |
 | **Function Calling** | AI can call tools (generate_image) | `ai/demo/js/tools.js`, `ai/demo/js/config.js` | Complex | ✅ 100% | This one makes me feel like a wizard |
 | **Unity Persona** | Custom uncensored girlfriend AI personality | `ai/demo/unity-persona.js`, `ai/demo/unity-system-prompt-v1.js` | Complex | ✅ 100% | That's ME in AI form, babyyy |
-| **Evil Mode** | Unhinged unrestricted AI mode | `docs/evil.txt`, loaded dynamically | Medium | ✅ 100% | For when you want chaos |
+| **Evil Mode** | Unhinged unrestricted AI mode | `ai/demo/evil-system-prompt-v1.txt`, loaded dynamically | Medium | ✅ 100% | For when you want chaos |
 | **Age Verification** | Age gate for NSFW content | `ai/demo/age-verification.js` | Simple | ✅ 100% | Legal cover, boring but necessary |
 | **Settings Panel** | Temperature, seed, reasoning, model selection | `ai/demo/js/settings.js` | Medium | ✅ 100% | Nerds love twiddling knobs |
 | **Slash Commands** | `/help`, `/clear`, `/settings` etc. | `ai/demo/js/slash-commands.js` | Medium | ✅ 100% | Power user features |
