@@ -559,7 +559,7 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         let lastError;
 
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
-            response = await fetch(`${OPENAI_ENDPOINT}&safe=false`, {
+            response = await fetch(`${OPENAI_ENDPOINT}?safe=false`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -756,7 +756,7 @@ export async function getFinalResponseAfterTools(model, systemPrompt, chatHistor
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
             // IMPORTANT: safe=false disables content filtering for uncensored mode
-            const response = await fetch(`${OPENAI_ENDPOINT}&safe=false`, {
+            const response = await fetch(`${OPENAI_ENDPOINT}?safe=false`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
