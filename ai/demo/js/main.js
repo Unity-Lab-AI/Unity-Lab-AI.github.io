@@ -14,7 +14,7 @@
  */
 
 // Import all modules with cache busting
-import {  DEFAULT_SETTINGS } from './config.js?v=20260506c';
+import {  DEFAULT_SETTINGS } from './config.js?v=20260506d';
 import { loadSettings, saveSettings, applySettingsToUI, setupControlsSync } from './settings.js?v=2.1.6';
 import {
     initializePolliLib,
@@ -28,7 +28,7 @@ import {
     getAvailableImageModels,
     getAvailableVoices,
     extractVoices
-} from './api.js?v=20260506c';
+} from './api.js?v=20260506d';
 import { addMessage, showTypingIndicator, removeTypingIndicator, clearSession } from './chat.js?v=2.1.6';
 import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js?v=20260506c';
 import { handleToolCall } from './tools.js?v=2.1.6';
