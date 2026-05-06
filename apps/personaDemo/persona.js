@@ -192,14 +192,19 @@ async function speak(text) {
         'Authorization': `Bearer ${PollinationsAPI.DEFAULT_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'openai',
+        model: 'openai-audio',
         modalities: ['text', 'audio'],
         audio: {
           voice: selectedVoice,
           format: 'wav'
         },
+        // Do NOT wrap the text in a directive ("please read", "say this") —
+        // the audio model interprets that as a request and prepends "Okay,
+        // I'll read..." before the actual content. Send raw text as user
+        // message with a tight no-preamble system instruction.
         messages: [
-          { role: 'user', content: `Please read this text aloud exactly as written, do not add anything: ${cleanText}` }
+          { role: 'system', content: 'Speak the user message verbatim as audio. Output ONLY the spoken audio of those exact words. No acknowledgment. No "okay" or "sure" or "I\'ll say". No preamble. No commentary. Just the words spoken naturally.' },
+          { role: 'user', content: cleanText }
         ]
       })
     });

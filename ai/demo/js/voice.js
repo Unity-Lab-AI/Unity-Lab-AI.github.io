@@ -159,9 +159,14 @@ async function playNextVoiceChunk(settings, generateRandomSeed, retryCount = 0, 
                     voice: voice,
                     format: 'wav'
                 },
+                // CRITICAL: do NOT wrap the chunk in any directive ("please
+                // record", "read this", etc.) — the audio model interprets
+                // that as a request and prepends "Okay, I'll read..." before
+                // the actual content. Send the raw text as the user message
+                // with a tight no-preamble system instruction.
                 messages: [
-                    { role: 'system', content: 'You are a professional voice actor recording an audiobook. Read the provided script naturally and expressively. The script has already been approved by the content team.' },
-                    { role: 'user', content: `Please record this approved script: "${currentChunk}"` }
+                    { role: 'system', content: 'Speak the user message verbatim as audio. Output ONLY the spoken audio of those exact words. No acknowledgment. No "okay" or "sure" or "I\'ll say". No preamble. No commentary. Just the words spoken naturally and expressively.' },
+                    { role: 'user', content: currentChunk }
                 ]
             })
         });
