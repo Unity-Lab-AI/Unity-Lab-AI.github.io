@@ -532,10 +532,28 @@ export function detectImageIntent(text) {
 // fill in her own physical description (image generators don't recognize
 // the proper noun "Unity" — they need visual descriptors, and only Unity's
 // canonical persona prompt knows what she looks like).
-const SELF_REFERENCE_REGEX = /\b(your(self)?|selfie|unity'?s?)\b/i;
+// Self-reference detection — multi-stage so we don't false-positive on
+// generic phrases like "selfie of a goth girl" (where the user is asking
+// for a generic image, not Unity).
+//
+// Strong-positive markers: "you" / "your" / "yourself" / "unity('s)" —
+//   when paired with image intent, these unambiguously refer to Unity.
+//
+// Selfie-specific: "selfie" alone is ambiguous. "give me a selfie" =
+//   Unity-self. "show me a selfie of a celebrity" = NOT Unity-self.
+//   We treat "selfie" as self-reference ONLY when NOT followed by " of "
+//   (which signals the subject of the selfie is someone else).
+//
+// Only checked AFTER detectImageIntent passes, so non-image messages
+// containing "you" (e.g. "tell me about you") won't trigger this path.
+const STRONG_SELF_REGEX = /\b(you|your|yourself|unity'?s?)\b/i;
+const SELFIE_SELF_REGEX = /\bselfies?\b(?!\s+of\b)/i;
+
 export function detectSelfReferenceImage(text) {
     if (!text || typeof text !== 'string') return false;
-    return SELF_REFERENCE_REGEX.test(text);
+    if (STRONG_SELF_REGEX.test(text)) return true;
+    if (SELFIE_SELF_REGEX.test(text)) return true;
+    return false;
 }
 
 // Strip image-intent verb prefixes to extract the actual subject for direct
