@@ -30,7 +30,7 @@ import {
     extractVoices
 } from './api.js?v=2.1.6';
 import { addMessage, showTypingIndicator, removeTypingIndicator, clearSession } from './chat.js?v=2.1.6';
-import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js?v=2.1.6';
+import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js?v=20260506b';
 import { handleToolCall } from './tools.js?v=2.1.6';
 import {
     setupEventListeners,
