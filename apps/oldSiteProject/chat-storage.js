@@ -131,15 +131,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Generate images from IMAGE tags
+            // Generate images from IMAGE tags via the Cloudflare Worker proxy.
+            // sk_* token injected server-side; browser sends NO ?key= query param.
+            // NOTE: safe=false is text-API-only — image URLs do not accept it.
             if (imagePrompts.length > 0) {
                 const imageModel = window.getSelectedImageModel ? window.getSelectedImageModel() : 'flux';
-                const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
+                const imageBase  = window.CLASSIC_IMAGE_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev/image';
                 imagePrompts.forEach(imgData => {
                     const seed = Math.floor(Math.random() * 1000000);
                     const encodedPrompt = encodeURIComponent(imgData.prompt);
-                    // Use correct Pollinations image endpoint: gen.pollinations.ai/image/{prompt}
-                    const imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?width=1024&height=1024&seed=${seed}&model=${imageModel}&nologo=true&safe=false&key=${apiKey}`;
+                    const imageUrl = `${imageBase}/${encodedPrompt}?width=1024&height=1024&seed=${seed}&model=${imageModel}&nologo=true`;
                     const imageContainer = createImageElement(imageUrl);
                     bubbleContent.appendChild(imageContainer);
                 });
@@ -445,7 +446,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     function refreshImage(img, imageId) {
         console.log(`Refreshing image with ID: ${imageId}`);
-        if (!img.src || !img.src.includes("gen.pollinations.ai/image")) {
+        // Accept either the legacy direct URL or the new Cloudflare Worker proxy URL.
+        const isPollImage = img.src && (img.src.includes("gen.pollinations.ai/image") || img.src.includes("/image/"));
+        if (!isPollImage) {
             showToast("No valid Pollinations image source to refresh.");
             return;
         }
@@ -513,6 +516,31 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (role === "ai") checkAndUpdateSessionTitle();
     };
+    // Surgically remove DOM message nodes after keepIndex — leaves prior bubbles
+    // (and their already-loaded image elements) untouched, so editing a past message
+    // does NOT trigger fresh GETs on every prior image URL.
+    function removeMessagesAfter(keepIndex) {
+        const toRemove = [];
+        chatBox.querySelectorAll('.message').forEach(node => {
+            const idx = parseInt(node.dataset.index || '-1', 10);
+            if (Number.isFinite(idx) && idx > keepIndex) toRemove.push(node);
+        });
+        toRemove.forEach(n => n.remove());
+    }
+    // Replace a single bubble in place — used for AI-message edit so we don't
+    // blow away the rest of the chat just to update one reply.
+    function replaceBubbleAt(msgIndex, role, content) {
+        const oldNode = chatBox.querySelector(`.message[data-index="${msgIndex}"]`);
+        if (!oldNode) {
+            appendMessage({ role, content, index: msgIndex });
+            return;
+        }
+        const nextSibling = oldNode.nextSibling;
+        oldNode.remove();
+        appendMessage({ role, content, index: msgIndex });
+        const newNode = chatBox.lastElementChild;
+        if (nextSibling && newNode) chatBox.insertBefore(newNode, nextSibling);
+    }
     function editMessage(msgIndex) {
         const currentSession = Storage.getCurrentSession();
         const oldMessage = currentSession.messages[msgIndex];
@@ -524,7 +552,10 @@ document.addEventListener("DOMContentLoaded", () => {
             currentSession.messages[msgIndex].content = newContent;
             currentSession.messages = currentSession.messages.slice(0, msgIndex + 1);
             Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-            renderStoredMessages(currentSession.messages);
+            // SURGICAL TRUNCATION — keep messages 0..msgIndex untouched in DOM,
+            // drop everything after, then update the edited bubble's text.
+            removeMessagesAfter(msgIndex);
+            replaceBubbleAt(msgIndex, "user", newContent);
             const loadingDiv = document.createElement("div");
             loadingDiv.id = `loading-${Date.now()}`;
             loadingDiv.classList.add("message", "ai-message");
@@ -543,7 +574,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             currentSession.messages[msgIndex].content = newContent;
             Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-            renderStoredMessages(currentSession.messages);
+            // Replace ONLY this AI bubble — leaves all other bubbles and their images alone.
+            replaceBubbleAt(msgIndex, "ai", newContent);
             highlightAllCodeBlocks();
             showToast("AI message updated");
         }
@@ -570,7 +602,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const userMessage = currentSession.messages[userIndex].content;
         currentSession.messages = currentSession.messages.slice(0, userIndex + 1);
         Storage.updateSessionMessages(currentSession.id, currentSession.messages);
-        renderStoredMessages(currentSession.messages);
+        // SURGICAL TRUNCATION — drop everything after the user message we're regenerating from.
+        // Prior bubbles (and their loaded images) stay put.
+        removeMessagesAfter(userIndex);
         const loadingDiv = document.createElement("div");
         loadingDiv.id = `loading-${Date.now()}`;
         loadingDiv.classList.add("message", "ai-message");
@@ -742,8 +776,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const seed = Math.floor(Math.random() * 1000000);
             const imageId = `voice-img-${Date.now()}`;
             localStorage.setItem(`voiceImageId_${imageId}`, imageId);
-            const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-            const imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(imagePrompt)}?width=512&height=512&seed=${seed}&nolog=true&key=${apiKey}`;
+            const imageBase = window.CLASSIC_IMAGE_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev/image';
+            const imageUrl = `${imageBase}/${encodeURIComponent(imagePrompt)}?width=512&height=512&seed=${seed}&nolog=true`;
             voiceChatImage.src = imageUrl;
             voiceChatImage.dataset.imageId = imageId;
             voiceChatImage.onload = () => {

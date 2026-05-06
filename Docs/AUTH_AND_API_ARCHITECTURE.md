@@ -587,3 +587,30 @@ The full archive of decisions, attempted workarounds, and the data behind each i
 - `Docs/Pollinations_API_Documentation.md` — verbatim mirror of upstream Pollinations docs (header note clarifies our routing)
 - `Docs/ARCHITECTURE.md` — high-level project architecture (this doc is the auth/API deep-dive it points to)
 - `Docs/FINALIZED.md` — historical record of completed work including the migration
+
+---
+
+## Classic Unity (apps/oldSiteProject) — added 2026-05-06
+
+The legacy chat app at `/apps/oldSiteProject/` (the `chat-core.js` + `chat-init.js` + `chat-storage.js` + `ui.js` + `simple.js` + legacy embedded `screensaver-page.js` + `screensaver.js` + `storage.js` stack) was explicitly skipped during the prior `feature/BugFIX` migration ("not in active code path"). Restored to spec on `feature/unity-classic-uncensored-image-fix`:
+
+- All chat completion + model lookup + image gen URLs route through the Cloudflare Worker proxy at `https://websiteunityailab.gfourteen7525.workers.dev`
+- `chat-core.js` has its own port of the image-prompt jailbreak system: `CLASSIC_PROXY_BASE` / `CLASSIC_TEXT_OPENAI` / `CLASSIC_IMAGE_BASE` constants, `CLASSIC_IMAGE_INTENT_REGEX` + `CLASSIC_STRONG_SELF_REGEX` + `CLASSIC_SELFIE_SELF_REGEX`, `classicDetectImageIntent` / `classicDetectSelfRef`, `classicExtractImagePrompt`, `classicBuildSelfPrompt` (narrative form), `CLASSIC_IMAGE_TOOL_SLIM_SYSTEM` (slim translator role), `CLASSIC_IMAGE_TOOL_PRIMING` (multi-turn precedent with 9-char `prime0001`/`prime0002` tool_call IDs), `CLASSIC_GENERATE_IMAGE_TOOL`, `classicGetUnityCaption` (5-attempt structurally-different framings)
+- `sendToPollinations` decision tree: SELF-REFERENCE FAST PATH (image-intent + self-ref + Unity persona) bypasses chat-completion entirely → narrative prompt + direct `/image/{prompt}` + parallel caption chain. IMAGE-INTENT PATH (non-self) swaps full Unity persona for slim translator + prepends priming + adds tools array. NORMAL CHAT PATH leaves full Unity prompt unchanged.
+- Tool-call response path: extract prompt arg → `[IMAGE]${prompt}[/IMAGE]` text + caption. 400/refusal path: direct image endpoint synthesis (image endpoint moderation is more permissive than chat) + caption.
+- All hardcoded fallback strings DELETED — empty bubble on terminal failure, NEVER a fake "API is being a little bitch" / "Tch... the connection crapped out" placeholder. Per LAW: every word Unity speaks comes from the model.
+
+The `[IMAGE]prompt[/IMAGE]` text tag rendering in `chat-init.js` (and its duplicate in `chat-storage.js`) is the existing classic-Unity convention for image insertion in AI replies — chat-init.js parses the tag, builds the proxy image URL, renders `<img>`. The jailbreak port produces this tag format so the existing renderer picks it up unchanged.
+
+Note: `safe=false` is text-API-only — image URLs do not accept it. Stripped from all `[IMAGE]` tag URL builds. The `safe: false` body parameter on chat completions is still valid + still set.
+
+## Universal 18+ age gate — added 2026-05-06
+
+`apps/age-verification.js` is the canonical 18+ verification module. Self-contained as of this session:
+
+- `injectStyles()` method creates an `<style id="age-verification-styles">` element on init with the full verification CSS (popup, backdrop, buttons, age input form, responsive media query). No external CSS import required.
+- z-index `2147483647` (32-bit max) — sits on top of any app layer regardless of context
+- CSS animations renamed `avFadeInBackdrop` / `avPopupSlideIn` to avoid collision with host-page animations
+- Universal localStorage flags persist across all gates: `button18` (true/false), `birthdate` (ISO string), `husdh-f978dyh-sdf` (verification key matching `ijdfjgdfo-38d9sf-sdf`)
+- Wired into `apps.html` + all 12 individual app HTMLs (apps/oldSiteProject, apps/unityDemo, apps/textDemo, apps/personaDemo, apps/helperInterfaceDemo, apps/talkingWithUnity, apps/screensaverDemo, apps/slideshowDemo) + `/ai/demo/`
+- Direct navigation to any app subpath triggers the gate; passing once on any path unlocks every other path
