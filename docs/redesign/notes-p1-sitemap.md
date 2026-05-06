@@ -67,6 +67,17 @@ Bumped its two child `<lastmod>` entries to `2026-05-05` to match. Otherwise unc
 
 The repo has `/generate-sitemap.js` in the out-of-scope build pipeline (per migration doc OUT-of-scope list). I did NOT run it — wrote sitemap.xml directly. If the build pipeline is later wired up, that script may overwrite this file unless its template is updated to match.
 
+### Update — 2026-05-06 — generator patched on `feature/fix-sitemap-generator`
+
+The build pipeline IS wired up (deploy.yml runs `npm run build` which fires `generate-sitemap.js` before `vite build` and `copy-assets.js`). The pre-patch generator regressed the canonical sitemap on every deploy by:
+
+- Reverting `.html` extension URLs to trailing-slash directory paths (defeating the SEO decision above)
+- Dropping `/apps/` URL entirely
+- Dropping `/downloads/` URL with the Moana `<image:image>` block
+- Dropping the `<?xml-stylesheet>` declaration, the multi-namespace `<urlset>` tag, the rationale comment, and per-URL inline comments
+
+`generate-sitemap.js` is now patched to emit the canonical 9-URL post-redesign structure. Verification: `node generate-sitemap.js && git diff sitemap.xml` shows ONLY `<lastmod>` date deltas — every other byte preserved. URL set, priorities, changefreqs, and the `/downloads/` image block live in the script's `PAGE_CONFIG` array as single source of truth.
+
 ## How to revert
 
 ```bash
