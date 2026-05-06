@@ -169,12 +169,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchImageModels() {
         try {
-            const res = await window.pollinationsFetch(`https://gen.pollinations.ai/image/models?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+            // Cloudflare Worker proxy injects sk_* server-side; client sends NO key/Bearer.
+            const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const res = await window.pollinationsFetch(`${proxyBase}/image/models`, {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${PollinationsAPI.DEFAULT_API_KEY}`
-                },
+                headers: { "Content-Type": "application/json" },
                 cache: "no-store"
             });
             const models = await res.json();
@@ -226,13 +225,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const textModel = "openai"; // Hardcoded as model-select is not available
         const seed = generateSeed();
         try {
-            const response = await window.pollinationsFetch(`https://gen.pollinations.ai/v1/chat/completions?key=${PollinationsAPI.DEFAULT_API_KEY}`, {
+            // Chat completion via proxy; safe:false disables Pollinations response filter.
+            const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const response = await window.pollinationsFetch(`${proxyBase}/text/openai`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Accept: "application/json" },
                 cache: "no-store",
                 body: JSON.stringify({
                     model: textModel,
                     seed,
+                    safe: false,
                     messages: [{ role: "user", content: metaPrompt }]
                 })
             });
@@ -291,8 +293,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const enhance = settings.enhance;
         const priv = settings.priv;
 
-        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-        const url = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}&nolog=true&key=${apiKey}`;
+        // Image gen via Worker proxy. NOTE: safe=false is text-API-only — image URLs do not accept it.
+        const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+        const url = `${proxyBase}/image/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}&nolog=true`;
         console.log("Generated new image URL:", url);
 
         const nextImage = currentImage === 'image1' ? 'image2' : 'image1';

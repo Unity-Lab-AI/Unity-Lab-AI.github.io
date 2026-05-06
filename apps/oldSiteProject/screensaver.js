@@ -149,10 +149,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchImageModels() {
         try {
-            const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-            const res = await window.pollinationsFetch(`https://gen.pollinations.ai/image/models?key=${apiKey}`, {
+            // Cloudflare Worker proxy injects sk_* server-side; client sends NO key/Bearer.
+            const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const res = await window.pollinationsFetch(`${proxyBase}/image/models`, {
                 method: "GET",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                headers: { "Content-Type": "application/json" },
                 cache: "no-store"
             });
             const models = await res.json();
@@ -205,15 +206,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const metaPrompt = "Generate exactly one short-125-character, new, fucked up and explicit wild image prompt as text only of outlandish and psychologically thrilling image. i.e. demented, evil, psychotic photo.";
         const textModel = document.getElementById("model-select")?.value;
         const seed = generateSeed();
-        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
         try {
-            const response = await window.pollinationsFetch(`https://gen.pollinations.ai/v1/chat/completions?key=${apiKey}`, {
+            // Chat completion via Worker proxy. safe:false disables Pollinations response filter.
+            const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+            const response = await window.pollinationsFetch(`${proxyBase}/text/openai`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", Accept: "application/json", "Authorization": `Bearer ${apiKey}` },
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
                 cache: "no-store",
                 body: JSON.stringify({
                     model: (textModel === "unity" || !textModel) ? "mistral" : textModel,
                     seed,
+                    safe: false,
                     messages: [
                         { role: "system", content: typeof PollinationsAPI !== 'undefined' && PollinationsAPI.UNITY_SYSTEM_PROMPT ? PollinationsAPI.UNITY_SYSTEM_PROMPT : "You are Unity, an edgy creative AI. Generate creative, dark, and artistic image prompts." },
                         { role: "user", content: metaPrompt }
@@ -275,8 +278,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const enhance = settings.enhance;
         const priv = settings.priv;
 
-        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
-        const url = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}&nolog=true&key=${apiKey}`;
+        // Image gen via Worker proxy. NOTE: safe=false is text-API-only — image URLs do not accept it.
+        const proxyBase = window.CLASSIC_PROXY_BASE || 'https://websiteunityailab.gfourteen7525.workers.dev';
+        const url = `${proxyBase}/image/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&private=${priv}&enhance=${enhance}&nolog=true`;
         console.log("Generated new image URL:", url);
 
         const nextImage = currentImage === 'image1' ? 'image2' : 'image1';

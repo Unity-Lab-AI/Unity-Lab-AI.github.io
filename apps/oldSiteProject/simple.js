@@ -568,7 +568,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function refreshImage(img, imageId) {
             console.log(`Refreshing image with ID: ${imageId} in simple mode`);
-            if (!img.src || !img.src.includes("gen.pollinations.ai/image")) {
+            // Accept either the legacy direct URL or the new Cloudflare Worker proxy URL.
+            const isPollImage = img.src && (img.src.includes("gen.pollinations.ai/image") || img.src.includes("/image/"));
+            if (!isPollImage) {
                 window.showToast("No valid Pollinations image source to refresh.");
                 return;
             }
