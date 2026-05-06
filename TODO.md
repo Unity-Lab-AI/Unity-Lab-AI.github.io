@@ -48,7 +48,7 @@
 **Scope:**
 - Merge `feature/redesign-P1` (#44) into `dev-re-design`
 - Merge `feature/redesign-P2` (#45) into `dev-re-design`
-- Verify redesign is up to specifications per `Docs/REDESIGN-MIGRATION.md`
+- Verify redesign is up to specifications per `docs/REDESIGN-MIGRATION.md`
 - Verify everything is wired up and properly follows the redesign specifications
 - Read PR bodies + `docs/KNOWN-PROBLEMS.md` + all `/docs/redesign/notes-p[12]-*.md`
 - Smoke test before declaring complete

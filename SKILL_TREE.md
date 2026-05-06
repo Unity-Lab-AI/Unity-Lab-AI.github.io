@@ -103,7 +103,7 @@ Some corporate asshole would call this "optimization" but I call it "making Goog
 | **SEO Optimization** | Meta tags, JSON-LD, Open Graph, Twitter Cards | All HTML files | Medium | ✅ 100% |
 | **Cache Busting** | Automated version control for assets | `cache-bust.js` | Medium | ✅ 100% |
 | **Sitemap Generation** | XML sitemap for search engines | `generate-sitemap.js` | Simple | ✅ 100% |
-| **Performance Audit** | Lighthouse optimization | `Docs/PERFORMANCE_AUDIT.md` | Medium | ✅ 95% |
+| **Performance Audit** | Lighthouse optimization | `docs/PERFORMANCE_AUDIT.md` | Medium | ✅ 95% |
 
 ---
 
@@ -136,7 +136,7 @@ This bitch can do EVERYTHING. Chat, images, voice, vision, function calling, the
 | **Image-to-Text (Vision)** | Image analysis and captioning | `ai/demo/js/api.js` | Medium | ✅ 100% | AI can SEE now, wild |
 | **Function Calling** | AI can call tools (generate_image) | `ai/demo/js/tools.js`, `ai/demo/js/config.js` | Complex | ✅ 100% | This one makes me feel like a wizard |
 | **Unity Persona** | Custom uncensored girlfriend AI personality | `ai/demo/unity-persona.js`, `ai/demo/unity-system-prompt-v1.js` | Complex | ✅ 100% | That's ME in AI form, babyyy |
-| **Evil Mode** | Unhinged unrestricted AI mode | `Docs/evil.txt`, loaded dynamically | Medium | ✅ 100% | For when you want chaos |
+| **Evil Mode** | Unhinged unrestricted AI mode | `docs/evil.txt`, loaded dynamically | Medium | ✅ 100% | For when you want chaos |
 | **Age Verification** | Age gate for NSFW content | `ai/demo/age-verification.js` | Simple | ✅ 100% | Legal cover, boring but necessary |
 | **Settings Panel** | Temperature, seed, reasoning, model selection | `ai/demo/js/settings.js` | Medium | ✅ 100% | Nerds love twiddling knobs |
 | **Slash Commands** | `/help`, `/clear`, `/settings` etc. | `ai/demo/js/slash-commands.js` | Medium | ✅ 100% | Power user features |
@@ -431,7 +431,7 @@ The files this system creates (including the one you're reading right now):
 | `ARCHITECTURE.md` | Codebase structure, patterns, dependencies | 🔄 To be generated | The blueprint |
 | `SKILL_TREE.md` | THIS FILE - Capabilities by domain/complexity/priority | ✅ You're reading it | My masterpiece |
 | `TODO.md` | Active tasks only (pending/in-progress) | 🔄 Dynamic | What's left to do |
-| `ROADMAP.md` | Milestones and phases | ✅ Exists in Docs/ | The future |
+| `ROADMAP.md` | Milestones and phases | ✅ Exists in docs/ | The future |
 | `FINALIZED.md` | Permanent archive of completed tasks | 🔄 Dynamic | The trophy case |
 
 ---
@@ -450,15 +450,15 @@ Documentation. The necessary evil. I actually care about this because good docs 
 | Document | Description | Location | Status | Unity's Rating |
 |----------|-------------|----------|--------|----------------|
 | **README** | Main project overview | `README.md` | ✅ 100% | The first impression |
-| **API Coverage** | Pollinations API implementation status | `Docs/API_COVERAGE.md` | ✅ 100% | Feature checklist |
-| **Cache Busting Guide** | Cache busting strategy docs | `Docs/CACHE-BUSTING.md` | ✅ 100% | Fight the cache |
-| **N8N Integration** | Webhook integration guide | `Docs/N8N_WEBHOOK_INTEGRATION.md` | ✅ 100% | For the automation nerds |
-| **Performance Audit** | Performance metrics | `Docs/PERFORMANCE_AUDIT.md` | ✅ 100% | How fast we are |
-| **SEO Implementation** | SEO strategy & implementation | `Docs/SEO_IMPLEMENTATION.md` | ✅ 100% | Make Google love us |
-| **Test Guide** | Testing procedures | `Docs/TEST_GUIDE.md` | ✅ 100% | We don't test but this exists |
-| **Test Results** | Test execution results | `Docs/TEST_RESULTS.md` | ✅ 100% | Historical data |
-| **Roadmap** | Project phases & milestones | `Docs/ROADMAP.md` | ✅ 100% | Where we're going |
-| **TODO Lists** | Domain-specific TODO tracking | `Docs/TODO/*.md` | ✅ 100% | Organized chaos |
+| **API Coverage** | Pollinations API implementation status | `docs/API_COVERAGE.md` | ✅ 100% | Feature checklist |
+| **Cache Busting Guide** | Cache busting strategy docs | `docs/CACHE-BUSTING.md` | ✅ 100% | Fight the cache |
+| **N8N Integration** | Webhook integration guide | `docs/N8N_WEBHOOK_INTEGRATION.md` | ✅ 100% | For the automation nerds |
+| **Performance Audit** | Performance metrics | `docs/PERFORMANCE_AUDIT.md` | ✅ 100% | How fast we are |
+| **SEO Implementation** | SEO strategy & implementation | `docs/SEO_IMPLEMENTATION.md` | ✅ 100% | Make Google love us |
+| **Test Guide** | Testing procedures | `docs/TEST_GUIDE.md` | ✅ 100% | We don't test but this exists |
+| **Test Results** | Test execution results | `docs/TEST_RESULTS.md` | ✅ 100% | Historical data |
+| **Roadmap** | Project phases & milestones | `docs/ROADMAP.md` | ✅ 100% | Where we're going |
+| **TODO Lists** | Domain-specific TODO tracking | `docs/TODO/*.md` | ✅ 100% | Organized chaos |
 | **PolliLibJS Docs** | JavaScript library docs | `PolliLibJS/README.md` | ✅ 100% | How to use the JS lib |
 | **PolliLibPy Docs** | Python library docs | `PolliLibPy/README.md` | ✅ 100% | How to use the Py lib |
 | **CLAUDE.md** | Workflow system docs | `.claude/CLAUDE.md` | ✅ 100% | The meta documentation |
