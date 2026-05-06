@@ -37,7 +37,7 @@ git push -u origin feature/redesign-P1
 1. **Source of truth is `/REDESIGN/`.** Don't modify `REDESIGN/*` during your work — only copy out of it.
 2. **Don't touch Person 2's files.** Conflict-zone audit in `/docs/REDESIGN-MIGRATION.md` lists every file. If you find something broken in Person 2's territory, write a note to `/docs/redesign/notes-p1-<topic>.md` — do NOT fix it.
 3. **Don't touch out-of-scope files.** Per Gee: "we don't want to remove anything at this point, we just want to update with the redesigned files." `/js/`, `/vendor/`, `/styles.css`, `/script.min.js`, vite config, etc. — leave alone.
-4. **All new docs go to `/docs/redesign/`.** Never edit root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, or `TODO.md` during this work. Post-work integration pass handles those.
+4. **All new docs go to `/docs/redesign/`.** Never edit root `README.md`, `Docs/ARCHITECTURE.md`, `FINALIZED.md`, or `Docs/TODO.md` during this work. Post-work integration pass handles those.
 5. **One task = one commit.** Small, atomic, easy to revert. Update the migration doc status table BEFORE and AFTER each task.
 6. **Smoke-test every page in a browser before marking complete.** Don't trust paths.
 7. **800-line read before edit.** Mostly N/A here (we're copying files, not editing big ones), but if you DO edit an existing file, read it fully first per `.claude/CONSTRAINTS.md §800-LINE READ`.
@@ -332,7 +332,7 @@ EOF
 3. Post-work integration pass (NOT your job during dual-person work) handles root doc updates
 
 **Do NOT:**
-- Edit root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, `TODO.md` during this work
+- Edit root `README.md`, `Docs/ARCHITECTURE.md`, `FINALIZED.md`, `Docs/TODO.md` during this work
 - Touch any file in Person 2's ownership column
 - Delete or modify any out-of-scope file (per "don't remove anything")
 

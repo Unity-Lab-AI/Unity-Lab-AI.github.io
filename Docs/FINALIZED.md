@@ -75,7 +75,7 @@ curl POST /text/openai with chat payload → 200, choices[0].message.content = "
 - `ai/demo/unity-persona.js` — Updated Unity's persona system prompt URL example so AI-generated image markdown URLs route through proxy.
 - `apps/textDemo/text.js` — `BASE_INSTRUCTIONS` system prompt updated so AI-generated image URLs route through proxy.
 - `Docs/Pollinations_API_Documentation.md` — Added Unity-AI-Lab note at top clarifying the doc is the upstream Pollinations reference (verbatim mirror) and that our site routes through the Worker proxy.
-- `Docs/TODO/TODO.md` — Marked screensaver task `[x]` with full fix description.
+- `Docs/TODO/Docs/TODO.md` — Marked screensaver task `[x]` with full fix description.
 - `.claude/project-config.json` — Wrote Git Flow opt-in marker (`enabled: true`).
 
 ### What was NOT touched
@@ -224,7 +224,7 @@ Per Gee's "update all documentation files as well with the changes" — also upd
 - `README.md` (root) — Authentication section rewritten to describe Worker proxy; legacy auth.pollinations.ai link replaced with enter.pollinations.ai
 - `Docs/README.md` — header note added clarifying body is upstream Pollinations reference; legacy auth.pollinations.ai link replaced
 - `Docs/API_COVERAGE.md` — Authentication Methods table extended with "Worker proxy + sk_" row marked ACTIVE for unityailab.com production; legacy auth dashboard link replaced
-- `PolliLibJS/TODO.md` — Authentication Methods checklist extended with proxy support entry; legacy referrer note added
+- `PolliLibJS/Docs/TODO.md` — Authentication Methods checklist extended with proxy support entry; legacy referrer note added
 - `PolliLibPy/README.md` — Authentication section rewritten to recommend `bearer_token` for server-side Python use, with note about why frontend uses Worker proxy instead
 
 ### What was NOT touched
@@ -619,5 +619,5 @@ Surgical edits to support docs reflecting the entire image-prompt jailbreak syst
 
 - `Docs/AUTH_AND_API_ARCHITECTURE.md` — added `## Image-prompt jailbreak system` (~70 lines) + `## TTS layered fallback` (~25 lines) sections; new troubleshooting entries for "image came back as mug shot", "image of random person", "empty AI response", "TTS speaks I can't assist"; migration history extended with the 2026-05-06 second wave.
 - `Docs/KNOWN-PROBLEMS.md` — added Problem #4 (heavy-explicit TTS skips), Problem #5 (Azure response filter on specific phrasings, fully mitigated), and `## Resolved (this session)` section listing 13 closed problems.
-- `ARCHITECTURE.md` — `### AI Chat Flow (Unity Demo)` rewritten with the new `detectImageIntent → detectSelfReferenceImage → fast path / standard path` decision tree.
-- `README-NERD.md` — added subsection `#### The Self-Reference Fast Path (When You Ask For An Image Of ME)` under the existing Tool Calling Flow section, explaining the bypass + narrative-form rewrite + canonical-extraction fallback.
+- `Docs/ARCHITECTURE.md` — `### AI Chat Flow (Unity Demo)` rewritten with the new `detectImageIntent → detectSelfReferenceImage → fast path / standard path` decision tree.
+- `Docs/README-NERD.md` — added subsection `#### The Self-Reference Fast Path (When You Ask For An Image Of ME)` under the existing Tool Calling Flow section, explaining the bypass + narrative-form rewrite + canonical-extraction fallback.

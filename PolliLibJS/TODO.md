@@ -326,7 +326,7 @@ PolliLibJS/
 ├── index.js                  # Package entry point
 ├── package.json              # NPM package configuration
 ├── README.md                 # Library documentation
-└── TODO.md                   # This file
+└── Docs/TODO.md                   # This file
 ```
 
 ---
@@ -351,7 +351,7 @@ PolliLibJS/
 - **API Coverage:** [../Docs/API_COVERAGE.md](../Docs/API_COVERAGE.md)
 - **Main README:** [README.md](README.md)
 - **Pollinations API:** [../Docs/Pollinations_API_Documentation.md](../Docs/Pollinations_API_Documentation.md)
-- **Master TODO:** [../Docs/TODO/TODO.md](../Docs/TODO/TODO.md)
+- **Master TODO:** [../Docs/TODO/Docs/TODO.md](../Docs/TODO/Docs/TODO.md)
 
 ---
 

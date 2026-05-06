@@ -70,7 +70,7 @@ A careful audit lists what the gothic rewrite **lost** vs. the original:
 - ➕ **New** sections: The Grimoire (PolliLibJS/Py code samples), Why-we-built-this manifesto, Proof row, interactive terminal modal on service cards, six pillars (vs. three), creator creed
 
 ### 5. Other Notes
-- `ARCHITECTURE.md` is a long, very informal "in-character" doc written in the Unity persona's voice — it documents the build pipeline, tech stack, and component map but reads more like creative writing than reference docs.
+- `Docs/ARCHITECTURE.md` is a long, very informal "in-character" doc written in the Unity persona's voice — it documents the build pipeline, tech stack, and component map but reads more like creative writing than reference docs.
 - A `docs/` folder was added with a `Unity Web Design.html` artifact.
 - `apps/` retains a `shared-nav.html/js/css` system distinct from the redesign.
 
@@ -1109,7 +1109,7 @@ _[tool: fork_verifier_agent]_
 | `_archive/about-v1-original/` etc. | Per-page Bootstrap originals |
 | `_archive/exploration-shells/` | `Gothic Landing.html`, `Landing Redesign.html`, `About Redesign.html`, `About Redesign V2.html`, root `design-canvas.jsx` |
 | `_archive/old-stack/` | `styles.css`, `js/` (10 ES6 modules), `vendor/` (Bootstrap + FA), `apps/shared-nav.*` |
-| `_archive/old-docs/` | `ARCHITECTURE.md` (outdated; superseded by `HANDOFF.md`) |
+| `_archive/old-docs/` | `Docs/ARCHITECTURE.md` (outdated; superseded by `HANDOFF.md`) |
 
 **Nothing in `_archive/` is loaded by any live page.** Verified via grep — only references to `vendor/`, `js/init.js`, `page-init.js`, `styles.css` are inside `_archive/` itself or in `_archive/README.md`.
 

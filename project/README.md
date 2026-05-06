@@ -115,11 +115,11 @@ npx serve .
 Unity-Lab-AI.github.io/
 ├── Docs/                           # Documentation hub
 │   ├── TODO/                       # Project planning and TODO lists
-│   │   ├── TODO.md                 # Main project roadmap ⭐ START HERE
-│   │   ├── website-TODO.md         # Website tasks (~90% complete)
-│   │   ├── demo-page-TODO.md       # Demo page tasks (~90% complete)
-│   │   ├── main-app-TODO.md        # Main app (external, reference only)
-│   │   ├── infrastructure-TODO.md  # Infrastructure (not applicable)
+│   │   ├── Docs/TODO.md                 # Main project roadmap ⭐ START HERE
+│   │   ├── website-Docs/TODO.md         # Website tasks (~90% complete)
+│   │   ├── demo-page-Docs/TODO.md       # Demo page tasks (~90% complete)
+│   │   ├── main-app-Docs/TODO.md        # Main app (external, reference only)
+│   │   ├── infrastructure-Docs/TODO.md  # Infrastructure (not applicable)
 │   │   └── TODO_EXTRAS.md          # Additional tasks
 │   ├── Pollinations_API_Documentation.md  # Complete API reference
 │   ├── API_COVERAGE.md             # Implementation status
@@ -130,13 +130,13 @@ Unity-Lab-AI.github.io/
 │
 ├── PolliLibJS/                     # JavaScript library (~3,700 lines)
 │   ├── README.md                   # Library documentation
-│   ├── TODO.md                     # ✅ 100% complete
+│   ├── Docs/TODO.md                     # ✅ 100% complete
 │   ├── pollylib.js                 # Core library
 │   └── ... (14 modules total)
 │
 ├── PolliLibPy/                     # Python library (~5,700 lines)
 │   ├── README.md                   # Library documentation
-│   ├── TODO.md                     # ✅ 100% complete
+│   ├── Docs/TODO.md                     # ✅ 100% complete
 │   ├── pollylib.py                 # Core library
 │   └── ... (13 modules total)
 │
@@ -232,7 +232,7 @@ This allows live testing of develop branch changes without affecting the product
 
 ### For Developers & AI Assistants
 - **⭐ AI Assistant Guide**: [CLAUDE.md](./CLAUDE.md) - Complete development guide (v2.1.5)
-- **⭐ Project Roadmap**: [Docs/TODO/TODO.md](./Docs/TODO/TODO.md) - Master TODO and project status
+- **⭐ Project Roadmap**: [Docs/TODO/Docs/TODO.md](./Docs/TODO/Docs/TODO.md) - Master TODO and project status
 
 ### API & Libraries
 - **API Documentation**: [Docs/Pollinations_API_Documentation.md](./Docs/Pollinations_API_Documentation.md)

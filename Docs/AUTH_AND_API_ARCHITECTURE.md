@@ -549,5 +549,5 @@ The full archive of decisions, attempted workarounds, and the data behind each i
 - `PolliLibJS/README.md` — JavaScript library reference
 - `PolliLibPy/README.md` — Python library reference (server-side, can use `bearer_token` directly)
 - `Docs/Pollinations_API_Documentation.md` — verbatim mirror of upstream Pollinations docs (header note clarifies our routing)
-- `ARCHITECTURE.md` — high-level project architecture (this doc is the auth/API deep-dive it points to)
+- `Docs/ARCHITECTURE.md` — high-level project architecture (this doc is the auth/API deep-dive it points to)
 - `Docs/FINALIZED.md` — historical record of completed work including the migration

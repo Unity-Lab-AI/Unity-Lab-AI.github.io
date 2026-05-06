@@ -277,7 +277,7 @@
                             <i class="fas fa-check-circle"></i>
                             <div>
                                 <strong>Document Templates</strong><br>
-                                Auto-generate ARCHITECTURE.md, SKILL_TREE.md, TODO.md, ROADMAP.md, and FINALIZED.md in Unity voice.
+                                Auto-generate Docs/ARCHITECTURE.md, Docs/SKILL_TREE.md, Docs/TODO.md, ROADMAP.md, and FINALIZED.md in Unity voice.
                             </div>
                         </li>
                         <li>
@@ -322,11 +322,11 @@
                         </div>
                         <div class="agent-card">
                             <h4><i class="fas fa-sitemap"></i> architect.md</h4>
-                            <p>Analyzes patterns, structure, complexity. Generates ARCHITECTURE.md with system diagrams.</p>
+                            <p>Analyzes patterns, structure, complexity. Generates Docs/ARCHITECTURE.md with system diagrams.</p>
                         </div>
                         <div class="agent-card">
                             <h4><i class="fas fa-tasks"></i> planner.md</h4>
-                            <p>Creates task hierarchies: Epic → Story → Task. Generates TODO.md with P0-P3 priorities.</p>
+                            <p>Creates task hierarchies: Epic → Story → Task. Generates Docs/TODO.md with P0-P3 priorities.</p>
                         </div>
                         <div class="agent-card">
                             <h4><i class="fas fa-file-alt"></i> documenter.md</h4>
@@ -453,8 +453,8 @@ claude
                             <code>/workflow</code>
                         </div>
                         <p>
-                            First run: Full codebase scan, generates ARCHITECTURE.md, SKILL_TREE.md, TODO.md, ROADMAP.md<br>
-                            Subsequent runs: Enters work mode, picks up tasks from TODO.md
+                            First run: Full codebase scan, generates Docs/ARCHITECTURE.md, Docs/SKILL_TREE.md, Docs/TODO.md, ROADMAP.md<br>
+                            Subsequent runs: Enters work mode, picks up tasks from Docs/TODO.md
                         </p>
                     </div>
 
@@ -471,7 +471,7 @@ claude
                         <div class="code-block">
                             <code>/workflow continue todo</code>
                         </div>
-                        <p>Skips to work mode and continues picking up tasks from TODO.md.</p>
+                        <p>Skips to work mode and continues picking up tasks from Docs/TODO.md.</p>
                     </div>
 
                     <div class="info-box" data-aos="fade-up">
@@ -516,7 +516,7 @@ claude
                         </div>
                         <div class="agent-card">
                             <h4><i class="fas fa-list-check"></i> enforce-todo-before-compact.py</h4>
-                            <p>Requires TODO.md entry before starting work. Enforces task tracking.</p>
+                            <p>Requires Docs/TODO.md entry before starting work. Enforces task tracking.</p>
                         </div>
                         <div class="agent-card">
                             <h4><i class="fas fa-play"></i> session-start.py</h4>

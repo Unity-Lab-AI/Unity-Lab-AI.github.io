@@ -82,21 +82,21 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 
 ### 🟨 **PolliLibJS** - JavaScript Client Library
 **Status:** ✅ **COMPLETE** (100%)
-**Location:** `PolliLibJS/TODO.md`
+**Location:** `PolliLibJS/Docs/TODO.md`
 **Summary:** Full-featured JavaScript client library for Pollinations.AI with all API endpoints, streaming, function calling, and comprehensive testing utilities.
 
 ---
 
 ### 🐍 **PolliLibPy** - Python Client Library
 **Status:** ✅ **COMPLETE** (100%)
-**Location:** `PolliLibPy/TODO.md`
+**Location:** `PolliLibPy/Docs/TODO.md`
 **Summary:** Feature-parity Python implementation mirroring all PolliLibJS capabilities with Python-idiomatic design patterns.
 
 ---
 
 ### 🌐 **Landing Website** - Current Test Site
 **Status:** 🟢 **IMPROVED** (~90%)
-**Location:** `website-TODO.md`
+**Location:** `website-Docs/TODO.md`
 **Summary:**
 - ✅ Main landing page with hero, features, services sections
 - ✅ About, Services, Projects, Contact pages
@@ -137,7 +137,7 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 
 ### 🎮 **/ai/demo Page** - Interactive Demo AI Chat
 **Status:** ✅ **HIGHLY COMPLETE** (~90%)
-**Location:** `demo-page-TODO.md`
+**Location:** `demo-page-Docs/TODO.md`
 **Summary:** Fully functional interactive demo showcasing PolliLibJS capabilities with text chat, image generation, TTS/voice features, markdown rendering, advanced parameter controls, Unity persona integration, and age verification system.
 
 **Implemented Features:**
@@ -171,7 +171,7 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 
 ### 💬 **Main AI Chat App** - Full-Featured Application
 **Status:** ❌ **NOT IN THIS REPO** (External)
-**Location:** `main-app-TODO.md`
+**Location:** `main-app-Docs/TODO.md`
 **Summary:** Production Unity AI Chat application (hosted at https://unity.unityailab.com). This TODO tracks features if/when implementing a version in this repository.
 
 **Note:** Currently external deployment. This TODO is for reference/future development.
@@ -182,7 +182,7 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 
 ### 🔧 **Infrastructure & Backend**
 **Status:** ❌ **NOT STARTED** (0%)
-**Location:** `infrastructure-TODO.md`
+**Location:** `infrastructure-Docs/TODO.md`
 **Summary:** Backend services, API infrastructure, DevOps, security, and operational requirements for production deployment.
 
 **Scope Includes:**
@@ -251,7 +251,7 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 ### 📋 **Next Up (P1)**
 - [ ] **Website:** Mobile optimization and comprehensive testing on real devices
 - [ ] **Website:** Final WCAG AA compliance verification
-- [ ] **Demo Page:** Complete remaining planned features from demo-page-TODO.md
+- [ ] **Demo Page:** Complete remaining planned features from demo-page-Docs/TODO.md
 - [ ] **Demo Page:** Add system prompt configuration
 - [ ] **Demo Page:** Add conversation export (JSON/Markdown)
 - [ ] **Documentation:** Model capability matrix
@@ -269,14 +269,14 @@ This project is a comprehensive AI-powered website showcasing the Pollinations A
 
 | Component | Status | Detailed TODO |
 |-----------|--------|---------------|
-| PolliLibJS | ✅ Complete (100%) | [../../PolliLibJS/TODO.md](../../PolliLibJS/TODO.md) |
-| PolliLibPy | ✅ Complete (100%) | [../../PolliLibPy/TODO.md](../../PolliLibPy/TODO.md) |
-| Landing Website | ✅ Improved (~90%) | [website-TODO.md](website-TODO.md) |
+| PolliLibJS | ✅ Complete (100%) | [../../PolliLibJS/Docs/TODO.md](../../PolliLibJS/Docs/TODO.md) |
+| PolliLibPy | ✅ Complete (100%) | [../../PolliLibPy/Docs/TODO.md](../../PolliLibPy/Docs/TODO.md) |
+| Landing Website | ✅ Improved (~90%) | [website-Docs/TODO.md](website-Docs/TODO.md) |
 | /ai Landing Page | ✅ Complete (~95%) | `/ai/index.html` |
-| /ai/demo Page | ✅ Highly Complete (~90%) | [demo-page-TODO.md](demo-page-TODO.md) |
+| /ai/demo Page | ✅ Highly Complete (~90%) | [demo-page-Docs/TODO.md](demo-page-Docs/TODO.md) |
 | /apps Page | 🟢 In Development (~70%) | `/apps/` |
-| Main Chat App | ❌ External | [main-app-TODO.md](main-app-TODO.md) |
-| Infrastructure | ❌ Not Started | [infrastructure-TODO.md](infrastructure-TODO.md) |
+| Main Chat App | ❌ External | [main-app-Docs/TODO.md](main-app-Docs/TODO.md) |
+| Infrastructure | ❌ Not Started | [infrastructure-Docs/TODO.md](infrastructure-Docs/TODO.md) |
 
 ---
 

@@ -58,7 +58,7 @@ The team is **Hackall360 / SpongeBong, GFourteen, Alfredo, and Red** — operati
 
 **The product surface** — a gothic-themed site (Cormorant Garamond / Inter / JetBrains Mono, crimson on near-black `#030000`) housing: the Unity persona chatbot (`/ai/demo`), an apps gallery of AI experiments, two client libraries (PolliLibJS / PolliLibPy), and the about/services/contact chrome.
 
-**The voice** — two registers exist in the repo. The internal-facing voice (README, ARCHITECTURE.md) is chaotic, profane, 3am-energy-drink. The public-facing voice (about-data.jsx, redesign/) is *much* tighter — terse, gothic, monastic ("Codex 00," "Chapter I," roman-numeral kickers, no marketing hedge). The redesign is clearly pulling the public surface toward that second voice — calmer, more confident, less performatively edgy.
+**The voice** — two registers exist in the repo. The internal-facing voice (README, Docs/ARCHITECTURE.md) is chaotic, profane, 3am-energy-drink. The public-facing voice (about-data.jsx, redesign/) is *much* tighter — terse, gothic, monastic ("Codex 00," "Chapter I," roman-numeral kickers, no marketing hedge). The redesign is clearly pulling the public surface toward that second voice — calmer, more confident, less performatively edgy.
 
 The throughline across all of it: **stubbornness as a methodology.** Four people, refusing permission, publishing the lab notes.
 

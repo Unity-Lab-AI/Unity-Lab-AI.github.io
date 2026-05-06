@@ -14,7 +14,7 @@
 
 ## Status — flagged, not fixed
 
-Per `TASKS-P2.md` P2-06 acceptance criteria:
+Per `Docs/redesign/TASKS-P2.md` P2-06 acceptance criteria:
 
 > Per HANDOFF outstanding item 8: CodeWringer + Unity-Lab-AI org GitHub URLs in projects-data.jsx cards II/III — verify they point at the intended repos. If targets are wrong/missing, log to `/docs/redesign/notes-p2-projects-outbound-links.md`. **Do NOT silently fix; flag for post-work integration.**
 

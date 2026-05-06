@@ -190,7 +190,7 @@ conflicts because P3 only touches:
 - `apps/<8 demo>/*` — explicitly OUT of scope on P1+P2.
 - `docs/REDESIGN-MIGRATION.md` — status row update only.
 - `docs/redesign/notes-p3-*.md` — new file, no overlap.
-- `TODO.md` + `FINALIZED.md` — workflow docs, sequential additions only.
+- `Docs/TODO.md` + `FINALIZED.md` — workflow docs, sequential additions only.
 
 ---
 

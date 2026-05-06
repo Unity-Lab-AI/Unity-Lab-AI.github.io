@@ -34,7 +34,7 @@ The redirect stubs at `/about/` etc. remain useful for old inbound links (anchor
 /downloads/                   priority 0.5   weekly
 ```
 
-Priorities follow the per-URL spec from `TASKS-P1.md`. The previous sitemap (236 lines) listed every individual app subpage (unityDemo, textDemo, personaDemo, etc.) and split keyword comments per URL — that was retired since:
+Priorities follow the per-URL spec from `Docs/redesign/TASKS-P1.md`. The previous sitemap (236 lines) listed every individual app subpage (unityDemo, textDemo, personaDemo, etc.) and split keyword comments per URL — that was retired since:
 
 - App subpages are out-of-scope per the migration doc and remain accessible by direct URL — a search engine that finds them via internal links will still index them, no need to spam the sitemap
 - The redesign URL set is the new canonical site surface

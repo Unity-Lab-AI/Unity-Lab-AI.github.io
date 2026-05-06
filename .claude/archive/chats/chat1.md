@@ -92,7 +92,7 @@ Everything's imported. Here's what landed in the project:
 - Page-level: `home-init.js`, `page-init.js`, `about/about.js`, `ai/ai-init.js`, `contact/contact-form.js`, `apps/shared-nav.js`
 
 **Docs/meta**
-- `README.md`, `ARCHITECTURE.md`, `manifest.json`, `favicon.ico`, `humans.txt`, `robots.txt`, `_headers`
+- `README.md`, `Docs/ARCHITECTURE.md`, `manifest.json`, `favicon.ico`, `humans.txt`, `robots.txt`, `_headers`
 
 **Skipped intentionally** (let me know if you want any of them):
 - `PolliLibJS/`, `PolliLibPy/` — the API client libraries

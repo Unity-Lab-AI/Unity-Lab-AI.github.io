@@ -634,8 +634,8 @@ This TODO covers all backend infrastructure, DevOps, security, documentation, an
 
 ## Related Documentation
 
-- **Master TODO:** [TODO.md](TODO.md)
-- **Main App:** [main-app-TODO.md](main-app-TODO.md)
+- **Master TODO:** [Docs/TODO.md](Docs/TODO.md)
+- **Main App:** [main-app-Docs/TODO.md](main-app-Docs/TODO.md)
 - **Cache-Busting:** [Docs/CACHE-BUSTING.md](Docs/CACHE-BUSTING.md)
 
 ---

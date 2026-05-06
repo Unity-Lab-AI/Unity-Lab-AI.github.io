@@ -485,9 +485,9 @@ This TODO is kept for **reference and future planning** if/when the application 
 
 ## Related Documentation
 
-- **Master TODO:** [TODO.md](TODO.md)
-- **Demo Page:** [demo-page-TODO.md](demo-page-TODO.md)
-- **Infrastructure:** [infrastructure-TODO.md](infrastructure-TODO.md)
+- **Master TODO:** [Docs/TODO.md](Docs/TODO.md)
+- **Demo Page:** [demo-page-Docs/TODO.md](demo-page-Docs/TODO.md)
+- **Infrastructure:** [infrastructure-Docs/TODO.md](infrastructure-Docs/TODO.md)
 - **Production App:** https://unity.unityailab.com
 
 ---

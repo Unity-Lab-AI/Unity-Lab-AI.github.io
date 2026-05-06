@@ -57,7 +57,7 @@ Hoist `/REDESIGN/` contents onto the live site root in two parallel feature bran
 - `/project/`, `/Docs/`, `/PolliLibJS/`, `/PolliLibPy/`, `/scripts/`
 - `BingSiteAuth.xml`, `a743d8b18b9b4efeb89378e9a803f956.txt`, `CNAME`, `.nojekyll`
 - `/.well-known/`, `/.github/`
-- Root workflow docs (`README.md`, `README-BASIC.md`, `README-NERD.md`, `USER-README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, `TODO.md`, `ROADMAP.md`, `SKILL_TREE.md`) — integration of redesign-related changes happens AFTER both branches merge, in a separate post-work pass
+- Root workflow docs (`README.md`, `Docs/README-BASIC.md`, `Docs/README-NERD.md`, `Docs/USER-README.md`, `Docs/ARCHITECTURE.md`, `FINALIZED.md`, `Docs/TODO.md`, `ROADMAP.md`, `Docs/SKILL_TREE.md`) — integration of redesign-related changes happens AFTER both branches merge, in a separate post-work pass
 
 ---
 
@@ -73,7 +73,7 @@ main (protected)
 
 **Workflow:**
 1. Both people branch off `dev-re-design` immediately
-2. Each works independently per `TASKS-P1.md` / `TASKS-P2.md` at repo root
+2. Each works independently per `Docs/redesign/TASKS-P1.md` / `Docs/redesign/TASKS-P2.md`
 3. Each PR into `dev-re-design` when their task list is complete
 4. After both PRs merge, a separate integration pass picks up notes from `/docs/redesign/` and updates root docs
 5. Then `dev-re-design` → `develop` → `main` per Git Flow
@@ -89,7 +89,7 @@ Naming convention:
 - `/docs/redesign/notes-p2-<topic>.md` for Person 2's notes
 - Existing redesign docs migrated from `REDESIGN/` keep their original names (`HANDOFF.md`, `diff-from-original.md`, etc.)
 
-Why: post-work integration scans `/docs/redesign/` to update root `README.md` / `ARCHITECTURE.md` / `FINALIZED.md` / `TODO.md` in one pass. Keeping notes out of root docs DURING the dual-person work eliminates the only remaining merge-conflict zone.
+Why: post-work integration scans `/docs/redesign/` to update root `README.md` / `Docs/ARCHITECTURE.md` / `FINALIZED.md` / `Docs/TODO.md` in one pass. Keeping notes out of root docs DURING the dual-person work eliminates the only remaining merge-conflict zone.
 
 If `/docs/redesign/` doesn't exist yet when you need to write a note, create it. First-mover responsibility — idempotent.
 
@@ -144,9 +144,9 @@ If `/docs/redesign/` doesn't exist yet when you need to write a note, create it.
 
 3 rules. Both people follow them. No exceptions.
 
-1. **Read this doc before starting any task. Update it after.** Each task in your `TASKS-P1.md` / `TASKS-P2.md` has a row in the status table below. Mark `[~]` in_progress when you start, `[x]` done when committed. Keep the rows in sync with reality.
+1. **Read this doc before starting any task. Update it after.** Each task in your `Docs/redesign/TASKS-P1.md` / `Docs/redesign/TASKS-P2.md` has a row in the status table below. Mark `[~]` in_progress when you start, `[x]` done when committed. Keep the rows in sync with reality.
 2. **Don't touch the other person's files. Ever.** If you discover something that needs fixing in the other's territory, write a note to `/docs/redesign/notes-p<your-num>-<topic>.md` and the other person picks it up — OR it gets picked up in the post-work integration pass.
-3. **All new documentation goes to `/docs/redesign/`.** Never edit root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, or `TODO.md` during this dual-person work. Those get integrated AFTER both branches merge, by reading the notes you leave behind.
+3. **All new documentation goes to `/docs/redesign/`.** Never edit root `README.md`, `Docs/ARCHITECTURE.md`, `FINALIZED.md`, or `Docs/TODO.md` during this dual-person work. Those get integrated AFTER both branches merge, by reading the notes you leave behind.
 
 ---
 
@@ -192,7 +192,7 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 |---|------|--------|-------|
 | INT-01 | Both PRs merged into `dev-re-design` | [x] | PR #44 merged 6e1cb04 + PR #45 merged 8891366. Zero conflicts (file-ownership matrix held). |
 | INT-02 | Read all `/docs/redesign/notes-p*.md` | [x] | Notes p1-config-diffs, p1-sitemap, p2-services-stub, p2-projects-outbound-links, p2-apps-data-paths, p2-apps-about-css all read. KNOWN-PROBLEMS.md (#2 vite map, #3 npm audit) read — both deferred dev-toolchain only, zero production exposure. |
-| INT-03 | Update root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, `TODO.md` per LAW #0 (verbatim user words) | [~] | TODO.md + FINALIZED.md updated with verbatim user direction this pass. README.md + ARCHITECTURE.md (~46KB each, describe old stack) still need redesign-aware rewrite — flagged as separate follow-up scope. |
+| INT-03 | Update root `README.md`, `Docs/ARCHITECTURE.md`, `FINALIZED.md`, `Docs/TODO.md` per LAW #0 (verbatim user words) | [~] | Docs/TODO.md + FINALIZED.md updated with verbatim user direction this pass. README.md + Docs/ARCHITECTURE.md (~46KB each, describe old stack) still need redesign-aware rewrite — flagged as separate follow-up scope. |
 | INT-04 | Delete now-empty `/REDESIGN/` folder | [x] | Replaced with cross-platform-safe move: REDESIGN/* (70 files) relocated to `_archive/redesign-source/*` instead of deleted. Eliminates Windows case-collision with lowercase `redesign/` while preserving all canonical content (including 13 unique exploration files: about-a/b/c/d direction variants, design-canvas, stubs/, v-d-smoke-v1.js.bak). Sister move: `Docs/*` (8 pre-redesign project docs) → `docs/*` to fix the second case collision. |
 | INT-05 | PR `dev-re-design` → `develop` | [ ] | Out of scope for this merge pass — user direction targeted dev-re-design only. |
 | INT-06 | PR `develop` → `main` | [ ] | Out of scope for this merge pass. |
@@ -206,7 +206,7 @@ Branched from `dev-re-design` after INT-01..INT-04 landed.
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| P3-00 | Branch `feature/redesign-P3-demo-and-apps` from `dev-re-design` + log task to TODO.md per LAW #0 | [x] | b41afef |
+| P3-00 | Branch `feature/redesign-P3-demo-and-apps` from `dev-re-design` + log task to Docs/TODO.md per LAW #0 | [x] | b41afef |
 | P3-01 | Reskin `apps/shared-{nav.js,theme.css,nav.html}` to redesign V-D gothic navbar | [x] | 4dfba5a — vanilla-DOM port of `<GothicNavbar />`, `.vD-nav-*` class names, inline ouroboros sigil, auto-loads redesign/shared-tokens + variations + gothic-init, 363 insertions / 546 deletions (net code reduction). |
 | P3-02 | Reskin `/ai/demo/index.html` + `demo.css` to redesign chrome | [x] | d957b69 — drop ../../styles.css + Bootstrap CSS+JS, add redesign/shared-tokens.css + gothic-init.js, replace `<i class="fas fa-brain">` with inline ouroboros SVG, replace Bootstrap footer with slim gothic codex-eof strip. |
 | P3-03 | Wire `redesign/shared-tokens.css` into all 10 app HTMLs (FOUC fix) | [x] | a5e6f45 — explicit FIRST link before Bootstrap so var(--*) resolves before inline `<style>` parses. Idempotent vs shared-nav.js auto-loader. |

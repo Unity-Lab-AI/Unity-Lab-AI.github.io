@@ -342,9 +342,9 @@ demo/
 
 ## Related Documentation
 
-- **Master TODO:** [TODO.md](TODO.md)
-- **PolliLibJS:** [PolliLibJS/TODO.md](PolliLibJS/TODO.md)
-- **Main App TODO:** [main-app-TODO.md](main-app-TODO.md)
+- **Master TODO:** [Docs/TODO.md](Docs/TODO.md)
+- **PolliLibJS:** [PolliLibJS/Docs/TODO.md](PolliLibJS/Docs/TODO.md)
+- **Main App TODO:** [main-app-Docs/TODO.md](main-app-Docs/TODO.md)
 
 ---
 

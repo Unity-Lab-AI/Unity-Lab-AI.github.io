@@ -185,7 +185,7 @@ _archive/
     apps-shared-nav/      — apps subpage shared chrome (orphaned now)
 
   old-docs/
-    ARCHITECTURE.md       — outdated architecture doc; this HANDOFF.md supersedes
+    Docs/ARCHITECTURE.md       — outdated architecture doc; this HANDOFF.md supersedes
 ```
 
 **Nothing in `_archive/` is loaded by any live page.** Safe to delete in

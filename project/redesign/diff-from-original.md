@@ -244,7 +244,7 @@ What the redesigned pages **no longer load** from the original stack:
      - `vendor/bootstrap`, `vendor/fontawesome` (gothic uses neither)
      - `apps/shared-nav.html`, `apps/shared-nav.js`, `apps/shared-theme.css`
        (orphaned after `/apps/` redesign)
-   `ARCHITECTURE.md` (outdated) → `_archive/old-docs/`.
+   `Docs/ARCHITECTURE.md` (outdated) → `_archive/old-docs/`.
    `redesign/HANDOFF.md` is now the canonical architecture doc.
 
 ### Outbound links (deferred — tracked for Claude Code)
