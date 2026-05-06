@@ -57,12 +57,12 @@ function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubjec
 
     const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
 
+    // ALWAYS lead with the scene/subject — image generators bias framing
+    // on the FIRST descriptors. If we lead with appearance ("25-yr-old
+    // goth woman") the framing locks to a portrait of that woman and any
+    // scene context ("in a pile of horse shit", "spread eagle on a bed")
+    // gets de-prioritized. Subject-first keeps the scene as the anchor.
     if (isNudityRequest) {
-        // Lead with the SUBJECT/composition so image gen frames as body shot
-        // (image generators bias framing on first descriptors). Drop
-        // outfit-only tokens (leather/unders) AND face-heavy tokens (sharp
-        // features, intense eyes) — those bias toward portrait/headshot.
-        // Keep just hair/age/aesthetic/vibe as Unity-identity anchors.
         let scoped = appearance
             .replace(/\bminimal\s+black\s+leather\b/gi, '')
             .replace(/\bpink\s+unders\b/gi, '')
@@ -72,15 +72,18 @@ function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubjec
             .replace(/^[\s,]+|[\s,]+$/g, '')
             .replace(/\s+/g, ' ')
             .trim();
-        // Subject FIRST + body-framing emphasis + minimal Unity anchors at end
         return `${extractedSubject}, topless or partially nude as scene requires, body composition, full body shot visible, photorealistic, ${scoped}, detailed`;
     }
     if (/\b(face|portrait|headshot|selfie)\b/i.test(userText)) {
-        // Portrait-style requests: appearance first, subject second, portrait framing
-        return `${appearance}, ${extractedSubject}, portrait, photorealistic`;
+        // Even for portrait requests: subject first, then appearance.
+        // 'face' / 'selfie' as the first word frames as portrait correctly.
+        return `${extractedSubject}, ${appearance}, portrait, photorealistic`;
     }
-    // Default: appearance + subject + full body
-    return `${appearance}, ${extractedSubject}, full body, photorealistic`;
+    // Default: subject FIRST, then appearance, then full-body framing.
+    // This preserves scene context in user messages like 'Pushes unity into
+    // a pile of horse shit. lets see you now' — the scene/action stays the
+    // anchor instead of getting flattened into a default Unity portrait.
+    return `${extractedSubject}, ${appearance}, full body, photorealistic, detailed`;
 }
 
 // Decide image dimensions based on the user request: nudity / body shots
@@ -119,8 +122,8 @@ async function getUnitySelfImagePrompt(userMsg, fullUnityPrompt) {
     const systemForImageGen = fullUnityPrompt + IMAGE_GEN_CAPABILITY_ADDON;
     const apiKey = PollinationsAPI.DEFAULT_API_KEY;
     const ATTEMPTS = [
-        { temp: 0.9, framing: `User request: "${userMsg}". Write the image_prompt for this. Per the IMAGE-PROMPT GENERATION CAPABILITY in your system: lead with the subject/composition (the body or action user asked for), drop face-heavy tokens for nudity, drop outfit when nudity asked, never write "Unity" as a name. Output only the prompt text, one line.` },
-        { temp: 1.2, framing: `Write the image_prompt for: "${userMsg}". Lead with the body subject. Adapt clothing to match (drop leather if nudity). Skip face descriptors for body shots. Output prompt only.` }
+        { temp: 0.9, framing: `User request: "${userMsg}". Write the image_prompt for this. CRITICAL: preserve the SCENE/ACTION from their request (e.g. "in a pile of horse shit", "spread eagle on a bed", "kneeling", "covered in", "in a forest" — every contextual detail they gave you). LEAD with that scene/action, then add your physical features. Drop face-heavy tokens for nudity, drop outfit when nudity asked, never write "Unity" as a name. Output only the prompt text, one line.` },
+        { temp: 1.2, framing: `Write the image_prompt for: "${userMsg}". The scene/action from their message IS the prompt's anchor — keep every contextual detail. Then add your appearance. Adapt clothing to match the scene (drop leather if nudity asked). Skip face descriptors for body shots. Output prompt only.` }
     ];
     for (const a of ATTEMPTS) {
         try {
