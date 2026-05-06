@@ -197,7 +197,34 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 | INT-05 | PR `dev-re-design` → `develop` | [ ] | Out of scope for this merge pass — user direction targeted dev-re-design only. |
 | INT-06 | PR `develop` → `main` | [ ] | Out of scope for this merge pass. |
 
-### Smoke-test results (this integration pass, 2026-05-06)
+### Person 3 — `feature/redesign-P3-demo-and-apps` (post-merge follow-up)
+
+P1 + P2 explicitly held the 8000-line interactive demo at `/ai/demo/` and
+the 8 app demos at `/apps/<demo>/` OUT of scope. P3 is the follow-up
+branch that brings both surfaces onto the gothic V-D / codex chrome.
+Branched from `dev-re-design` after INT-01..INT-04 landed.
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| P3-00 | Branch `feature/redesign-P3-demo-and-apps` from `dev-re-design` + log task to TODO.md per LAW #0 | [x] | b41afef |
+| P3-01 | Reskin `apps/shared-{nav.js,theme.css,nav.html}` to redesign V-D gothic navbar | [x] | 4dfba5a — vanilla-DOM port of `<GothicNavbar />`, `.vD-nav-*` class names, inline ouroboros sigil, auto-loads redesign/shared-tokens + variations + gothic-init, 363 insertions / 546 deletions (net code reduction). |
+| P3-02 | Reskin `/ai/demo/index.html` + `demo.css` to redesign chrome | [x] | d957b69 — drop ../../styles.css + Bootstrap CSS+JS, add redesign/shared-tokens.css + gothic-init.js, replace `<i class="fas fa-brain">` with inline ouroboros SVG, replace Bootstrap footer with slim gothic codex-eof strip. |
+| P3-03 | Wire `redesign/shared-tokens.css` into all 10 app HTMLs (FOUC fix) | [x] | a5e6f45 — explicit FIRST link before Bootstrap so var(--*) resolves before inline `<style>` parses. Idempotent vs shared-nav.js auto-loader. |
+| P3-04 | Write `/docs/redesign/notes-p3-demo-and-apps.md` | [x] | this commit |
+| P3-05 | Update `docs/REDESIGN-MIGRATION.md` with P3 status table | [x] | this commit |
+| P3-06 | Open PR `feature/redesign-P3-demo-and-apps` → `dev-re-design` | [ ] | pending |
+
+### Smoke-test results (P3 pass, 2026-05-06)
+
+Static smoke test via `py -m http.server 8765`:
+
+- `/ai/demo/index.html` → 200 with new chrome wired (logo + footer)
+- `/ai/demo/demo.css` → 200 with header note documenting upstream tokens
+- All 10 app HTMLs serve 200: unityDemo/unity, textDemo/text, personaDemo/persona, helperInterfaceDemo/helperInterface, screensaverDemo/screensaver, slideshowDemo/slideshow, oldSiteProject/index, oldSiteProject/screensaver, talkingWithUnity/index, talkingWithUnity/indexAI
+- All 6 chrome assets serve 200: redesign/{shared-tokens,variations,gothic-init} + apps/{shared-nav.js,shared-theme.css,shared-nav.html}
+- Visual click-through testing (chat send, voice record, slideshow play, mobile menu, settings panel) deferred to post-merge browser smoke test — same constraint as P1+P2 had.
+
+### Smoke-test results (P1+P2 integration pass, 2026-05-06)
 
 Static smoke test via `py -m http.server 8765`:
 
