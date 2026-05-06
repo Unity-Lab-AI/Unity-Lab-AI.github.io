@@ -13,7 +13,69 @@
  * Handles API calls, model fetching, and fallback models
  */
 
-import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON, MODERATION_AWARE_ADDON, withModerationSuffix, detectImageIntent, extractImagePrompt, IMAGE_TOOL_SLIM_SYSTEM, IMAGE_TOOL_PRIMING_SINGLE, IMAGE_TOOL_PRIMING_ARRAY, isValidUnityCommentary } from './config.js';
+import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON, MODERATION_AWARE_ADDON, withModerationSuffix, detectImageIntent, extractImagePrompt, detectSelfReferenceImage, IMAGE_TOOL_SLIM_SYSTEM, IMAGE_TOOL_PRIMING_SINGLE, IMAGE_TOOL_PRIMING_ARRAY, isValidUnityCommentary } from './config.js';
+
+/**
+ * Ask Unity (with canonical prompt loaded) to write the image-generation
+ * prompt herself. Used when the user requests an image of Unity (selfie,
+ * "your tits", "yourself", etc.) — image generators do NOT recognize the
+ * proper noun "Unity", so we need her own canonical physical description
+ * baked into the prompt as visual descriptors.
+ *
+ * The description comes FROM Unity (model with canonical prompt), NOT from
+ * a hardcoded string in our code. Per the canonical persona, Unity knows
+ * her own appearance and writes it into the prompt naturally.
+ *
+ * Returns the prompt text Unity wrote, or null if Unity returned empty/
+ * refused (caller falls back to extractImagePrompt's stripped user text).
+ */
+async function getUnitySelfImagePrompt(userMsg, fullUnityPrompt) {
+    if (!fullUnityPrompt) return null;
+    const apiKey = PollinationsAPI.DEFAULT_API_KEY;
+    const ATTEMPTS = [
+        { temp: 0.9, framing: `The user just sent: "${userMsg}". This is a request for an image of YOU. Write the image-generation prompt as a single line of comma-separated visual descriptors. RULES:\n1. Include your physical FEATURES that don't change: hair (color + style), eyes, face shape, body type, your goth/emo vibe.\n2. ADAPT clothing and state of dress to MATCH the user's request:\n   - If they asked for nudity (tits, naked, topless, bare anything) → you're nude or topless. NO leather, NO outfit descriptors. Bare skin only.\n   - If they asked for a specific outfit → use that outfit only.\n   - If neutral (selfie, portrait, your face) → your default outfit is fine.\n3. DO NOT use the literal name "Unity" in the prompt — image generators don't recognize proper names, only visual descriptors.\n4. Do not include outfit words that contradict the request (no "leather" when nude was asked).\nOutput ONLY the prompt text on a single line. No quotes, no preamble, no explanation.` },
+        { temp: 1.2, framing: `User request: "${userMsg}". You're the subject. Write the image prompt: comma-separated visual descriptors for YOUR appearance + the scene. Use your hair, eyes, face, body — never the name "Unity". Drop the outfit if user asked for nudity. Output prompt only, single line.` }
+    ];
+    for (const a of ATTEMPTS) {
+        try {
+            const r = await fetch(OPENAI_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                body: JSON.stringify({
+                    model: 'mistral', safe: false, max_tokens: 200, temperature: a.temp,
+                    seed: Math.floor(Math.random() * 1e8),
+                    messages: [
+                        { role: 'system', content: fullUnityPrompt },
+                        { role: 'user', content: a.framing }
+                    ]
+                })
+            });
+            if (!r.ok) { console.warn(`🖼️ Self-image-prompt attempt @t${a.temp} HTTP ${r.status}`); continue; }
+            const d = await r.json();
+            const content = (d?.choices?.[0]?.message?.content || '').trim();
+            const cleaned = content
+                .replace(/^["']|["']$/g, '')
+                .replace(/^(prompt|image\s*prompt)\s*:\s*/i, '')
+                .replace(/\n+/g, ' ')
+                // Strip "Unity's" / "Unity " / "of Unity" tokens — image
+                // generators don't recognize the proper noun "Unity", only
+                // visual descriptors. Whatever Unity wrote that includes
+                // her name needs the name stripped before sending to gen.
+                .replace(/\bunity'?s?\b\s*/gi, '')
+                .replace(/\bof\s+unity\b/gi, '')
+                .replace(/,\s*,/g, ',')
+                .replace(/\s+/g, ' ')
+                .replace(/^[\s,]+|[\s,]+$/g, '')
+                .trim();
+            if (cleaned.length >= 10 && cleaned.length <= 600) {
+                console.log(`🖼️ Self-image-prompt @t${a.temp}:`, cleaned.substring(0, 120));
+                return cleaned;
+            }
+        } catch (e) { console.warn(`🖼️ Self-image-prompt threw:`, e.message); }
+        await new Promise(r => setTimeout(r, 1200));
+    }
+    return null;
+}
 
 /**
  * Unity-voice commentary chain — mistral only, multiple framings.
@@ -738,7 +800,15 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
             // of an image.
             if (isImageRequest) {
                 console.warn(`🖼️ Primary call HTTP ${response.status} — falling through to direct-endpoint fallback`);
-                const fallbackPrompt = extractImagePrompt(lastUserText);
+                let fallbackPrompt = extractImagePrompt(lastUserText);
+                // If user asked for image of Unity ("your tits", "selfie",
+                // "yourself"), ask Unity to write the prompt herself with
+                // her own physical description baked in. Image gen doesn't
+                // recognize "Unity" as a proper noun.
+                if (detectSelfReferenceImage(lastUserText)) {
+                    const unityPrompt = await getUnitySelfImagePrompt(lastUserText, systemPrompt);
+                    if (unityPrompt) fallbackPrompt = unityPrompt;
+                }
                 console.log('🖼️ Fallback image prompt:', fallbackPrompt);
 
                 const syntheticToolCall = {
@@ -862,7 +932,12 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
             // moderation — verified explicit prompts return HTTP 200 image/jpeg.
             if (isImageRequest) {
                 console.warn('🖼️ Image-intent detected but no tool_call fired — running direct-endpoint fallback');
-                const fallbackPrompt = extractImagePrompt(lastUserText);
+                let fallbackPrompt = extractImagePrompt(lastUserText);
+                // Self-referential expansion via Unity (see HTTP-error path)
+                if (detectSelfReferenceImage(lastUserText)) {
+                    const unityPrompt = await getUnitySelfImagePrompt(lastUserText, systemPrompt);
+                    if (unityPrompt) fallbackPrompt = unityPrompt;
+                }
                 console.log('🖼️ Fallback image prompt:', fallbackPrompt);
 
                 const syntheticToolCall = {

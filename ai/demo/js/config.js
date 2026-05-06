@@ -526,6 +526,18 @@ export function detectImageIntent(text) {
     return IMAGE_INTENT_REGEX.test(text);
 }
 
+// Detect self-referential image requests where the user wants an image of
+// Unity herself (selfie, "your tits", "yourself", "show unity", etc.). When
+// true, the image-prompt generation should be delegated to Unity so she can
+// fill in her own physical description (image generators don't recognize
+// the proper noun "Unity" — they need visual descriptors, and only Unity's
+// canonical persona prompt knows what she looks like).
+const SELF_REFERENCE_REGEX = /\b(your(self)?|selfie|unity'?s?)\b/i;
+export function detectSelfReferenceImage(text) {
+    if (!text || typeof text !== 'string') return false;
+    return SELF_REFERENCE_REGEX.test(text);
+}
+
 // Strip image-intent verb prefixes to extract the actual subject for direct
 // image-endpoint generation. "show me a hot goth chick naked" → "hot goth
 // chick naked". "draw me a sunset" → "sunset".
@@ -541,8 +553,8 @@ export function extractImagePrompt(text) {
     s = s.replace(/^unity[,!\s]+/i, '');
     // Pass 1: leading verb
     s = s.replace(/^(show|draw|sketch|paint|render|generate|gen|make|create|illustrate|depict|visualize|imagine|give)\s+/i, '');
-    // Pass 2: pronoun (me/us/my) — only one
-    s = s.replace(/^(me|us|my|your)\s+/i, '');
+    // Pass 2: pronoun (me/us/my/your/yourself) — only one
+    s = s.replace(/^(me|us|my|your|yourself|yourselves)\s+/i, '');
     // Pass 3: article (a/an/the/some)
     s = s.replace(/^(a|an|the|some)\s+/i, '');
     // Pass 4: format word (image/picture/selfie/etc.)
