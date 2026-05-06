@@ -237,7 +237,10 @@ function constructMessages(userPrompt) {
   // Use appropriate system prompt based on model
   let systemPrompt;
   if (currentModel === 'unity') {
-    systemPrompt = `${BASE_INSTRUCTIONS}\n${PollinationsAPI.UNITY_SYSTEM_PROMPT || unitySystemPrompt || FALLBACK_UNITY_PROMPT}`;
+    // Prefer the canonical full prompt loaded from unity-system-prompt-v2.txt
+    // (~200 lines, the same one the demo uses). PollinationsAPI.UNITY_SYSTEM_PROMPT
+    // is the legacy short embedded version and produces weak/generic output.
+    systemPrompt = `${BASE_INSTRUCTIONS}\n${unitySystemPrompt || PollinationsAPI.UNITY_SYSTEM_PROMPT || FALLBACK_UNITY_PROMPT}`;
   } else if (currentModel === 'evil') {
     systemPrompt = `${BASE_INSTRUCTIONS}\n${PollinationsAPI.EVIL_SYSTEM_PROMPT}`;
   } else {
@@ -342,7 +345,10 @@ async function sendChatMessage(prompt, retryCount = 0) {
   const requestBody = {
     messages: messages,
     model: String(apiModel),
-    seed: Math.floor(Math.random() * 1000000)
+    seed: Math.floor(Math.random() * 1000000),
+    // safe:false disables Pollinations' content filter — required so Unity's
+    // explicit/profane outputs aren't redacted to generic AI hedging.
+    safe: false
   };
 
   chatOutput.innerHTML += sanitizeHTML(`<p><strong>User:</strong> ${processResponse(prompt)}</p>`);
