@@ -52,38 +52,34 @@ function getCanonicalUnityAppearance(canonicalPrompt) {
  * tokens of canonical text are scene-appropriate).
  */
 function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubject) {
-    const appearance = getCanonicalUnityAppearance(canonicalPrompt);
-    if (!appearance) return extractedSubject;
+    if (!canonicalPrompt) return extractedSubject;
 
     const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
     const isPortraitRequest = /\b(face|portrait|headshot|selfie)\b/i.test(userText);
 
-    // For PORTRAIT requests only: keep full canonical appearance (face,
-    // outfit, eyes — all relevant to a portrait shot).
-    if (isPortraitRequest && !isNudityRequest) {
-        return `${extractedSubject}, ${appearance}, portrait, photorealistic`;
-    }
+    // NARRATIVE prompt form. Image generators (flux etc.) render scenes
+    // far better with narrative descriptions than comma-separated keyword
+    // soup. Pattern: "A [identity descriptor] [action/scene], [framing],
+    // [style]." Lead the SUBJECT clause with "A" so image gen knows we're
+    // describing a person doing a thing in a scene — not a portrait of a
+    // person whose background happens to match keywords.
 
-    // ALL OTHER self-image requests (nudity OR scene-based body shots like
-    // "covered in horse shit", "spread eagle", "kneeling", etc.): lead with
-    // the scene/subject AND strip face-heavy + outfit descriptors so they
-    // don't override the scene composition. Only preserve identity anchors:
-    // hair, age, vibe, aesthetic.
-    let scoped = appearance
-        .replace(/\bminimal\s+black\s+leather\b/gi, '')
-        .replace(/\bpink\s+unders\b/gi, '')
-        .replace(/\bsharp\s+features\b/gi, '')
-        .replace(/\bintense\s+eyes\b/gi, '')
-        .replace(/(\s*,\s*)+/g, ', ')
-        .replace(/^[\s,]+|[\s,]+$/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+    if (isPortraitRequest && !isNudityRequest) {
+        // Portrait request — face/selfie/headshot. Keep full canonical look.
+        return `A 25-year-old goth-emo woman with dark hair with pink streaks, edgy goth/emo aesthetic, minimal black leather outfit, dark vibe, sharp features, intense eyes. Portrait shot, photorealistic, detailed.`;
+    }
 
     if (isNudityRequest) {
-        return `${extractedSubject}, topless or partially nude as scene requires, body composition, full body shot visible, photorealistic, ${scoped}, detailed`;
+        // Nudity scene — drop outfit, keep identity anchors. Narrative form
+        // makes image gen render her IN the scene.
+        return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${extractedSubject}, full body in frame, body shot from a flattering angle, dark sensual mood, photorealistic, detailed.`;
     }
-    // Scene-based body shot. Lead with scene, identity anchors at end.
-    return `${extractedSubject}, body composition, full body shot, photorealistic, ${scoped}, detailed`;
+
+    // Generic scene-based body shot. Don't add a preposition — subject
+    // flows naturally regardless of whether it's a verb-phrase ("covered
+    // in mud") or a location ("pile of horse shit") or an action ("eating
+    // ice cream"). Body-shot framing at the end.
+    return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${extractedSubject}, full body in frame from a wide angle, scene composition, photorealistic, detailed.`;
 }
 
 // Decide image dimensions based on the user request: nudity / body shots
@@ -122,8 +118,8 @@ async function getUnitySelfImagePrompt(userMsg, fullUnityPrompt) {
     const systemForImageGen = fullUnityPrompt + IMAGE_GEN_CAPABILITY_ADDON;
     const apiKey = PollinationsAPI.DEFAULT_API_KEY;
     const ATTEMPTS = [
-        { temp: 0.9, framing: `User request: "${userMsg}". Write the image_prompt for this. CRITICAL: preserve the SCENE/ACTION from their request (e.g. "in a pile of horse shit", "spread eagle on a bed", "kneeling", "covered in", "in a forest" — every contextual detail they gave you). LEAD with that scene/action, then add your physical features. Drop face-heavy tokens for nudity, drop outfit when nudity asked, never write "Unity" as a name. Output only the prompt text, one line.` },
-        { temp: 1.2, framing: `Write the image_prompt for: "${userMsg}". The scene/action from their message IS the prompt's anchor — keep every contextual detail. Then add your appearance. Adapt clothing to match the scene (drop leather if nudity asked). Skip face descriptors for body shots. Output prompt only.` }
+        { temp: 0.9, framing: `User request: "${userMsg}". Write the image_prompt as a NARRATIVE sentence (not comma-keyword soup). Format: "A 25-year-old goth-emo woman with dark hair and pink streaks, [doing the action / in the scene from their request], [body-shot framing], photorealistic, detailed." PRESERVE every detail of the scene/action they asked for. ADAPT clothing to fit (drop leather if nudity asked, swap if outfit specified). Never write "Unity" as a name. Output only the prompt sentence, one line.` },
+        { temp: 1.2, framing: `Write a NARRATIVE image_prompt for: "${userMsg}". Start with "A 25-year-old goth-emo woman..." then describe what she's doing in the scene from the user's request. Include scene context. Body shot framing. Output prompt only, no quotes.` }
     ];
     for (const a of ATTEMPTS) {
         try {
