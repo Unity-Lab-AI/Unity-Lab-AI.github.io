@@ -295,9 +295,10 @@ PolliLibJS is a comprehensive JavaScript/Node.js library providing complete acce
 ### ✅ Authentication Methods
 **Status:** Complete in JavaScript ✓
 
-- [x] Referrer-based authentication (default: `s-test-sk37AGI`)
+- [x] Referrer-based authentication *(legacy — kept for compat; default is empty string as of 2026-05 since Pollinations deprecated referrer auth on the new gen.pollinations.ai surface)*
 - [x] Bearer token authentication
 - [x] Anonymous mode support
+- [x] **Cloudflare Worker proxy support (2026-05)** — `PROXY_BASE`/`TEXT_API`/`IMAGE_API` constants point at `https://websiteunityailab.gfourteen7525.workers.dev` for production unityailab.com use; Worker holds `sk_*` server-side and translates legacy paths to `gen.pollinations.ai`
 
 **Implementation:** `pollylib.js`
 

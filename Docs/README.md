@@ -9,9 +9,11 @@ This directory contains comprehensive documentation for the Pollinations.AI API,
 Complete API reference documentation for Pollinations.AI, including:
 
 - **API Endpoints**: Text generation, image generation, speech synthesis, and more
-- **Authentication**: Referrer-based and bearer token authentication methods
+- **Authentication** *(legacy — see note below)*: Referrer-based and bearer token authentication methods as originally documented by Pollinations
 - **Rate Limits**: Access tiers and rate limit specifications
 - **Request/Response Formats**: Detailed parameter documentation
+
+> **⚠ 2026-05 update:** This site no longer authenticates against `text.pollinations.ai` / `image.pollinations.ai` directly. All requests are routed through the unityailab.com Cloudflare Worker proxy at `https://websiteunityailab.gfourteen7525.workers.dev`, which holds an `sk_*` Pollinations token server-side and forwards to `gen.pollinations.ai` (the migrated API surface). The doc body preserves the upstream Pollinations reference verbatim — useful as the underlying API spec — but `?referrer=...` query params are deprecated; new code should NOT add them. See [PolliLibJS/README.md](../PolliLibJS/README.md) and [PolliLibJS/pollylib.js](../PolliLibJS/pollylib.js) for the proxy URL and route map.
 - **Model Information**: Available models and their capabilities
 - **Code Examples**: Usage examples in multiple languages
 
@@ -26,7 +28,7 @@ The documentation in this directory is referenced by both library implementation
 
 - [Main Repository README](../README.md)
 - [Pollinations.AI Official Documentation](https://github.com/pollinations/pollinations)
-- [Pollinations.AI Authentication Portal](https://auth.pollinations.ai)
+- [Pollinations.AI Developer Console (enter.pollinations.ai)](https://enter.pollinations.ai/) — replaced the retired legacy `auth.pollinations.ai` portal in 2026
 
 ## Purpose
 

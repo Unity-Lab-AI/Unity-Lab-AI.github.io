@@ -192,13 +192,13 @@ Both libraries are feature-complete and provide:
 
 ## Authentication
 
-Both libraries use **referrer-based authentication** with the default referrer `s-test-sk37AGI` (Seed tier - free).
+**As of 2026-05, this site authenticates against Pollinations through a Cloudflare Worker proxy** at `https://websiteunityailab.gfourteen7525.workers.dev`. The Worker holds an `sk_*` Pollinations token server-side as a Cloudflare Secret env var (`POLLINATIONS_SK`) and forwards all browser requests to the new `gen.pollinations.ai` API surface (`/v1/chat/completions`, `/v1/models`, `/image/{prompt}`, etc.) with `Authorization: Bearer sk_*` injected.
 
-Access tiers:
-- **Anonymous**: 1 request / 15s (no signup)
-- **Seed**: 1 request / 5s (free registration) - **Default**
-- **Flower**: 1 request / 3s (paid)
-- **Nectar**: No limits (enterprise)
+**Why the proxy:** Pollinations migrated auth to `enter.pollinations.ai` / `gen.pollinations.ai` in 2026; legacy referrer-based authentication on `text.pollinations.ai` / `image.pollinations.ai` was deprecated. Static sites can't safely embed `sk_*` tokens (would leak via View Source), so the Worker holds the token server-side and the browser only ever sees the proxy URL.
+
+**Browser code sends NO token and NO referrer.** Auth is entirely server-side. Rate limits are governed by the upstream `sk_*` tier on the Worker.
+
+For local/non-proxy use cases (e.g., backend Python/Node scripts), `PolliLibJS` and `PolliLibPy` still expose `bearerToken` constructor options for direct `Authorization: Bearer` auth — see each library's README.
 
 ## Development
 
@@ -241,7 +241,7 @@ This allows live testing of develop branch changes without affecting the product
 ## External Resources
 
 - [Pollinations.AI Official Documentation](https://github.com/pollinations/pollinations)
-- [Pollinations.AI Authentication Portal](https://auth.pollinations.ai)
+- [Pollinations.AI Developer Console](https://enter.pollinations.ai/) (current — replaces the legacy auth.pollinations.ai which was retired in 2026)
 - [Unity AI Lab Main Website](https://unity-lab-ai.github.io/)
 
 ## Contributing

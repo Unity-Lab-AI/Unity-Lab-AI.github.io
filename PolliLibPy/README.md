@@ -56,21 +56,24 @@ if result['success']:
 
 ## Authentication
 
-PolliLibPy uses referrer-based authentication by default with the referrer `s-test-sk37AGI` (seed tier).
+**Note (2026-05):** Pollinations migrated auth to `enter.pollinations.ai` / `gen.pollinations.ai`. Referrer-based authentication on the legacy `text.pollinations.ai` / `image.pollinations.ai` endpoints is deprecated. For new Python code, prefer `bearer_token` with an `sk_*` key obtained at https://enter.pollinations.ai/ (server-side Python is the safe place for `sk_*` tokens — never embed them in browser code).
 
-You can customize the referrer:
+PolliLibPy still defaults to the legacy `s-test-sk37AGI` seed-tier referrer for backward compatibility, but expect rate-limited / degraded responses on the legacy endpoints. For production use, either:
 
 ```python
+# Recommended (server-side Python with sk_ token)
 from PolliLibPy.pollylib import PollinationsAPI
+api = PollinationsAPI(bearer_token="sk_your_token_here")
+```
 
+or
+
+```python
+# Custom referrer (legacy compat only)
 api = PollinationsAPI(referrer="your-referrer-here")
 ```
 
-Or use a bearer token for backend applications:
-
-```python
-api = PollinationsAPI(bearer_token="your-token-here")
-```
+For the unityailab.com **frontend** site, browser code is routed through a Cloudflare Worker proxy (see PolliLibJS/README.md). Python backends should use `bearer_token` directly — the Worker proxy is for browser code that can't safely embed `sk_*`.
 
 ## Examples
 
@@ -208,7 +211,7 @@ python PolliLibPy/text_to_text.py
 | Flower    | 1 request / 3s       | Paid tier                      |
 | Nectar    | No limits            | Enterprise                     |
 
-**Current Configuration**: This library uses the `s-test-sk37AGI` seed tier referrer.
+**Current Configuration**: This library defaults to the legacy `s-test-sk37AGI` seed tier referrer for backward compat, but Pollinations deprecated referrer auth in 2026. For production use, pass `bearer_token="sk_*"` (obtained from https://enter.pollinations.ai/) — Python backends are the safe place for `sk_*` tokens.
 
 ## Best Practices
 

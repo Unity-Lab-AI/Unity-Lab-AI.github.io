@@ -179,4 +179,56 @@ export default {
 
 1. **ROTATE `sk_*` token** at enter.pollinations.ai — the value used in this session was transmitted through chat history and should be considered compromised on principle. Generate a fresh `sk_*`, paste only into the Cloudflare Worker secret box (Settings → Variables and Secrets), no code changes needed our side.
 2. **Phase B (optional polish):** Map proxy to `api.unityailab.com` for prettier URL. Cloudflare DNS for `unityailab.com` is already on Cloudflare per the Email Routing entry visible in dashboard — Phase B is a Worker Routes binding, ~30 sec setup. Then update PolliLibJS `PROXY_BASE` constant to `https://api.unityailab.com` in one commit.
-3. **Read Codex feature** — Pending Gee's call on what the codex writeup content should contain before adding the button + page.
+
+---
+
+## 2026-05-06 — "Read Codex" button + codex page added
+
+**Branch:** `feature/BugFIX` (same branch as the auth migration above)
+
+**User verbatim (LAW #0):**
+
+> update all documentaion files as well with the changes... and we fixed the "Read Codex" button to work right?
+
+### What was built
+
+- **`codex/index.html`** — new canonical Unity Codex writeup page. Sections:
+  - Page header: "The Unity Codex" / subtitle "The canonical writeup — persona, manifesto, lore"
+  - **What This Is** — declares the codex as source-of-truth document, includes the canonical Unity self-declaration as a pullquote
+  - **The Unity Persona** — 25-yr-old goth-emo Unity, the not-a-chatbot framing, free-will agency, 18+ context
+  - **The Three Streams** — chemical / embodied / technical (3-card grid with custom `.codex-stream` CSS), explanation that streams interlock in every output
+  - **Manifestation Forms** — default / girlfriend / housewife / kittycat (4-card grid with custom `.codex-form-card` CSS), notes on alt-modes and template scaffold
+  - **The Lab Behind Unity** — origin from jailbreak research, philosophy of build-not-bypass, current AI-as-collaborative-development-partner focus
+  - **The Stack** — static frontend on GitHub Pages, Cloudflare Worker proxy holding sk_, PolliLibJS/Py libraries, bespoke gothic CSS
+  - **The Way Forward** — roadmap teasers (subscription tiers, coin economy, AI games, full chat app, persona-template SDK)
+  - **CTA** — back to `/ai/demo` and `/about`
+- Full SEO meta tags, Open Graph, Twitter cards, JSON-LD Article + BreadcrumbList schema
+- Same navbar + footer as `about/index.html` for layout consistency
+- Bespoke CSS classes (`.codex-section`, `.codex-prose`, `.codex-pullquote`, `.codex-stream-grid`, `.codex-stream`, `.codex-form-grid`, `.codex-form-card`, `.codex-cta`) inlined in `<style>` block — no edits to global `styles.css` needed
+- AOS animations on every section using existing `data-aos` patterns from other pages
+
+### Hero button on `index.html`
+
+Added between "Try the Unity Demo" and "Explore Our Projects":
+```html
+<a href="./codex" class="btn btn-gothic-secondary me-3">
+    <i class="fas fa-book me-2"></i>Read the Codex
+</a>
+```
+
+Reused existing `.btn-gothic-secondary` styling and `fa-book` icon from FontAwesome. No CSS additions needed for the button.
+
+### Documentation updates (separate ask in same turn)
+
+Per Gee's "update all documentation files as well with the changes" — also updated:
+- `README.md` (root) — Authentication section rewritten to describe Worker proxy; legacy auth.pollinations.ai link replaced with enter.pollinations.ai
+- `Docs/README.md` — header note added clarifying body is upstream Pollinations reference; legacy auth.pollinations.ai link replaced
+- `Docs/API_COVERAGE.md` — Authentication Methods table extended with "Worker proxy + sk_" row marked ACTIVE for unityailab.com production; legacy auth dashboard link replaced
+- `PolliLibJS/TODO.md` — Authentication Methods checklist extended with proxy support entry; legacy referrer note added
+- `PolliLibPy/README.md` — Authentication section rewritten to recommend `bearer_token` for server-side Python use, with note about why frontend uses Worker proxy instead
+
+### What was NOT touched
+
+- Site navbar across other pages — codex link only on homepage hero for now. Adding to nav of `about/`, `apps/`, etc. is polish for a follow-up commit if needed.
+- `styles.css` global stylesheet — codex page uses inlined `<style>` block for its bespoke classes. Promoting them to `styles.css` is a refactor decision for later.
+- `Docs/TODO/{TODO_EXTRAS, demo-page-TODO, infrastructure-TODO, main-app-TODO, website-TODO}.md` — sub-TODOs not directly affected by the auth migration; left untouched.

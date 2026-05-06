@@ -250,17 +250,24 @@ All parameters from the official API documentation are fully supported:
 
 All three authentication methods from the official API are supported:
 
-| Method | Use Case | Python | JavaScript |
-|--------|----------|--------|------------|
-| **Referrer-based** | Web apps | ✅ `referrer` parameter | ✅ `referrer` option |
-| **Bearer Token** | Backend services | ✅ `bearer_token` parameter | ✅ `bearerToken` option |
-| **Anonymous** | No auth required | ✅ Default mode | ✅ Default mode |
+| Method | Use Case | Python | JavaScript | unityailab.com production |
+|--------|----------|--------|------------|---------------------------|
+| **Worker proxy + sk_** | Static frontend sites (THIS SITE) | n/a (Python is server-side) | ✅ Built into `PROXY_BASE` constant | ✅ ACTIVE — auth handled by Cloudflare Worker |
+| **Bearer Token** | Backend services | ✅ `bearer_token` parameter | ✅ `bearerToken` option | n/a |
+| **Referrer-based** | *(legacy — deprecated 2026)* Web apps | ✅ `referrer` parameter (kept for compat) | ✅ `referrer` option (kept for compat, defaults to empty string) | ❌ NO — site doesn't use it |
+| **Anonymous** | No auth required | ✅ Default mode | ✅ Default mode | n/a |
 
-**Token Source:** https://auth.pollinations.ai
+**Token Source:** https://enter.pollinations.ai/ (replaces the retired `auth.pollinations.ai` portal as of 2026)
 
 **Implementation:**
-- ✅ Python: `pollylib.py::__init__(referrer=..., bearer_token=...)`
-- ✅ JavaScript: `new PollinationsAPI({referrer: ..., bearerToken: ...})`
+- ✅ Python: `pollylib.py::__init__(referrer=..., bearer_token=...)` *(referrer kept for compat; new Pollinations API prefers Bearer tokens)*
+- ✅ JavaScript: `new PollinationsAPI({referrer: ..., bearerToken: ...})` *(referrer defaults to empty; production unityailab.com routes through Cloudflare Worker proxy holding sk_ server-side)*
+
+**unityailab.com production auth path:**
+- Browser → `https://websiteunityailab.gfourteen7525.workers.dev/text/openai`
+- Worker injects `Authorization: Bearer sk_*` (from `POLLINATIONS_SK` Cloudflare Secret)
+- Worker forwards to `https://gen.pollinations.ai/v1/chat/completions`
+- Browser never sees the token. Static-site-safe by design.
 
 ---
 
@@ -420,7 +427,8 @@ Both libraries include comprehensive testing frameworks:
 ## 📝 References
 
 - **Official API Documentation:** https://github.com/pollinations/pollinations/blob/master/APIDOCS.md
-- **Auth Dashboard:** https://auth.pollinations.ai
+- **Auth Dashboard (current):** https://enter.pollinations.ai/ *(replaces the retired auth.pollinations.ai portal)*
+- **API Reference (current):** https://enter.pollinations.ai/api/docs *(redirects to gen.pollinations.ai/docs)*
 - **Pollinations.ai:** https://pollinations.ai
 
 ---
