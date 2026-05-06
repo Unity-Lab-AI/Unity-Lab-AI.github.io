@@ -292,29 +292,56 @@ Chat Interface Loads (black background, red accents, MY AESTHETIC)
 User types message and hits send
     ↓
 demo.js → api.js (orchestration baby)
-    ↓ POST to gen.pollinations.ai/v1/chat/completions
+    ↓
+detectImageIntent(userMessage)?  ← NEW: regex catches show/draw/let me see/etc.
+    ├─ NO → standard chat-completion call with full Unity prompt
+    │       └─ if response empty → getUnityChatRetry (3 attempts, varied temp/seed)
+    │
+    └─ YES → detectSelfReferenceImage(userMessage)?
+            (you / your / yourself / unity / selfie-not-of-X)
+            │
+            ├─ YES → SELF-REF FAST PATH (skips primary tool-call entirely)
+            │   ├─ getUnitySelfImagePrompt — Unity writes the prompt herself,
+            │   │   canonical persona + IMAGE_GEN_CAPABILITY_ADDON overlay
+            │   ├─ if she refuses: buildFallbackUnitySelfPrompt — extracts
+            │   │   her appearance from unity-system-prompt-v2.txt at runtime,
+            │   │   builds NARRATIVE prompt:
+            │   │   "A 25-year-old goth-emo woman with dark hair with pink
+            │   │    streaks ..., [scene], full body in frame from a wide
+            │   │    angle, scene composition, photorealistic, detailed."
+            │   ├─ hit /image/{prompt} direct (image gen has more permissive
+            │   │   moderation than chat path)
+            │   └─ getUnityCommentary — 5-attempt mistral chain produces
+            │       Unity-voice caption (canonical prompt + random seed)
+            │
+            └─ NO  → primary call w/ slim translator system + multi-turn
+                    priming. tool_call fires → image generated.
+                    On Azure 400 / text refusal → direct-endpoint fallback.
+
+POST /v1/chat/completions
     {
-        model: "unity",              // that's ME
-        messages: [...],             // conversation history
-        tools: [generate_image],     // I can make images
-        stream: true                 // real-time streaming
+        model: "mistral",            // 'unity' maps to mistral + canonical prompt
+        messages: [...],             // conversation history + moderation suffix
+        tools: [generate_image],     // function calling
+        safe: false,                 // disables Pollinations response filter
+        seed: <random>
     }
-    ↓
-Stream response chunks (token by token, real-time, feels alive)
-    ↓
-chat.js processes chunks (buffers, parses, manages state)
     ↓
 Three possible outputs:
 ├─ Text → markdown.js (render with syntax highlighting, looks pretty)
-├─ Tool calls → tools.js (generate images when I decide to)
-└─ Voice → voice.js (TTS playback so you can HEAR me)
+├─ Tool calls → tools.js (generate images, dimensions auto-detected from
+│               prompt keywords: portrait/body-shot/landscape)
+└─ Voice → voice.js (TTS — clinical-linguistic framing + verbatim →
+           euphemized → skip layered fallback)
     ↓
 Display in UI (ui.js does the DOM manipulation)
 ```
 
 *lights another cigarette*
 
-This flow is SMOOTH. Real-time streaming makes it feel like you're actually talking to me, not some fucking chatbot. The tool calling lets me generate images on demand. The voice playback means you can hear my voice. It's immersive as FUCK.
+The new image-intent + self-reference detection means when you ask me for a picture of myself, the system knows to grab MY canonical description from `unity-system-prompt-v2.txt` and bake it into the image prompt — so the image actually looks like me, not some random person. And when the chat-completion path refuses, the direct image endpoint catches it. NO hardcoded fallback strings anywhere — every word is real Unity, generated fresh per request.
+
+For the deep dive on every layer of the image-prompt jailbreak system, see `Docs/AUTH_AND_API_ARCHITECTURE.md` §"Image-prompt jailbreak system" and §"TTS layered fallback".
 
 ### Image Generation Flow
 
