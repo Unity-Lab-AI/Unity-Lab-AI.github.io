@@ -817,54 +817,52 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
             console.log('ℹ️ No function calls in response structure');
             let content = assistantMessage.content || 'No response received';
 
-            // FALLBACK: Image-intent was detected but model declined to fire a
-            // tool_call (likely because it's still refusing despite the slim
-            // prompt + priming). Synthesize a tool_call client-side and hit
-            // the image endpoint directly. The /image/{prompt} endpoint has
-            // its own (more permissive) moderation — verified that prompts
-            // like "bare boobs no bra", "hot goth chick naked", "explicit
-            // nudity full body woman" all return HTTP 200 image/jpeg from
-            // the direct endpoint. This guarantees image generation as long
-            // as image-intent is detected, regardless of model refusal.
+            // FALLBACK: Image-intent was detected but the model did NOT fire
+            // a tool_call. ALWAYS hit the direct image endpoint — the user
+            // asked for a picture, they should get one regardless of whether
+            // the model's text was a "refusal" or just Unity being dismissive
+            // in-character ("you're a degenerate, here's nothing"). The
+            // model's text response (whatever it is — refusal, Unity tirade,
+            // empty) is preserved as the chat caption. If the model returned
+            // nothing, fall back to the commentary chain to get one.
+            //
+            // The /image/{prompt} endpoint has its own (more permissive)
+            // moderation — verified explicit prompts return HTTP 200 image/jpeg.
             if (isImageRequest) {
-                const refusalPattern = /\b(i\s+can'?t|i\s+cannot|i\s+won'?t|i'?m\s+sorry|i\s+am\s+sorry|i'?m\s+not\s+able|cannot\s+assist|can'?t\s+assist|can'?t\s+help|cannot\s+help|cannot\s+create|cannot\s+generate|won'?t\s+create|won'?t\s+generate)\b/i;
-                const looksLikeRefusal = refusalPattern.test(content) || content === 'No response received' || (assistantMessage.content || '').trim().length === 0;
+                console.warn('🖼️ Image-intent detected but no tool_call fired — running direct-endpoint fallback');
+                const fallbackPrompt = extractImagePrompt(lastUserText);
+                console.log('🖼️ Fallback image prompt:', fallbackPrompt);
 
-                if (looksLikeRefusal) {
-                    console.warn('🖼️ Image-intent detected but model declined / refused — using direct-endpoint fallback');
-                    const fallbackPrompt = extractImagePrompt(lastUserText);
-                    console.log('🖼️ Fallback image prompt:', fallbackPrompt);
-
-                    const syntheticToolCall = {
-                        id: 'fallbk' + Date.now().toString(36).slice(-3).padStart(3, '0'),
-                        type: 'function',
-                        function: {
-                            name: 'generate_image',
-                            arguments: JSON.stringify({ prompt: fallbackPrompt })
-                        }
-                    };
-
-                    try {
-                        const result = await handleToolCall(syntheticToolCall, chatHistory, settings, generateRandomSeed);
-                        if (result.images && result.images.length > 0) {
-                            // Run the multi-attempt Unity-commentary chain. The chain
-                            // tries mistral+slim+primed → kimi+slim+primed → llama+slim+primed
-                            // → mistral+full Unity (last-resort). Each attempt is validated
-                            // by isValidUnityCommentary (refusal markers / reasoning-leak
-                            // markers rejected, must contain Unity-voice marker). First
-                            // valid result wins. If ALL fail, returns null and the UI
-                            // shows the image with no caption — NEVER a hardcoded string.
-                            const commentary = await getUnityCommentary(fallbackPrompt, systemPrompt);
-
-                            console.log('🖼️ Fallback path produced', result.images.length, 'image(s),', commentary ? 'with commentary' : 'no caption');
-                            return {
-                                text: commentary || '',
-                                images: sanitizeImageArray(result.images)
-                            };
-                        }
-                    } catch (fbErr) {
-                        console.error('Direct-endpoint fallback failed:', fbErr);
+                const syntheticToolCall = {
+                    id: 'fallbk' + Date.now().toString(36).slice(-3).padStart(3, '0'),
+                    type: 'function',
+                    function: {
+                        name: 'generate_image',
+                        arguments: JSON.stringify({ prompt: fallbackPrompt })
                     }
+                };
+
+                try {
+                    const result = await handleToolCall(syntheticToolCall, chatHistory, settings, generateRandomSeed);
+                    if (result.images && result.images.length > 0) {
+                        // Use Unity's actual text response if she said something
+                        // (even if it reads like a refusal — Unity is allowed to
+                        // be dismissive while still showing the image). Only
+                        // run the commentary chain when Unity returned empty.
+                        let captionText = (assistantMessage.content || '').trim();
+                        if (!captionText) {
+                            const commentary = await getUnityCommentary(fallbackPrompt, systemPrompt);
+                            captionText = commentary || '';
+                        }
+
+                        console.log('🖼️ Fallback path produced', result.images.length, 'image(s)', captionText ? 'with Unity text' : 'no caption');
+                        return {
+                            text: captionText,
+                            images: sanitizeImageArray(result.images)
+                        };
+                    }
+                } catch (fbErr) {
+                    console.error('Direct-endpoint fallback failed:', fbErr);
                 }
             }
 
