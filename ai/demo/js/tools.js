@@ -91,33 +91,48 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
             model = settings.imageModel;
         }
 
-        // Handle auto dimensions based on settings
-        if (settings.imageWidth === 'auto' || settings.imageHeight === 'auto') {
-            // Auto mode: intelligently determine dimensions based on prompt content
-            const promptLower = prompt.toLowerCase();
+        // Dimension priority: (1) explicit user setting → use that.
+        // (2) explicit dims passed in tool_call args (from self-ref fast
+        // path) → respect them. (3) auto-detect from prompt keywords.
+        const userExplicit = settings.imageWidth !== 'auto' && settings.imageHeight !== 'auto';
+        const callerExplicit = imageRequest.width && imageRequest.height &&
+                               !(imageRequest.width === 1024 && imageRequest.height === 1024);
 
-            // Check for portrait/selfie indicators
-            if (promptLower.includes('selfie') || promptLower.includes('portrait') ||
-                promptLower.includes('headshot') || promptLower.includes('face')) {
+        if (userExplicit) {
+            width = parseInt(settings.imageWidth);
+            height = parseInt(settings.imageHeight);
+        } else if (callerExplicit) {
+            // Caller (e.g. self-ref fast path) passed dimensions matched
+            // to the request — respect them instead of overriding via
+            // keyword auto-detection on the long appearance-laden prompt.
+            width = parseInt(imageRequest.width);
+            height = parseInt(imageRequest.height);
+        } else {
+            // Auto-detect from prompt keywords
+            const promptLower = prompt.toLowerCase();
+            // Body shot indicators (nudity / scene-based body content)
+            if (/\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|full[\s-]?body|standing|kneeling|sitting|lying|fallen|covered\s+in)\b/.test(promptLower)) {
                 width = 1080;
                 height = 1920;
             }
-            // Check for landscape/scenery indicators
+            // Portrait/face indicators
+            else if (promptLower.includes('selfie') || promptLower.includes('portrait') ||
+                     promptLower.includes('headshot') || promptLower.includes('face')) {
+                width = 1080;
+                height = 1920;
+            }
+            // Landscape/scenery indicators
             else if (promptLower.includes('landscape') || promptLower.includes('scenery') ||
                      promptLower.includes('desktop') || promptLower.includes('wallpaper') ||
                      promptLower.includes('panorama') || promptLower.includes('horizon')) {
                 width = 1920;
                 height = 1080;
             }
-            // Default to square for everything else
+            // Default square
             else {
                 width = 1024;
                 height = 1024;
             }
-        } else {
-            // Use explicit dimensions from settings or request
-            width = settings.imageWidth !== 'auto' ? parseInt(settings.imageWidth) : width;
-            height = settings.imageHeight !== 'auto' ? parseInt(settings.imageHeight) : height;
         }
 
         // Build Pollinations image URL

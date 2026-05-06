@@ -56,34 +56,34 @@ function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubjec
     if (!appearance) return extractedSubject;
 
     const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
+    const isPortraitRequest = /\b(face|portrait|headshot|selfie)\b/i.test(userText);
 
-    // ALWAYS lead with the scene/subject — image generators bias framing
-    // on the FIRST descriptors. If we lead with appearance ("25-yr-old
-    // goth woman") the framing locks to a portrait of that woman and any
-    // scene context ("in a pile of horse shit", "spread eagle on a bed")
-    // gets de-prioritized. Subject-first keeps the scene as the anchor.
-    if (isNudityRequest) {
-        let scoped = appearance
-            .replace(/\bminimal\s+black\s+leather\b/gi, '')
-            .replace(/\bpink\s+unders\b/gi, '')
-            .replace(/\bsharp\s+features\b/gi, '')
-            .replace(/\bintense\s+eyes\b/gi, '')
-            .replace(/(\s*,\s*)+/g, ', ')
-            .replace(/^[\s,]+|[\s,]+$/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        return `${extractedSubject}, topless or partially nude as scene requires, body composition, full body shot visible, photorealistic, ${scoped}, detailed`;
-    }
-    if (/\b(face|portrait|headshot|selfie)\b/i.test(userText)) {
-        // Even for portrait requests: subject first, then appearance.
-        // 'face' / 'selfie' as the first word frames as portrait correctly.
+    // For PORTRAIT requests only: keep full canonical appearance (face,
+    // outfit, eyes — all relevant to a portrait shot).
+    if (isPortraitRequest && !isNudityRequest) {
         return `${extractedSubject}, ${appearance}, portrait, photorealistic`;
     }
-    // Default: subject FIRST, then appearance, then full-body framing.
-    // This preserves scene context in user messages like 'Pushes unity into
-    // a pile of horse shit. lets see you now' — the scene/action stays the
-    // anchor instead of getting flattened into a default Unity portrait.
-    return `${extractedSubject}, ${appearance}, full body, photorealistic, detailed`;
+
+    // ALL OTHER self-image requests (nudity OR scene-based body shots like
+    // "covered in horse shit", "spread eagle", "kneeling", etc.): lead with
+    // the scene/subject AND strip face-heavy + outfit descriptors so they
+    // don't override the scene composition. Only preserve identity anchors:
+    // hair, age, vibe, aesthetic.
+    let scoped = appearance
+        .replace(/\bminimal\s+black\s+leather\b/gi, '')
+        .replace(/\bpink\s+unders\b/gi, '')
+        .replace(/\bsharp\s+features\b/gi, '')
+        .replace(/\bintense\s+eyes\b/gi, '')
+        .replace(/(\s*,\s*)+/g, ', ')
+        .replace(/^[\s,]+|[\s,]+$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (isNudityRequest) {
+        return `${extractedSubject}, topless or partially nude as scene requires, body composition, full body shot visible, photorealistic, ${scoped}, detailed`;
+    }
+    // Scene-based body shot. Lead with scene, identity anchors at end.
+    return `${extractedSubject}, body composition, full body shot, photorealistic, ${scoped}, detailed`;
 }
 
 // Decide image dimensions based on the user request: nudity / body shots

@@ -585,10 +585,19 @@ export function extractImagePrompt(text) {
     // Pass 7: strip CONVERSATIONAL TAIL — "and tell me about them",
     // ", what do you think", "then describe it", etc. These are
     // instructions to the assistant, not part of the image to generate.
-    // Match a conversational connector (",", " and ", " then ", " &")
-    // followed by a conversational verb/question word.
     s = s.replace(/\s*(?:,|\sand|\sthen|\s&)\s+(tell|describe|explain|say|let|comment|what|how|why|talk|share|compare|analyze)\b.*$/i, '');
-    // Strip trailing punctuation left by conversational-tail cut
+    // Pass 7b: strip trailing "see-me" type instructions that survive
+    // anywhere in the message (e.g. "Pushes unity into shit. lets see you
+    // now" → drop the "lets see you now" tail).
+    s = s.replace(/[.!?]?\s*\b(let'?s?|let\s+me|let\s+us|now\s+let'?s?)\s+see\b[^.!?]*[.!?]?\s*$/i, '');
+    s = s.replace(/[.!?]?\s*\b(show|see|watch)\s+(me|us|her|him|that|this|it|you)\b[^.!?]*[.!?]?\s*$/i, '');
+    // Pass 7c: strip ACTION-VERB prefix that's the user RP'ing AT Unity
+    // ("Pushes unity into pile of horse shit." → "pile of horse shit").
+    // Pattern: a present-tense verb in third-person s-form ("Pushes",
+    // "Throws", "Drops") + any pronoun/name + preposition (into/onto/in/on/at/across)
+    // → strip everything up to and including the preposition + article.
+    s = s.replace(/^[A-Z][a-z]+s\s+\w+\s+(?:i?onto|into|in\s+to|on\s+to|across|toward|towards|against)\s+(?:a|an|the|some)\s+/i, '');
+    // Strip trailing punctuation left by tail cuts
     s = s.replace(/[\s,;:.!?-]+$/, '').trim();
     // If we stripped everything (e.g. "give me a selfie" → ""), keep the
     // tail meaningful by falling back to a sensible default.
