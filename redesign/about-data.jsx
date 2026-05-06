@@ -344,13 +344,13 @@ const ABOUT = {
     },
     {
       key: 'alfredo',
-      name: 'Alfredo',
+      name: 'Alfreddo',
       handle: 'alfredo',
       sigil: 'Robot',
       title: 'Engineer · Agentic systems',
       bio:
         'Lives inside the planner / executor / critic loop. When the agent stack does ' +
-        'something nobody expected, Alfredo can usually tell you why before you finish ' +
+        'something nobody expected, Alfreddo can usually tell you why before you finish ' +
         'asking.',
       roles: ['Developer', 'Agentic Systems', 'Researcher'],
     },

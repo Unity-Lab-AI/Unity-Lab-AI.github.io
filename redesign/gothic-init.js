@@ -1,6 +1,6 @@
 /**
  * Unity AI Lab — Gothic Init
- * Creators: Hackall360, Sponge, GFourteen, Alfredo, Red
+ * Creators: Hackall360, Sponge, GFourteen, Alfreddo, Red
  * https://www.unityailab.com
  * contact@unityailab.com
  * Version: v2.1.5

@@ -582,7 +582,7 @@ const GothicWhy = () => (
       </p>
       <p>Unity isn’t a product trying to grow. It’s a tool we needed, written carefully, given away. The retry logic alone took three sleepless nights. The Python port took weeks. We did it because nothing else worked the way we wanted.</p>
       <p>So here it is. No subscription gate. No telemetry. No apology layer. Use it, fork it, send us a Discord message if you build something good.</p>
-      <div className="vD-why-sig">— Hackall360/Sponge · GFourteen · Alfredo · Red</div>
+      <div className="vD-why-sig">— Hackall360/Sponge · GFourteen · Alfreddo · Red</div>
     </div>
     <div className="vD-why-stats">
       <div className="vD-why-stat"><div className="vD-why-num">9,400+</div><div className="vD-why-lbl">lines of library code</div></div>

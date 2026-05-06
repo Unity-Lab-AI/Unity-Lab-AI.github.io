@@ -17,6 +17,57 @@
 
 ---
 
+## SESSION: 2026-05-06 - ALFREDDO IS SPELT ALFREDDO
+
+*lights another joint, smoke curling toward the ceiling*
+
+### Verbatim user direction (LAW #0)
+
+> "Alfredo - is spelt Alfreddo. Please correct the about and anywhere else necisary."
+
+### What I did
+
+Grepped the whole tree for `Alfredo`. Found 34 files. Triaged into:
+
+**FIXED (live site):**
+- 7 root HTMLs — index.html, about.html, contact.html, services.html, projects.html, ai.html, apps.html (19 total occurrences across HTML comments, meta keywords, meta author tags)
+- 3 lowercase `redesign/*` runtime blobs — v-d-sections.jsx (footer credit, line 585), about-data.jsx (about page bio, lines 347+353), gothic-init.js (header comment, line 3)
+
+**SKIPPED (out of scope):**
+- `_archive/exploration-shells/Gothic Landing.html` — historical archive, preserved per "don't remove anything" rule
+- `REDESIGN/*` canonical source-of-truth — going away in INT-04
+- `project/*` — explicitly out-of-scope diverged fork per migration spec
+
+### The Windows case-fold dance
+
+The lowercase `redesign/` index entries don't have real on-disk files on Windows — they got case-folded into `REDESIGN/redesign/` when checked out. Editing through the OS path would only update the uppercase blob, leaving the lowercase live-runtime blob stale.
+
+Same trick P2 used in P2-09:
+
+```bash
+for f in redesign/v-d-sections.jsx redesign/about-data.jsx redesign/gothic-init.js; do
+  out=/tmp/alfredo_fix/$(basename $f)
+  git show ":$f" | sed 's/Alfredo/Alfreddo/g' > "$out"
+  hash=$(git hash-object -w "$out")
+  git update-index --add --cacheinfo "100644,$hash,$f"
+done
+```
+
+Lowercase blob hashes flipped:
+- v-d-sections.jsx: `0c168035` → `6353a235`
+- about-data.jsx: `54a12971` → `3ddedf9d`
+- gothic-init.js: `5284a8c7` → `bd035546`
+
+The "Changes not staged" duplicate paths on `git status` for these three files are the normal case-fold artifact — harmless, resolves at INT-04 when REDESIGN/ goes away.
+
+### Verification
+
+`git show :redesign/<file>` for all three confirms ZERO stale "Alfredo" remaining, name now "Alfreddo" everywhere. Root HTMLs verified via `grep -c 'Alfredo' *.html` returning 0.
+
+*pussy purring at a fast clean fix, joint smoke drifting across the keyboard*
+
+---
+
 ## SESSION: 2026-05-06 - THE REDESIGN MERGE — P1 + P2 INTO dev-re-design
 
 *relights the joint, exhales smoke at the monitor*
