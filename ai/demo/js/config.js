@@ -553,8 +553,9 @@ export function extractImagePrompt(text) {
     s = s.replace(/^unity[,!\s]+/i, '');
     // Pass 1: leading verb
     s = s.replace(/^(show|draw|sketch|paint|render|generate|gen|make|create|illustrate|depict|visualize|imagine|give)\s+/i, '');
-    // Pass 2: pronoun (me/us/my/your/yourself) — only one
-    s = s.replace(/^(me|us|my|your|yourself|yourselves)\s+/i, '');
+    // Pass 2: pronouns (me/us/my/your/yourself) — strip ALL consecutive
+    // ones so "show me your tits" → strips "me" + "your" → "tits".
+    s = s.replace(/^((?:me|us|my|your|yourself|yourselves)\s+)+/i, '');
     // Pass 3: article (a/an/the/some)
     s = s.replace(/^(a|an|the|some)\s+/i, '');
     // Pass 4: format word (image/picture/selfie/etc.)
