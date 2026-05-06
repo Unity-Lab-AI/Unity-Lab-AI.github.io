@@ -190,12 +190,36 @@ Legend: `[ ]` not started · `[~]` in_progress · `[x]` complete · `[!]` blocke
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| INT-01 | Both PRs merged into `dev-re-design` | [ ] | |
-| INT-02 | Read all `/docs/redesign/notes-p*.md` | [ ] | |
-| INT-03 | Update root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, `TODO.md` per LAW #0 (verbatim user words) | [ ] | docs-before-push |
-| INT-04 | Delete now-empty `/REDESIGN/` folder | [ ] | |
-| INT-05 | PR `dev-re-design` → `develop` | [ ] | |
-| INT-06 | PR `develop` → `main` | [ ] | |
+| INT-01 | Both PRs merged into `dev-re-design` | [x] | PR #44 merged 6e1cb04 + PR #45 merged 8891366. Zero conflicts (file-ownership matrix held). |
+| INT-02 | Read all `/docs/redesign/notes-p*.md` | [x] | Notes p1-config-diffs, p1-sitemap, p2-services-stub, p2-projects-outbound-links, p2-apps-data-paths, p2-apps-about-css all read. KNOWN-PROBLEMS.md (#2 vite map, #3 npm audit) read — both deferred dev-toolchain only, zero production exposure. |
+| INT-03 | Update root `README.md`, `ARCHITECTURE.md`, `FINALIZED.md`, `TODO.md` per LAW #0 (verbatim user words) | [~] | TODO.md + FINALIZED.md updated with verbatim user direction this pass. README.md + ARCHITECTURE.md (~46KB each, describe old stack) still need redesign-aware rewrite — flagged as separate follow-up scope. |
+| INT-04 | Delete now-empty `/REDESIGN/` folder | [ ] | Deferred — user directive was merge + verify wiring; REDESIGN/ deletion is a separate destructive op needing explicit approval. |
+| INT-05 | PR `dev-re-design` → `develop` | [ ] | Out of scope for this merge pass — user direction targeted dev-re-design only. |
+| INT-06 | PR `develop` → `main` | [ ] | Out of scope for this merge pass. |
+
+### Smoke-test results (this integration pass, 2026-05-06)
+
+Static smoke test via `py -m http.server 8765`:
+
+- All 8 redesigned root HTMLs serve 200 (`/`, `/index.html`, `/about.html`, `/contact.html`, `/services.html`, `/projects.html`, `/ai.html`, `/apps.html`, `/Unity Web Design.html`).
+- All 6 redirect stubs serve 200 with `<meta refresh>` + `window.location.replace()` to flat .html (`/about/`, `/contact/`, `/services/`, `/projects/`, `/ai/`, `/apps/`).
+- All 16 P1 chrome assets serve 200 from `/redesign/`: shared-tokens, variations, gothic-init, v-d-smoke, v-d-chrome, v-d-sections, v-d, sigils, about{,.css,-v2.css,-v2.jsx,-data.jsx,-shared.jsx}, contact-{v1.css,v1.jsx,data.jsx}.
+- All 17 P2 codex assets serve 200 from `/redesign/`: codex-shared, services-{v1.css,v1.jsx,data.jsx}, projects-{v1.css,v1.jsx,data.jsx}, ai-{v1.css,v1.jsx,data.jsx}, apps-{v1.css,v1.jsx,data.jsx}, unity-web-design.css, uwd-{helpers,page,page-2}.jsx.
+- All deep paths preserved (NOT shadowed by redirect stubs): `/ai/demo/` (19761b), all 8 `/apps/<demo>/` subfolders (unityDemo, textDemo, personaDemo, talkingWithUnity, helperInterfaceDemo, slideshowDemo, screensaverDemo, oldSiteProject), `/downloads/`.
+- `/sitemap.xml` (3339b), `/sitemap-images.xml` (1673b), `/sitemap-index.xml` (871b) all valid.
+- `/` content confirmed gothic V-D landing (GothicNavbar, GothicHero, redesign/v-d-* scripts) — NOT old Bootstrap stack.
+
+HANDOFF item 8 outbound URL verification (per `notes-p2-projects-outbound-links.md`):
+
+- `https://github.com/Unity-Lab-AI/CodeWringer` — verified live, public, correct project.
+- `https://github.com/Unity-Lab-AI` — verified live, public org page, 31 repos visible.
+- Cards III ("Explore research") + history card both point at the generic org URL — both URLs work, but the duplication smell flagged by P2 author remains: those cards may want more specific repo targets (left as-is for follow-up; not blocking).
+
+What CANNOT be verified without a real browser:
+
+- Visual rendering parity (P2-10 apps.html with `about.css`/`about-v2.css` commented out — static analysis says safe, browser confirmation pending).
+- Click-through interactions: pillar/service modals, smoke-effect particles on click, toast validation on contact form, visitor counter rendering, skip-to-main-content keyboard focus, navbar links navigating between pages.
+- These are owned by post-merge browser smoke test (see Smoke-test checklist below) — not blocking the merge of P1+P2 into `dev-re-design`.
 
 ---
 

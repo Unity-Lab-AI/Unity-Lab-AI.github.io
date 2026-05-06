@@ -22,8 +22,8 @@
 
 ## P1 - HIGH PRIORITY
 
-### [~] Redesign-merge integration pass (PR #44 + PR #45 → dev-re-design)
-**Status:** IN PROGRESS — 2026-05-06
+### [x] Redesign-merge integration pass (PR #44 + PR #45 → dev-re-design)
+**Status:** DONE — 2026-05-06 (commits 6e1cb04 P1 + 8891366 P2; verification + INT docs in 9-something integration commit)
 **Branch:** `dev-re-design` (current)
 **User direction (verbatim, LAW #0):**
 > "There are 2 PRs on this repo, #44 & #45, these are for P1 & P2 - These need merging together on the current repo branch. There is also additional iformation on the PRs pull requests; as well as known problems markdown files. I need you to go throught and complete the pull requests going into the branch please maks eure the redisign is upto specifications. I need you to make sure everything is wired up and properly follows the redisign specifications, thank you."
