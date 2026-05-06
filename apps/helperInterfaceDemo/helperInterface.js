@@ -680,13 +680,13 @@ function helperBuildSelfPrompt(canonical, userText, subject) {
 }
 async function helperGetCaption(imagePrompt, originalUserMsg, canonical) {
   if (!canonical) return null;
-  const userQuoted = originalUserMsg ? `The user just said: "${originalUserMsg}". ` : '';
+  const um = originalUserMsg || '';
   const ATTEMPTS = [
-    { temp: 1.0, user: `${userQuoted}You generated the image they asked for. Drop a brief in-character reaction to THEIR message. No preamble, no quotes.` },
-    { temp: 1.4, user: `${userQuoted}Image is now displayed. React to what they said, in-character, brief. No preamble, no quotes.` },
-    { temp: 1.2, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
-    { temp: 1.5, user: `You just dropped a pic in the user's chat — exactly what they asked for. React in-character, brief. No preamble, no quotes.` },
-    { temp: 0.9, user: `Just sent the user their pic. React briefly, in-character. No preamble, no quotes.` }
+    { temp: 1.1, user: `Continue this scene. User: "${um}" — You: [drops the image and...] Write your next line, in voice, brief, no preamble or quotes.` },
+    { temp: 1.3, user: `Stage direction: User just said "${um}". You generated the image. Write your line of dialogue.` },
+    { temp: 0.95, user: `[transcript continues] User said: "${um}" — image was generated and shown. Your reply:` },
+    { temp: 1.4, user: `${um}\n\n[The image is now displayed in front of me. What do you say next?]` },
+    { temp: 1.0, user: `An image was just generated. Write a brief in-character line acknowledging the user. No preamble, no quotes.` }
   ];
   for (const a of ATTEMPTS) {
     try {

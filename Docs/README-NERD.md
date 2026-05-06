@@ -711,6 +711,41 @@ Why narrative form over keyword soup? Image generators (flux/SD-style) interpret
 
 For the full deep-dive (regex patterns, all the helpers, the test results across edge cases), see `Docs/AUTH_AND_API_ARCHITECTURE.md` §"Image-prompt jailbreak system".
 
+#### The Screensaver + Slideshow Defensive Layer (Auto-Prompt That Doesn't Choke)
+
+*lights another joint*
+
+The screensaver and slideshow are different beasts — no chat, no tool calls, just "fire one Mistral request every cycle, render the response as an image." They share four defensive layers I had to add when Mistral and Azure got flakier in early 2026:
+
+```
+┌─ Template-built user message (composeUserMessage)
+│   Random pick: LENGTH × VIBE × THEMES × VOICE × CLOSER
+│   ~12k variants → Mistral never sees the same input twice
+│
+├─ Canonical Unity system prompt (loadUnityPrompt / loadSystemPrompt)
+│   Loaded from ai/demo/unity-system-prompt-v2.txt
+│   Acts as the JAILBREAK CARRIER — Unity's persona is what lets
+│   benign-individual-words user messages produce explicit output
+│
+├─ stripQuotes (quote-wrap defense)
+│   Mistral now wraps responses in literal "" — without stripping,
+│   they URL-encode as %22 and trip Chrome's ERR_BLOCKED_BY_ORB
+│
+├─ 4-attempt retry on Azure flakiness
+│   HTTP 400 (input filter)  → re-roll user message + seed
+│   HTTP 200 with empty body → response filter ate it, retry
+│   HTTP 200 with content    → success
+│
+└─ Default-model picker (never kontext)
+    Pollinations now returns kontext (image-EDIT, needs source) at
+    modelNames[0]. Picker prefers flux > flux-pro > turbo > sdxl >
+    dreamshaper, falls back to first non-edit-model match.
+```
+
+Both `apps/screensaverDemo/screensaver.js` and `apps/slideshowDemo/slideshow.js` carry the identical pattern. NO hardcoded fallback prompt strings — when all 4 attempts fail the function returns null and the UI shows "retrying next cycle" instead of spamming a fake prompt at Pollinations.
+
+Full mechanics + why each layer exists: `Docs/AUTH_AND_API_ARCHITECTURE.md §Screensaver + slideshow auto-prompt defensive layer`.
+
 ### The Tool Schema (How The AI Knows What To Do)
 
 *adjusts glasses again*

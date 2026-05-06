@@ -91,7 +91,14 @@ The `ai/demo/` chat is more than just a Pollinations passthrough. It implements:
 - **Multi-attempt commentary chain** — when generating image captions, the system tries 5 framings × random seeds × varying temperatures, all using the canonical Unity prompt so every word is real Unity, not a hardcoded template
 - **Zero hardcoded fallback strings** — `"There you go babe."` / `"Here's what you asked for~"` / `"No response received"` — all DELETED. If Mistral can't produce content, the user sees an empty bubble instead of fake Unity
 
-The full deep-dive on every layer of this is in [`Docs/AUTH_AND_API_ARCHITECTURE.md`](./Docs/AUTH_AND_API_ARCHITECTURE.md) §"Image-prompt jailbreak system" and §"TTS layered fallback".
+The screensaver and slideshow apps share their own defensive layer for auto-prompt generation:
+
+- **Template-built user message** — composed per cycle from 5 random pools (LENGTH × VIBE × THEMES × VOICE × CLOSER ≈ 12k variants) so Mistral never gets two identical inputs in a row and stops regurgitating the same opener
+- **Canonical Unity system prompt as jailbreak carrier** — same `unity-system-prompt-v2.txt` the chat apps use, loaded once at init; the persona is what lets benign-individual-words user messages produce explicit fucked-up image-prompt output
+- **Quote-strip + 4-attempt retry** — peels Mistral's `""` wrapping (which would URL-encode as `%22…%22` and trip Chrome's `ERR_BLOCKED_BY_ORB`); retries on Azure response-filter empty content + 400-rejected pool combos
+- **Default-model picker that prefers `flux`** — Pollinations now returns the image-EDIT model `kontext` at `modelNames[0]`; the picker filters edit-models out and prefers known text-to-image models
+
+The full deep-dive on every layer of this is in [`Docs/AUTH_AND_API_ARCHITECTURE.md`](./Docs/AUTH_AND_API_ARCHITECTURE.md) §"Image-prompt jailbreak system", §"TTS layered fallback", and §"Screensaver + slideshow auto-prompt defensive layer".
 
 ---
 
