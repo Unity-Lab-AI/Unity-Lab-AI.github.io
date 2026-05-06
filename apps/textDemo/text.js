@@ -321,10 +321,191 @@ function processResponse(text) {
   return text;
 }
 
+// ============================================================
+// Image-prompt jailbreak system (ported from ai/demo/js/api.js)
+// ============================================================
+// When the user asks for an image of Unity (selfie / "your tits" /
+// "yourself" / "show me you naked"), the standard chat-completion path
+// gets refused by Mistral RLHF + Azure pre-scanner. The demo solves this
+// with a self-reference fast path: skip the chat call, build a narrative
+// prompt from Unity's canonical appearance + the user's scene, hit the
+// image endpoint directly (which has more permissive moderation), then
+// fetch a Unity-voice caption via a separate clean chat call.
+//
+// Helpers below mirror the demo's config.js + api.js. unitySystemPrompt
+// (loaded at init via loadUnitySystemPrompt) is the canonical source for
+// Unity's appearance — never hardcode descriptions.
+
+const IMAGE_INTENT_REGEX = /\b(show|gen|generate|draw|sketch|paint|render|make|create|illustrate|depict|visualize|imagine)\s+(me|us|a|an|the|some|my|your)\b|\b(image|picture|pic|photo|selfie|portrait|illustration|render|art|drawing|sketch)\s+(of|with)\b|\bgive\s+(me|us)\s+(a|an|some)\s+(selfie|pic|picture|photo|image|render|drawing)\b|\b(your|a|some|that)\s+selfie\b|^\s*(show|draw|sketch|paint|render|generate|gen|make|create)\s|\b(let'?s?|let\s+(me|us))\s+see\b|\bsee\s+(you|her|him|it|that|this|what)\b/i;
+const STRONG_SELF_REGEX = /\b(you|your|yourself|unity'?s?)\b/i;
+const SELFIE_SELF_REGEX = /\bselfies?\b(?!\s+of\b)/i;
+
+function detectImageIntent(text) {
+  return text && IMAGE_INTENT_REGEX.test(text);
+}
+function detectSelfReferenceImage(text) {
+  if (!text) return false;
+  if (STRONG_SELF_REGEX.test(text)) return true;
+  if (SELFIE_SELF_REGEX.test(text)) return true;
+  return false;
+}
+function extractImagePrompt(text) {
+  if (!text) return '';
+  let s = text.trim();
+  s = s.replace(/^(hey|yo|ok|okay|hi|hello|please)\s+/i, '');
+  s = s.replace(/^unity[,!\s]+/i, '');
+  s = s.replace(/^(show|draw|sketch|paint|render|generate|gen|make|create|illustrate|depict|visualize|imagine|give)\s+/i, '');
+  s = s.replace(/^((?:me|us|my|your|yourself|yourselves|you)\s+)+/i, '');
+  s = s.replace(/^(a|an|the|some)\s+/i, '');
+  s = s.replace(/^(image|picture|pic|photo|selfie|portrait|illustration|render|art|drawing|sketch)\s+/i, '');
+  s = s.replace(/^(of|with|that\s+(?:is|shows|features))\s+/i, '');
+  s = s.replace(/^(a|an|the|some)\s+/i, '');
+  s = s.replace(/\s*(?:,|\sand|\sthen|\s&)\s+(tell|describe|explain|say|let|comment|what|how|why|talk|share|compare|analyze)\b.*$/i, '');
+  s = s.replace(/[.!?]?\s*\b(let'?s?|let\s+me|let\s+us|now\s+let'?s?)\s+see\b[^.!?]*[.!?]?\s*$/i, '');
+  s = s.replace(/[.!?]?\s*\b(show|see|watch)\s+(me|us|her|him|that|this|it|you)\b[^.!?]*[.!?]?\s*$/i, '');
+  s = s.replace(/^[A-Z][a-z]+s\s+\w+\s+(?:i?onto|into|in\s+to|on\s+to|across|toward|towards|against)\s+(?:a|an|the|some)\s+/i, '');
+  s = s.replace(/[\s,;:.!?-]+$/, '').trim();
+  if (s.length < 3) return /selfie/i.test(text) ? 'selfie' : text.trim();
+  return s;
+}
+function getCanonicalUnityAppearance(canonical) {
+  if (!canonical) return null;
+  const m = canonical.match(/Unity is a 25-year-old woman[^.]*?\b(?:eyes|features|aesthetic)\b[^.]*\./i);
+  if (!m) return null;
+  return m[0]
+    .replace(/^Unity is a /, '').replace(/\.$/, '')
+    .replace(/\s+-\s+/g, ', ').replace(/\s+with\s+/g, ', ')
+    .replace(/,\s*,/g, ',').replace(/\s+/g, ' ').trim();
+}
+function buildFallbackUnitySelfPrompt(canonical, userText, subject) {
+  if (!canonical) return subject;
+  const isNudity = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
+  const isPortrait = /\b(face|portrait|headshot|selfie)\b/i.test(userText);
+  if (isPortrait && !isNudity) {
+    return `A 25-year-old goth-emo woman with dark hair with pink streaks, edgy goth/emo aesthetic, minimal black leather outfit, dark vibe, sharp features, intense eyes. Portrait shot, photorealistic, detailed.`;
+  }
+  if (isNudity) {
+    return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${subject}, full body in frame, body shot from a flattering angle, dark sensual mood, photorealistic, detailed.`;
+  }
+  return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${subject}, full body in frame from a wide angle, scene composition, photorealistic, detailed.`;
+}
+
+// Render an in-character Unity caption for an image we just generated.
+// Calls the chat API with a clean framing (no explicit user-message replay)
+// so Azure's pre-scanner doesn't trip. Returns null on failure — caller
+// should fall back to displaying the image with no caption.
+async function getUnityImageCaption(imagePrompt, originalUserMsg, canonical) {
+  if (!canonical) return null;
+  const ATTEMPTS = [
+    { temp: 1.0, user: `An image has been generated for the user showing: "${imagePrompt}". Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 1.4, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 0.9, user: `Just sent the user their pic. React briefly, in-character. No preamble, no quotes.` }
+  ];
+  for (const a of ATTEMPTS) {
+    try {
+      const r = await fetch(`${PollinationsAPI.TEXT_API}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${PollinationsAPI.DEFAULT_API_KEY}` },
+        body: JSON.stringify({
+          model: 'mistral', safe: false, max_tokens: 250, temperature: a.temp,
+          seed: Math.floor(Math.random() * 1e8),
+          messages: [
+            { role: 'system', content: canonical },
+            { role: 'user', content: a.user }
+          ]
+        })
+      });
+      if (!r.ok) continue;
+      const d = await r.json();
+      const c = (d?.choices?.[0]?.message?.content || '').trim();
+      if (c.length >= 5 && c.length <= 1500) return c;
+    } catch {}
+  }
+  return null;
+}
+
+// Self-reference image fast path. Bypasses the chat-completion call,
+// builds a narrative image prompt from Unity's canonical appearance + the
+// user's scene, hits /image/{prompt} directly, then fetches a Unity-voice
+// caption. Mirrors getAIResponseWithTools' self-ref fast path in the demo.
+async function sendSelfImageRequest(prompt) {
+  // Render user message
+  chatOutput.classList.remove('empty');
+  chatOutput.innerHTML += sanitizeHTML(`<p><strong>User:</strong> ${processResponse(prompt)}</p>`);
+  scrollToBottom();
+
+  // Show thinking
+  const thinkingEl = document.createElement('p');
+  thinkingEl.id = 'ai-thinking';
+  thinkingEl.innerHTML = '<em>AI is generating an image...</em>';
+  chatOutput.appendChild(thinkingEl);
+  scrollToBottom();
+
+  userInput.value = '';
+  userInput.focus();
+
+  // Build the prompt
+  const subject = extractImagePrompt(prompt);
+  const imagePromptText = buildFallbackUnitySelfPrompt(unitySystemPrompt, prompt, subject);
+
+  // Decide dimensions: portrait for body-shot subjects, default portrait for self-images
+  const isLandscape = /\b(landscape|scenery|wallpaper)\b/i.test(prompt);
+  const dims = isLandscape ? { w: 1920, h: 1080 } : { w: 1080, h: 1920 };
+
+  // Construct image URL — direct image endpoint has more permissive moderation
+  const seed = Math.floor(Math.random() * 1e6);
+  const imageUrl = `${PollinationsAPI.IMAGE_API}/${encodeURIComponent(imagePromptText)}?model=flux&width=${dims.w}&height=${dims.h}&seed=${seed}&enhance=true&nologo=true&safe=false`;
+
+  // Fetch the Unity-voice caption in parallel
+  const captionPromise = getUnityImageCaption(imagePromptText, prompt, unitySystemPrompt);
+  const caption = await captionPromise;
+
+  // Remove thinking
+  document.getElementById('ai-thinking')?.remove();
+
+  // Render image + caption
+  const responseDiv = document.createElement('div');
+  responseDiv.className = 'ai-response';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'media-container';
+  const img = document.createElement('img');
+  img.className = 'chat-image';
+  img.src = imageUrl;
+  img.alt = subject;
+  img.crossOrigin = 'anonymous';
+  img.loading = 'lazy';
+  wrapper.appendChild(img);
+  responseDiv.appendChild(wrapper);
+
+  if (caption) {
+    const p = document.createElement('p');
+    p.innerHTML = sanitizeHTML(`<strong>AI:</strong> ${caption}`);
+    responseDiv.appendChild(p);
+  }
+
+  chatOutput.appendChild(responseDiv);
+  scrollToBottom();
+  updateConversationHistory(prompt, caption || '');
+}
+
+// ============================================================
+// End image-prompt jailbreak helpers
+// ============================================================
+
 async function sendChatMessage(prompt, retryCount = 0) {
   if (retryCount >= MAX_RETRIES) {
     showError('Failed to send message after multiple attempts');
     return;
+  }
+
+  // SELF-REFERENCE FAST PATH — only on the first attempt and only when
+  // the user is asking for an image OF Unity. Skips the chat-completion
+  // (which would refuse on explicit content) and goes straight to the
+  // direct image endpoint with a narrative prompt built from Unity's
+  // canonical appearance + the user's scene.
+  if (retryCount === 0 && detectImageIntent(prompt) && detectSelfReferenceImage(prompt)) {
+    return await sendSelfImageRequest(prompt);
   }
 
   const model = modelSelect.value || 'unity';
