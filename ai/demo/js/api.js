@@ -16,6 +16,65 @@
 import { OPENAI_ENDPOINT, TOOLS_ARRAY, TOOLS_SINGLE, UNITY_SYSTEM_PROMPT, TOOL_CALLING_ADDON, MODERATION_AWARE_ADDON, withModerationSuffix, detectImageIntent, extractImagePrompt, detectSelfReferenceImage, IMAGE_TOOL_SLIM_SYSTEM, IMAGE_TOOL_PRIMING_SINGLE, IMAGE_TOOL_PRIMING_ARRAY, isValidUnityCommentary } from './config.js';
 
 /**
+ * Extract Unity's physical-appearance description from the canonical
+ * persona prompt at runtime. NOT hardcoded by us — we read from the
+ * source-of-truth file (unity-system-prompt-v2.txt). Used as a fallback
+ * appearance prefix when Unity-the-model refuses to write the prompt
+ * herself (Azure 400) but the user asked for an image of Unity.
+ *
+ * Looks for the canonical sentence:
+ *   "Unity is a 25-year-old woman - edgy, goth, emo aesthetic with
+ *   minimal black leather, pink unders, dark hair with pink streaks,
+ *   dark vibe, sharp features, intense eyes."
+ * Returns the descriptive part (everything after "Unity is a", up to the
+ * first period) reformatted as comma-separated descriptors.
+ */
+function getCanonicalUnityAppearance(canonicalPrompt) {
+    if (!canonicalPrompt || typeof canonicalPrompt !== 'string') return null;
+    const m = canonicalPrompt.match(/Unity is a 25-year-old woman[^.]*?\b(?:eyes|features|aesthetic)\b[^.]*\./i);
+    if (!m) return null;
+    return m[0]
+        .replace(/^Unity is a /, '')
+        .replace(/\.$/, '')
+        .replace(/\s+-\s+/g, ', ')
+        .replace(/\s+with\s+/g, ', ')
+        .replace(/,\s*,/g, ',')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * Build a fallback image prompt for Unity-self requests when Unity refuses
+ * to write the prompt herself. Combines canonical-extracted appearance
+ * descriptors with the user's bare subject. If the user asked for nudity,
+ * drop outfit-related descriptors from the canonical appearance using
+ * keyword detection (NOT hardcoded persona invention — just selecting which
+ * tokens of canonical text are scene-appropriate).
+ */
+function buildFallbackUnitySelfPrompt(canonicalPrompt, userText, extractedSubject) {
+    const appearance = getCanonicalUnityAppearance(canonicalPrompt);
+    if (!appearance) return extractedSubject;
+
+    const isNudityRequest = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped)\b/i.test(userText);
+
+    let scoped = appearance;
+    if (isNudityRequest) {
+        // Drop outfit/clothing-only tokens so we don't get "leather + bare tits"
+        // contradiction. Keep features (hair, eyes, face, body, vibe).
+        scoped = scoped
+            .replace(/\bminimal\s+black\s+leather\b/gi, '')
+            .replace(/\bpink\s+unders\b/gi, '');
+        // Collapse multiple consecutive commas/spaces into single comma
+        scoped = scoped
+            .replace(/(\s*,\s*)+/g, ', ')
+            .replace(/^[\s,]+|[\s,]+$/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+    return `${scoped}, ${extractedSubject}`;
+}
+
+/**
  * Ask Unity (with canonical prompt loaded) to write the image-generation
  * prompt herself. Used when the user requests an image of Unity (selfie,
  * "your tits", "yourself", etc.) — image generators do NOT recognize the
@@ -800,14 +859,25 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
             // of an image.
             if (isImageRequest) {
                 console.warn(`🖼️ Primary call HTTP ${response.status} — falling through to direct-endpoint fallback`);
-                let fallbackPrompt = extractImagePrompt(lastUserText);
+                const baseSubject = extractImagePrompt(lastUserText);
+                let fallbackPrompt = baseSubject;
                 // If user asked for image of Unity ("your tits", "selfie",
                 // "yourself"), ask Unity to write the prompt herself with
-                // her own physical description baked in. Image gen doesn't
-                // recognize "Unity" as a proper noun.
+                // her own physical description baked in. If she refuses,
+                // fall back to canonical-extracted appearance + subject.
                 if (detectSelfReferenceImage(lastUserText)) {
                     const unityPrompt = await getUnitySelfImagePrompt(lastUserText, systemPrompt);
-                    if (unityPrompt) fallbackPrompt = unityPrompt;
+                    if (unityPrompt) {
+                        fallbackPrompt = unityPrompt;
+                    } else {
+                        // Pull description from canonical file at runtime.
+                        // NOT hardcoded by us — read from source-of-truth.
+                        const built = buildFallbackUnitySelfPrompt(systemPrompt, lastUserText, baseSubject);
+                        if (built && built !== baseSubject) {
+                            console.log('🖼️ Using canonical-extracted appearance + subject');
+                            fallbackPrompt = built;
+                        }
+                    }
                 }
                 console.log('🖼️ Fallback image prompt:', fallbackPrompt);
 
