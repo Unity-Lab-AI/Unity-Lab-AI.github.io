@@ -53,6 +53,36 @@
 - Read PR bodies + `docs/KNOWN-PROBLEMS.md` + all `/docs/redesign/notes-p[12]-*.md`
 - Smoke test before declaring complete
 
+### [~] Redesign demo page + update apps to follow redesign specifications
+**Status:** IN-PROGRESS — 2026-05-06
+**Branch:** `feature/redesign-P3-demo-and-apps` (off `dev-re-design`)
+**User direction (verbatim, LAW #0):**
+> "Create a new feature branch, based on the current branch that is focusing directly on redesigning the actual demo page and updating the apps. Based on the files that were recently redesigned (check latest git commit history) the demo and app pages need updating accordingly- following the redesign specifications."
+
+**Scope:**
+- Create `feature/redesign-P3-demo-and-apps` off `dev-re-design`
+- Redesign `/ai/demo/` (the 8000-line interactive demo) to follow the redesign chrome spec — gothic palette, Trajan Pro / Cormorant Garamond / JetBrains Mono / Inter typography, crimson + bone tokens from `redesign/shared-tokens.css`, drop Bootstrap dep, drop dep on legacy `../../styles.css`
+- Update the 8 app demos (`apps/unityDemo`, `apps/textDemo`, `apps/personaDemo`, `apps/talkingWithUnity`, `apps/helperInterfaceDemo`, `apps/slideshowDemo`, `apps/screensaverDemo`, `apps/oldSiteProject`) to follow redesign specifications via the shared-theme/shared-nav bridge layer
+- Match the GothicNavbar HTML + class names from `redesign/v-d-chrome.jsx` so apps feel like volumes of the same codex
+- Per-app CSS polish where Bootstrap leaks or palette drifts
+- Smoke-test via `py -m http.server`, write notes under `/docs/redesign/notes-p3-*.md`, update `docs/REDESIGN-MIGRATION.md` with P3 status, open PR back into `dev-re-design`
+
+**Reference state (latest commits per `git log --oneline`):**
+- 40b4d53 Fix stale Docs/ path refs after Docs→docs rename
+- 7f212c3 Cross-platform compat: rename Docs→docs and REDESIGN→_archive/redesign-source
+- a4e34c4 Fix: Alfredo→Alfreddo spelling correction
+- 1a9a581 INT-final: redesign-merge integration pass
+- 8891366 Merge PR #45 (P2 — codex pages + design system docs)
+- 6e1cb04 Merge PR #44 (P1 — anchor pages + global chrome)
+
+**OUT of scope on this branch:**
+- Old-stack files unrelated to demo/apps (`/js/`, `/vendor/` core, `/styles.css`, `/styles.min.css`, `/script.min.js`)
+- `/project/` diverged fork
+- `/downloads/` static assets
+- `INT-05`/`INT-06` (PR up to develop/main) — handled separately
+
+---
+
 ### [x] Eliminate Docs/docs and REDESIGN/redesign Windows case collisions
 **Status:** DONE — 2026-05-06
 **User direction (verbatim, LAW #0):**
