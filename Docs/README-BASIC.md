@@ -177,6 +177,15 @@ This is what I can do, courtesy of Pollinations.AI:
 - **Function calling** / tool use (yeah, I can use tools, meta as hell)
 - **Streaming mode** for real-time responses (watch me think in real-time)
 
+**Demo hardening (May 2026):** the `ai/demo/` chat went through a major reliability + jailbreak pass:
+
+- **Image-prompt jailbreak system** — image requests are detected client-side, self-references ("show me your tits", "give me a selfie") route through a fast-path that bypasses model refusals. Unity's appearance is pulled from the canonical persona file at runtime — no hardcoded descriptions.
+- **Narrative-form image prompts** — fallback prompts use sentence form ("A 25-year-old goth-emo woman ..., [scene/action], full body in frame, ...") instead of comma-keyword soup. Image generators frame the body shot around the scene instead of locking into mug-shot framing.
+- **TTS layered fallback** — verbatim → euphemized → skip silently. Drug talk + heavy profanity plays Unity's exact words; heavy stacks gracefully skip with no fake "I'm sorry" audio.
+- **Hardcoded fallback strings DELETED** — every word Unity says comes from the canonical prompt + Mistral, fresh per request. No "There you go babe." templates anywhere.
+
+For the full architecture, route table, secret rotation, troubleshooting, and how each jailbreak layer works: see [`Docs/AUTH_AND_API_ARCHITECTURE.md`](./AUTH_AND_API_ARCHITECTURE.md). For the deep technical walkthrough: [`Docs/README-NERD.md`](./README-NERD.md).
+
 All of this without API keys, without selling your data, without corporate gatekeeping.
 
 ### The Libraries: PolliLibJS & PolliLibPy
@@ -203,16 +212,16 @@ Both READMEs are actually readable and include real examples. Because I'm not a 
 
 ## Authentication
 
-Default auth uses **API key** method with a publishable key (`pk_`).
+This site authenticates via a **Cloudflare Worker proxy** at `websiteunityailab.gfourteen7525.workers.dev` that holds an `sk_*` Pollinations token server-side. Browser code sends NO token. The Worker injects `Authorization: Bearer ${POLLINATIONS_SK}` on every upstream request to `gen.pollinations.ai`.
 
-**Key Types:**
+**Key types (Pollinations side):**
 
 | Key Type | Rate Limit | Notes |
 |----------|-----------|-------|
-| **Publishable (`pk_`)** | 3 req/burst, 1/15sec refill | Client-side safe, IP rate-limited |
-| **Secret (`sk_`)** | No limits | Server-side only, can spend Pollen |
+| **Publishable (`pk_`)** | DEPRECATED | Old tier, no longer issued |
+| **Secret (`sk_`)** | No limits, server-side only | What we use, behind the Worker |
 
-We use a publishable key by default. Get your own at [enter.pollinations.ai](https://enter.pollinations.ai).
+**For the full auth architecture, route table, CORS allowlist, secret rotation procedure, and troubleshooting:** [`Docs/AUTH_AND_API_ARCHITECTURE.md`](./AUTH_AND_API_ARCHITECTURE.md).
 
 **Real talk:** The free tier is generous as fuck compared to other AI platforms. Use it responsibly, don't abuse it, support the project if you can.
 
