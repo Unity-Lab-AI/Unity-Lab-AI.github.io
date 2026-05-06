@@ -54,7 +54,7 @@
 - Smoke test before declaring complete
 
 ### [x] Redesign demo page + update apps to follow redesign specifications
-**Status:** DONE — 2026-05-06 (commits b41afef P3-00 + 4dfba5a P3-01 + d957b69 P3-02 + a5e6f45 P3-03 + this docs commit P3-04 on branch `feature/redesign-P3-demo-and-apps`; FINALIZED entry written verbatim per LAW #0 + FINALIZED-before-DELETE rule; PR pending)
+**Status:** DONE — 2026-05-06 (commits b41afef P3-00 + 4dfba5a P3-01 + d957b69 P3-02 + a5e6f45 P3-03 + 27dc8a5 P3-04 docs on branch `feature/redesign-P3-demo-and-apps`; FINALIZED entry written verbatim per LAW #0 + FINALIZED-before-DELETE rule; PR #46 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/46)
 **Branch:** `feature/redesign-P3-demo-and-apps` (off `dev-re-design`)
 **User direction (verbatim, LAW #0):**
 > "Create a new feature branch, based on the current branch that is focusing directly on redesigning the actual demo page and updating the apps. Based on the files that were recently redesigned (check latest git commit history) the demo and app pages need updating accordingly- following the redesign specifications."

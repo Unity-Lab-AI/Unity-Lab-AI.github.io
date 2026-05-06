@@ -212,7 +212,7 @@ Branched from `dev-re-design` after INT-01..INT-04 landed.
 | P3-03 | Wire `redesign/shared-tokens.css` into all 10 app HTMLs (FOUC fix) | [x] | a5e6f45 — explicit FIRST link before Bootstrap so var(--*) resolves before inline `<style>` parses. Idempotent vs shared-nav.js auto-loader. |
 | P3-04 | Write `/docs/redesign/notes-p3-demo-and-apps.md` | [x] | this commit |
 | P3-05 | Update `docs/REDESIGN-MIGRATION.md` with P3 status table | [x] | this commit |
-| P3-06 | Open PR `feature/redesign-P3-demo-and-apps` → `dev-re-design` | [ ] | pending |
+| P3-06 | Open PR `feature/redesign-P3-demo-and-apps` → `dev-re-design` | [x] | PR #46 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/46 |
 
 ### Smoke-test results (P3 pass, 2026-05-06)
 
