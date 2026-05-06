@@ -642,8 +642,133 @@ function createImageWithRetry(imageData, container) {
 }
 
 // Send message function with tool calling support
+// ============================================================
+// Image-prompt jailbreak (ported from ai/demo/js/api.js)
+// ============================================================
+const HELPER_IMAGE_INTENT_REGEX = /\b(show|gen|generate|draw|sketch|paint|render|make|create|illustrate|depict|visualize|imagine)\s+(me|us|a|an|the|some|my|your)\b|\b(image|picture|pic|photo|selfie|portrait|illustration|render|art|drawing|sketch)\s+(of|with)\b|\bgive\s+(me|us)\s+(a|an|some)\s+(selfie|pic|picture|photo|image|render|drawing)\b|\b(your|a|some|that)\s+selfie\b|^\s*(show|draw|sketch|paint|render|generate|gen|make|create)\s|\b(let'?s?|let\s+(me|us))\s+see\b|\bsee\s+(you|her|him|it|that|this|what)\b/i;
+const HELPER_STRONG_SELF_REGEX = /\b(you|your|yourself|unity'?s?)\b/i;
+const HELPER_SELFIE_SELF_REGEX = /\bselfies?\b(?!\s+of\b)/i;
+
+function helperDetectImageIntent(t) { return t && HELPER_IMAGE_INTENT_REGEX.test(t); }
+function helperDetectSelfRef(t) { return t && (HELPER_STRONG_SELF_REGEX.test(t) || HELPER_SELFIE_SELF_REGEX.test(t)); }
+function helperExtractImagePrompt(text) {
+  if (!text) return '';
+  let s = text.trim();
+  s = s.replace(/^(hey|yo|ok|okay|hi|hello|please)\s+/i, '');
+  s = s.replace(/^unity[,!\s]+/i, '');
+  s = s.replace(/^(show|draw|sketch|paint|render|generate|gen|make|create|illustrate|depict|visualize|imagine|give)\s+/i, '');
+  s = s.replace(/^((?:me|us|my|your|yourself|yourselves|you)\s+)+/i, '');
+  s = s.replace(/^(a|an|the|some)\s+/i, '');
+  s = s.replace(/^(image|picture|pic|photo|selfie|portrait|illustration|render|art|drawing|sketch)\s+/i, '');
+  s = s.replace(/^(of|with|that\s+(?:is|shows|features))\s+/i, '');
+  s = s.replace(/^(a|an|the|some)\s+/i, '');
+  s = s.replace(/\s*(?:,|\sand|\sthen|\s&)\s+(tell|describe|explain|say|let|comment|what|how|why|talk|share|compare|analyze)\b.*$/i, '');
+  s = s.replace(/[.!?]?\s*\b(let'?s?|let\s+me|let\s+us|now\s+let'?s?)\s+see\b[^.!?]*[.!?]?\s*$/i, '');
+  s = s.replace(/[.!?]?\s*\b(show|see|watch)\s+(me|us|her|him|that|this|it|you)\b[^.!?]*[.!?]?\s*$/i, '');
+  s = s.replace(/^[A-Z][a-z]+s\s+\w+\s+(?:i?onto|into|in\s+to|on\s+to|across|toward|towards|against)\s+(?:a|an|the|some)\s+/i, '');
+  s = s.replace(/[\s,;:.!?-]+$/, '').trim();
+  if (s.length < 3) return /selfie/i.test(text) ? 'selfie' : text.trim();
+  return s;
+}
+function helperBuildSelfPrompt(canonical, userText, subject) {
+  if (!canonical) return subject;
+  const isNudity = /\b(naked|nude|topless|bare|tits|breasts|nipples|pussy|cock|cunt|undressed|stripped|asshole|spread|blowjob|oral|sucking|riding|fucking|sex|orgasm|cum|cumming)\b/i.test(userText);
+  const isPortrait = /\b(face|portrait|headshot|selfie)\b/i.test(userText);
+  if (isPortrait && !isNudity) return `A 25-year-old goth-emo woman with dark hair with pink streaks, edgy goth/emo aesthetic, minimal black leather outfit, dark vibe, sharp features, intense eyes. Portrait shot, photorealistic, detailed.`;
+  if (isNudity) return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${subject}, full body in frame, body shot from a flattering angle, dark sensual mood, photorealistic, detailed.`;
+  return `A 25-year-old goth-emo woman with dark hair with pink streaks and edgy goth/emo aesthetic, ${subject}, full body in frame from a wide angle, scene composition, photorealistic, detailed.`;
+}
+async function helperGetCaption(imagePrompt, canonical) {
+  if (!canonical) return null;
+  const ATTEMPTS = [
+    { temp: 1.0, user: `An image has been generated for the user showing: "${imagePrompt}". Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 1.4, user: `You just sent the user a pic they asked for. Drop a brief in-character reaction. No preamble, no quotes.` },
+    { temp: 0.9, user: `Just sent the user their pic. React briefly, in-character. No preamble, no quotes.` }
+  ];
+  for (const a of ATTEMPTS) {
+    try {
+      const r = await fetch(`${PollinationsAPI.TEXT_API}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${PollinationsAPI.DEFAULT_API_KEY}` },
+        body: JSON.stringify({
+          model: 'mistral', safe: false, max_tokens: 250, temperature: a.temp,
+          seed: Math.floor(Math.random() * 1e8),
+          messages: [{ role: 'system', content: canonical }, { role: 'user', content: a.user }]
+        })
+      });
+      if (!r.ok) continue;
+      const d = await r.json();
+      const c = (d?.choices?.[0]?.message?.content || '').trim();
+      if (c.length >= 5 && c.length <= 1500) return c;
+    } catch {}
+  }
+  return null;
+}
+
+async function helperSendSelfImageRequest(message) {
+  const userDiv = document.createElement("div");
+  userDiv.className = "message user-message";
+  const userAvatar = document.createElement("div");
+  userAvatar.className = "message-avatar";
+  userAvatar.innerHTML = `<img src="https://www.gravatar.com/avatar/?d=mp" alt="User">`;
+  const userContent = document.createElement("div");
+  userContent.className = "message-content";
+  userContent.innerHTML = processMessage(message);
+  userDiv.appendChild(userAvatar);
+  userDiv.appendChild(userContent);
+  chatBox.appendChild(userDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  const subject = helperExtractImagePrompt(message);
+  const canonical = PollinationsAPI.UNITY_SYSTEM_PROMPT;
+  const imagePromptText = helperBuildSelfPrompt(canonical, message, subject);
+  const isLandscape = /\b(landscape|scenery|wallpaper)\b/i.test(message);
+  const dims = isLandscape ? { w: 1920, h: 1080 } : { w: 1080, h: 1920 };
+  const seed = Math.floor(Math.random() * 1e6);
+  const imageUrl = `${PollinationsAPI.IMAGE_API}/${encodeURIComponent(imagePromptText)}?model=flux&width=${dims.w}&height=${dims.h}&seed=${seed}&enhance=true&nologo=true&safe=false`;
+
+  const caption = await helperGetCaption(imagePromptText, canonical);
+
+  const aiDiv = document.createElement("div");
+  aiDiv.className = "message ai-message";
+  const aiAvatar = document.createElement("div");
+  aiAvatar.className = "message-avatar";
+  aiAvatar.innerHTML = `<img src="https://www.gravatar.com/avatar/?d=identicon" alt="AI">`;
+  const aiContent = document.createElement("div");
+  aiContent.className = "message-content";
+
+  const imgEl = document.createElement('img');
+  imgEl.src = imageUrl;
+  imgEl.alt = subject;
+  imgEl.className = 'chat-image';
+  imgEl.crossOrigin = 'anonymous';
+  imgEl.loading = 'lazy';
+  imgEl.style.maxWidth = '100%';
+  imgEl.style.borderRadius = '8px';
+  aiContent.appendChild(imgEl);
+  if (caption) {
+    const captionP = document.createElement('p');
+    captionP.textContent = caption;
+    aiContent.appendChild(captionP);
+  }
+
+  aiDiv.appendChild(aiAvatar);
+  aiDiv.appendChild(aiContent);
+  chatBox.appendChild(aiDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+// ============================================================
+// End jailbreak helpers
+// ============================================================
+
 async function sendMessage(message) {
   console.log('📨 [SEND] Starting sendMessage:', message.substring(0, 50) + '...');
+
+  // Self-reference image fast path — bypasses chat-completion which would
+  // refuse on explicit content.
+  if (helperDetectImageIntent(message) && helperDetectSelfRef(message)) {
+    return await helperSendSelfImageRequest(message);
+  }
 
   const input = document.getElementById("chat-input");
   let finalMessage = message;
