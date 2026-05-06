@@ -248,26 +248,22 @@ All parameters from the official API documentation are fully supported:
 
 ## ✅ Authentication Methods
 
-All three authentication methods from the official API are supported:
+API key authentication is supported (per official docs):
 
-| Method | Use Case | Python | JavaScript | unityailab.com production |
-|--------|----------|--------|------------|---------------------------|
-| **Worker proxy + sk_** | Static frontend sites (THIS SITE) | n/a (Python is server-side) | ✅ Built into `PROXY_BASE` constant | ✅ ACTIVE — auth handled by Cloudflare Worker |
-| **Bearer Token** | Backend services | ✅ `bearer_token` parameter | ✅ `bearerToken` option | n/a |
-| **Referrer-based** | *(legacy — deprecated 2026)* Web apps | ✅ `referrer` parameter (kept for compat) | ✅ `referrer` option (kept for compat, defaults to empty string) | ❌ NO — site doesn't use it |
-| **Anonymous** | No auth required | ✅ Default mode | ✅ Default mode | n/a |
+| Key Type | Use Case | Python | JavaScript |
+|----------|----------|--------|------------|
+| **Publishable (`pk_`)** | Client-side apps | ✅ `api_key` parameter | ✅ `apiKey` option |
+| **Secret (`sk_`)** | Backend services | ✅ `api_key` parameter | ✅ `apiKey` option |
 
-**Token Source:** https://enter.pollinations.ai/ (replaces the retired `auth.pollinations.ai` portal as of 2026)
+**Get API Key:** https://enter.pollinations.ai
 
 **Implementation:**
-- ✅ Python: `pollylib.py::__init__(referrer=..., bearer_token=...)` *(referrer kept for compat; new Pollinations API prefers Bearer tokens)*
-- ✅ JavaScript: `new PollinationsAPI({referrer: ..., bearerToken: ...})` *(referrer defaults to empty; production unityailab.com routes through Cloudflare Worker proxy holding sk_ server-side)*
+- ✅ Python: `PollinationsAPI(api_key="pk_...")`
+- ✅ JavaScript: `new PollinationsAPI({apiKey: "pk_..."})`
 
-**unityailab.com production auth path:**
-- Browser → `https://websiteunityailab.gfourteen7525.workers.dev/text/openai`
-- Worker injects `Authorization: Bearer sk_*` (from `POLLINATIONS_SK` Cloudflare Secret)
-- Worker forwards to `https://gen.pollinations.ai/v1/chat/completions`
-- Browser never sees the token. Static-site-safe by design.
+**Auth Methods:**
+- Header: `Authorization: Bearer YOUR_API_KEY`
+- Query param: `?key=YOUR_API_KEY`
 
 ---
 
@@ -427,8 +423,7 @@ Both libraries include comprehensive testing frameworks:
 ## 📝 References
 
 - **Official API Documentation:** https://github.com/pollinations/pollinations/blob/master/APIDOCS.md
-- **Auth Dashboard (current):** https://enter.pollinations.ai/ *(replaces the retired auth.pollinations.ai portal)*
-- **API Reference (current):** https://enter.pollinations.ai/api/docs *(redirects to gen.pollinations.ai/docs)*
+- **Auth Dashboard:** https://auth.pollinations.ai
 - **Pollinations.ai:** https://pollinations.ai
 
 ---
