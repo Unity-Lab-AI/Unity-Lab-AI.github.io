@@ -1,0 +1,157 @@
+/* Codex shared chrome — mast, cover, section bands, eof.
+   Used by: services (.sV1-*), projects (.pV1-*), ai (.aiV1-*), apps (.apV1-*).
+   Each page brings its own grid styles; this just centralizes the file-folio
+   chrome so they all feel like volumes of the same codex.
+
+   Usage: include AFTER about-v2.css and BEFORE the page-specific css.
+
+   To opt a page in, scope its root with class "codex" and use codex-* utility
+   classes. Existing pages (services-v1) keep their per-page prefixed classes;
+   we'll alias the shared selectors below so we don't have to rewrite them. */
+
+/* ------------------------------------------------------------ canvas frame */
+.codex {
+  background: #030001;
+  color: var(--light-grey);
+  font-family: var(--font-body);
+  position: relative;
+  overflow: hidden;
+}
+.codex::before, .codex::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, transparent 0%, rgba(220,20,60,0.35) 8%, rgba(220,20,60,0.35) 92%, transparent 100%);
+  pointer-events: none;
+}
+.codex::before { left: 56px; }
+.codex::after  { right: 56px; }
+
+/* ------------------------------------------------------------ classified mast */
+.codex-mast {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 80px;
+  border-bottom: 1px solid rgba(220,20,60,0.3);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 4px;
+  color: var(--bone); text-transform: uppercase;
+  background: rgba(8,2,3,0.6);
+  flex-wrap: wrap; gap: 8px;
+}
+.codex-mast-classification { color: var(--crimson-red); font-weight: 700; }
+
+.codex-meta {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+  padding: 22px 80px 28px;
+  border-bottom: 1px solid rgba(220,20,60,0.2);
+  font-family: var(--font-mono); font-size: 11px;
+}
+.codex-meta dt {
+  color: var(--muted-grey); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 6px; font-size: 10px;
+}
+.codex-meta dd { color: var(--bone); font-size: 13px; }
+
+/* ------------------------------------------------------------ cover */
+.codex-cover {
+  position: relative;
+  padding: 110px 120px 96px;
+  text-align: center;
+  border-bottom: 1px solid rgba(220,20,60,0.35);
+}
+.codex-cover-fileno {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 6px;
+  color: var(--crimson-red); margin-bottom: 32px; text-transform: uppercase;
+}
+.codex-cover h1 {
+  font-family: var(--font-display); font-size: 88px; line-height: 0.95;
+  color: var(--white); font-weight: 700; letter-spacing: 2px;
+  white-space: pre-line; margin: 0 0 36px;
+  text-shadow: 0 0 50px rgba(220,20,60,0.4);
+}
+.codex-cover-rule {
+  width: 80px; height: 1px; background: var(--crimson-red);
+  margin: 0 auto 36px;
+}
+.codex-cover-lede {
+  font-family: 'Cormorant Garamond', serif; font-size: 24px; line-height: 1.7;
+  color: var(--bone); font-style: italic;
+  max-width: 800px; margin: 0 auto;
+}
+.codex-stamp {
+  position: absolute;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 13px; letter-spacing: 4px;
+  color: var(--crimson-red);
+  border: 2px solid var(--crimson-red);
+  padding: 10px 18px;
+  background: rgba(220,20,60,0.05);
+  z-index: 2;
+}
+.codex-stamp-tr { top: 60px; right: 100px; transform: rotate(8deg); }
+.codex-stamp-bl { bottom: 60px; left: 100px; transform: rotate(-6deg); }
+
+/* ------------------------------------------------------------ section + band */
+.codex-section {
+  padding: 80px 120px 88px;
+  border-bottom: 1px solid rgba(220,20,60,0.2);
+}
+.codex-section:last-of-type { border-bottom: none; }
+.codex-band {
+  display: flex; align-items: baseline; justify-content: space-between;
+  border-top: 2px solid var(--crimson-red);
+  border-bottom: 1px solid rgba(220,20,60,0.4);
+  padding: 14px 0;
+  margin-bottom: 40px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 4px;
+  color: var(--bone); text-transform: uppercase;
+  flex-wrap: wrap; gap: 8px;
+}
+.codex-band-num { color: var(--crimson-red); font-weight: 700; }
+.codex-band-name {
+  font-family: var(--font-display); font-size: 16px; letter-spacing: 4px;
+  color: var(--white); font-weight: 700;
+}
+
+.codex-section-head { margin-bottom: 32px; }
+.codex-h {
+  font-family: var(--font-display); font-size: 52px; font-weight: 700;
+  color: var(--white); letter-spacing: 1.5px; line-height: 1.05;
+  text-shadow: 0 0 30px rgba(220,20,60,0.25);
+  margin: 0 0 18px;
+}
+.codex-section-lede {
+  font-family: 'Cormorant Garamond', serif; font-size: 21px; line-height: 1.6;
+  color: var(--bone); font-style: italic; max-width: 880px;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ eof footer band */
+.codex-eof {
+  padding: 24px 80px;
+  border-top: 1px solid rgba(220,20,60,0.3);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+  background: rgba(8,2,3,0.6);
+  flex-wrap: wrap; gap: 8px;
+}
+.codex-eof strong { color: var(--crimson-red); font-weight: 700; }
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 1100px) {
+  .codex-cover { padding: 80px 56px 70px; }
+  .codex-cover h1 { font-size: 64px; }
+  .codex-section { padding: 60px 56px 64px; }
+  .codex-mast, .codex-meta, .codex-eof { padding-left: 56px; padding-right: 56px; }
+  .codex-meta { grid-template-columns: repeat(2, 1fr); }
+  .codex::before { left: 28px; }
+  .codex::after  { right: 28px; }
+}
+@media (max-width: 700px) {
+  .codex-cover h1 { font-size: 44px; }
+  .codex-h { font-size: 36px; }
+  .codex-stamp-tr { top: 20px; right: 30px; font-size: 11px; padding: 6px 10px; }
+  .codex-stamp-bl { bottom: 20px; left: 30px; font-size: 11px; padding: 6px 10px; }
+  .codex-mast { padding: 14px 24px; font-size: 9px; letter-spacing: 2px; }
+  .codex-meta { padding: 18px 24px; grid-template-columns: 1fr; gap: 14px; }
+  .codex-section { padding: 48px 24px; }
+  .codex-eof { padding: 18px 24px; flex-direction: column; gap: 8px; text-align: center; }
+}

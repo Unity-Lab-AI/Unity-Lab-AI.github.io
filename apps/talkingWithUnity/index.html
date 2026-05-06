@@ -1,9 +1,19 @@
 <!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unity Voice Lab – System Check</title>
+
+    <!-- Redesign tokens (palette + fonts) — load FIRST so var(--primary-black) etc. resolve before any inline styles parse -->
+    <link rel="stylesheet" href="../../redesign/shared-tokens.css">
 
     <!-- Bootstrap CSS -->
     <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -15,8 +25,8 @@
     <link rel="stylesheet" href="../shared-theme.css">
 
     <!-- App-specific styles -->
-    <link rel="stylesheet" href="style.css?v=20240606" />
-    <link rel="stylesheet" href="./styleAI.css?v=20240606" />
+    <link rel="stylesheet" href="style.css?v=20241217f" />
+    <link rel="stylesheet" href="./styleAI.css?v=20241217f" />
 
     <style>
         body {
@@ -161,11 +171,83 @@
             border-radius: 4px;
             font-family: 'Courier New', monospace;
         }
+
+        /* Headphones Mode Toggle */
+        .headphones-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 15px 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(220, 20, 60, 0.2);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--dark-grey);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            border-radius: 26px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--light-grey);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--gradient-red);
+            border-color: var(--crimson-red);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(24px);
+            background-color: var(--white);
+        }
+
+        .toggle-label {
+            font-family: 'Trajan Pro', serif;
+            font-size: 1rem;
+            color: var(--white);
+        }
+
+        .toggle-hint {
+            font-family: 'Trajan Pro', serif;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            opacity: 0.7;
+        }
     </style>
 
     <noscript>
-        <link rel="stylesheet" href="./style.css?v=20240606" />
-        <link rel="stylesheet" href="./styleAI.css?v=20240606" />
+        <link rel="stylesheet" href="./style.css?v=20241217" />
+        <link rel="stylesheet" href="./styleAI.css?v=20241217" />
     </noscript>
 </head>
 <body class="no-js" data-app-state="landing">
@@ -324,6 +406,14 @@
         </div>
 
         <div class="landing-actions surface-card action-bar">
+            <div class="headphones-toggle">
+                <label class="toggle-switch" title="Enable if using headphones - Unity will listen while speaking. Disable for speakers to prevent Unity hearing herself.">
+                    <input type="checkbox" id="headphonesMode" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">🎧 Headphones Mode</span>
+                <span class="toggle-hint">(Unity listens while speaking)</span>
+            </div>
             <button id="launch-app" class="primary" type="button" disabled aria-disabled="true">Talk to Unity</button>
             <button id="recheck-dependencies" class="ghost" type="button">Check again</button>
         </div>
@@ -337,18 +427,18 @@
                 </button>
             </header>
             <main class="layout" aria-live="polite">
-                <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true">
+                <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true" title="Ask Unity to generate an image">
                     <img id="hero-image" alt="" loading="lazy" decoding="async" />
                 </figure>
                 <section class="voice-stage" role="group" aria-label="Voice activity monitors">
-                    <article class="voice-circle ai" data-role="ai" aria-label="Unity is idle">
+                    <button id="muteUnityBtn" class="voice-circle ai" data-role="ai" data-muted="false" aria-label="Unity is idle" title="Click to mute/unmute Unity's voice">
                         <div class="pulse-ring"></div>
-                        <span class="sr-only">Unity</span>
-                    </article>
-                    <article class="voice-circle user" data-role="user" aria-label="Microphone is muted">
+                        <span class="mute-icon">🔊</span>
+                    </button>
+                    <button id="muteMicBtn" class="voice-circle user" data-role="user" data-muted="true" aria-label="Microphone is muted" title="Click to mute/unmute your microphone">
                         <div class="pulse-ring"></div>
-                        <span class="sr-only">You</span>
-                    </article>
+                        <span class="mute-icon">🔇</span>
+                    </button>
                 </section>
             </main>
         </div>
@@ -367,9 +457,9 @@
     <script src="index.js" defer></script>
 
     <!-- Landing Page Logic -->
-    <script src="landing.js?v=20240606" defer></script>
+    <script src="landing.js?v=20251219" defer></script>
 
     <!-- Voice Experience Bundle -->
-    <script src="./app.js?v=20240606" defer></script>
+    <script src="./app.js?v=20251219" defer></script>
 </body>
 </html>

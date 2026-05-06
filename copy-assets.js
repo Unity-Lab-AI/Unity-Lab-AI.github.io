@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Copy Additional Assets to Dist
  * Uses BLACKLIST approach - copies everything EXCEPT excluded items
  * Vite handles HTML files, this copies all other assets
@@ -27,6 +35,9 @@ const EXCLUDE = [
   'copy-assets.js',
   'cache-bust.js',
   'generate-sitemap.js',
+  
+  // Scripts folder (build/dev tools, not needed in production)
+  'scripts',
   '.gitignore',
   '.gitattributes',
   '.eslintrc.js',
@@ -34,10 +45,9 @@ const EXCLUDE = [
   'tsconfig.json',
   'jsconfig.json',
 
-  // Documentation (not needed in production)
+  // Documentation (README stays out, but Docs folder deploys for prompts)
   'CLAUDE.md',
   'README.md',
-  'Docs',
 
   // Archived/legacy content (not needed in production)
   'Archived',
@@ -80,7 +90,9 @@ function shouldExclude(itemPath, itemName) {
   }
 
   // Check if it's a hidden file/folder (starts with .)
-  if (itemName.startsWith('.') && itemName !== '.htaccess' && itemName !== '_headers') {
+  // Allow .htaccess, _headers, .nojekyll, and .claude.zip (download file)
+  const allowedDotFiles = ['.htaccess', '_headers', '.nojekyll', '.claude.zip'];
+  if (itemName.startsWith('.') && !allowedDotFiles.includes(itemName)) {
     return true;
   }
 

@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Streaming Mode (SSE) - Real-time streaming responses
 Implements the Streaming Mode section from the TODO list
 
@@ -38,7 +46,7 @@ class StreamingMode(PollinationsAPI):
         Yields:
             Text chunks as they are generated
         """
-        url = f"{self.TEXT_API}/openai"
+        url = self._get_url_with_key(self.TEXT_API)
 
         payload = {
             "model": model,
@@ -176,9 +184,9 @@ class StreamingMode(PollinationsAPI):
             List of events from the feed
         """
         if feed_type == "text":
-            feed_url = f"{self.TEXT_API}/feed"
+            feed_url = self._get_url_with_key(f"{self.BASE_API}/text/feed")
         elif feed_type == "image":
-            feed_url = f"{self.IMAGE_API}/feed"
+            feed_url = self._get_url_with_key(f"{self.BASE_API}/image/feed")
         else:
             return [{"error": "Invalid feed type. Use 'text' or 'image'"}]
 

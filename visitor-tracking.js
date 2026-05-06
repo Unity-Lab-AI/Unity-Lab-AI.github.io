@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Visitor Tracking Utility
  * Handles unique visitor tracking via UnityAILab API
  *
@@ -15,6 +23,22 @@ const VisitorTracking = (() => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const API_URL = isLocalhost ? '/api/visitors' : 'https://users.unityailab.com/api/visitors';
     const UID_KEY = 'visitor_uid';
+
+    /**
+     * Create timeout signal with browser fallback
+     * AbortSignal.timeout not supported in Safari < 15.4 / Firefox < 90
+     * @param {number} ms - Timeout in milliseconds
+     * @returns {AbortSignal} Signal that aborts after timeout
+     */
+    function createTimeoutSignal(ms) {
+        if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+            return AbortSignal.timeout(ms);
+        }
+        // Fallback for older browsers - manual AbortController + setTimeout
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), ms);
+        return controller.signal;
+    }
 
     /**
      * Get or create visitor UID
@@ -81,7 +105,7 @@ const VisitorTracking = (() => {
                     uid: uid,
                     page: page
                 }),
-                signal: AbortSignal.timeout(5000) // 5 second timeout
+                signal: createTimeoutSignal(5000) // 5 second timeout
             });
 
             if (!response.ok) {
@@ -99,10 +123,12 @@ const VisitorTracking = (() => {
 
             return data;
         } catch (error) {
+            // Silently handle tracking failures - this is expected when running locally
+            // or when the tracking server is unavailable
             if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-                console.error('VisitorTracking: Request timeout');
+                console.debug('VisitorTracking: Request timeout (server unavailable)');
             } else {
-                console.error('VisitorTracking: Tracking failed:', error.message);
+                console.debug('VisitorTracking: Tracking unavailable -', error.message);
             }
             return null;
         }
@@ -155,7 +181,7 @@ const VisitorTracking = (() => {
         try {
             const response = await fetch(`${API_URL}?page=${encodeURIComponent(page)}`, {
                 method: 'GET',
-                signal: AbortSignal.timeout(5000) // 5 second timeout
+                signal: createTimeoutSignal(5000) // 5 second timeout
             });
 
             if (!response.ok) {
@@ -201,7 +227,7 @@ const VisitorTracking = (() => {
                 try {
                     const response = await fetch(`${API_URL}?page=${encodeURIComponent(page)}`, {
                         method: 'GET',
-                        signal: AbortSignal.timeout(5000)
+                        signal: createTimeoutSignal(5000)
                     });
 
                     if (response.ok) {

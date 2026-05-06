@@ -1,9 +1,19 @@
 <!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unity Chat Interface - Unity AI Lab</title>
+
+  <!-- Redesign tokens (palette + fonts) — load FIRST so var(--primary-black) etc. resolve before any inline styles parse -->
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
 
   <!-- Bootstrap CSS -->
   <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -500,7 +510,7 @@
     }
 
     /* Model Select */
-    .persona-select, .model-select {
+    .persona-select, .model-select, .image-model-select {
       background: #151515;
       border: 1px solid rgba(220, 20, 60, 0.3);
       border-radius: 8px;
@@ -514,21 +524,26 @@
       background-repeat: no-repeat;
       background-position: right 10px center;
       background-size: 1.2em;
-      min-width: 200px;
-      max-width: 300px;
-      width: 100%;
+      min-width: 150px;
+      max-width: 200px;
+      width: auto;
       transition: all 0.3s ease;
     }
 
-    .persona-select:hover, .model-select:hover {
+    .persona-select:hover, .model-select:hover, .image-model-select:hover {
       border-color: #dc143c;
       box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
     }
 
-    .persona-select:focus, .model-select:focus {
+    .persona-select:focus, .model-select:focus, .image-model-select:focus {
       outline: none;
       border-color: #dc143c;
       box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.5);
+    }
+
+    .persona-select option, .model-select option, .image-model-select option {
+      background: #151515;
+      color: #e0e0e0;
     }
 
     /* Image Container */
@@ -817,6 +832,9 @@
         <button id="nav-right" class="nav-btn" title="Show code panel" onclick="toggleView('code')">➡️</button>
       </div>
       <div class="menu-controls">
+        <select class="image-model-select" title="Select Image model">
+          <option value="flux" selected>Flux (Default)</option>
+        </select>
         <select class="model-select" title="Select AI model">
           <option value="unity" selected>Unity AI</option>
           <option value="evil">Evil Mode</option>

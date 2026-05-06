@@ -1,0 +1,1549 @@
+Open SearchSearch Keyboard Shortcut:CTRL⌃ k
+
+  *
+    Introduction
+
+  *
+
+    Close Group
+    Quick Start
+
+      o
+        Image Generation
+
+      o
+        Text Generation
+
+      o
+        Simple Text Endpoint
+
+      o
+        Streaming
+
+      o
+        Model Discovery
+
+  *
+    Authentication
+
+  *
+    API
+      o
+
+        Close Group
+        gen.pollinations.ai
+
+          +
+            /v1/models
+            HTTP Method:  GET
+
+          +
+            /image/models
+            HTTP Method:  GET
+
+          +
+            /text/models
+            HTTP Method:  GET
+
+          +
+            /v1/chat/completions
+            HTTP Method:  POST
+
+          +
+            /text/{prompt}
+            HTTP Method:  GET
+
+          +
+            /image/{prompt}
+            HTTP Method:  GET
+
+  *
+    /api-keys/{id}/update
+    HTTP Method:  POST
+
+Open API Client <https://client.scalar.com/?
+url=https%3A%2F%2Fenter.pollinations.ai%2Fapi%2Fdocs%2Fopen-
+api%2Fgenerate-schema&integration=hono&utm_source=api-
+reference&utm_medium=button&utm_campaign=sidebar>
+Powered by Scalar <https://www.scalar.com/>
+
+v0.3.0
+OAS 3.1.0
+
+
+Pollinations.AI API
+
+Download OpenAPI Document json
+
+Download OpenAPI Document yaml
+
+Documentation for |gen.pollinations.ai| - the Pollinations.AI API gateway.
+
+📝 Edit docs <https://github.com/pollinations/pollinations/edit/master/
+enter.pollinations.ai/src/routes/docs.ts>
+
+
+    Quick Start
+
+Get your API key at https://enter.pollinations.ai <https://
+enter.pollinations.ai/>
+
+
+      Image Generation
+
+|curl 'https://gen.pollinations.ai/image/a%20cat?model=flux' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+
+|
+
+
+      Text Generation
+
+|curl 'https://gen.pollinations.ai/v1/chat/completions' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"model": "openai", "messages": [{"role": "user", "content": "Hello"}]}'
+
+|
+
+*Note:* |gemini| model has |code_execution|, |google_search|, |
+url_context| tools enabled by default. Pass your own |tools| array to
+override.
+
+
+      Simple Text Endpoint
+
+|curl 'https://gen.pollinations.ai/text/hello?key=YOUR_API_KEY'
+
+|
+
+
+      Streaming
+
+|curl 'https://gen.pollinations.ai/v1/chat/completions' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"model": "openai", "messages": [{"role": "user", "content": "Write a poem"}], "stream": true}' \
+  --no-buffer
+
+|
+
+
+      Model Discovery
+
+*Always check available models before testing:*
+
+  * *Image models:* /image/models <https://gen.pollinations.ai/image/models>
+  * *Text models:* /v1/models <https://gen.pollinations.ai/v1/models>
+
+
+    Authentication
+
+*Two key types:*
+
+  * *Publishable Keys (|pk_|):* Client-side safe, IP rate-limited (3
+    req/burst, 1/15sec refill)
+  * *Secret Keys (|sk_|):* Server-side only, no rate limits, can spend
+    Pollen
+
+*Auth methods:*
+
+ 1. Header: |Authorization: Bearer YOUR_API_KEY|
+ 2. Query param: |?key=YOUR_API_KEY|
+
+Server
+
+Server:https://gen.pollinations.ai
+
+
+    AuthenticationRequired
+
+Selected Auth Type: bearerAuth
+
+API key from enter.pollinations.ai dashboard
+Bearer Token
+
+:
+
+Show Password
+
+Client Libraries
+
+Shell
+
+Ruby
+
+Node.js
+
+PHP
+
+Python
+
+More Select from all clients
+
+Shell Curl
+
+
+gen.pollinations.ai
+
+​
+
+Copy link
+
+Generate text, images, and videos using AI models
+
+gen.pollinations.ai Operations
+
+  * get/v1/models
+  * get/image/models
+  * get/text/models
+  * post/v1/chat/completions
+  * get/text/{prompt}
+  * get/image/{prompt}
+
+
+/v1/models
+
+​
+
+Copy link
+
+Get available text models (OpenAI-compatible).
+
+Responses
+
+  *
+
+    200
+
+    Success
+    application/json
+
+  *
+
+    500
+
+    Oh snap, something went wrong on our end. We're on it!
+    application/json
+
+Request Example forget/v1/models
+Shell Curl
+
+|curl https://gen.pollinations.ai/v1/models \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+|
+
+Test Request(get /v1/models)
+
+Status: 200
+
+Status: 500
+
+Show Schema
+
+|[
+  {
+    "name": "string",
+    "description": "string",
+    "tier": "anonymous",
+    "community": true,
+    "aliases": [
+      "string"
+    ],
+    "input_modalities": [
+      "text"
+    ],
+    "output_modalities": [
+      "text"
+    ],
+    "tools": true,
+    "vision": true,
+    "audio": true,
+    "maxInputChars": 1,
+    "reasoning": true,
+    "voices": [
+      "string"
+    ],
+    "uncensored": true,
+    "supportsSystemMessages": true
+  }
+]|
+
+Success
+
+
+/image/models
+
+​
+
+Copy link
+
+Get a list of available image generation models with pricing,
+capabilities, and metadata. Use this endpoint to discover which models
+are available and their costs before making generation requests.
+Response includes |aliases| (alternative names you can use), pricing per
+image, and supported modalities.
+
+Responses
+
+  *
+
+    200
+
+    Success
+    application/json
+
+  *
+
+    500
+
+    Oh snap, something went wrong on our end. We're on it!
+    application/json
+
+Request Example forget/image/models
+Shell Curl
+
+|curl https://gen.pollinations.ai/image/models \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+|
+
+Test Request(get /image/models)
+
+Status: 200
+
+Status: 500
+
+Show Schema
+
+|[
+  {
+    "name": "string",
+    "aliases": [
+      "string"
+    ],
+    "pricing": {
+      "input_token_price": 1,
+      "output_token_price": 1,
+      "cached_token_price": 1,
+      "image_price": 1,
+      "audio_input_price": 1,
+      "audio_output_price": 1,
+      "currency": "pollen"
+    },
+    "description": "string",
+    "input_modalities": [
+      "string"
+    ],
+    "output_modalities": [
+      "string"
+    ],
+    "tools": true,
+    "reasoning": true,
+    "context_window": 1,
+    "voices": [
+      "string"
+    ],
+    "is_specialized": true
+  }
+]|
+
+Success
+
+
+/text/models
+
+​
+
+Copy link
+
+Get a list of available text generation models with pricing,
+capabilities, and metadata. Use this endpoint to discover which models
+are available and their costs before making generation requests.
+Response includes |aliases| (alternative names you can use), token
+pricing, supported modalities (text, image, audio), and capabilities
+(tools, reasoning).
+
+Responses
+
+  *
+
+    200
+
+    Success
+    application/json
+
+  *
+
+    500
+
+    Oh snap, something went wrong on our end. We're on it!
+    application/json
+
+Request Example forget/text/models
+Shell Curl
+
+|curl https://gen.pollinations.ai/text/models \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+|
+
+Test Request(get /text/models)
+
+Status: 200
+
+Status: 500
+
+Show Schema
+
+|[
+  {
+    "name": "string",
+    "aliases": [
+      "string"
+    ],
+    "pricing": {
+      "input_token_price": 1,
+      "output_token_price": 1,
+      "cached_token_price": 1,
+      "image_price": 1,
+      "audio_input_price": 1,
+      "audio_output_price": 1,
+      "currency": "pollen"
+    },
+    "description": "string",
+    "input_modalities": [
+      "string"
+    ],
+    "output_modalities": [
+      "string"
+    ],
+    "tools": true,
+    "reasoning": true,
+    "context_window": 1,
+    "voices": [
+      "string"
+    ],
+    "is_specialized": true
+  }
+]|
+
+Success
+
+
+/v1/chat/completions
+
+​
+
+Copy link
+
+OpenAI-compatible chat completions endpoint.
+
+*Legacy endpoint:* |/openai| (deprecated, use |/v1/chat/completions|
+instead)
+
+*Authentication (Secret Keys Only):*
+
+Include your API key in the |Authorization| header as a Bearer token:
+
+|Authorization: Bearer YOUR_API_KEY|
+
+API keys can be created from your dashboard at enter.pollinations.ai.
+Secret keys provide the best rate limits and can spend Pollen.
+
+Body
+application/json
+
+  *
+    messages
+
+    Copy link to messages
+
+    Type: array object[]
+    required
+
+    Show Child Attributesfor messages
+
+  *
+    audio
+
+    Copy link to audio
+
+    Type: object
+
+    Show Child Attributesfor audio
+
+  *
+    frequency_penalty
+
+    Copy link to frequency_penalty
+
+    Type: number
+    min:  
+    -2
+    max:  
+    2
+    default: 
+    0nullable
+  *
+    function_call
+
+    Copy link to function_call
+
+    Any ofstring
+
+      o
+        Type: stringenum
+          +
+            none
+          +
+            auto
+  *
+    functions
+
+    Copy link to functions
+
+    Type: array object[]1…128
+
+    Show Child Attributesfor functions
+
+  *
+    logit_bias
+
+    Copy link to logit_bias
+
+    Type: object
+    default: 
+    nullnullable
+
+    Show Child Attributesfor logit_bias
+
+  *
+    logprobs
+
+    Copy link to logprobs
+
+    Type: boolean
+    default: 
+    falsenullable
+  *
+    max_tokens
+
+    Copy link to max_tokens
+
+    Type: integer
+    min:  
+    0
+    max:  
+    9007199254740991nullable
+
+    Integer numbers.
+
+  *
+    modalities
+
+    Copy link to modalities
+
+    Type: array string[]enum
+      o
+        text
+      o
+        audio
+  *
+    model
+
+    Copy link to model
+
+    Type: string
+    default: 
+    "openai"
+  *
+    n
+
+    Copy link to n
+
+    Type: integer
+    min:  
+    1
+    max:  
+    128
+    default: 
+    1nullable
+
+    Integer numbers.
+
+  *
+    parallel_tool_calls
+
+    Copy link to parallel_tool_calls
+
+    Type: boolean
+    default: 
+    true
+
+Show additional properties for Request Body
+
+Responses
+
+  *
+
+    200
+
+    Success
+    application/json
+
+  *
+
+    400
+
+    Something was wrong with the input data, check the details for more
+    info.
+    application/json
+
+  *
+
+    401
+
+    You need to authenticate by providing a session cookie or
+    Authorization header (Bearer token).
+    application/json
+
+  *
+
+    500
+
+    Oh snap, something went wrong on our end. We're on it!
+    application/json
+
+Request Example forpost/v1/chat/completions
+Shell Curl
+
+|curl https://gen.pollinations.ai/v1/chat/completions \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "messages": [
+    {
+      "content": "",
+      "role": "system",
+      "name": "",
+      "cache_control": {
+        "type": "ephemeral"
+      }
+    }
+  ],
+  "model": "openai",
+  "modalities": [
+    "text"
+  ],
+  "audio": {
+    "voice": "alloy",
+    "format": "wav"
+  },
+  "frequency_penalty": 0,
+  "logit_bias": null,
+  "logprobs": false,
+  "top_logprobs": 0,
+  "max_tokens": 0,
+  "n": 1,
+  "presence_penalty": 0,
+  "response_format": {
+    "type": "text"
+  },
+  "seed": 0,
+  "stop": "",
+  "stream": false,
+  "stream_options": {
+    "include_usage": true
+  },
+  "thinking": {
+    "type": "disabled",
+    "budget_tokens": 1
+  },
+  "reasoning_effort": "low",
+  "thinking_budget": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "description": "",
+        "name": "",
+        "parameters": {
+          "propertyName*": "anything"
+        },
+        "strict": false
+      }
+    }
+  ],
+  "tool_choice": "none",
+  "parallel_tool_calls": true,
+  "user": "",
+  "function_call": "none",
+  "functions": [
+    {
+      "description": "",
+      "name": "",
+      "parameters": {
+        "propertyName*": "anything"
+      }
+    }
+  ]
+}'
+|
+
+Test Request(post /v1/chat/completions)
+
+Status: 200
+
+Status: 400
+
+Status: 401
+
+Status: 500
+
+Show Schema
+
+|{
+  "id": "string",
+  "choices": [
+    {
+      "finish_reason": "string",
+      "index": 0,
+      "message": {
+        "content": "string",
+        "tool_calls": [
+          {
+            "id": "string",
+            "type": "function",
+            "function": {
+              "name": "string",
+              "arguments": "string"
+            }
+          }
+        ],
+        "role": "assistant",
+        "function_call": {
+          "arguments": "string",
+          "name": "string"
+        },
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "string",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ],
+        "audio": {
+          "transcript": "string",
+          "data": "string",
+          "id": "string",
+          "expires_at": -9007199254740991
+        },
+        "reasoning_content": "string"
+      },
+      "logprobs": {
+        "content": [
+          {
+            "token": "string",
+            "logprob": 1,
+            "bytes": [
+              "[Max Depth Exceeded]"
+            ],
+            "top_logprobs": [
+              {
+                "token": "[Max Depth Exceeded]",
+                "logprob": "[Max Depth Exceeded]",
+                "bytes": "[Max Depth Exceeded]"
+              }
+            ]
+          }
+        ]
+      },
+      "content_filter_results": {
+        "hate": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": true,
+          "detected": true
+        },
+        "protected_material_text": {
+          "filtered": true,
+          "detected": true
+        },
+        "protected_material_code": {
+          "filtered": true,
+          "detected": true
+        }
+      }
+    }
+  ],
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": true,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": true,
+          "detected": true
+        },
+        "protected_material_text": {
+          "filtered": true,
+          "detected": true
+        },
+        "protected_material_code": {
+          "filtered": true,
+          "detected": true
+        }
+      }
+    }
+  ],
+  "created": -9007199254740991,
+  "model": "string",
+  "system_fingerprint": "string",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 0,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 0,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 0
+  },
+  "user_tier": "anonymous",
+  "citations": [
+    "string"
+  ]
+}|
+
+Success
+
+
+/text/{prompt}
+
+​
+
+Copy link
+
+Generates text from text prompts.
+
+*Authentication:*
+
+Include your API key either:
+
+  * In the |Authorization| header as a Bearer token: |Authorization:
+    Bearer YOUR_API_KEY|
+  * As a query parameter: |?key=YOUR_API_KEY|
+
+API keys can be created from your dashboard at enter.pollinations.ai.
+
+Path Parameters
+
+  *
+    prompt
+
+    Copy link to prompt
+
+    Type: string
+    min length:  
+    1
+    required
+    Example
+
+    Write a haiku about coding
+
+    Text prompt for generation
+
+Query Parameters
+
+  *
+    model
+
+    Copy link to model
+
+    Type: stringenum
+    default: 
+    "openai"
+
+    Text model to use for generation
+
+      o
+        openai
+      o
+        openai-fast
+      o
+        openai-large
+      o
+        qwen-coder
+      o
+        mistral
+      o
+
+        Show all values
+
+  *
+    seed
+
+    Copy link to seed
+
+    Type: integer
+    min:  
+    -9007199254740991
+    max:  
+    9007199254740991
+
+    Random seed for reproducible results
+
+  *
+    system
+
+    Copy link to system
+
+    Type: string
+
+    System prompt to set context/behavior for the model
+
+  *
+    json
+
+    Copy link to json
+
+    Type: boolean
+    default: 
+    false
+
+    Return response in JSON format
+
+  *
+    temperature
+
+    Copy link to temperature
+
+    Type: number
+
+    Controls creativity (0.0=strict, 2.0=creative)
+
+  *
+    stream
+
+    Copy link to stream
+
+    Type: boolean
+    default: 
+    false
+
+    Stream response in real-time chunks
+
+  *
+    private
+
+    Copy link to private
+
+    Type: boolean
+    default: 
+    false
+
+    Hide from public feeds
+
+Responses
+
+  *
+
+    200
+
+    Generated text response
+    text/plain
+
+Request Example forget/text//{prompt}/
+Shell Curl
+
+|curl 'https://gen.pollinations.ai/text/Write a haiku about coding?model=openai&seed=-9007199254740991&system=&json=false&temperature=1&stream=false&private=false' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+|
+
+Test Request(get /text/{prompt})
+
+Status: 200
+
+Show Schema
+
+|string|
+
+Generated text response
+
+
+/image/{prompt}
+
+​
+
+Copy link
+
+Generate an image or video from a text prompt.
+
+*Image Models:* |flux| (default), |turbo|, |gptimage|, |kontext|, |
+seedream|, |nanobanana|, |nanobanana-pro|
+
+*Video Models:* |veo|, |seedance|
+
+  * |veo|: Text-to-video only (4-8 seconds)
+  * |seedance|: Text-to-video and image-to-video (2-10 seconds)
+
+*Authentication:*
+
+Include your API key either:
+
+  * In the |Authorization| header as a Bearer token: |Authorization:
+    Bearer YOUR_API_KEY|
+  * As a query parameter: |?key=YOUR_API_KEY|
+
+API keys can be created from your dashboard at enter.pollinations.ai.
+
+Path Parameters
+
+  *
+    prompt
+
+    Copy link to prompt
+
+    Type: string
+    min length:  
+    1
+    required
+    Example
+
+    a beautiful sunset over mountains
+
+    Text description of the image or video to generate
+
+Query Parameters
+
+  *
+    model
+
+    Copy link to model
+
+    Type: stringenum
+    default: 
+    "flux"
+
+    AI model. Image: flux, turbo, gptimage, kontext, seedream, seedream-
+    pro, nanobanana. Video: veo, seedance, seedance-pro
+
+      o
+        flux
+      o
+        kontext
+      o
+        turbo
+      o
+        nanobanana
+      o
+        nanobanana-pro
+      o
+
+        Show all values
+
+  *
+    width
+
+    Copy link to width
+
+    Type: integer
+    min:  
+    0
+    max:  
+    9007199254740991
+    default: 
+    1024
+
+    Image width in pixels
+
+  *
+    height
+
+    Copy link to height
+
+    Type: integer
+    min:  
+    0
+    max:  
+    9007199254740991
+    default: 
+    1024
+
+    Image height in pixels
+
+  *
+    seed
+
+    Copy link to seed
+
+    Type: integer
+    min:  
+    0
+    max:  
+    1844674407370955
+    default: 
+    42
+
+    Random seed for reproducible results
+
+  *
+    enhance
+
+    Copy link to enhance
+
+    Type: boolean
+    default: 
+    false
+
+    Let AI improve your prompt for better results
+
+  *
+    negative_prompt
+
+    Copy link to negative_prompt
+
+    Type: string
+    default: 
+    "worst quality, blurry"
+
+    What to avoid in the generated image
+
+  *
+    private
+
+    Copy link to private
+
+    Type: boolean
+    default: 
+    false
+
+    Hide image from public feeds
+
+  *
+    nologo
+
+    Copy link to nologo
+
+    Type: boolean
+    default: 
+    false
+
+    Remove Pollinations watermark
+
+  *
+    nofeed
+
+    Copy link to nofeed
+
+    Type: boolean
+    default: 
+    false
+
+    Don't add to public feed
+
+  *
+    safe
+
+    Copy link to safe
+
+    Type: boolean
+    default: 
+    false
+
+    Enable safety content filters
+
+  *
+    quality
+
+    Copy link to quality
+
+    Type: stringenum
+    default: 
+    "medium"
+
+    Image quality level
+
+      o
+        low
+      o
+        medium
+      o
+        high
+      o
+        hd
+  *
+    image
+
+    Copy link to image
+
+    Type: string
+
+    Reference image URL(s) for image-to-image or video. Comma/pipe
+    separated for multiple
+
+  *
+    transparent
+
+    Copy link to transparent
+
+    Type: boolean
+    default: 
+    false
+
+    Generate with transparent background
+
+  *
+    guidance_scale
+
+    Copy link to guidance_scale
+
+    Type: number
+
+    How closely to follow the prompt (1-20)
+
+  *
+    duration
+
+    Copy link to duration
+
+    Type: integer
+    min:  
+    -9007199254740991
+    max:  
+    9007199254740991
+
+    Video duration in seconds. veo: 4, 6, or 8. seedance: 2-10
+
+  *
+    aspectRatio
+
+    Copy link to aspectRatio
+
+    Type: string
+
+    Video aspect ratio: 16:9 or 9:16
+
+  *
+    audio
+
+    Copy link to audio
+
+    Type: boolean
+    default: 
+    false
+
+    Enable audio generation for video (veo only)
+
+Responses
+
+  *
+
+    200
+
+    Success - Returns the generated image or video
+    Selected Content Type:image/jpeg
+
+  *
+
+    400
+
+    Something was wrong with the input data, check the details for more
+    info.
+    application/json
+
+  *
+
+    401
+
+    You need to authenticate by providing a session cookie or
+    Authorization header (Bearer token).
+    application/json
+
+  *
+
+    500
+
+    Oh snap, something went wrong on our end. We're on it!
+    application/json
+
+Request Example forget/image//{prompt}/
+Shell Curl
+
+|curl 'https://gen.pollinations.ai/image/a beautiful sunset over mountains?model=flux&width=1024&height=1024&seed=42&enhance=false&negative_prompt=worst%20quality%2C%20blurry&private=false&nologo=false&nofeed=false&safe=false&quality=medium&image=&transparent=false&guidance_scale=1&duration=-9007199254740991&aspectRatio=&audio=false' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+|
+
+Test Request(get /image/{prompt})
+
+Status: 200
+
+Status: 400
+
+Status: 401
+
+Status: 500
+
+Show Schema
+
+|{}|
+
+Success - Returns the generated image or video
+
+
+/api-keys/{id}/update
+
+​
+
+Copy link
+
+Path Parameters
+
+  *
+    id
+
+    Copy link to id
+
+    Type: string
+    required 
+
+Body
+application/json
+
+  *
+    allowedModels
+
+    Copy link to allowedModels
+
+    Type: array string[]nullable 
+
+Responses
+
+  *
+    200
+
+    Copy link to 200
+
+Request Example forpost/api-keys//{id}//update
+Shell Curl
+
+|curl 'https://gen.pollinations.ai/api-keys/{id}/update' \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "allowedModels": [
+    ""
+  ]
+}'
+|
+
+Test Request(post /api-keys/{id}/update)
+
+Status: 200
+
+No Body
+
+Show sidebar
+
+Show search
+
+#
+
+  *
+
+    Open Group
+     
+    gen.pollinations.ai
+     
+
+  *
+
+    Open Group
+     
+    Usage
+     
+
+  *
+    /api-keys/{id}/update
+      HTTP Method:
+    POST
+     <https://enter.pollinations.ai/workspace/default/request/
+    Q5TCv_kTFX0xmDJChVNfJ>
+
+POST
+Server: https://gen.pollinations.ai
+
+/api-keys/{id}/update
+
+SendSend post request to https://gen.pollinations.ai/api-keys/{id}/update
+
+Open API Client <https://client.scalar.com/?
+url=https%3A%2F%2Fenter.pollinations.ai%2Fapi%2Fdocs%2Fopen-
+api%2Fgenerate-schema&integration=hono&utm_source=api-
+reference&utm_medium=button&utm_campaign=modal>
+
+Close Client
+
+Close Client
+All
+
+Auth
+
+Path Parameters
+
+Cookies
+
+Headers
+
+Query
+
+Body
+
+All
+
+
+    AuthenticationRequired
+
+Selected Auth Type: bearerAuth
+
+API key from enter.pollinations.ai dashboard
+Bearer Token
+
+:
+
+Show Password
+
+
+    Path Parameters
+
+Enabled	Key	Value
+
+	
+id
+Required
+	
+Value
+
+
+    Cookies
+
+Cookie Enabled	Cookie Key	Cookie Value
+
+	
+Key
+	
+Value
+
+
+    Headers
+
+Clear All Headers
+
+Header Enabled	Header Key	Header Value
+
+	
+Accept
+	
+*/*
+
+	
+Content-Type
+	
+application/json
+
+	
+Key
+	
+Value
+
+
+    Query Parameters
+
+Parameter Enabled	Parameter Key	Parameter Value
+
+	
+Key
+	
+Value
+
+
+    Body
+
+JSON
+
+Press Esc then Tab to exit
+9
+1
+2
+3
+4
+5
+
+{
+  "allowedModels": [
+    ""
+  ]
+}
+
+
+    Code Snippet(Collapsed)
+
+Curl
+
+Response
+All
+
+Cookies
+
+Headers
+
+Body
+
+All
+
+Powered By Scalar.com <https://www.scalar.com/>
+                         .,,uod8B8bou,,.                ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.           ||||||||||||||!?TFPRBBBBBBBBBBBBBBB8m=,           ||||   '""^^!!||||||||||TFPRBBBVT!:...!           ||||            '""^^!!|||||?!:.......!           ||||                     ||||.........!           ||||                     ||||.........!           ||||                     ||||.........!           ||||                     ||||.........!           ||||                     ||||.........!           ||||                     ||||.........!           ||||,                    ||||.........`           |||||!!-._               ||||.......;.           ':!|||||||||!!-._        ||||.....bBBBBWdou,.         bBBBBB86foi!|||||||!!-..:|||!..bBBBBBBBBBBBBBBY!         ::!?TFPRBBBBBB86foi!||||||||!!bBBBBBBBBBBBBBBY..!         :::::::::!?TFPRBBBBBB86ftiaabBBBBBBBBBBBBBBY....!         :::;`"^!:;::::::!?TFPRBBBBBBBBBBBBBBBBBBBY......!         ;::::::...''^::::::::::!?TFPRBBBBBBBBBBY........!     .ob86foi;::::::::::::::::::::::::!?TFPRBY..........`    .b888888888886foi;:::::::::::::::::::::::..........` .b888888888888888888886foi;::::::::::::::::...........b888888888888888888888888888886foi;:::::::::......`!Tf998888888888888888888888888888888886foi;:::....`  '"^!|Tf9988888888888888888888888888888888!::..`       '"^!|Tf998888888888888888888888889!! '`             '"^!|Tf9988888888888888888!!`            iBBbo.                  '"^!|Tf998888888889!`             WBBBBbo.                        '"^!|Tf9989!`              YBBBP^'                              '"^!`               `
+Send Request
+ctrlControl
+↵Enter
+

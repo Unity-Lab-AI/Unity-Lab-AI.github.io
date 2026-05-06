@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * About Page JavaScript
  * Handles GitHub stats fetching and counter animations
  */
@@ -25,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * Fetch GitHub statistics for the organization
+ * Grab stats from GitHub API - stars, forks, commits
  */
 async function fetchGitHubStats() {
     try {
@@ -70,7 +78,7 @@ async function fetchGitHubStats() {
 }
 
 /**
- * Fetch total commits from repositories
+ * Pull commit counts from repos (limited to avoid rate limits)
  * @param {Array} repos - Array of repository objects
  * @returns {Promise<number>} Total commits count
  */
@@ -105,7 +113,7 @@ async function fetchTotalCommits(repos) {
 }
 
 /**
- * Animate counter from 0 to target value
+ * Count-up animation for stat numbers
  * @param {string} elementId - ID of the counter element
  * @param {number} targetValue - Target value to count to
  */

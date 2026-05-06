@@ -1,4 +1,10 @@
 #!/bin/bash
+# Unity AI Lab
+# Creators: Hackall360, Sponge, GFourteen
+# https://www.unityailab.com
+# unityailabcontact@gmail.com
+# Version: v2.1.5
+#
 # Script to update all legacy apps with Unity AI Lab navigation
 
 # Apps to update (relative paths from /apps directory)
@@ -12,7 +18,8 @@ APPS=(
     "oldSiteProject/index.html"
 )
 
-cd /home/user/sitetest0/apps
+# Navigate to the apps directory (adjust path as needed for your environment)
+cd "$(dirname "$0")"
 
 for app in "${APPS[@]}"; do
     echo "Processing $app..."

@@ -1,9 +1,19 @@
 <!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Persona Chat - Unity AI Lab</title>
+
+  <!-- Redesign tokens (palette + fonts) — load FIRST so var(--primary-black) etc. resolve before any inline styles parse -->
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
 
   <!-- Bootstrap CSS -->
   <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -67,8 +77,9 @@
       color: var(--white);
       border: 2px solid var(--crimson-red);
       cursor: pointer;
-      width: 100%;
-      max-width: 600px;
+      width: auto;
+      max-width: 250px;
+      display: block;
       border-radius: 8px;
       font-family: 'Trajan Pro', serif;
       font-size: 1rem;
@@ -406,28 +417,29 @@
 
       <!-- Settings Panel -->
       <div id="settingsPanel" class="settings-panel" title="Mess with my settings—models, audio, all that jazz.">
-        <select id="textModel" class="model-select" title="Choose the text model—pick how I talk to you, asshole."></select>
-        <select id="imageModel" class="model-select" title="Pick the image model—decide how my visuals fuck with you."></select>
+        <select id="textModel" class="model-select" title="Choose the text model—pick how I talk to you."></select>
+        <select id="imageModel" class="model-select" title="Pick the image model for generations."></select>
         <select id="aspectRatio" class="model-select" title="Set the image ratio—landscape, portrait, whatever you want.">
           <option value="16:9">Landscape (16:9)</option>
           <option value="4:3">Landscape (4:3)</option>
-          <option value="1:1">Square (1:1)</option>
+          <option value="1:1" selected>Square (1:1)</option>
           <option value="3:4">Portrait (3:4)</option>
         </select>
 
-        <!-- Volume Control -->
-        <div class="volume-control">
-          <label for="volumeSlider">Volume:</label>
-          <input type="range" id="volumeSlider" min="0" max="100" value="50" title="Adjust my audio—make me loud or shut me up.">
+        <!-- TTS Voice Selection -->
+        <select id="ttsVoice" class="model-select" title="Select TTS voice">
+          <option value="alloy">Alloy (Neutral)</option>
+          <option value="echo">Echo (Male)</option>
+          <option value="fable">Fable (British)</option>
+          <option value="onyx">Onyx (Deep Male)</option>
+          <option value="nova" selected>Nova (Female)</option>
+          <option value="shimmer">Shimmer (Soft Female)</option>
+        </select>
 
-          <!-- Audio Controls -->
-          <div class="audio-controls">
-            <label class="loop-control">
-              <input type="checkbox" id="loopCheckbox" title="Loop my tunes—keep the chaos going, you freak."> Loop Audio
-            </label>
-            <button id="replayButton" class="replay-button" disabled title="Replay the last audio—hear it again, you needy bitch.">Replay Audio</button>
-            <button id="downloadMidi" class="replay-button" disabled title="Download the MIDI—steal my music, you thief.">Download MIDI</button>
-          </div>
+        <!-- TTS Controls -->
+        <div class="audio-controls">
+          <button type="button" id="muteButton" class="replay-button" title="Mute/Unmute TTS">🔊 TTS On</button>
+          <button type="button" id="replayTTSButton" class="replay-button" disabled title="Replay last message">🔄 Replay</button>
         </div>
       </div>
 

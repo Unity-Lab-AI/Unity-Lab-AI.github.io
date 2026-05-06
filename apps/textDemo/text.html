@@ -1,9 +1,19 @@
 <!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Text Chat - Unity AI Lab</title>
+
+  <!-- Redesign tokens (palette + fonts) — load FIRST so var(--primary-black) etc. resolve before any inline styles parse -->
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
 
   <!-- Bootstrap CSS -->
   <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -445,13 +455,11 @@
       <!-- Model Selection -->
       <div class="top-controls">
         <select id="model" title="Pick the AI model—choose your flavor of chaos.">
-          <option value="unity" selected>Unity by Unity AI Lab</option>
+          <option value="unity" selected>Unity AI (Custom)</option>
           <option value="evil">Evil Mode</option>
-          <option value="openai">OpenAI GPT-4</option>
-          <option value="mistral">Mistral</option>
-          <option value="qwen-coder">Qwen Coder</option>
-          <option value="deepseek">DeepSeek</option>
-          <option value="gemini">Gemini</option>
+        </select>
+        <select id="imageModel" title="Pick the image model for generating visuals.">
+          <option value="flux" selected>Flux (Default)</option>
         </select>
       </div>
 

@@ -1,0 +1,159 @@
+{
+  "name": "Unity AI Lab - Unrestricted AI Chatbot & AI Solutions",
+  "short_name": "Unity AI Lab",
+  "description": "Unity AI Lab specializes in unrestricted AI chatbots, AI integration services, red team and blue team testing, generative AI, text generation, image generation, and cutting-edge AI development. Try our free AI demo, explore AI tools, and discover ChatGPT alternatives powered by Pollinations.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0a",
+  "theme_color": "#dc143c",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "utilities",
+    "entertainment",
+    "education",
+    "developer tools"
+  ],
+  "keywords": [
+    "AI",
+    "artificial intelligence",
+    "machine learning",
+    "chatbot",
+    "AI chatbot",
+    "generative AI",
+    "LLM",
+    "large language model",
+    "GPT",
+    "ChatGPT alternative",
+    "text generation",
+    "AI text generator",
+    "image generation",
+    "AI image generator",
+    "text to image",
+    "AI art",
+    "text to speech",
+    "AI voice",
+    "conversational AI",
+    "AI assistant",
+    "virtual assistant",
+    "AI demo",
+    "free AI",
+    "AI tools",
+    "AI platform",
+    "AI agents",
+    "autonomous AI",
+    "AI automation",
+    "enterprise AI",
+    "AI solutions",
+    "AI services",
+    "AI integration",
+    "red team",
+    "blue team",
+    "AI security",
+    "prompt engineering",
+    "Unity AI",
+    "Unity AI Lab",
+    "Pollinations"
+  ],
+  "iarc_rating_id": "",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Demo",
+      "short_name": "Demo",
+      "description": "Try the Unity AI chatbot demo - free AI chat with no restrictions",
+      "url": "/ai/demo/",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Apps Gallery",
+      "short_name": "Apps",
+      "description": "Explore AI-powered applications - text generation, image generation, voice AI",
+      "url": "/apps/",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "short_name": "Services",
+      "description": "AI integration services, red team testing, AI consulting",
+      "url": "/services/",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Downloads",
+      "short_name": "Downloads",
+      "description": "Download AI tools and software from Unity AI Lab",
+      "url": "/downloads/",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "48x48"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://www.unityailab.com/ai/demo/",
+      "id": "unity-ai-demo"
+    }
+  ],
+  "screenshots": [],
+  "serviceworker": {
+    "src": "/sw.js",
+    "scope": "/",
+    "update_via_cache": "none"
+  },
+  "share_target": {
+    "action": "/ai/demo/",
+    "method": "GET",
+    "params": {
+      "text": "prompt"
+    }
+  },
+  "protocol_handlers": [],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "browser"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

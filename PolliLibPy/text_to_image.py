@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Text-to-Image Generation - Generate images from text prompts
 Implements the Text-to-Image Generation section from the TODO list
 
@@ -55,9 +63,9 @@ class TextToImage(PollinationsAPI):
         """
         start_time = time.time()
 
-        # Build URL
+        # Build URL (no /prompt/ needed with gen.pollinations.ai)
         encoded_prompt = self.encode_prompt(prompt)
-        url = f"{self.IMAGE_API}/prompt/{encoded_prompt}"
+        url = f"{self.IMAGE_API}/{encoded_prompt}"
 
         # Build parameters
         params = {
@@ -76,6 +84,9 @@ class TextToImage(PollinationsAPI):
             params["private"] = "true"
         if safe:
             params["safe"] = "true"
+
+        # Add API key
+        params["key"] = self.api_key
 
         try:
             # Make request

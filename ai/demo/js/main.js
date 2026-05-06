@@ -1,16 +1,25 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Main Application Module
  * Unity AI Lab Demo Page
  *
- * Coordinates all modules and initializes the demo application
+ * Boots up the demo, wires everything together
  */
 
-// Import all modules
-import {  DEFAULT_SETTINGS } from './config.js';
-import { loadSettings, saveSettings, applySettingsToUI, setupControlsSync } from './settings.js';
+// Import all modules with cache busting
+import {  DEFAULT_SETTINGS } from './config.js?v=2.1.6';
+import { loadSettings, saveSettings, applySettingsToUI, setupControlsSync } from './settings.js?v=2.1.6';
 import {
     initializePolliLib,
     loadUnitySystemPrompt,
+    loadEvilSystemPrompt,
     fetchModels,
     getAIResponse,
     getFinalResponseAfterTools,
@@ -19,10 +28,10 @@ import {
     getAvailableImageModels,
     getAvailableVoices,
     extractVoices
-} from './api.js';
-import { addMessage, showTypingIndicator, removeTypingIndicator, clearSession } from './chat.js';
-import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js';
-import { handleToolCall } from './tools.js';
+} from './api.js?v=2.1.6';
+import { addMessage, showTypingIndicator, removeTypingIndicator, clearSession } from './chat.js?v=2.1.6';
+import { playVoice, stopVoicePlayback, updateAllVolumeSliders } from './voice.js?v=2.1.6';
+import { handleToolCall } from './tools.js?v=2.1.6';
 import {
     setupEventListeners,
     setupDesktopPanelCollapse,
@@ -37,9 +46,9 @@ import {
     populateImageModels,
     populateVoices,
     detectAndQueueEffects
-} from './ui.js';
-import { configureMarked, renderMarkdown } from './markdown.js';
-import { getSlashCommands, handleSlashCommandInput, handleAutocompleteNavigation } from './slash-commands.js';
+} from './ui.js?v=2.1.6';
+import { configureMarked, renderMarkdown } from './markdown.js?v=2.1.6';
+import { getSlashCommands, handleSlashCommandInput, handleAutocompleteNavigation } from './slash-commands.js?v=2.1.6';
 
 /**
  * Main Demo Application Object
@@ -97,8 +106,11 @@ const DemoApp = {
         // Configure markdown
         configureMarked();
 
-        // Load Unity system prompt
-        await loadUnitySystemPrompt();
+        // Load custom model system prompts
+        await Promise.all([
+            loadUnitySystemPrompt(),
+            loadEvilSystemPrompt()
+        ]);
 
         // Fetch and populate models
         await this.fetchAndPopulateModels();
@@ -168,17 +180,18 @@ const DemoApp = {
         const imageModels = getAvailableImageModels();
         let voices = getAvailableVoices();
 
-        if (textModels.length > 0) {
-            populateTextModels(textModels, this.settings);
+        // ALWAYS populate text models - custom Unity/Evil models are added regardless of API fetch
+        populateTextModels(textModels, this.settings);
 
-            // Extract voices if not already available
+        // Extract voices if available
+        if (textModels.length > 0) {
             if (!voices || voices.length === 0) {
                 voices = extractVoices(textModels);
             }
+        }
 
-            if (voices && voices.length > 0) {
-                populateVoices(voices, this.settings);
-            }
+        if (voices && voices.length > 0) {
+            populateVoices(voices, this.settings);
         }
 
         if (imageModels.length > 0) {
@@ -247,9 +260,12 @@ const DemoApp = {
             let responseText = '';
             let responseImages = [];
 
-            if (typeof response === 'object' && response.text) {
+            console.log('📨 Response received:', typeof response, response);
+
+            if (typeof response === 'object' && response !== null && 'text' in response) {
                 responseText = response.text;
                 responseImages = response.images || [];
+                console.log('📷 Images to display:', responseImages.length, responseImages);
             } else {
                 responseText = response;
             }
@@ -265,10 +281,13 @@ const DemoApp = {
             );
 
             // Add to history (text only, images are handled separately)
+            // IMPORTANT: Only add clean user/assistant messages, never tool_calls
             this.chatHistory.push({
                 role: 'assistant',
                 content: responseText
             });
+
+            // Assistant message added to history
 
             // Voice playback if enabled
             if (this.settings.voicePlayback) {
@@ -281,7 +300,14 @@ const DemoApp = {
             }
         } catch (error) {
             removeTypingIndicator();
-            addMessage('ai', 'Sorry, I encountered an error: ' + error.message, [], null, null, null);
+            addMessage(
+                'ai',
+                'Sorry, I encountered an error: ' + error.message,
+                [],
+                (text) => renderMarkdown(text),
+                null,
+                null
+            );
             console.error('AI Response Error:', error);
         }
     },

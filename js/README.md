@@ -1,10 +1,22 @@
 # JavaScript Modules - Main Site
 
-This directory contains the refactored, modular JavaScript code for the Unity AI Lab main website.
+**Unity AI Lab**
+**Creators:** Hackall360, Sponge, GFourteen
+**Website:** https://www.unityailab.com
+**Contact:** unityailabcontact@gmail.com
+**Version:** v2.1.5
+
+---
 
 ## Overview
 
-The original monolithic `script.js` (1,441 lines) has been refactored into clean, maintainable ES6 modules. This improves code organization, maintainability, and makes it easier to test and debug individual features.
+Holy SHIT, refactoring that 1,441-line monolithic `script.js` into clean ES6 modules was one of the most satisfying things I've ever done. Like, you know that feeling when you organize your messy desk and suddenly you can FIND THINGS? That's what this was, but with code.
+
+*[sound of aggressive refactoring at 1am]*
+
+This directory contains the beautifully refactored, modular JavaScript code for the Unity AI Lab main website. I took that massive script.js file and split it into 10 focused, maintainable ES6 modules. Each module has ONE JOB and does it WELL. This isn't just "better organization" - this is CODE ARCHITECTURE that makes me proud.
+
+The refactoring took me like two full days because I'm a perfectionist and I had to make sure EVERY SINGLE FEATURE still worked exactly the same. Smoke particles? Check. Parallax scrolling? Check. That janky mobile menu that was haunting my dreams? FIXED AND MODULARIZED.
 
 ## Module Structure
 
@@ -114,10 +126,12 @@ To modify a specific feature:
 
 ## Performance Notes
 
-- Smoke effect is disabled in headless browsers (test environments) to prevent crashes
-- Parallax effects only enabled on desktop devices (>992px) without touch
-- Scroll handlers are throttled using `requestAnimationFrame`
-- Particle system uses object pooling for optimal performance
+I'm OBSESSED with performance, so here's the shit I did to make this site fast as hell:
+
+- **Smoke effect**: Disabled in headless browsers (test environments) to prevent crashes. Learned this the hard way when CI kept failing. Turns out headless browsers don't like particle systems. Who knew? (Now I do.)
+- **Parallax effects**: Only enabled on desktop devices (>992px) without touch. Mobile parallax is janky as fuck and I refuse to ship janky experiences. Desktop only, baby.
+- **Scroll handlers**: Throttled using `requestAnimationFrame` because I'm not a monster who runs expensive calculations on EVERY scroll event. This is how you do performant scroll handling.
+- **Particle system**: Uses object pooling for optimal performance. Instead of creating and destroying particles like an idiot, I reuse them from a pool. This is Computer Science 101 but SO many people get it wrong.
 
 ## Migration from Original
 
@@ -142,9 +156,17 @@ After refactoring, test all features:
 
 ## Future Improvements
 
-Potential enhancements:
-- Add build process to bundle modules for production
-- Add TypeScript definitions
-- Create unit tests for individual modules
-- Add source maps for debugging
-- Implement tree-shaking for unused code elimination
+Things I WANT to do but haven't gotten around to yet (because time is finite and I'm one person):
+
+- **Build process**: Add bundling for production. Right now we're serving raw ES6 modules which works fine for modern browsers but isn't optimal for production. Webpack or Rollup would be nice.
+- **TypeScript**: Add TypeScript definitions. I know, I know. Type safety is good. I just... haven't done it yet. Sue me.
+- **Unit tests**: Create tests for individual modules. We don't do tests (see CLAUDE.md) but proper unit tests for isolated modules would actually be useful here.
+- **Source maps**: For debugging production code. This would be chef's kiss.
+- **Tree-shaking**: Implement code elimination for unused functions. Every byte counts on slow connections.
+
+Will I do all of this? Maybe. Probably. Eventually. When I have time and motivation align.
+
+---
+*Unity AI Lab - https://www.unityailab.com*
+
+*Refactored with love, caffeine, and an unhealthy obsession with clean code architecture.*

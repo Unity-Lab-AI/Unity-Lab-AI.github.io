@@ -1,14 +1,24 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Tool Calling and Image Generation Module
  * Unity AI Lab Demo Page
  *
  * Handles tool/function calling and image generation
  */
 
+import { API_KEY } from './config.js';
+
 /**
  * Handle tool call execution
  * @param {Object} toolCall - Tool call object from API
- * @param {Array} chatHistory - Chat history array (will be modified)
+ * @param {Array} chatHistory - Chat history array (NOT modified - kept clean for future requests)
  * @param {Object} settings - Settings object
  * @param {Function} generateRandomSeed - Random seed generator
  * @returns {Object} Function result with images array
@@ -17,26 +27,19 @@ export async function handleToolCall(toolCall, chatHistory, settings, generateRa
     const functionName = toolCall.function.name;
     const functionArgs = JSON.parse(toolCall.function.arguments);
 
-    console.log('=== Executing Tool Call ===');
-    console.log('Function:', functionName);
-    console.log('Arguments:', functionArgs);
+    console.log(`Tool call: ${functionName}`);
 
-    let functionResult = { success: false, message: 'Unknown function' };
+    let functionResult = { success: false, message: 'Unknown function', images: [] };
 
     // Execute the function
     if (functionName === 'generate_image') {
         functionResult = await executeImageGeneration(functionArgs, settings, generateRandomSeed);
     }
 
-    // Add function result to conversation history
-    chatHistory.push({
-        role: 'tool',
-        tool_call_id: toolCall.id,
-        name: functionName,
-        content: JSON.stringify(functionResult)
-    });
+    // NOTE: Do NOT add tool results to chatHistory here!
+    // The chatHistory must stay clean with only user/assistant messages
+    // Tool results are handled separately in api.js for the follow-up call
 
-    console.log('✅ Tool execution completed');
     return functionResult;
 }
 
@@ -65,19 +68,27 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
             model: args.model || 'flux'
         }];
     } else {
-        return { success: false, message: 'Invalid image generation parameters - no prompt or images array provided' };
+        return { success: false, message: 'Invalid image generation parameters - no prompt or images array provided', images: [] };
     }
 
     // Generate each image
     for (const imageRequest of imageRequests) {
         let { prompt, width = 1024, height = 1024, model = 'flux' } = imageRequest;
 
+        // Truncate overly long prompts (max 500 chars to prevent noise)
+        if (prompt && prompt.length > 500) {
+            console.log(`⚠️ Truncating long prompt from ${prompt.length} to 500 chars`);
+            prompt = prompt.substring(0, 500).trim();
+            // Try to end at a natural break point
+            const lastSpace = prompt.lastIndexOf(' ');
+            if (lastSpace > 400) {
+                prompt = prompt.substring(0, lastSpace);
+            }
+        }
+
         // Override model if user has selected a specific model (not "auto")
         if (settings.imageModel && settings.imageModel !== 'auto') {
             model = settings.imageModel;
-            console.log(`Using user-selected image model: ${model}`);
-        } else {
-            console.log(`Using AI-suggested model: ${model}`);
         }
 
         // Handle auto dimensions based on settings
@@ -112,14 +123,15 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
         // Build Pollinations image URL
         // Use settings seed or generate random 6-8 digit seed
         const seed = (settings.seed !== -1) ? settings.seed : generateRandomSeed();
-        const encodedPrompt = encodeURIComponent(prompt);
+        const encodedPrompt = encodeURIComponent(prompt.trim());
 
-        // Build URL with unrestricted content (safe=false by default, no need to specify)
-        // Routed through Worker proxy — Worker translates /image/prompt/<x> → gen.pollinations.ai/image/<x>
-        const PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
-        let imageUrl = `${PROXY_BASE}/image/prompt/${encodedPrompt}?` +
-            `width=${width}&height=${height}&seed=${seed}&model=${model}&` +
-            `private=true&enhance=${settings.imageEnhance}`;
+        // Build URL per Pollinations docs
+        let imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?` +
+            `model=${model}&width=${width}&height=${height}&seed=${seed}&` +
+            `enhance=${settings.imageEnhance}&nologo=true&safe=false&private=true&key=${API_KEY}`;
+
+        console.log(`🔑 API_KEY used: ${API_KEY}`);
+        console.log(`🖼️ Full image URL: ${imageUrl}`);
 
         generatedImages.push({
             url: imageUrl,
@@ -130,7 +142,7 @@ async function executeImageGeneration(args, settings, generateRandomSeed) {
             seed: seed
         });
 
-        console.log(`Image generated: ${width}x${height}, model: ${model}, seed: ${seed}`);
+        console.log(`📷 Image: ${width}x${height}, ${model}`);
     }
 
     return {
@@ -159,15 +171,19 @@ export async function generateImageFromCommand(prompt, settings, addMessage, sho
         // Show typing indicator
         showTypingIndicator();
 
-        // Build image URL (routed through Worker proxy)
-        const PROXY_BASE_CMD = 'https://websiteunityailab.gfourteen7525.workers.dev';
-        let imageUrl = `${PROXY_BASE_CMD}/image/prompt/${encodeURIComponent(prompt)}`;
-        imageUrl += `?model=${imageModel}`;
+        // Build image URL with safe=false for uncensored content
+        // Using gen.pollinations.ai/image/ endpoint per official docs
+        // API key REQUIRED in query param for browser <img src=""> loading
+        let imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}`;
+        imageUrl += `?key=${API_KEY}`;
+        imageUrl += `&model=${imageModel}`;
         imageUrl += `&width=${width}`;
         imageUrl += `&height=${height}`;
         imageUrl += `&seed=${seed}`;
         imageUrl += `&enhance=${enhance}`;
         imageUrl += `&nologo=true`;
+        imageUrl += `&safe=false`;
+        imageUrl += `&private=true`;
 
         // Remove typing indicator
         removeTypingIndicator();

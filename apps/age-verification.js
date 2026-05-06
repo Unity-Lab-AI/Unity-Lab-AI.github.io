@@ -1,33 +1,41 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Age Verification System for Unity AI Lab Apps
  * 18+ verification with localStorage
  */
 
 const AgeVerification = {
-    // LocalStorage keys
+    // storage keys we're using
     KEYS: {
         BUTTON_18: 'button18',
         BIRTHDATE: 'birthdate',
         VERIFICATION_KEY: 'husdh-f978dyh-sdf'
     },
 
-    // Verification value
+    // the magic verification string
     VERIFICATION_VALUE: 'ijdfjgdfo-38d9sf-sdf',
 
-    // Minimum age requirement
+    // gotta be this old to enter
     MIN_AGE: 18,
 
     /**
-     * Initialize the age verification system
+     * fire up the age check system
      */
     init() {
         console.log('Age Verification System: Initializing...');
 
-        // Check if user is already verified
+        // see if they're already good to go
         if (this.isVerified()) {
             console.log('Age Verification System: User already verified');
             this.enableSite();
-            // Track visitor after verification confirmed
+            // log visitor after verification confirmed
             this.trackVisitor();
         } else {
             console.log('Age Verification System: Verification required');
@@ -37,7 +45,7 @@ const AgeVerification = {
     },
 
     /**
-     * Track visitor for apps page
+     * log visitor for the apps page
      */
     trackVisitor() {
         if (typeof VisitorTracking !== 'undefined') {
@@ -52,34 +60,34 @@ const AgeVerification = {
     },
 
     /**
-     * Check if user has valid verification
+     * check if user's verified properly
      */
     isVerified() {
         try {
-            // Check all three required values
+            // need all three of these bad boys
             const button18 = localStorage.getItem(this.KEYS.BUTTON_18);
             const birthdate = localStorage.getItem(this.KEYS.BIRTHDATE);
             const verificationKey = localStorage.getItem(this.KEYS.VERIFICATION_KEY);
 
-            // All three must exist
+            // all three better be here
             if (!button18 || !birthdate || !verificationKey) {
                 console.log('Age Verification: Missing values');
                 return false;
             }
 
-            // Button 18 must be truthy
+            // button18 needs to be true
             if (button18 !== 'true') {
                 console.log('Age Verification: Invalid button18 value');
                 return false;
             }
 
-            // Verification key must match
+            // verification key has to match our secret sauce
             if (verificationKey !== this.VERIFICATION_VALUE) {
                 console.log('Age Verification: Invalid verification key');
                 return false;
             }
 
-            // Check if birthdate is valid and age >= 18
+            // make sure they're actually 18+
             const isOldEnough = this.validateAge(birthdate);
             if (!isOldEnough) {
                 console.log('Age Verification: User is under 18');
@@ -95,18 +103,18 @@ const AgeVerification = {
     },
 
     /**
-     * Validate that the user is 18 or older
+     * make sure they're old enough to be here
      */
     validateAge(birthdateString) {
         try {
             const birthdate = new Date(birthdateString);
             const today = new Date();
 
-            // Calculate age
+            // do the age math
             let age = today.getFullYear() - birthdate.getFullYear();
             const monthDiff = today.getMonth() - birthdate.getMonth();
 
-            // Adjust age if birthday hasn't occurred this year yet
+            // subtract a year if birthday hasn't hit yet this year
             if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
                 age--;
             }
@@ -120,7 +128,7 @@ const AgeVerification = {
     },
 
     /**
-     * Disable site interactions
+     * lock down the site
      */
     disableSite() {
         const mainContent = document.getElementById('main-content');
@@ -128,7 +136,7 @@ const AgeVerification = {
             mainContent.classList.add('verification-disabled');
         }
 
-        // Disable all interactive elements except navbar
+        // disable everything except navbar
         const interactiveElements = document.querySelectorAll('main button, main input, main select, main textarea, main a.app-link');
         interactiveElements.forEach(el => {
             if (!el.hasAttribute('data-originally-disabled')) {
@@ -142,7 +150,7 @@ const AgeVerification = {
     },
 
     /**
-     * Enable site interactions
+     * unlock the site
      */
     enableSite() {
         const mainContent = document.getElementById('main-content');
@@ -150,7 +158,7 @@ const AgeVerification = {
             mainContent.classList.remove('verification-disabled');
         }
 
-        // Enable all interactive elements
+        // re-enable everything
         const interactiveElements = document.querySelectorAll('main button, main input, main select, main textarea, main a.app-link');
         interactiveElements.forEach(el => {
             const wasDisabled = el.getAttribute('data-originally-disabled') === 'true';
@@ -165,7 +173,7 @@ const AgeVerification = {
     },
 
     /**
-     * Show first popup: "Are you over 18?"
+     * show the "are you 18?" popup
      */
     showFirstPopup() {
         const backdrop = document.createElement('div');
@@ -188,7 +196,7 @@ const AgeVerification = {
         backdrop.appendChild(popup);
         document.body.appendChild(backdrop);
 
-        // Make buttons interactable (override disable)
+        // make buttons work (override the disable shit)
         const yesBtn = document.getElementById('verifyYes');
         const noBtn = document.getElementById('verifyNo');
 
@@ -204,33 +212,33 @@ const AgeVerification = {
     },
 
     /**
-     * Handle "Yes" on first popup
+     * they clicked "yes" on first popup
      */
     handleFirstYes() {
-        // Store button18 confirmation
+        // save that they confirmed 18+
         localStorage.setItem(this.KEYS.BUTTON_18, 'true');
         console.log('Age Verification: User confirmed 18+');
 
-        // Remove first popup
+        // remove first popup
         this.removeCurrentPopup();
 
-        // Show second popup (birthdate entry)
+        // show birthdate popup
         setTimeout(() => this.showSecondPopup(), 300);
     },
 
     /**
-     * Handle "No" on either popup or failed age check
+     * they clicked "no" or failed age check - kick em out
      */
     handleNo() {
         console.log('Age Verification: User declined or under 18');
 
-        // Clear all localStorage for this site
+        // wipe their verification data
         this.clearVerification();
 
-        // Open Google in new tab
+        // send them to google
         window.open('https://www.google.com', '_blank');
 
-        // Close current tab (may be blocked by browser security)
+        // try to close tab (browser might block this)
         setTimeout(() => {
             const closed = window.close();
             if (!closed) {
@@ -240,7 +248,7 @@ const AgeVerification = {
     },
 
     /**
-     * Show second popup: Birthdate entry
+     * show birthdate entry popup
      */
     showSecondPopup() {
         const backdrop = document.createElement('div');
@@ -251,7 +259,7 @@ const AgeVerification = {
         popup.className = 'verification-popup';
         popup.id = 'verificationPopup';
 
-        // Generate month options
+        // build month dropdown options
         const months = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -260,12 +268,12 @@ const AgeVerification = {
             `<option value="${index}">${month}</option>`
         ).join('');
 
-        // Generate day options (1-31)
+        // build day dropdown (1-31)
         const dayOptions = Array.from({length: 31}, (_, i) => i + 1)
             .map(day => `<option value="${day}">${day}</option>`)
             .join('');
 
-        // Generate year options (1900 - current year)
+        // build year dropdown (1900 to now)
         const currentYear = new Date().getFullYear();
         const yearOptions = Array.from({length: currentYear - 1900 + 1}, (_, i) => currentYear - i)
             .map(year => `<option value="${year}">${year}</option>`)
@@ -305,7 +313,7 @@ const AgeVerification = {
         backdrop.appendChild(popup);
         document.body.appendChild(backdrop);
 
-        // Make interactive elements work (override disable)
+        // make selects and button work (override disable shit)
         const monthSelect = document.getElementById('birthMonth');
         const daySelect = document.getElementById('birthDay');
         const yearSelect = document.getElementById('birthYear');
@@ -322,39 +330,39 @@ const AgeVerification = {
     },
 
     /**
-     * Handle birthdate submission
+     * process their birthdate submission
      */
     handleBirthdateSubmit() {
         const month = document.getElementById('birthMonth').value;
         const day = document.getElementById('birthDay').value;
         const year = document.getElementById('birthYear').value;
 
-        // Validate all fields are filled
+        // make sure they filled everything out
         if (!month || !day || !year) {
             alert('Please fill in all fields');
             return;
         }
 
-        // Create UTC date string
+        // convert to UTC date string
         const birthdate = new Date(Date.UTC(parseInt(year), parseInt(month), parseInt(day)));
         const birthdateString = birthdate.toISOString();
 
         console.log('Age Verification: Birthdate submitted:', birthdateString);
 
-        // Check if user is 18 or older
+        // verify they're 18+
         if (!this.validateAge(birthdateString)) {
             console.log('Age Verification: User is under 18');
             this.handleNo();
             return;
         }
 
-        // User is 18+, store birthdate and verification key
+        // they're good - save their info and verification key
         localStorage.setItem(this.KEYS.BIRTHDATE, birthdateString);
         localStorage.setItem(this.KEYS.VERIFICATION_KEY, this.VERIFICATION_VALUE);
 
         console.log('Age Verification: Verification complete');
 
-        // Track visitor after successful verification
+        // track visitor now that they're verified
         if (typeof VisitorTracking !== 'undefined') {
             console.log('Age Verification: Tracking visitor for apps page...');
             VisitorTracking.createAndRegisterUID('apps').then(result => {
@@ -366,15 +374,15 @@ const AgeVerification = {
             });
         }
 
-        // Remove popup
+        // close popup
         this.removeCurrentPopup();
 
-        // Enable site
+        // unlock the site
         this.enableSite();
     },
 
     /**
-     * Remove current popup
+     * remove whatever popup is showing
      */
     removeCurrentPopup() {
         const backdrop = document.getElementById('verificationBackdrop');
@@ -385,7 +393,7 @@ const AgeVerification = {
     },
 
     /**
-     * Clear all verification data
+     * wipe all verification data from storage
      */
     clearVerification() {
         localStorage.removeItem(this.KEYS.BUTTON_18);
@@ -395,7 +403,7 @@ const AgeVerification = {
     }
 };
 
-// Initialize on DOM load
+// fire it up when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     AgeVerification.init();
 });

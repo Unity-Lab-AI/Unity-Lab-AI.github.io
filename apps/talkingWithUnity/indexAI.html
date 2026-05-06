@@ -1,9 +1,19 @@
 <!DOCTYPE html>
+<!--
+  Unity AI Lab
+  Creators: Hackall360, Sponge, GFourteen
+  https://www.unityailab.com
+  unityailabcontact@gmail.com
+  Version: v2.1.5
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unity Voice Chat - Unity AI Lab</title>
+
+    <!-- Redesign tokens (palette + fonts) — load FIRST so var(--primary-black) etc. resolve before any inline styles parse -->
+    <link rel="stylesheet" href="../../redesign/shared-tokens.css">
 
     <!-- Bootstrap CSS -->
     <link href="../../vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -15,7 +25,7 @@
     <link rel="stylesheet" href="../shared-theme.css">
 
     <!-- App-specific styles -->
-    <link rel="stylesheet" href="./styleAI.css?v=20240606">
+    <link rel="stylesheet" href="./styleAI.css?v=20241217b">
 
     <style>
         body, html {
@@ -256,19 +266,19 @@
         </header>
 
         <main class="layout" aria-live="polite">
-            <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true">
+            <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true" title="Ask Unity to generate an image">
                 <img id="hero-image" alt="" loading="lazy" decoding="async" />
             </figure>
 
             <section class="voice-stage" role="group" aria-label="Voice activity monitors">
-                <article class="voice-circle ai" data-role="ai" aria-label="Unity is idle">
+                <button id="muteUnityBtn" class="voice-circle ai" data-role="ai" data-muted="false" aria-label="Unity is idle" title="Click to mute/unmute Unity's voice">
                     <div class="pulse-ring"></div>
-                    <span class="sr-only">Unity</span>
-                </article>
-                <article class="voice-circle user" data-role="user" aria-label="Microphone is muted">
+                    <span class="mute-icon">🔊</span>
+                </button>
+                <button id="muteMicBtn" class="voice-circle user" data-role="user" data-muted="true" aria-label="Microphone is muted" title="Click to mute/unmute your microphone">
                     <div class="pulse-ring"></div>
-                    <span class="sr-only">You</span>
-                </article>
+                    <span class="mute-icon">🔇</span>
+                </button>
             </section>
         </main>
     </div>
@@ -283,6 +293,6 @@
     <script src="indexAI.js" defer></script>
 
     <!-- Voice Experience Bundle -->
-    <script defer src="./app.js?v=20240606"></script>
+    <script defer src="./app.js?v=20241217b"></script>
 </body>
 </html>

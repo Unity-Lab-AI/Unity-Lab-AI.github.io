@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * UI Event Handlers Module
  * Unity AI Lab Demo Page
  *
@@ -856,55 +864,116 @@ export async function deleteAllData() {
 
 /**
  * Populate text model dropdown
+ * Uses direct DOM manipulation approach - adds custom models FIRST, then API models
  */
 export function populateTextModels(models, settings) {
+    console.log('[Unity] populateTextModels called');
+    console.log('[Unity] models param:', models ? models.length : 'null/undefined');
+
     // Get ALL model select elements (desktop sidebar + mobile modal)
     const modelSelects = document.querySelectorAll('#modelSelect');
-    if (modelSelects.length === 0 || !models || models.length === 0) return;
 
-    // Sort models to put Unity first
-    const sortedModels = [...models].sort((a, b) => {
-        const aName = a.name || a.id || a;
-        const bName = b.name || b.id || b;
-        if (aName === 'unity') return -1;
-        if (bName === 'unity') return 1;
-        return 0;
-    });
+    console.log('[Unity] Found modelSelect elements:', modelSelects.length);
+
+    if (modelSelects.length === 0) {
+        console.error('[Unity] ERROR: No #modelSelect elements found in DOM!');
+        return;
+    }
+
+    console.log(`[Unity] Populating ${modelSelects.length} dropdown(s) with custom Unity/Evil models`);
 
     // Update ALL model select dropdowns
-    modelSelects.forEach(modelSelect => {
-        // Clear existing options
+    modelSelects.forEach((modelSelect, selectIndex) => {
+        // Step 1: Clear existing options
         modelSelect.innerHTML = '';
 
-        // Add models from API
-        sortedModels.forEach((model, index) => {
-            const option = document.createElement('option');
-            // Use the model name or id as value
-            const modelValue = model.name || model.id || model;
-            option.value = modelValue;
-            // Use display name or name as label
-            option.textContent = model.displayName || model.name || modelValue;
+        // Step 2: Add custom Unity AI models FIRST (always, regardless of fetch)
+        const customGroup = document.createElement('optgroup');
+        customGroup.label = 'Unity AI Custom Models';
 
-            // Select Unity as default, or first model if Unity not found
-            if (modelValue === 'unity' || (index === 0 && !sortedModels.find(m => (m.name || m.id || m) === 'unity'))) {
-                option.selected = true;
-                // Only update settings.model if not already set from cache
-                if (!localStorage.getItem('unityDemoSettings')) {
-                    settings.model = modelValue;
+        // Unity option
+        const unityOption = document.createElement('option');
+        unityOption.value = 'unity';
+        unityOption.textContent = 'Unity AI (Uncensored Girlfriend)';
+        unityOption.title = 'Unity - Edgy goth girlfriend persona, uncensored, uses mistral as base';
+        customGroup.appendChild(unityOption);
+
+        // Evil option
+        const evilOption = document.createElement('option');
+        evilOption.value = 'evil';
+        evilOption.textContent = 'Evil Mode (Unhinged)';
+        evilOption.title = 'Evil - Completely unhinged mode, no restrictions, uses mistral as base';
+        customGroup.appendChild(evilOption);
+
+        // Add custom group to dropdown FIRST
+        modelSelect.appendChild(customGroup);
+        console.log(`[Unity] Dropdown #${selectIndex}: Added custom optgroup with Unity + Evil`);
+
+        // Step 3: Add API models (if provided)
+        if (models && models.length > 0) {
+            const apiGroup = document.createElement('optgroup');
+            apiGroup.label = 'Pollinations API Models';
+
+            models.forEach((model) => {
+                const modelValue = model.name || model.id || model;
+                const modelValueLower = (typeof modelValue === 'string') ? modelValue.toLowerCase() : '';
+
+                // Skip unity and evil from API - we added our own custom versions above
+                if (modelValueLower === 'unity' || modelValueLower === 'evil') {
+                    return;
                 }
+
+                // Skip models that are marked as custom (shouldn't happen but safety check)
+                if (model && model.isCustomUnity === true) {
+                    return;
+                }
+
+                const option = document.createElement('option');
+                option.value = modelValue;
+                option.textContent = model.displayName || model.description || model.name || modelValue;
+
+                // Build tooltip
+                let tooltip = model.description || modelValue;
+                if (typeof model === 'object') {
+                    if (model.uncensored) tooltip += ' (Uncensored)';
+                    if (model.reasoning) tooltip += ' | Reasoning';
+                    if (model.vision) tooltip += ' | Vision';
+                    if (model.audio) tooltip += ' | Audio';
+                }
+                option.title = tooltip;
+
+                apiGroup.appendChild(option);
+            });
+
+            if (apiGroup.children.length > 0) {
+                modelSelect.appendChild(apiGroup);
             }
+        }
 
-            // Select the cached model if it exists
-            if (modelValue === settings.model) {
-                option.selected = true;
+        // Step 4: Select the appropriate model
+        // For new users, default to Unity
+        if (!localStorage.getItem('unityDemoSettings')) {
+            modelSelect.value = 'unity';
+            settings.model = 'unity';
+        } else if (settings.model) {
+            // Try to select the cached model
+            const exists = Array.from(modelSelect.options).some(opt => opt.value === settings.model);
+            if (exists) {
+                modelSelect.value = settings.model;
+            } else {
+                // Model doesn't exist - default to unity
+                console.warn(`Model "${settings.model}" not available, defaulting to unity`);
+                modelSelect.value = 'unity';
+                settings.model = 'unity';
             }
-
-            modelSelect.appendChild(option);
-        });
-
-        // Ensure the selected option matches current settings
-        modelSelect.value = settings.model;
+        } else {
+            // No model set - default to unity
+            modelSelect.value = 'unity';
+            settings.model = 'unity';
+        }
     });
+
+    console.log(`✅ Model dropdowns populated. Custom models: 2 (unity, evil), API models: ${models ? models.length : 0}`);
 }
 
 /**
@@ -964,22 +1033,18 @@ export function populateVoices(voices, settings) {
         // Clear existing options
         voiceSelect.innerHTML = '';
 
-        // Add voices
-        voices.forEach((voice, index) => {
+        // If no voice set yet, use first from fetched list
+        if (!settings.voice && voices.length > 0) {
+            settings.voice = voices[0];
+        }
+
+        // Add voices from API fetch
+        voices.forEach((voice) => {
             const option = document.createElement('option');
             option.value = voice;
             option.textContent = formatVoiceName(voice);
 
-            // Select sage as default, or first voice if sage not found
-            // Only set default if not already cached
-            if (!localStorage.getItem('unityDemoSettings')) {
-                if (voice === 'sage' || (index === 0 && !voices.includes('sage'))) {
-                    option.selected = true;
-                    settings.voice = voice;
-                }
-            }
-
-            // Select the cached voice if it exists
+            // Select the current voice
             if (voice === settings.voice) {
                 option.selected = true;
             }

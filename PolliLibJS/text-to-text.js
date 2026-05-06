@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Text-to-Text Generation - Generate text responses using AI models
  *
  * Features:
@@ -45,9 +53,9 @@ class TextToText extends PollinationsAPI {
             jsonMode = false
         } = options;
 
-        // Build URL
+        // Build URL - use simple text endpoint
         const encodedPrompt = this.encodePrompt(prompt);
-        let url = `${PollinationsAPI.TEXT_API}/${encodedPrompt}`;
+        let url = `${PollinationsAPI.TEXT_SIMPLE_API}/${encodedPrompt}`;
 
         // Build parameters
         const params = new URLSearchParams({
@@ -126,7 +134,8 @@ class TextToText extends PollinationsAPI {
             safe = false
         } = options;
 
-        const url = `${PollinationsAPI.TEXT_API}/openai`;
+        // Use OpenAI-compatible chat completions endpoint
+        const url = PollinationsAPI.TEXT_API;
 
         // Build payload
         const payload = {
@@ -249,16 +258,16 @@ class TextToText extends PollinationsAPI {
      * @returns {string} Redacted text
      */
     _redactSensitive(text) {
-        // Redact email addresses
+        // strip out emails - regex catches most formats
         text = text.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[EMAIL_REDACTED]');
 
-        // Redact phone numbers (simple pattern)
+        // catch phone numbers - handles xxx-xxx-xxxx and similar
         text = text.replace(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g, '[PHONE_REDACTED]');
 
-        // Redact credit card numbers (simple pattern)
+        // redact credit cards - simple 16 digit pattern with optional separators
         text = text.replace(/\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g, '[CARD_REDACTED]');
 
-        // Redact SSN (simple pattern)
+        // SSN pattern - xxx-xx-xxxx
         text = text.replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[SSN_REDACTED]');
 
         return text;

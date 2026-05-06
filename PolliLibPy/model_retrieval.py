@@ -1,4 +1,12 @@
 """
+Unity AI Lab
+Creators: Hackall360, Sponge, GFourteen
+https://www.unityailab.com
+unityailabcontact@gmail.com
+Version: v2.1.5
+"""
+
+"""
 Model Retrieval - List available text and image models
 Implements the Model Retrieval section from the TODO list
 """
@@ -24,7 +32,7 @@ class ModelRetrieval(PollinationsAPI):
         try:
             response = self.retry_request(
                 "GET",
-                f"{self.TEXT_API}/models"
+                self._get_url_with_key(self.TEXT_MODELS_API)
             )
 
             models = response.json()
@@ -129,7 +137,7 @@ class ModelRetrieval(PollinationsAPI):
         try:
             response = self.retry_request(
                 "GET",
-                f"{self.IMAGE_API}/models"
+                self._get_url_with_key(self.IMAGE_MODELS_API)
             )
 
             models = response.json()

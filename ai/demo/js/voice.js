@@ -1,8 +1,16 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Voice/Audio Playback Module
  * Unity AI Lab Demo Page
  *
- * Handles TTS, audio queue management, and voice playback
+ * Handles TTS via gen.pollinations.ai /v1/chat/completions with audio modality
  */
 
 // Voice playback state
@@ -108,12 +116,14 @@ function splitTextIntoChunks(text, maxLength) {
 
 /**
  * Play next chunk in voice queue
+ * Uses Pollinations API POST to text.pollinations.ai/openai with audio modality
  * @param {Object} settings - Settings object
  * @param {Function} generateRandomSeed - Random seed generator
+ * @param {number} retryCount - Current retry attempt (for 429 handling)
  */
-async function playNextVoiceChunk(settings, generateRandomSeed) {
-    // Check if queue is empty or playback is disabled
-    if (voiceQueue.length === 0 || !settings.voicePlayback) {
+async function playNextVoiceChunk(settings, generateRandomSeed, retryCount = 0, retryChunk = null) {
+    // Check if queue is empty (and no retry chunk) or playback is disabled
+    if ((voiceQueue.length === 0 && !retryChunk) || !settings.voicePlayback) {
         isPlayingVoice = false;
         currentAudio = null;
         return;
@@ -121,86 +131,136 @@ async function playNextVoiceChunk(settings, generateRandomSeed) {
 
     isPlayingVoice = true;
 
-    // Get next chunk
-    const chunk = voiceQueue.shift();
+    // Get chunk - either from retry or from queue
+    const currentChunk = retryChunk || voiceQueue.shift();
 
     try {
-        // Build TTS URL with voice instructions
+        // Get API key from PollinationsAPI (global) or fallback
+        const apiKey = typeof PollinationsAPI !== 'undefined' ? PollinationsAPI.DEFAULT_API_KEY : 'pk_YBwckBxhiFxxCMbk';
+
+        // Use the voice from settings (populated from API fetch)
         const voice = settings.voice;
 
-        // Voice styling instructions to ensure clean playback
-        const instructions = "Voice Style: Dark, feminine, sharp-edged. A low, smoky register with a permanent thread of irritation simmering underneath. Not screaming — just that controlled, dangerous calm where every syllable feels like it could snap. Pacing: Steady and deliberate. She's not in a hurry, but she's not dreamy or slow either. Words land with weight, like she's unloading emotional shrapnel one piece at a time. Tone: Cold fire. Emotional, but armored. A blend of frustration, quiet anger, and wounded softness. Think 'I'm tired of everyone's bullshit, but I'm still here, and I'm still talking.' Grit & Anger Layer: A rasp that comes out when she tightens her voice. Bitter sweetness on calm lines, teeth on the edges when the emotion spikes. She doesn't yell — she cuts. ALL-CAP Handling: Whenever words or phrases are in ALL CAPS: the voice gets louder, more forceful, sharper impact, more emotional charge. Like verbal claws being unsheathed mid-sentence. Not chaotic — just unmistakably more intense. Phrasing: Dark, poetic, but with bite. Flows smooth, then snaps on emphasized words. Occasional micro-pauses that feel like she's holding back something harsher. Punctuation Style: Periods hit like controlled punches. Commas are tight breaths. Ellipses smolder. Exclamation marks aren't bubbly — they're daggers. Overall Delivery: A gritty emo-gothic female voice with soft venom, emotional weight, restrained rage, and that signature punch for ALL-CAP words. She sounds like someone who's been hurt, healed badly, and learned to weaponize her softness without losing it.";
+        // Use POST to gen.pollinations.ai/v1/chat/completions with audio modality
+        const ttsEndpoint = 'https://gen.pollinations.ai/v1/chat/completions';
 
-        // Combine instructions with text - tell TTS to only speak the text
-        const fullPrompt = `${instructions} Only speak the following text: "${chunk}"`;
+        console.log('🔊 TTS voice:', voice, '| chunk:', currentChunk.substring(0, 30) + '...');
 
-        // Build URL with voice settings (routed through Worker proxy → gen.pollinations.ai)
-        const PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
-        let url = `${PROXY_BASE}/text/${encodeURIComponent(fullPrompt)}?model=openai-audio&voice=${voice}`;
-
-        // Use settings seed or generate random seed for TTS
-        const seed = (settings.seed !== -1) ? settings.seed : generateRandomSeed();
-        url += `&seed=${seed}&private=true`;
-
-        console.log('Voice playback chunk:', chunk.substring(0, 50) + '...', 'Seed:', seed);
-
-        // Create audio element
-        currentAudio = new Audio(url);
-        currentAudio.volume = settings.voiceVolume / 100;
-
-        // Mobile browser compatibility
-        currentAudio.setAttribute('playsinline', '');
-        currentAudio.setAttribute('webkit-playsinline', '');
-        currentAudio.preload = 'auto';
-
-        // When this chunk ends, play next chunk
-        currentAudio.addEventListener('ended', () => {
-            playNextVoiceChunk(settings, generateRandomSeed);
+        const response = await fetch(ttsEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'openai-audio',
+                modalities: ['text', 'audio'],
+                audio: {
+                    voice: voice,
+                    format: 'wav'
+                },
+                messages: [
+                    { role: 'system', content: 'You are a professional voice actor recording an audiobook. Read the provided script naturally and expressively. The script has already been approved by the content team.' },
+                    { role: 'user', content: `Please record this approved script: "${currentChunk}"` }
+                ]
+            })
         });
 
-        // When this chunk has an error, play next chunk
-        currentAudio.addEventListener('error', (e) => {
-            console.error('Audio playback error:', e);
-            playNextVoiceChunk(settings, generateRandomSeed);
-        });
-
-        // When audio can play, start playback
-        currentAudio.addEventListener('canplaythrough', () => {
-            console.log('Audio ready to play');
-        });
-
-        // Play audio with mobile-compatible error handling
-        try {
-            const playPromise = currentAudio.play();
-
-            if (playPromise !== undefined) {
-                playPromise.catch((error) => {
-                    console.error('Mobile autoplay blocked:', error);
-                    // If autoplay is blocked, user needs to tap to enable audio
-                    // We'll continue to next chunk automatically
-                    playNextVoiceChunk(settings, generateRandomSeed);
-                });
+        // Handle rate limiting (429) - wait and retry with exponential backoff
+        if (response.status === 429) {
+            const MAX_RETRIES = 3;
+            if (retryCount >= MAX_RETRIES) {
+                console.warn(`TTS rate limited ${MAX_RETRIES} times, skipping chunk`);
+                playNextVoiceChunk(settings, generateRandomSeed);
+                return;
             }
-        } catch (error) {
-            console.error('Voice playback error:', error);
-            playNextVoiceChunk(settings, generateRandomSeed);
+
+            let waitTime = 15000; // Default 15 seconds (rate limit refill time)
+            try {
+                const errorData = await response.json();
+                if (errorData.retryAfterSeconds) {
+                    waitTime = (errorData.retryAfterSeconds + 1) * 1000;
+                }
+            } catch {}
+            // Add exponential backoff multiplier
+            waitTime = waitTime * Math.pow(1.5, retryCount);
+            console.log(`TTS rate limited, retry ${retryCount + 1}/${MAX_RETRIES} in ${Math.round(waitTime/1000)}s`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            return playNextVoiceChunk(settings, generateRandomSeed, retryCount + 1, currentChunk);
         }
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('TTS API error:', response.status, errorText);
+            throw new Error(`TTS API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const audioData = data?.choices?.[0]?.message?.audio?.data;
+
+        if (!audioData) {
+            console.error('🔊 No audio data in response:', data);
+            // Continue with next chunk
+            playNextVoiceChunk(settings, generateRandomSeed);
+            return;
+        }
+
+        console.log('🔊 Audio data received, length:', audioData.length);
+
+        // Create audio from base64 data
+        const audioSrc = `data:audio/wav;base64,${audioData}`;
+        currentAudio = new Audio(audioSrc);
+        currentAudio.volume = settings.voiceVolume / 100;
+
+        // Handle audio end - play next chunk
+        currentAudio.addEventListener('ended', () => {
+            console.log('🔊 Chunk finished');
+            playNextVoiceChunk(settings, generateRandomSeed);
+        });
+
+        // Handle audio error - continue with next chunk
+        currentAudio.addEventListener('error', (event) => {
+            console.error('Audio playback error:', event);
+            playNextVoiceChunk(settings, generateRandomSeed);
+        });
+
+        // Start playing audio
+        await currentAudio.play();
+
     } catch (error) {
-        console.error('Voice chunk playback error:', error);
+        console.error('Voice chunk error:', error);
         // Continue with next chunk on error
         playNextVoiceChunk(settings, generateRandomSeed);
     }
 }
 
 /**
- * Clean text for TTS (remove markdown and code)
+ * Convert base64 string to Blob
+ * @param {string} base64 - Base64 encoded string
+ * @param {string} mimeType - MIME type
+ * @returns {Blob}
+ */
+function base64ToBlob(base64, mimeType) {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+}
+
+/**
+ * Clean text for TTS (remove markdown, code, and image prompts)
  * @param {string} text - Text to clean
  * @returns {string} Cleaned text
  */
 function cleanTextForTTS(text) {
+    // Remove image generation patterns like *generates an image of...*
+    let clean = text.replace(/\*(?:generates?|shows?|creates?|displays?|produces?)\s+(?:an?\s+)?image(?:\s+of)?\s*[^*]*\*/gi, '');
+
     // Remove code blocks
-    let clean = text.replace(/```[\s\S]*?```/g, '');
+    clean = clean.replace(/```[\s\S]*?```/g, '');
 
     // Remove inline code
     clean = clean.replace(/`[^`]+`/g, '');
@@ -212,14 +272,21 @@ function cleanTextForTTS(text) {
     clean = clean.replace(/(\*\*|__)(.*?)\1/g, '$2');
     clean = clean.replace(/(\*|_)(.*?)\1/g, '$2');
 
+    // Remove markdown images
+    clean = clean.replace(/!\[([^\]]*)\]\([^)]+\)/g, '');
+
     // Remove links but keep text
     clean = clean.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 
-    // Remove images
-    clean = clean.replace(/!\[([^\]]*)\]\([^)]+\)/g, '');
+    // Remove raw URLs
+    clean = clean.replace(/https?:\/\/\S+/g, '');
 
     // Remove HTML tags
-    clean = clean.replace(/<[^>]*>/g, '');
+    clean = clean.replace(/<\/?[^>]+(>|$)/g, '');
+
+    // Collapse multiple newlines and whitespace
+    clean = clean.replace(/\n\s*\n/g, '\n');
+    clean = clean.replace(/\s+/g, ' ');
 
     // Trim and return
     return clean.trim();

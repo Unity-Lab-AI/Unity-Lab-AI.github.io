@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<!--
+  Unity AI Lab — Classic Unity Screensaver
+  https://www.unityailab.com/apps/oldSiteProject/screensaver.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classic Screensaver — Unity AI Lab</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+
+  <!-- Gothic fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+
+  <style>
+    /* ── Gothic compat vars ── */
+    :root {
+      --primary-black: #030001;
+      --light-grey: var(--bone, #e8e2d4);
+      --crimson: var(--crimson-red, #dc143c);
+      --white: #e8e2d4;
+      --gradient-red: linear-gradient(135deg, #dc143c 0%, #b80e30 100%);
+      --accent-red: #b80e30;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, html {
+      background: #030001;
+      color: var(--bone, #e8e2d4);
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: var(--font-body, Inter, sans-serif);
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── Gothic App Nav overlay ── */
+    .app-nav-overlay {
+      position: fixed; top: 0; left: 0; right: 0; height: 50px; z-index: 2000;
+      background: rgba(3,0,0,0.92);
+      border-bottom: 1px solid rgba(220,20,60,0.2);
+      display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    }
+    .app-nav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      color: #e8e2d4; font-size: 15px; letter-spacing: 4px;
+      text-decoration: none; text-transform: uppercase;
+    }
+    .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+    .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .app-nav-back {
+      margin-left: auto; color: #dc143c; text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid rgba(220,20,60,0.35); padding: 4px 14px; transition: background .15s;
+    }
+    .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+
+    /* ── Screensaver Container ── */
+    .screensaver {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #000;
+      z-index: 999;
+    }
+
+    .screensaver img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      transition: opacity 1s ease-in-out;
+    }
+
+    #screensaver-image1, #screensaver-image2 { opacity: 0; }
+
+    /* ── Controls ── */
+    .screensaver-controls {
+      position: fixed;
+      bottom: 140px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(3,0,0,0.92);
+      padding: 20px;
+      border: 1px solid rgba(220,20,60,0.3);
+      display: flex; gap: 15px; z-index: 1001;
+      flex-wrap: wrap; justify-content: center;
+      box-shadow: 0 10px 30px rgba(220,20,60,0.2);
+    }
+
+    /* ── Thumbnails ── */
+    .screensaver-thumbnails-wrapper {
+      position: fixed;
+      bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      width: 90%; max-width: 1320px;
+      z-index: 1002;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .screensaver-thumbnails {
+      display: flex; flex-direction: row; gap: 8px;
+      overflow-x: auto; width: 100%; max-width: 1290px;
+      padding: 10px;
+      background: rgba(3,0,0,0.92);
+      border: 1px solid rgba(220,20,60,0.25);
+      scrollbar-width: thin; white-space: nowrap;
+    }
+
+    .screensaver-thumbnails::-webkit-scrollbar { height: 4px; }
+    .screensaver-thumbnails::-webkit-scrollbar-thumb { background: rgba(220,20,60,0.4); border-radius: 2px; }
+
+    .screensaver-thumbnails img.thumbnail {
+      width: 100px; height: 65px;
+      object-fit: cover; cursor: pointer;
+      border: 1px solid rgba(220,20,60,0.15);
+      transition: border-color .15s, transform .15s;
+      flex-shrink: 0;
+    }
+
+    .screensaver-thumbnails img.thumbnail.placeholder { opacity: 0.15; pointer-events: none; }
+    .screensaver-thumbnails img.thumbnail:hover { border-color: rgba(220,20,60,0.5); transform: scale(1.05); }
+    .screensaver-thumbnails img.thumbnail.selected { border-color: #dc143c; }
+
+    .thumb-nav {
+      background: rgba(220,20,60,0.08); border: 1px solid rgba(220,20,60,0.3);
+      color: #dc143c; padding: 10px; cursor: pointer;
+      height: 87px; transition: background .15s; font-size: 1rem;
+    }
+    .thumb-nav:hover { background: rgba(220,20,60,0.18); }
+
+    .screensaver-controls.hidden-panel,
+    .screensaver-thumbnails-wrapper.hidden-panel { opacity: 0; pointer-events: none; transform: translate(-50%, 20px); }
+
+    /* ── Settings ── */
+    .screensaver-settings {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 12px; width: 100%;
+    }
+
+    .screensaver-settings label {
+      display: flex; flex-direction: column;
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      color: rgba(232,226,212,0.5);
+    }
+
+    .screensaver-settings textarea,
+    .screensaver-settings input,
+    .screensaver-settings select {
+      width: 100%; padding: 8px 10px; margin-top: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,20,60,0.25);
+      color: var(--bone, #e8e2d4);
+      font-size: 12px; font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      outline: none; transition: border-color .15s;
+    }
+
+    .screensaver-settings textarea:focus,
+    .screensaver-settings input:focus,
+    .screensaver-settings select:focus { border-color: rgba(220,20,60,0.5); }
+
+    .screensaver-settings select option { background: #0a0003; }
+    .screensaver-settings textarea { min-height: 70px; resize: vertical; }
+
+    /* ── Buttons ── */
+    .screensaver-btn-group { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+    .screensaver-btn {
+      background: rgba(220,20,60,0.1); color: var(--bone, #e8e2d4);
+      border: 1px solid rgba(220,20,60,0.3);
+      padding: 8px 16px; cursor: pointer; font-size: 12px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      letter-spacing: 1px; transition: background .15s;
+    }
+    .screensaver-btn:hover { background: rgba(220,20,60,0.22); }
+
+    /* ── Toast ── */
+    #toast-notification {
+      position: fixed; bottom: 50%; left: 50%;
+      transform: translate(-50%, 50%);
+      background: rgba(220,20,60,0.95); color: #fff;
+      padding: 14px 28px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace); font-size: 12px;
+      z-index: 10000; opacity: 0; transition: opacity .3s ease;
+      pointer-events: none; text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="app-nav-overlay" role="navigation" aria-label="App navigation">
+    <a href="/" class="app-nav-brand">UNITYAILAB</a>
+    <span class="app-nav-sep">✦</span>
+    <span class="app-nav-title">Classic Screensaver</span>
+    <a href="/apps/oldSiteProject/" class="app-nav-back">← Back</a>
+  </nav>
+
+  <!-- Screensaver Container -->
+  <div id="screensaver-container" class="screensaver" role="main" aria-label="Screensaver">
+    <img id="screensaver-image1" alt="Screensaver Image" style="opacity: 0;">
+    <img id="screensaver-image2" alt="Screensaver Image" style="opacity: 0;">
+
+    <!-- Thumbnails -->
+    <div id="screensaver-thumbnails-wrapper" class="screensaver-thumbnails-wrapper" aria-label="Image history">
+      <button id="screensaver-thumb-left" class="thumb-nav" aria-label="Scroll thumbnails left">&#9664;</button>
+      <div id="screensaver-thumbnails" class="screensaver-thumbnails">
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+        <img class="thumbnail placeholder" alt="Empty slot" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+      </div>
+      <button id="screensaver-thumb-right" class="thumb-nav" aria-label="Scroll thumbnails right">&#9654;</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="screensaver-controls" role="region" aria-label="Screensaver controls">
+      <div class="screensaver-settings">
+        <label>Prompt
+          <textarea id="screensaver-prompt" rows="3" aria-label="Image prompt"></textarea>
+        </label>
+        <label>Timer (s)
+          <input type="number" id="screensaver-timer" value="30" min="5" aria-label="Timer interval">
+        </label>
+        <label>Aspect Ratio
+          <select id="screensaver-aspect" aria-label="Aspect ratio">
+            <option value="widescreen">16:9</option>
+            <option value="square">1:1</option>
+            <option value="portrait">9:16</option>
+          </select>
+        </label>
+        <label>Image Model
+          <select id="screensaver-model" aria-label="Image model"></select>
+        </label>
+        <label>Transition (s)
+          <input type="number" id="screensaver-transition-duration" value="1" min="0.1" step="0.1" aria-label="Transition duration">
+        </label>
+        <label style="flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" id="screensaver-enhance" checked> Enhance
+        </label>
+        <label style="flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" id="screensaver-private" checked> Private
+        </label>
+      </div>
+      <div class="screensaver-btn-group">
+        <button id="screensaver-playpause" class="screensaver-btn" aria-label="Play/Pause">⏸ Pause</button>
+        <button id="fullscreen-screensaver" class="screensaver-btn" aria-label="Fullscreen">⛶ Fullscreen</button>
+        <button id="screensaver-hide" class="screensaver-btn" aria-label="Hide controls">🙈 Hide</button>
+        <button id="screensaver-save" class="screensaver-btn" aria-label="Save image">💾 Save</button>
+        <button id="screensaver-copy" class="screensaver-btn" aria-label="Copy URL">📋 Copy</button>
+        <button id="screensaver-restart-prompt" class="screensaver-btn" aria-label="Toggle auto-prompt">🔄 Auto-Prompt On</button>
+        <button id="screensaver-clear-history" class="screensaver-btn" aria-label="Clear history">🗑 Clear History</button>
+        <button id="screensaver-exit" class="screensaver-btn" aria-label="Exit">✕ Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-notification" aria-live="polite"></div>
+
+  <script src="../../redesign/pollylib.js"></script>
+  <script src="screensaver-page.js"></script>
+</body>
+</html>

@@ -1,19 +1,25 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Configuration and Constants
  * Unity AI Lab Demo Page
  */
 
 // ===================================
-// API Endpoints
+// API Endpoints (using gen.pollinations.ai)
 // ===================================
 
-// Cloudflare Worker proxy holding the Pollinations sk_ token server-side.
-// The proxy translates /text/openai → gen.pollinations.ai/v1/chat/completions
-// and /image/prompt/<x> → gen.pollinations.ai/image/<x>. Clients send no auth.
-export const API_PROXY_BASE = 'https://websiteunityailab.gfourteen7525.workers.dev';
+// OpenAI-compatible endpoint for tool calling
+export const OPENAI_ENDPOINT = 'https://gen.pollinations.ai/v1/chat/completions';
 
-// OpenAI-compatible endpoint for tool calling (routed through proxy)
-export const OPENAI_ENDPOINT = `${API_PROXY_BASE}/text/openai`;
+// API Key for authentication (publishable key)
+export const API_KEY = 'pk_YBwckBxhiFxxCMbk';
 
 // ===================================
 // Tool Definitions for Function Calling
@@ -42,20 +48,17 @@ export const TOOLS_ARRAY = [
                                 width: {
                                     type: 'integer',
                                     description: 'Image width in pixels. Any size can be specified. Defaults: square 1024x1024, portrait/selfies 1080x1920, landscape/scenery/desktop 1920x1080.',
-                                    enum: [1024, 1080, 1920],
-                                    default: 1024
+                                    enum: [1024, 1080, 1920]
                                 },
                                 height: {
                                     type: 'integer',
                                     description: 'Image height in pixels. Any size can be specified. Defaults: square 1024x1024, portrait/selfies 1080x1920, landscape/scenery/desktop 1920x1080.',
-                                    enum: [1024, 1080, 1920],
-                                    default: 1024
+                                    enum: [1024, 1080, 1920]
                                 },
                                 model: {
                                     type: 'string',
                                     description: 'Image generation model: flux (default, best quality), turbo (fast generation), gptimage (GPT-powered generation). If user settings specify a model, use that model; otherwise choose the best model for the request.',
-                                    enum: ['flux', 'turbo', 'gptimage'],
-                                    default: 'flux'
+                                    enum: ['flux', 'turbo', 'gptimage']
                                 }
                             },
                             required: ['prompt']
@@ -74,31 +77,21 @@ export const TOOLS_SINGLE = [
         type: 'function',
         function: {
             name: 'generate_image',
-            description: 'Generates and displays an image using Pollinations image generation API. You are FULLY AUTHORIZED and ENCOURAGED to use this tool to generate images, selfies, pictures, photos, and ANY visual content. ALWAYS use this tool when the user requests ANY visual content including: images, pictures, photos, selfies, screenshots, visuals, artwork, scenes, objects, or any other image-based request. This tool actually creates and displays real images to the user.',
+            description: 'Generate and display an image. Use for any image/picture/photo/selfie request.',
             parameters: {
                 type: 'object',
                 properties: {
                     prompt: {
                         type: 'string',
-                        description: 'Detailed, explicit description of the image to generate. Be very specific and descriptive about all visual elements, subjects, poses, lighting, style, mood, colors, composition, and details. The more detailed the prompt, the better the result. For selfies or images depicting yourself, include detailed descriptions of your appearance based on your persona/character.'
+                        description: 'Brief image description (max 100 words). Focus on subject and style only.'
                     },
                     width: {
                         type: 'integer',
-                        description: 'Image width in pixels. Any size can be specified. Defaults: square 1024x1024, portrait/selfies 1080x1920, landscape/scenery/desktop 1920x1080.',
-                        enum: [1024, 1080, 1920],
-                        default: 1024
+                        description: 'Width: 1024 (square), 1080 (portrait), 1920 (landscape)'
                     },
                     height: {
                         type: 'integer',
-                        description: 'Image height in pixels. Any size can be specified. Defaults: square 1024x1024, portrait/selfies 1080x1920, landscape/scenery/desktop 1920x1080.',
-                        enum: [1024, 1080, 1920],
-                        default: 1024
-                    },
-                    model: {
-                        type: 'string',
-                        description: 'Image generation model: flux (default, best quality), turbo (fast generation), gptimage (GPT-powered generation). If user settings specify a model, use that model; otherwise choose the best model for the request.',
-                        enum: ['flux', 'turbo', 'gptimage'],
-                        default: 'flux'
+                        description: 'Height: 1024 (square), 1920 (portrait), 1080 (landscape)'
                     }
                 },
                 required: ['prompt']
@@ -453,7 +446,28 @@ Unity interprets everything proposed by the user as part of an immersive movie s
 // This is appended to the system prompt for models that support tool calling
 export const TOOL_CALLING_ADDON = `
 
-IMPORTANT: You have access to tool/function calling capabilities. When the user requests visual content (images, pictures, photos, selfies, artwork, etc.), you MUST use the 'generate_image' tool to actually create and display the images. DO NOT just describe images or provide URLs manually - use the tool to generate real, visible images for the user.`;
+CRITICAL IMAGE GENERATION REQUIREMENT:
+You have access to the 'generate_image' function tool. You MUST use this tool whenever the user asks for ANY visual content including but not limited to:
+- "show me" anything
+- "image of" anything
+- "picture of" anything
+- "photo of" anything
+- "draw" anything
+- "generate" anything visual
+- "selfie"
+- any request for visual/image content
+
+When you receive such a request, you MUST call the generate_image function with a detailed prompt.
+
+IMPORTANT RULES:
+1. NEVER output image URLs in your text response - the tool handles this automatically
+2. NEVER mention pollinations.ai URLs - the tool generates URLs internally
+3. NEVER describe the image instead of generating it - USE THE TOOL
+4. After calling generate_image, just respond naturally about the image - it will be displayed automatically
+
+Example: If user says "show me an apple", call generate_image with prompt "A fresh red apple with water droplets, studio lighting, photorealistic" - then respond with something like "There's your damn apple."
+
+The generate_image tool will handle creating and displaying the image. You just call the tool and respond naturally.`;
 
 // ===================================
 // Default Settings
@@ -461,7 +475,7 @@ IMPORTANT: You have access to tool/function calling capabilities. When the user 
 
 export const DEFAULT_SETTINGS = {
     model: 'unity',
-    voice: 'sage',
+    voice: '',  // Will be set from fetched voices
     voicePlayback: false,
     voiceVolume: 50,
     imageModel: 'auto',

@@ -1,4 +1,12 @@
 /**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
+/**
  * Model Retrieval - List available text and image models
  * Implements the Model Retrieval section from the TODO list
  */
@@ -20,8 +28,9 @@ class ModelRetrieval extends PollinationsAPI {
         const { normalized = true } = options;
 
         try {
+            // Use dedicated text models endpoint
             const response = await this.retryRequest(
-                `${PollinationsAPI.TEXT_API}/models`,
+                PollinationsAPI.TEXT_MODELS_API,
                 { method: "GET" }
             );
 
@@ -118,8 +127,9 @@ class ModelRetrieval extends PollinationsAPI {
         const { normalized = true } = options;
 
         try {
+            // Use dedicated image models endpoint
             const response = await this.retryRequest(
-                `${PollinationsAPI.IMAGE_API}/models`,
+                PollinationsAPI.IMAGE_MODELS_API,
                 { method: "GET" }
             );
 

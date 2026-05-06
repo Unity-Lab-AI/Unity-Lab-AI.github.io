@@ -1,0 +1,219 @@
+<!doctype html>
+<!--
+  Unity AI Lab — Talking With Unity
+  https://www.unityailab.com/apps/talkingWithUnity/index.html
+  contact@unityailab.com
+  Version: v2.1.5
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talking With Unity — Unity AI Lab</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../redesign/shared-tokens.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./styleAI.css">
+
+  <style>
+    /* ── Gothic palette overrides ── */
+    :root, :root[data-theme='dark'] {
+      --background-color: #030001;
+      --text-color: var(--bone, #e8e2d4);
+      --muted-text: rgba(232,226,212,0.55);
+      --accent-primary: #dc143c;
+      --accent-primary-contrast: #fff;
+      --accent-secondary: rgba(220,20,60,0.6);
+      --accent-success: #6dbf7e;
+      --accent-primary-soft: rgba(220,20,60,0.18);
+      --border-color: rgba(220,20,60,0.18);
+      --surface-color: rgba(232,226,212,0.03);
+      --surface-highlight: rgba(220,20,60,0.08);
+      --surface-glow: rgba(220,20,60,0.25);
+    }
+    html, body { background: #030001; font-family: var(--font-body, Inter, sans-serif); }
+    h1, h2, h3 { font-family: var(--font-display, 'Cormorant Garamond', serif); }
+    code { font-family: var(--font-mono, 'JetBrains Mono', monospace); font-size: 0.9em; }
+
+    /* ── Gothic App Nav ── */
+    .app-nav {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px;
+      background: rgba(3,0,0,0.97);
+      border-bottom: 1px solid rgba(220,20,60,0.2);
+      display: flex; align-items: center; padding: 0 20px; z-index: 2000; gap: 12px;
+    }
+    .app-nav-brand {
+      font-family: var(--font-display, 'Cormorant Garamond', serif);
+      color: var(--bone, #e8e2d4); font-size: 15px; letter-spacing: 4px;
+      text-decoration: none; text-transform: uppercase;
+    }
+    .app-nav-sep { color: rgba(220,20,60,0.4); font-size: 12px; }
+    .app-nav-title { color: rgba(232,226,212,0.45); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .app-nav-back {
+      margin-left: auto; color: #dc143c; text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid rgba(220,20,60,0.35); padding: 4px 14px; transition: background .15s;
+    }
+    .app-nav-back:hover { background: rgba(220,20,60,0.1); }
+    body { padding-top: 56px; }
+    body[data-app-state='app'] { padding-top: 0; }
+    body[data-app-state='app'] .app-nav { display: none; }
+  </style>
+</head>
+<body class="no-js" data-app-state="landing">
+
+  <nav class="app-nav" role="navigation" aria-label="App navigation">
+    <a href="/" class="app-nav-brand">UNITYAILAB</a>
+    <span class="app-nav-sep">✦</span>
+    <span class="app-nav-title">Talking With Unity</span>
+    <a href="/apps.html" class="app-nav-back">← Apps</a>
+  </nav>
+
+  <noscript>
+    <div class="no-js-banner" role="alert">
+      <strong>JavaScript is disabled.</strong> The live Unity assistant requires JavaScript.
+    </div>
+  </noscript>
+
+  <section id="landing" class="landing" aria-labelledby="landing-title">
+    <div class="landing-grid">
+      <div class="landing-hero surface-card accent-card">
+        <span class="landing-badge">Unity voice lab check-in</span>
+        <h1 id="landing-title">Let's make sure every light is green</h1>
+        <p class="landing-lede">
+          Before Unity can chat with you, we run a quick readiness scan on your browser.
+          When a light glows amber, read the tip, fix it, then press "Check again."
+        </p>
+        <div class="landing-links">
+          <a class="landing-link" href="/apps.html">← Back to Apps</a>
+          <a class="landing-link" href="https://github.com/Unity-Lab-AI/Talking-with-Unity.git" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </div>
+      </div>
+
+      <div class="landing-overview surface-card">
+        <div id="status-message" class="landing-status" role="status" aria-live="polite"></div>
+        <div class="landing-body">
+          <div class="dependency-summary">
+            <span class="dependency-light" data-role="dependency-light" data-state="pending"
+                  aria-live="polite" aria-label="Checking requirements"></span>
+            <div class="dependency-summary-text">
+              <h2>What the lights mean</h2>
+              <p id="dependency-summary">
+                Checking now. Green means ready. Amber means we need to fix that before Unity can listen.
+              </p>
+            </div>
+          </div>
+
+          <ul id="dependency-list" class="dependency-list">
+            <li class="dependency-item" data-dependency="secure-context" data-state="pending"
+                data-pass-status="Ready — secure and private"
+                data-fail-status="Fix: Use HTTPS or localhost">
+              <div class="dependency-header">
+                <span class="dependency-name">Secure connection (HTTPS or localhost)</span>
+                <span class="dependency-status">Checking…</span>
+              </div>
+              <p class="dependency-message" data-message-type="pass">Secure connection detected.</p>
+              <p class="dependency-message" data-message-type="fail">Open with <code>https://</code> or from <code>localhost</code>, then press "Check again."</p>
+            </li>
+            <li class="dependency-item" data-dependency="speech-recognition" data-state="pending"
+                data-pass-status="Ready — Unity can listen"
+                data-fail-status="Ready — Vosklet fallback">
+              <div class="dependency-header">
+                <span class="dependency-name">Web Speech Recognition API</span>
+                <span class="dependency-status">Checking…</span>
+              </div>
+              <p class="dependency-message" data-message-type="pass">Speech recognition available.</p>
+              <p class="dependency-message" data-message-type="fail">Firefox is supported via Vosklet fallback.</p>
+            </li>
+            <li class="dependency-item" data-dependency="speech-synthesis" data-state="pending"
+                data-pass-status="Ready — Unity can speak back"
+                data-fail-status="Fix: Enable browser speech voices">
+              <div class="dependency-header">
+                <span class="dependency-name">Speech synthesis voices</span>
+                <span class="dependency-status">Checking…</span>
+              </div>
+              <p class="dependency-message" data-message-type="pass">Speech voices ready.</p>
+              <p class="dependency-message" data-message-type="fail">Use Chrome, Edge, or Safari with audio enabled, then press "Check again."</p>
+            </li>
+            <li class="dependency-item" data-dependency="microphone" data-state="pending"
+                data-pass-status="Ready — Microphone unlocked"
+                data-fail-status="Fix: Allow microphone access">
+              <div class="dependency-header">
+                <span class="dependency-name">Microphone access</span>
+                <span class="dependency-status">Checking…</span>
+              </div>
+              <p class="dependency-message" data-message-type="pass">Microphone permission granted.</p>
+              <p class="dependency-message" data-message-type="fail">Click "Allow" on the microphone prompt, then press "Check again."</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="landing-instructions surface-card" aria-labelledby="landing-how-to-title">
+      <h2 id="landing-how-to-title">How to get every light to glow green</h2>
+      <ol class="landing-steps">
+        <li><strong>Stay on a secure connection.</strong> Load via <code>https://</code> or <code>localhost</code>.</li>
+        <li><strong>Use Chrome or Edge.</strong> Safari works on macOS.</li>
+        <li><strong>Give Unity ears.</strong> Enable speakers and allow microphone access when prompted.</li>
+        <li><strong>Re-run the check.</strong> Press "Check again" after changes. All green = "Talk to Unity" unlocks.</li>
+        <li><strong>Unmute on load.</strong> Tap anywhere when the lab loads so Unity can hear you.</li>
+      </ol>
+    </div>
+
+    <div class="landing-actions surface-card action-bar">
+      <div class="headphones-toggle">
+        <label class="toggle-switch" title="Enable if using headphones">
+          <input type="checkbox" id="headphonesMode" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">🎧 Headphones Mode</span>
+        <span class="toggle-hint">(Unity listens while speaking)</span>
+      </div>
+      <button id="launch-app" class="primary" type="button" disabled aria-disabled="true">Talk to Unity</button>
+      <button id="recheck-dependencies" class="ghost" type="button">Check again</button>
+    </div>
+  </section>
+
+  <div id="app-root" hidden>
+    <div class="app-shell">
+      <header class="status-banner" role="status" aria-live="polite">
+        <button id="mute-indicator" class="mute-indicator" data-state="muted" type="button">
+          <span class="indicator-text">Tap or click anywhere to unmute</span>
+        </button>
+      </header>
+      <main class="layout" aria-live="polite">
+        <figure id="hero-stage" class="image-stage" data-state="empty" aria-hidden="true" title="Ask Unity to generate an image">
+          <img id="hero-image" alt="" loading="lazy" decoding="async" />
+        </figure>
+        <section class="voice-stage" role="group" aria-label="Voice activity monitors">
+          <div class="voice-monitor" id="ai-voice-monitor" data-state="idle" aria-label="Unity AI voice activity">
+            <div class="voice-circles">
+              <span class="voice-circle vc-outer" aria-hidden="true"></span>
+              <span class="voice-circle vc-mid" aria-hidden="true"></span>
+              <span class="voice-circle vc-core" aria-hidden="true"></span>
+            </div>
+            <p class="voice-label">Unity</p>
+          </div>
+          <div class="voice-monitor" id="user-voice-monitor" data-state="muted" aria-label="Your microphone activity">
+            <div class="voice-circles">
+              <span class="voice-circle vc-outer" aria-hidden="true"></span>
+              <span class="voice-circle vc-mid" aria-hidden="true"></span>
+              <span class="voice-circle vc-core" aria-hidden="true"></span>
+            </div>
+            <p class="voice-label">You</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="../../redesign/pollylib.js"></script>
+  <script src="./landing.js"></script>
+  <script src="./index.js" type="module"></script>
+</body>
+</html>

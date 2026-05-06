@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Unity AI Lab Image Sitemap
+  https://www.unityailab.com/sitemap-images.xml
+
+  Audited during P1-07 — every commented-out placeholder pointing at non-existent
+  /assets/* paths was dropped. Only verified-on-disk image references remain:
+    - /favicon.ico (homepage branding)
+    - /downloads/moana/image.png (moana miner thumbnail)
+  When new visual assets ship (e.g. screenshot library at /docs/redesign/screenshots/
+  is for internal reference, not public surface), add fresh entries here.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage — favicon -->
+  <url>
+    <loc>https://www.unityailab.com/</loc>
+    <image:image>
+      <image:loc>https://www.unityailab.com/favicon.ico</image:loc>
+      <image:title>Unity AI Lab Logo</image:title>
+      <image:caption>Unity AI Lab favicon — gothic V-D branding mark</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Downloads — Moana Miner -->
+  <url>
+    <loc>https://www.unityailab.com/downloads/moana/</loc>
+    <image:image>
+      <image:loc>https://www.unityailab.com/downloads/moana/image.png</image:loc>
+      <image:title>Moana Miner — AI-Optimized Cryptocurrency Mining Software</image:title>
+      <image:caption>Moana cryptocurrency mining application interface by Unity AI Lab — efficient XMR Monero mining software with AI optimization</image:caption>
+      <image:geo_location>Worldwide</image:geo_location>
+      <image:license>https://www.unityailab.com/</image:license>
+    </image:image>
+  </url>
+
+</urlset>

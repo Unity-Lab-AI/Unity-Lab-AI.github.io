@@ -1,11 +1,19 @@
+/**
+ * Unity AI Lab
+ * Creators: Hackall360, Sponge, GFourteen
+ * https://www.unityailab.com
+ * unityailabcontact@gmail.com
+ * Version: v2.1.5
+ */
+
 // ===================================
-// Scroll Effects Module
+// scroll handlers and parallax shit
 // ===================================
 
 import { isTouchDevice } from './utils.js';
 
 // ===================================
-// Scroll Indicator
+// scroll indicator - that bouncy arrow thing
 // ===================================
 export function initScrollIndicator() {
     const scrollIndicator = document.querySelector('.scroll-indicator');
@@ -18,7 +26,7 @@ export function initScrollIndicator() {
             }
         });
 
-        // Hide scroll indicator when scrolling down
+        // hide when you scroll - it's done its job
         window.addEventListener('scroll', function() {
             if (window.scrollY > 100) {
                 scrollIndicator.style.opacity = '0';
@@ -32,10 +40,10 @@ export function initScrollIndicator() {
 }
 
 // ===================================
-// Parallax Effect (with feature detection)
+// parallax - desktop only cause mobile can't handle it
 // ===================================
 export function initParallax() {
-    // Only enable parallax on desktop devices
+    // desktop only - touch devices choke on this
     if (window.innerWidth > 992 && !isTouchDevice()) {
         var ticking = false;
 
@@ -49,7 +57,7 @@ export function initParallax() {
                         var translateY = scrolled * 0.5;
                         var opacity = 1 - (scrolled / 600);
 
-                        // Use vendor prefixes
+                        // vendor prefixes for old browsers
                         heroContent.style.webkitTransform = 'translateY(' + translateY + 'px)';
                         heroContent.style.mozTransform = 'translateY(' + translateY + 'px)';
                         heroContent.style.msTransform = 'translateY(' + translateY + 'px)';
@@ -68,7 +76,7 @@ export function initParallax() {
 }
 
 // ===================================
-// Performance: Throttled scroll handler
+// throttled scroll - don't spam the event loop
 // ===================================
 export function initThrottledScroll() {
     var lastScrollTop = 0;
@@ -79,7 +87,7 @@ export function initThrottledScroll() {
 
         if (!ticking) {
             window.requestAnimationFrame(function() {
-                // Only update if scroll position changed significantly
+                // skip tiny scrolls
                 if (Math.abs(scrollTop - lastScrollTop) > 5) {
                     lastScrollTop = scrollTop;
                 }
