@@ -20,3 +20,5 @@ CLAUDE.md
 START_LOCAL.html
 START_SERVER.bat
 START_SERVER.sh
+# Runtime test screenshots from test-apps.js (Playwright)
+test-results-runtime/
