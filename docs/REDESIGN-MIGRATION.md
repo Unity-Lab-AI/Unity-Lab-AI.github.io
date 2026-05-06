@@ -47,9 +47,9 @@ Hoist `/REDESIGN/` contents onto the live site root in two parallel feature bran
 
 **OUT of scope (DO NOT touch on either branch):**
 - `/js/`, `/vendor/`, `/styles.css`, `/styles.min.css`, `/script.min.js`
-- `/home-init.js`, `/page-init.js`, `/visitor-tracking.js`
+- `/page-init.js`, `/visitor-tracking.js` *(`/home-init.js` archived to `_archive/orphans/` 2026-05-06 — only legacy `_archive/v1-original/` page referenced it)*
 - `/vite.config.js`, `/package.json`, `/package-lock.json`, `/cache-bust.js`, `/copy-assets.js`, `/generate-sitemap.js`, `/update-version.sh`
-- `/test-image.html`, `/test-module-image.html`
+- *(archived 2026-05-06 to `_archive/orphans/`: `/test-image.html`, `/test-module-image.html`, `/test-apps.js`, `/UnityPrompt.txt`, `/Unity Web Design.html`, `/REFACTOR_BUGS_ANALYSIS.md`, `/server.py` — see `_archive/orphans/README.md`)*
 - `/about/about.js`, `/about/about-contact.js`, `/ai/ai-init.js`, `/contact/contact-form.js`, `/services/services.js` (orphan after stub replacement, but preserved)
 - `/ai/demo/` (8000-line interactive demo)
 - `/apps/{helperInterfaceDemo,oldSiteProject,personaDemo,screensaverDemo,slideshowDemo,talkingWithUnity,textDemo,unityDemo}/` (8 demo subfolders)

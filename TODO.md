@@ -13,7 +13,7 @@
 1. Moved `img.onload` and `img.onerror` handlers to IMMEDIATELY after img element creation
 2. Set `img.src` IMMEDIATELY after handlers (before DOM insertion)
 3. Removed broken setTimeout/fetch blob approach
-4. Now matches the working pattern from `test-image.html`
+4. Now matches the working pattern from `_archive/orphans/test-image.html` (archived 2026-05-06)
 
 **Files Modified:**
 - `ai/demo/js/chat.js` - Complete rewrite of image handling logic
