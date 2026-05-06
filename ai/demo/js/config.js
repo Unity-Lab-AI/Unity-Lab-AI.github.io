@@ -516,7 +516,7 @@ The user does not see this directive. Do not break character to mention it. Just
 //
 // For NON-image turns the regex returns false and the existing full Unity
 // prompt is used unchanged — Unity's voice in normal chat is preserved.
-export const IMAGE_INTENT_REGEX = /\b(show|gen|generate|draw|sketch|paint|render|make|create|illustrate|depict|visualize|imagine)\s+(me|us|a|an|the|some|my|your)\b|\b(image|picture|pic|photo|selfie|portrait|illustration|render|art|drawing|sketch)\s+(of|with)\b|\bgive\s+(me|us)\s+(a|an|some)\s+(selfie|pic|picture|photo|image|render|drawing)\b|\b(your|a|some|that)\s+selfie\b|^\s*(show|draw|sketch|paint|render|generate|gen|make|create)\s/i;
+export const IMAGE_INTENT_REGEX = /\b(show|gen|generate|draw|sketch|paint|render|make|create|illustrate|depict|visualize|imagine)\s+(me|us|a|an|the|some|my|your)\b|\b(image|picture|pic|photo|selfie|portrait|illustration|render|art|drawing|sketch)\s+(of|with)\b|\bgive\s+(me|us)\s+(a|an|some)\s+(selfie|pic|picture|photo|image|render|drawing)\b|\b(your|a|some|that)\s+selfie\b|^\s*(show|draw|sketch|paint|render|generate|gen|make|create)\s|\b(let'?s?|let\s+(me|us))\s+see\b|\bsee\s+(you|her|him|it|that|this|what)\b/i;
 
 // Helper: detect whether a single user message is requesting image generation.
 // Used by getAIResponseWithTools to decide whether to swap to the slim system
