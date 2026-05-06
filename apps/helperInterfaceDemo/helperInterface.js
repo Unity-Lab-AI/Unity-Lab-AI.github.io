@@ -720,7 +720,10 @@ async function sendMessage(message) {
     while (attempt < maxAttempts) {
       attempt++;
       try {
-        response = await fetch(`${PollinationsAPI.TEXT_API}?key=${API_KEY}&safe=false`, {
+        // safe:false in body disables Pollinations content filter (the URL
+        // query param ?safe=false is not honored by /v1/chat/completions).
+        if (requestBody && typeof requestBody === 'object') requestBody.safe = false;
+        response = await fetch(`${PollinationsAPI.TEXT_API}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -804,7 +807,8 @@ async function sendMessage(message) {
             followUpBody.seed = Math.floor(Math.random() * 1000000);
           }
 
-          const followUpResponse = await fetch(`${PollinationsAPI.TEXT_API}?key=${API_KEY}&safe=false`, {
+          if (followUpBody && typeof followUpBody === 'object') followUpBody.safe = false;
+          const followUpResponse = await fetch(`${PollinationsAPI.TEXT_API}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -974,7 +978,10 @@ async function fetchModels() {
         throw new Error('Invalid response type');
       }
 
-      models = await response.json();
+      const raw = await response.json();
+      // Normalize: gen.pollinations.ai returns { object, data: [...] }; legacy
+      // returns a bare array. Accept both.
+      models = Array.isArray(raw) ? raw : (raw && raw.data) || [];
 
       if (!Array.isArray(models) || models.length === 0) {
         throw new Error('Invalid models data received');
@@ -1117,7 +1124,9 @@ async function fetchImageModels() {
         throw new Error('Invalid response type');
       }
 
-      models = await response.json();
+      const rawImg = await response.json();
+      // Normalize: handle both bare-array and { data: [...] } wrapper.
+      models = Array.isArray(rawImg) ? rawImg : (rawImg && rawImg.data) || [];
 
       if (!Array.isArray(models) || models.length === 0) {
         throw new Error('Invalid image models data received');
@@ -1276,7 +1285,8 @@ async function getImageDescription(imageUrl) {
         }
       ],
       model: "openai",
-      jsonMode: false
+      jsonMode: false,
+      safe: false
     };
 
     // Use direct fetch with API key authentication

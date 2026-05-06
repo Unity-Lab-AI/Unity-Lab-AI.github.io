@@ -189,7 +189,8 @@ async function fetchImageModels() {
     const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}`);
     if (!response.ok) throw new Error('Failed to fetch models');
 
-    const models = await response.json();
+    const raw = await response.json();
+    const models = Array.isArray(raw) ? raw : (raw && raw.data) || [];
     modelSelect.innerHTML = '';
 
     // API returns objects with 'name' property

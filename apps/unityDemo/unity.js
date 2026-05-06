@@ -482,7 +482,10 @@ async function sendMessage(message) {
 
     const requestBody = {
       messages: messages,
-      model: apiModel
+      model: apiModel,
+      // safe:false disables Pollinations content filter so Unity's profanity
+      // and explicit content survives the upstream pipeline.
+      safe: false
     };
     if (apiModel !== "openai") {
       requestBody.stream = false;
@@ -620,7 +623,10 @@ async function fetchModels() {
     // Use direct fetch with API key authentication
     const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}`);
     if (!response.ok) throw new Error("Failed to fetch models");
-    const models = await response.json();
+    const raw = await response.json();
+    // Normalize: gen.pollinations.ai returns { object, data: [...] }; legacy
+    // returns a bare array. Accept both.
+    const models = Array.isArray(raw) ? raw : (raw && raw.data) || [];
 
     // Add custom Unity model group first
     const customGroup = document.createElement("optgroup");
@@ -876,7 +882,8 @@ async function getImageDescription(imageUrl) {
         }
       ],
       model: "openai",
-      jsonMode: false
+      jsonMode: false,
+      safe: false
     };
     // Use direct fetch with API key authentication
     const response = await fetch(`${PollinationsAPI.TEXT_API}`, {

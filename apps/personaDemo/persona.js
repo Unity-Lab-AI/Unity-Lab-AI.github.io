@@ -41,7 +41,10 @@ async function fetchTextModels() {
   try {
     // Use direct fetch with API key authentication
     const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}`);
-    const models = await response.json();
+    const raw = await response.json();
+    // Normalize: gen.pollinations.ai returns { object, data: [...] }; legacy
+    // returns a bare array. Accept both.
+    const models = Array.isArray(raw) ? raw : (raw && raw.data) || [];
     textModel.innerHTML = '';
 
     // Add fetched models first - API returns objects with 'name' property
@@ -80,7 +83,8 @@ async function fetchImageModels() {
   try {
     // Use direct fetch with API key authentication
     const response = await fetch(`${PollinationsAPI.IMAGE_MODELS_API}`);
-    const models = await response.json();
+    const raw = await response.json();
+    const models = Array.isArray(raw) ? raw : (raw && raw.data) || [];
     imageModel.innerHTML = '';
 
     // API returns objects with 'name' property
@@ -568,7 +572,10 @@ chatForm.onsubmit = async function(event) {
 
   const requestBody = {
     messages: getModelMessages(modelType, prompt),
-    model: apiModel
+    model: apiModel,
+    // safe:false disables Pollinations content filter so Unity's profanity
+    // and explicit content survives the upstream pipeline.
+    safe: false
   };
   chatOutput.innerHTML += sanitizeHTML(`<p id="ai-thinking"><em>${isEvil ? 'Evil AI plotting...' : 'AI is thinking...'}</em></p>`);
   scrollToBottom();

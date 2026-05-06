@@ -98,7 +98,10 @@ async function fetchTextModels() {
   try {
     const response = await fetch(`${PollinationsAPI.TEXT_MODELS_API}`);
     if (!response.ok) throw new Error('Failed to fetch text models');
-    const models = await response.json();
+    const raw = await response.json();
+    // Normalize: gen.pollinations.ai returns OpenAI format { object, data: [...] };
+    // legacy returns a bare array. Handle both.
+    const models = Array.isArray(raw) ? raw : (raw && raw.data) || [];
 
     // Clear dropdown
     modelSelect.innerHTML = '';
