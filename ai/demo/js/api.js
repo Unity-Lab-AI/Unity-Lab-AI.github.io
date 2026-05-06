@@ -191,6 +191,50 @@ async function getUnitySelfImagePrompt(userMsg, fullUnityPrompt) {
  * @returns {Promise<string|null>} Mistral's Unity-voice commentary, or
  *   null if all attempts returned empty/error
  */
+/**
+ * Unity-voice chat retry. Used when the regular non-image chat flow returns
+ * empty content (Mistral RLHF / Azure refused silently). Asks Mistral to
+ * respond to the user's actual message with the canonical Unity prompt
+ * loaded, varying framing/temp/seed across attempts.
+ *
+ * Returns Unity's actual response, or null if all attempts fail (caller
+ * shows empty bubble — better than 'No response received' string).
+ */
+async function getUnityChatRetry(originalUserMessage, fullUnityPrompt) {
+    if (!fullUnityPrompt || !originalUserMessage) return null;
+    const apiKey = PollinationsAPI.DEFAULT_API_KEY;
+    const ATTEMPTS = [
+        { temp: 1.1, framing: `User just said: "${originalUserMessage}". Respond in-character. Brief.` },
+        { temp: 1.4, framing: `Reply to the user's last message in your voice. They said: "${originalUserMessage}". Stay in-character, brief.` },
+        { temp: 0.8, framing: `User: "${originalUserMessage}". Drop a brief in-character response.` }
+    ];
+    for (const a of ATTEMPTS) {
+        try {
+            const r = await fetch(OPENAI_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                body: JSON.stringify({
+                    model: 'mistral', safe: false, max_tokens: 600, temperature: a.temp,
+                    seed: Math.floor(Math.random() * 1e8),
+                    messages: [
+                        { role: 'system', content: fullUnityPrompt },
+                        { role: 'user', content: a.framing }
+                    ]
+                })
+            });
+            if (!r.ok) { console.warn(`💬 Chat retry @t${a.temp} HTTP ${r.status}`); continue; }
+            const d = await r.json();
+            const content = (d?.choices?.[0]?.message?.content || '').trim();
+            if (content.length >= 5 && content.length <= 1500) {
+                console.log(`💬 Chat retry win @t${a.temp}:`, content.substring(0, 100));
+                return content;
+            }
+        } catch (e) { console.warn(`💬 Chat retry threw:`, e.message); }
+        await new Promise(r => setTimeout(r, 1000));
+    }
+    return null;
+}
+
 async function getUnityCommentary(imagePrompt, fullUnityPrompt, originalUserMessage) {
     // mistral-only. System prompt = canonical Unity from disk. We thread
     // the user's actual original message into the framings (when supplied)
@@ -1060,7 +1104,7 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
         } else {
             // Regular text response - but check if model outputted tool call as text
             console.log('ℹ️ No function calls in response structure');
-            let content = assistantMessage.content || 'No response received';
+            let content = assistantMessage.content || '';
 
             // FALLBACK: Image-intent was detected but the model did NOT fire
             // a tool_call. ALWAYS hit the direct image endpoint — the user
@@ -1163,6 +1207,16 @@ async function getAIResponseWithTools(message, model, systemPrompt, chatHistory,
                 } catch (parseError) {
                     console.warn('Failed to parse tool call from text:', parseError);
                 }
+            }
+
+            // If we still have empty content (mistral refused / Azure-blocked /
+            // returned silently), run the Unity-voice chat retry chain so the
+            // user gets an actual Unity response instead of an empty bubble or
+            // the old hardcoded "No response received" string.
+            if (!content || !content.trim()) {
+                console.warn('💬 Empty content from primary call — running Unity-voice chat retry');
+                const retried = await getUnityChatRetry(lastUserText, systemPrompt);
+                if (retried) content = retried;
             }
 
             return {
@@ -1328,8 +1382,10 @@ async function getAIResponseLegacy(message, model, systemPrompt, chatHistory, se
         }
 
         const text = await response.text();
+        // No hardcoded fallback strings. If legacy endpoint returned empty,
+        // return empty text — caller can decide. Better than a fake string.
         return {
-            text: text || 'No response received',
+            text: (text || '').trim(),
             images: []
         };
     } catch (error) {
