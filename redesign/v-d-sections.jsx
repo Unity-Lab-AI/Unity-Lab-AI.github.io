@@ -686,6 +686,10 @@ const GothicFooter = () => {
         <span aria-hidden="true">·</span>
         <a href="./contact">Contact</a>
         <span aria-hidden="true">·</span>
+        <a href="./terms">Terms</a>
+        <span aria-hidden="true">·</span>
+        <a href="./privacy">Privacy</a>
+        <span aria-hidden="true">·</span>
         <a href="https://pollinations.ai">Powered by Pollinations.AI</a>
         <span aria-hidden="true">·</span>
         <span>Built with blood, sweat, and ~{coffeeCount.toLocaleString()} cups of coffee.</span>

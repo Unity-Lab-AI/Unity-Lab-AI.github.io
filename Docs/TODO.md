@@ -212,7 +212,37 @@
 
 ## P2 - MEDIUM PRIORITY
 
-*No active P2 tasks*
+### [x] Terms of Service + Privacy Policy pages — full legal write-ups
+**Status:** DONE — 2026-05-08 (branch `feature/legal-tos-privacy` off `develop`; FINALIZED.md entry written verbatim per LAW #0 + FINALIZED-before-DELETE rule; pending atomic commit + PR back into `develop`)
+**Branch:** `feature/legal-tos-privacy`
+**User direction (verbatim, LAW #0):**
+> "We really really need to deal with a terms of service page, and a privacy policy page, with proper, legal documentation and write-ups
+>
+> We need to ensure that the terms of service page, defers any and all responsibility to the end user, and clearly outline this page is only for used by individuals who are above the age of convent in their juristion (the age at which a person is considered an adult), and that any underage or minor use is not allowed, and any responsibility for minors on the site is at all times, differed back to the parents or guardian's responcility to keep their children off of the site. UnityAILab, and any of it's parties are not responcible for anything the AI produces, as far as generated text, audio, or images, and any problem with such functionality is deffred back to the original generative AI providers, Pollinations, and that provider's providers. This website in its current state, is NOT a generative AI provider, and simply uses an external provider to provide proof of concept experimental showcases, to showcase jailbreak and cyber security / generative AI security capabilites of UnityAILAb, from a red team perspective, showcasing the ability to bypass convential systems, with willigness to explain how it is done, in an attempt to not only prove it can be done, but to showcase skillsets. Theres a lot of ther things that need to be added in as well.
+>
+> The privacy policy page needs to explain that any generative AI responces are not stored by us, and is subjet to the terms of pollinations, which themselves do not store data either, however, it is up to pollinations for how the data is handled, and a bunch of other legal jargon.
+>
+> All highly professional, legally worded, ext."
+>
+> "and sayappropriate thing to under aged 18 people idk should shay to under 18 people reading pricavy and and terms of service"
+
+**Q&A captured from clarification (LAW #0 verbatim):**
+- Governing-law jurisdiction: "what ever the best is for a hobbie project from 4 guys in 4 different states that is just a hobbie project not even a company yet and not charging money for anything(hope to make profit at some point and incorporate)" → resolved to **Delaware governing law + AAA arbitration + class-action waiver** (best-practice neutral default for non-monetized multi-state hobby project, swappable on incorporation)
+- Operator name in legal docs: "Unity AI Lab (the brand)"
+- Legal contact email: "contact@unityailab.com"
+
+**Scope:**
+- Build `terms.html` + `privacy.html` at site root using gothic V-D redesign chrome (matches `about.html` / `contact.html` / etc. — `GothicNavbar` + content component + `GothicFooter`)
+- Build `redesign/terms-v1.jsx` (TermsV1 component) + `redesign/privacy-v1.jsx` (PrivacyV1 component) carrying the legal content
+- Build `redesign/legal-v1.css` for shared legal-page typography + the warning-callout treatment for the under-18 plain-English section
+- Terms-of-Service must defer all responsibility to the end user; restrict to adults at age of consent in their jurisdiction; defer minor-supervision responsibility to parents/guardians; disclaim Unity AI Lab and its parties of responsibility for any AI-generated text/audio/image content (defers to Pollinations and Pollinations' upstream providers); explicitly state this website is NOT a generative AI provider; frame as proof-of-concept experimental showcase of jailbreak + cybersecurity / generative-AI-security capabilities from a red-team perspective (willingness to explain how it is done — proves it can be done + showcases skillsets); add the standard legal coverage (acceptable use, no warranty, limitation of liability, indemnification, IP, external links, termination, changes to terms, governing law / arbitration / class-action waiver, severability, contact)
+- Privacy Policy must explain: no AI conversations or generations stored by Unity AI Lab; subject to Pollinations' terms; Pollinations does not store either, but data handling is at Pollinations' discretion; localStorage usage detail (chat history, settings, age-verification flags); third-party visitor counter (abacus.jasoncameron.dev) and what it does and doesn't collect; no cookies, no analytics, no tracking pixels from us; data-subject-rights gestures for GDPR / CCPA jurisdictions; international transfer note (GitHub Pages = US); changes to policy; contact
+- BOTH pages must include a plain-English (non-legalese) section addressed at any under-18 reader who reaches the page — telling them this site isn't for them, what they should do (close the tab, talk to a parent/guardian), and that continued use is on them
+- Wire `Terms` + `Privacy` links into the `GothicFooter` legal meta strip in `redesign/v-d-sections.jsx` so the links propagate to every page
+- Add both URLs to `sitemap.xml` and `scripts/generate-sitemap.js` PAGE_CONFIG (priority 0.4, changefreq yearly — typical for legal pages)
+- Update `Docs/ARCHITECTURE.md` with a note pointing to the new legal pages
+- Atomic commit: pages + JSX components + CSS + footer wiring + sitemap + sitemap generator + ARCHITECTURE doc + FINALIZED.md entry, all in one commit
+- Open PR back into `develop`
 
 ---
 

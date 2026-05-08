@@ -96,6 +96,18 @@ const PAGE_CONFIG = [
       caption: 'Moana cryptocurrency mining application by Unity AI Lab',
     },
   },
+  {
+    url: '/terms.html',
+    priority: '0.3',
+    changefreq: 'yearly',
+    comment: 'Terms of Service — legal page, footer-linked from every page',
+  },
+  {
+    url: '/privacy.html',
+    priority: '0.3',
+    changefreq: 'yearly',
+    comment: 'Privacy Policy — legal page, footer-linked from every page',
+  },
 ];
 
 function formatDate(date) {
