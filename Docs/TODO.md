@@ -212,6 +212,30 @@
 
 ## P2 - MEDIUM PRIORITY
 
+### [x] og:image absolute-URL fix + add og:image to the 7 redesigned pages that lack it
+**Status:** DONE — 2026-05-08 (branch `feature/og-image-absolute-urls` off `develop`; FINALIZED.md entry written verbatim per LAW #0 + FINALIZED-before-DELETE; pending atomic commit + merge develop)
+**Branch:** `feature/og-image-absolute-urls`
+**User direction (verbatim, LAW #0):**
+> "one last thing i asked you before about the social image not posting with the url address when the url is shared.. i only get the write up:'Unity AI Lab Unity AI Lab — The Dark Side of AI An independent lab forging AI tools without the apology layer. Open source, hand-written, intentionally unfiltered. Built by four people who'd rather ship something true than something safe.'"
+>
+> "B but make sure it wont mass with our other github pages that build the same domain page like /unity as an example that has its own social image"
+>
+> "the slash unity path to www.unityailab.com is a totally different repo u arnt to worry about its just it has its own socila image and builds out on github pages just like the site does"
+
+**Diagnosis:**
+- `index.html` lines 31 + 42 use ROOT-RELATIVE URL `/social/og-image.jpg` for `og:image` and `twitter:image`. Open Graph spec calls for absolute URLs; Facebook / LinkedIn / iMessage drop the image when the URL is relative. Discord and sometimes Twitter resolve it; that's why the user sees mixed/no image when sharing the URL.
+- The other 7 redesigned root pages (`ai.html`, `about.html`, `apps.html`, `services.html`, `projects.html`, `contact.html`, `codex.html`) have NO `og:image` meta tag at all. Sharing those URLs shows no preview image.
+- `terms.html` + `privacy.html` (legal pages I shipped earlier today) already use the absolute URL — those serve as the correct-pattern reference.
+- The image file itself is fine — `social/og-image.jpg` is 1200×630 JPEG, 104 KB, served HTTP 200 from Cloudflare with `Content-Type: image/jpeg`.
+
+**Scope:**
+- Fix `index.html` og:image + twitter:image to absolute URL `https://www.unityailab.com/social/og-image.jpg`
+- Add og:image + twitter:image (and supporting og:image:width / og:image:height / og:image:alt) to the 7 redesigned root pages that lack them, all pointing at the same site-level card
+- Atomic commit covering all 8 HTML edits + workflow doc updates
+- DO NOT touch the separate `/unity` repo (different GitHub Pages build at the same domain, owns its own social image — out of scope and not in this repo anyway)
+- DO NOT touch the social/ folder or the image file itself
+- Promote per the established release flow
+
 ### [x] Legal-acceptance modal (ToS + Privacy) — combined with / sequenced around the 18+ age gate
 **Status:** DONE — 2026-05-08 (branch `feature/legal-acceptance-modal` off `develop`; FINALIZED.md entry written verbatim per LAW #0 + FINALIZED-before-DELETE rule; pending atomic commit + merge into develop + main)
 **Branch:** `feature/legal-acceptance-modal`
