@@ -839,3 +839,137 @@ All 5 image network responses HTTP 200 from `websiteunityailab.gfourteen7525.wor
 - `apps/oldSiteProject/storage.js` `/api/registerUser` legacy endpoint — fires once for new browsers without `uniqueUserId` localStorage flag, then no-ops. Not breaking and not in scope. Can be cleaned up alongside `initUserChecks` in a follow-up if Gee wants.
 - React-rendered `apps.html` `<main id="main-content">` exists only after React mounts; the `disableSite()` blur effect won't apply pre-mount. The full-viewport backdrop modal is the actual gate (and works regardless) — the blur is cosmetic.
 - `dist/` build output — not modified directly. Will regenerate on next `npm run build`.
+
+---
+
+## 2026-05-08 — Terms of Service + Privacy Policy pages: full legal write-ups + under-18 plain-English notice + footer wiring
+
+**Branch:** `feature/legal-tos-privacy` (off `develop`)
+
+**User verbatim (LAW #0) — primary direction:**
+
+> "We really really need to deal with a terms of service page, and a privacy policy page, with proper, legal documentation and write-ups
+>
+> We need to ensure that the terms of service page, defers any and all responsibility to the end user, and clearly outline this page is only for used by individuals who are above the age of convent in their juristion (the age at which a person is considered an adult), and that any underage or minor use is not allowed, and any responsibility for minors on the site is at all times, differed back to the parents or guardian's responcility to keep their children off of the site. UnityAILab, and any of it's parties are not responcible for anything the AI produces, as far as generated text, audio, or images, and any problem with such functionality is deffred back to the original generative AI providers, Pollinations, and that provider's providers. This website in its current state, is NOT a generative AI provider, and simply uses an external provider to provide proof of concept experimental showcases, to showcase jailbreak and cyber security / generative AI security capabilites of UnityAILAb, from a red team perspective, showcasing the ability to bypass convential systems, with willigness to explain how it is done, in an attempt to not only prove it can be done, but to showcase skillsets. Theres a lot of ther things that need to be added in as well.
+>
+> The privacy policy page needs to explain that any generative AI responces are not stored by us, and is subjet to the terms of pollinations, which themselves do not store data either, however, it is up to pollinations for how the data is handled, and a bunch of other legal jargon.
+>
+> All highly professional, legally worded, ext."
+
+**User verbatim (LAW #0) — under-18 messaging follow-up:**
+
+> "and sayappropriate thing to under aged 18 people idk should shay to under 18 people reading pricavy and and terms of service"
+
+**Q&A captured during clarification (LAW #0 verbatim):**
+
+- Governing law: "what ever the best is for a hobbie project from 4 guys in 4 different states that is just a hobbie project not even a company yet and not charging money for anything(hope to make profit at some point and incorporate)" → resolved to **Delaware governing law + AAA arbitration + class-action waiver** (best-practice neutral default for non-monetized multi-state hobby project; swappable on incorporation, and a 30-day individual opt-out is built into the arbitration clause).
+- Operator name in legal docs: **"Unity AI Lab (the brand)"** — used as-is throughout, with the Section IX/X "Unity AI Lab Parties" defined-term covering members/contributors/officers/employees/agents/licensors/suppliers.
+- Legal contact email: **`contact@unityailab.com`** — used in both pages and in the meta-strip header on each.
+
+### What shipped
+
+**1. Terms of Service (`/terms.html` — Codex 03):**
+
+- HTML shell at root (`terms.html`), gothic V-D chrome (React UMD + Babel + GothicNavbar + GothicFooter).
+- Content component `redesign/terms-v1.jsx` (TermsV1) — 17 sections, table of contents, "FILE/OPEN — UNCLASSIFIED" classified mast, EOF mark — same vocabulary as existing Codex 02 (Contact V1) for visual continuity.
+- Section coverage:
+  - I. Acceptance of these Terms — by-using-you-accept; user assumes all responsibility for use and consequences.
+  - II. Nature of the Service — **explicit "this website, in its current state, is NOT a generative AI provider"** carrying the user's verbatim policy framing; describes the proof-of-concept red-team / jailbreak-and-security showcase purpose; warns about experimental / breakable / offensive output.
+  - III. Eligibility & Age Requirement — **"above the age of consent in their jurisdiction (the age at which a person is considered an adult)"** verbatim; underage/minor use **"is not allowed"** verbatim; self-attestation language for the age gate.
+  - IV. Notice to Anyone Under 18 (the plain-English callout) — visually distinct red-bordered box with the `lV1-under18` styling; tells the under-18 reader directly: stop, close the tab, tell a parent/guardian, helplines (Crisis Text Line 741741 US / Childline 0800 1111 UK / search-equivalent for other countries), don't lie about age. Explicitly disclaims responsibility for continued use after the notice.
+  - V. Parents & Legal Guardians — **"any responsibility for minors who reach the Service is, at all times, deferred back to the parent's or guardian's responsibility to keep their children off of the Service"** verbatim; lists OS-level parental controls (Windows Family Safety, macOS/iOS Screen Time, Android Family Link), DNS filters (OpenDNS Family Shield, CleanBrowsing), third-party content filters.
+  - VI. AI-Generated Content — **"Unity AI Lab and any of its parties are not responsible for anything the AI produces, as far as generated text, audio, or images. Any problem with such functionality is deferred back to the original generative AI providers — Pollinations, and that provider's providers"** verbatim, integrated as the leading clause of the section.
+  - VII. Acceptable Use — absolute CSAM prohibition, NCII / non-consensual intimate imagery, harassment / doxxing, CBRN-weapon operational instructions, fraud, unauthorized security probing, impersonation, age-gate circumvention, resale, illegality. Closing graf clarifies: red-team / jailbreak-research character of the Service does NOT authorize criminal use.
+  - VIII. Disclaimer of Warranties — full ALL-CAPS "AS IS / AS AVAILABLE" with merchantability / fitness / title / non-infringement / accuracy carve-outs.
+  - IX. Limitation of Liability — full ALL-CAPS no-indirect-/-incidental-/-consequential clause; aggregate cap = greater of (amount paid in last 12 months for the Service) or USD $100. Acknowledges Service is free.
+  - X. Indemnification — standard defense-and-hold-harmless clause covering use of Service / Terms violations / law violations / third-party-rights violations / generated content / false age attestation; right of Unity AI Lab to assume defense.
+  - XI. Intellectual Property — separates our materials, third-party materials, AI-generated outputs (no ownership claim by us), and user prompts (license-grant only as needed for relay to Pollinations).
+  - XII. Third-Party Services & Links — Pollinations + upstream providers, GitHub Pages, abacus.jasoncameron.dev visitor counter, CDNs (unpkg, Google Fonts).
+  - XIII. Termination — at our discretion (no accounts, so practical = IP-block / feature-removal / shutdown); user terminates by ceasing use; survival clause.
+  - XIV. Changes to these Terms — Effective-date update + version-history mark; continued use = acceptance.
+  - XV. Governing Law / Arbitration / Class-Action Waiver — Delaware governing law + AAA Consumer Arbitration Rules + Wilmington seat; class-action waiver (with severability fallback if found unenforceable); small-claims carve-out; **30-day individual opt-out** mailed to `contact@unityailab.com`; residual exclusive jurisdiction = New Castle County, DE state + federal courts.
+  - XVI. Severability & Miscellaneous — severability, no-waiver, entire-agreement, assignment (only by us), no-agency, force majeure (including Pollinations / upstream outages), headings-not-binding, English-controlling.
+  - XVII. Contact — `contact@unityailab.com`; clarifies unincorporated-hobby-project status; email is the authoritative legal-notice channel.
+
+**2. Privacy Policy (`/privacy.html` — Codex 04):**
+
+- HTML shell at root (`privacy.html`), same gothic V-D chrome.
+- Content component `redesign/privacy-v1.jsx` (PrivacyV1) — 17 sections, table of contents, classified mast, EOF mark.
+- Section coverage:
+  - I. Scope & Acceptance — incorporated into ToS; using site = consent; if you don't consent, leave.
+  - II. At a Glance — honest one-screen summary covering: no server-side user store, no stored conversations, **"Generative AI responses are not stored by us"** verbatim, **"It is up to Pollinations for how the data is handled"** verbatim ("…in accordance with their terms — and they themselves do not store data either, but you should review their policies directly"), localStorage scope, no cookies / analytics / fingerprinting / advertising trackers, third-party visitor counter, GitHub Pages logs, adults-only.
+  - III. Who We Are — unincorporated hobby project from a small team across multiple US states, free, public proof-of-concept showcase, NOT a generative AI provider; controller/processor framing.
+  - IV. What We Do Not Collect — full negative list (no name/email/phone/address/ID/payment, no user-account system, no chat-content storage, no generation storage, no UAL-set cookies, no Google Analytics / Meta Pixel / TikTok Pixel / etc., no fingerprinting, no sale/rental/license to third parties).
+  - V. Local Browser Storage — concrete enumeration of localStorage entries (chat history, settings, age-verification flags including `button18`/`birthdate`/randomized site flag, visitor-counter session flag); user can clear via browser settings.
+  - VI. Visitor Counter — third-party stateless service at abacus.jasoncameron.dev; aggregate count only; IP/User-Agent visible to that service at network level; we do not log; user can block via extensions or DNS.
+  - VII. AI Generations & Pollinations — full data-flow description: **"Any generative AI responses are not stored by us"** verbatim → request through CF Worker proxy → Pollinations → upstream providers → response relayed to browser. Worker discards rather than stores; Cloudflare applies platform-level logging. **"Subject to the terms of Pollinations, which themselves do not store data either; however, it is up to Pollinations for how the data is handled"** verbatim, with explanation that Pollinations relies on its own model / hosting / moderation providers (Azure OpenAI etc.). Practical-consequences guidance for users: don't enter sensitive data, don't enter third-party PII, don't enter regulated data (HIPAA/FERPA/GLBA/PCI), review Pollinations' policies directly.
+  - VIII. Cookies & Similar Technologies — none from us; localStorage/sessionStorage are functional-only; third parties may set their own.
+  - IX. Hosting & Server Access Logs — GitHub Pages serves static; standard server-access logging by GitHub; we don't read those logs; Cloudflare Worker on Cloudflare's logging.
+  - X. Children's Privacy — not directed to children; restricted to age of consent in jurisdiction; we do not knowingly collect from children; no user-database to delete from; **"Any responsibility for minors who reach the Service is, at all times, deferred back to the parent's or guardian's responsibility to keep their children off of the Service"** verbatim.
+  - XI. Notice to Anyone Under 18 — same red-bordered plain-English callout as on the Terms page (warning, helplines, instructions to leave, don't-lie-about-age, don't-give-real-info-to-AI), plus a privacy-specific addendum: even though we don't know who you are, what you type leaves your browser to third parties; we can't tell those companies to forget you, so don't send anything from this site at all.
+  - XII. Your Rights Under GDPR & CCPA — right-to-know / access / correction / deletion / portability / objection / non-discrimination / DPA-complaint; how-to-exercise via `contact@unityailab.com`; one-month GDPR / 45-day CCPA response timeline; no-sale/no-share statement; authorized-agents accepted with proof of authority.
+  - XIII. Security — HTTPS, server-side token (Worker), no client credentials, no user database, no server-side conversation store; standard "no method is 100% secure" disclaimer.
+  - XIV. International Data Transfers — US-hosted infrastructure; transfers acknowledged; rely on providers' lawful-transfer mechanisms (SCCs etc.) where applicable; we don't maintain a separate cross-border-transfer mechanism because we don't store user data.
+  - XV. Retention — limited to (a) localStorage on user device, retained until user clears, (b) email correspondence retained per normal email-management practice. Third-party retention noted as outside our control.
+  - XVI. Changes to this Policy — Effective-date update + version-history mark; continued use = acceptance.
+  - XVII. Contact — `contact@unityailab.com`; suggested subject lines for `Privacy request — access` / `Privacy request — deletion`.
+
+**3. Shared chrome:**
+
+- `redesign/legal-v1.css` — shared legal-page typography (Trajan Pro display, Cormorant Garamond italic lede, Inter body, JetBrains Mono mast / band / meta), classified-mast / meta-strip / cover / TOC / band / section vocabulary identical to Contact V1, plus a custom red-bordered `.lV1-under18` callout box for the plain-English under-18 section (the visually distinct treatment the user asked for), plus EOF mark and 2-column TOC with mobile collapse to 1 column.
+- Both HTML shells use `redesign/shared-tokens.css` + `redesign/variations.css?v=16` + `redesign/legal-v1.css?v=20260508a` for stylesheet stack — no Bootstrap, no AOS, no extra deps beyond what every redesigned page already loads.
+- React + Babel + sigils + chrome + sections all mirror `contact.html` script chain so `GothicNavbar` and `GothicFooter` render identically across the legal pages and the rest of the site.
+
+**4. Footer wiring (cross-site propagation):**
+
+- `redesign/v-d-sections.jsx` `GothicFooter` `vD-foot-meta` strip — added `Terms` + `Privacy` links between the existing `Contact` and `Pollinations` entries. Single edit propagates across `index.html`, `ai.html`, `about.html`, `apps.html`, `services.html`, `projects.html`, `contact.html`, `codex.html`, plus the new `terms.html` and `privacy.html` themselves — every redesigned page that uses the shared footer now exposes the new legal links.
+- Used `./terms` / `./privacy` extensionless paths matching the existing nav/footer convention (GitHub Pages 302s extensionless to the `.html` resource; the sitemap declares the `.html` form as canonical, matching the precedent set in P1-07).
+
+**5. Sitemap:**
+
+- `sitemap.xml` — added two new `<url>` entries (`/terms.html` and `/privacy.html`, priority 0.3, changefreq yearly, lastmod 2026-05-08) below the `/downloads/` entry, preserving the canonical `.html` extension form per P1-07 decision.
+- `scripts/generate-sitemap.js` — added the two new entries to `PAGE_CONFIG` so future `npm run build` cycles regenerate the sitemap with both included. Comments in the config call them out as legal pages footer-linked from every page.
+
+**6. Architecture doc:**
+
+- `Docs/ARCHITECTURE.md` — added a new `⚖️ Legal pages (May 2026)` callout immediately after the existing `🔐 Auth & API note (May 2026)` block at the top of the file, summarizing the structure (Terms = Codex 03, Privacy = Codex 04, shared `legal-v1.css`), the policy positions (defers responsibility, age-of-consent, parent/guardian-deferred, AI-content disclaimer to Pollinations + upstream, NOT-a-GenAI-provider framing, Delaware governing law + AAA arbitration), the contact email, and where the footer links propagate from.
+
+### Verification
+
+- **JSX parse check** — `redesign/terms-v1.jsx` and `redesign/privacy-v1.jsx` both parse cleanly via esbuild's JSX loader (which is functionally equivalent to the Babel-standalone runtime that loads them on the actual site). No syntax errors that would break rendering.
+- **Sitemap** — both new URLs are present in `sitemap.xml` and in `scripts/generate-sitemap.js` `PAGE_CONFIG`. The hand-curated XML and the generator output stay in sync (a regression `feature/fix-sitemap-generator` shipped on 2026-05-06 specifically to keep these two artifacts byte-aligned).
+- **Footer wiring** — single edit to `redesign/v-d-sections.jsx` `GothicFooter` `vD-foot-meta` strip propagates Terms + Privacy links to every redesigned page including the new legal pages themselves; no per-page edits required.
+- **Branch hygiene** — work performed on `feature/legal-tos-privacy` off latest `develop` (Git Flow opt-in is ENABLED for this project).
+- **LAW #0** — all user verbatim quotes preserved in this FINALIZED entry, in the TODO entry, and as drop-in policy clauses in the legal documents themselves where they anchor a substantive policy position (Section II / III / V / VI of Terms, Section II / VII / X of Privacy).
+
+### Your test plan
+
+**What to test:** The two new legal pages render with the correct chrome, the under-18 callout is visually distinct, and the footer links work from any page.
+
+**How to test:**
+1. Spin up the local dev server: `py -m http.server 8000` from the repo root (or `npm run dev` if you prefer Vite).
+2. Visit `http://localhost:8000/terms.html` — verify gothic chrome (red-streak background, GothicNavbar with active-link highlighting absent on legal pages since they're not in NAV_LINKS, GothicFooter at the bottom). Verify the table of contents at the top has 17 entries and each anchor jumps to the right section. Verify the under-18 red-bordered callout box stands out visually.
+3. Visit `http://localhost:8000/privacy.html` — same checks. Verify the under-18 callout is the same visual treatment as on Terms.
+4. From any other page (e.g. `http://localhost:8000/contact.html`), check the footer's lower meta strip — should now read `Source · Contact · Terms · Privacy · Powered by Pollinations.AI · Built with blood, sweat, …`. Click `Terms` and `Privacy` to confirm cross-page navigation.
+5. View the page source of `terms.html` — confirm the React App composition is `<GothicNavbar /> + <main><TermsV1 /></main> + <GothicFooter />` and that the canonical link is `https://www.unityailab.com/terms`.
+6. `cat sitemap.xml | grep -E "(terms|privacy)\.html"` — both URLs present.
+7. `node scripts/generate-sitemap.js && diff sitemap.xml <(cat sitemap.xml)` — generator output should match the hand-curated file (modulo `<lastmod>` which gets stamped to today's date).
+
+**Expected results:**
+- Both pages render with no console errors.
+- Layout matches the typography density of the existing redesigned pages but with cleaner long-form spacing for legal text.
+- Under-18 callout has crimson border + ⛧ marker + bone-on-dark text, distinguishable at a glance from surrounding sections.
+- Footer Terms/Privacy links work from every page.
+
+**If it fails:**
+- Blank page on `terms.html` / `privacy.html` → likely a Babel parse failure on the JSX. Open browser DevTools console and look for "SyntaxError" or "Unexpected token" referencing `terms-v1.jsx` or `privacy-v1.jsx`. Compare against the esbuild parse-check output.
+- Pages render but no chrome → `GothicNavbar` or `GothicFooter` not on `window` because one of the chrome scripts didn't load. Check the Network tab for `redesign/v-d-chrome.jsx` and `redesign/v-d-sections.jsx`.
+- Footer links broken on existing pages → `redesign/v-d-sections.jsx` edit didn't propagate; hard-refresh with cache disabled.
+- Styling missing on legal pages → `redesign/legal-v1.css?v=20260508a` 404 or wrong path. Check the Network tab.
+
+### What was NOT touched
+
+- Cache busting on the existing pages — only the new `legal-v1.css?v=20260508a` and `terms-v1.jsx?v=20260508a` / `privacy-v1.jsx?v=20260508a` query params were added (they're new files, no in-flight cache to bust). The existing pages with footer changes from `v-d-sections.jsx` are not query-bumped because the JSX file is loaded by every page already and the in-page `<script type="text/babel">` is re-evaluated each load (Babel-standalone doesn't long-cache aggressively). If a stale-footer regression surfaces in the wild, bump the `?v=` on `v-d-sections.jsx` references in each HTML shell.
+- `Archived/terms.html` and `Archived/privacy.html` (legacy 19-line joke shells) — left in place under `Archived/` for historical preservation, not deleted.
+- React-rendered `<main id="main-content">` and the `vD-skip` skip-link — kept the existing pattern where the skip link works once the React mount completes; legal pages don't use any pre-React fallback content because the chrome convention doesn't either.
+- `dist/` build output — not modified directly. Will regenerate on next `npm run build`.
