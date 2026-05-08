@@ -95,4 +95,20 @@
     </image:image>
   </url>
 
+  <!-- Terms of Service — legal page, footer-linked from every page -->
+  <url>
+    <loc>https://www.unityailab.com/terms.html</loc>
+    <lastmod>2026-05-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Privacy Policy — legal page, footer-linked from every page -->
+  <url>
+    <loc>https://www.unityailab.com/privacy.html</loc>
+    <lastmod>2026-05-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
 </urlset>

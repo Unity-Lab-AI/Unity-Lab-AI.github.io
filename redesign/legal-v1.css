@@ -1,0 +1,340 @@
+/* LEGAL — V1
+   Shared chrome for Terms of Service + Privacy Policy.
+   Same token vocabulary as About V2 / Contact V1, restrained
+   layout because legal text needs to be readable, not ornate.
+*/
+
+.lV1 {
+  color: var(--bone, #e8e2d4);
+  background: var(--primary-black, #0a0a0a);
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+  font-size: 16px;
+  line-height: 1.7;
+  padding: 32px 28px 96px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .lV1 { padding: 56px 56px 128px; font-size: 17px; }
+}
+
+/* classified mast — same vocabulary as contact-v1 */
+.lV1-mast {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-grey, #6a6a6a);
+  border-top: 1px solid rgba(232, 226, 212, 0.12);
+  border-bottom: 1px solid rgba(232, 226, 212, 0.12);
+  padding: 10px 0;
+  margin-bottom: 36px;
+}
+
+.lV1-mast-classification {
+  color: var(--crimson-red, #dc143c);
+  font-weight: 600;
+}
+
+/* meta — effective / version / contact */
+.lV1-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  margin-bottom: 48px;
+  padding: 18px 22px;
+  border: 1px solid rgba(232, 226, 212, 0.16);
+  background: rgba(20, 20, 20, 0.55);
+}
+
+.lV1-meta dt {
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-grey, #6a6a6a);
+  margin-bottom: 4px;
+}
+
+.lV1-meta dd {
+  color: var(--bone, #e8e2d4);
+  font-weight: 500;
+}
+
+.lV1-meta a {
+  color: var(--crimson-red, #dc143c);
+  border-bottom: 1px dotted rgba(220, 20, 60, 0.4);
+}
+
+/* cover */
+.lV1-cover {
+  position: relative;
+  border-top: 1px solid rgba(232, 226, 212, 0.18);
+  border-bottom: 1px solid rgba(232, 226, 212, 0.18);
+  padding: 48px 0 36px;
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.lV1-cover-fileno {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-grey, #6a6a6a);
+  margin-bottom: 16px;
+}
+
+.lV1-cover h1 {
+  font-family: var(--font-display, 'Trajan Pro', 'Cormorant Garamond', serif);
+  font-size: clamp(34px, 5.6vw, 58px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--bone, #e8e2d4);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  line-height: 1.05;
+}
+
+.lV1-cover-rule {
+  width: 100px;
+  height: 1px;
+  background: var(--crimson-red, #dc143c);
+  margin: 0 auto 18px;
+}
+
+.lV1-cover-lede {
+  max-width: 680px;
+  margin: 0 auto;
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-style: italic;
+  font-size: clamp(15px, 2.1vw, 19px);
+  color: var(--light-grey, #cccccc);
+  line-height: 1.55;
+}
+
+/* section bands — same vocabulary as contact-v1 */
+.lV1-band {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid rgba(232, 226, 212, 0.16);
+  border-bottom: 1px solid rgba(232, 226, 212, 0.16);
+  padding: 8px 0;
+  margin: 64px 0 28px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-grey, #6a6a6a);
+}
+
+.lV1-band-num {
+  color: var(--crimson-red, #dc143c);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.lV1-band-name {
+  color: var(--bone, #e8e2d4);
+  font-weight: 600;
+}
+
+/* section heads + body */
+.lV1-section h2 {
+  font-family: var(--font-display, 'Trajan Pro', 'Cormorant Garamond', serif);
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--bone, #e8e2d4);
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+
+.lV1-section h3 {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: clamp(18px, 2.4vw, 22px);
+  font-weight: 600;
+  color: var(--bone, #e8e2d4);
+  margin: 28px 0 10px;
+  letter-spacing: 0.01em;
+}
+
+.lV1-section p,
+.lV1-section li {
+  color: var(--light-grey, #cccccc);
+  margin-bottom: 14px;
+}
+
+.lV1-section ul,
+.lV1-section ol {
+  padding-left: 24px;
+  margin-bottom: 18px;
+}
+
+.lV1-section li {
+  margin-bottom: 8px;
+}
+
+.lV1-section strong {
+  color: var(--bone, #e8e2d4);
+  font-weight: 600;
+}
+
+.lV1-section a {
+  color: var(--crimson-red, #dc143c);
+  border-bottom: 1px dotted rgba(220, 20, 60, 0.4);
+  transition: color 120ms ease;
+}
+
+.lV1-section a:hover,
+.lV1-section a:focus {
+  color: var(--accent-red, #ff0033);
+}
+
+/* THE under-18 callout — visually distinct, plain-English voice */
+.lV1-under18 {
+  position: relative;
+  border: 2px solid var(--crimson-red, #dc143c);
+  background: linear-gradient(
+    180deg,
+    rgba(139, 0, 0, 0.18) 0%,
+    rgba(20, 0, 0, 0.4) 100%
+  );
+  padding: 28px 26px 24px;
+  margin: 40px 0 36px;
+  box-shadow:
+    0 0 0 1px rgba(220, 20, 60, 0.25),
+    0 12px 36px -12px rgba(220, 20, 60, 0.4);
+}
+
+.lV1-under18::before {
+  content: '⛧';
+  position: absolute;
+  top: -14px;
+  left: 24px;
+  background: var(--primary-black, #0a0a0a);
+  color: var(--crimson-red, #dc143c);
+  padding: 0 10px;
+  font-size: 18px;
+}
+
+.lV1-under18-kicker {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--crimson-red, #dc143c);
+  margin-bottom: 8px;
+}
+
+.lV1-under18 h3 {
+  font-family: var(--font-display, 'Trajan Pro', 'Cormorant Garamond', serif);
+  font-size: clamp(20px, 2.8vw, 26px);
+  color: var(--bone, #e8e2d4);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.lV1-under18 p {
+  color: var(--bone, #e8e2d4);
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.lV1-under18 ol {
+  padding-left: 22px;
+  margin: 8px 0 12px;
+}
+
+.lV1-under18 li {
+  color: var(--bone, #e8e2d4);
+  margin-bottom: 6px;
+}
+
+.lV1-under18 strong {
+  color: var(--accent-red, #ff5a3c);
+}
+
+/* table of contents */
+.lV1-toc {
+  border: 1px solid rgba(232, 226, 212, 0.14);
+  background: rgba(20, 20, 20, 0.4);
+  padding: 22px 26px;
+  margin: 0 0 32px;
+}
+
+.lV1-toc-kicker {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-grey, #6a6a6a);
+  margin-bottom: 10px;
+}
+
+.lV1-toc ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  columns: 2;
+  column-gap: 32px;
+}
+
+@media (max-width: 600px) {
+  .lV1-toc ol { columns: 1; }
+}
+
+.lV1-toc li {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  margin-bottom: 6px;
+  break-inside: avoid;
+}
+
+.lV1-toc a {
+  color: var(--light-grey, #cccccc);
+  border: none;
+}
+
+.lV1-toc a:hover {
+  color: var(--crimson-red, #dc143c);
+}
+
+.lV1-toc-num {
+  color: var(--crimson-red, #dc143c);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* end of file */
+.lV1-eof {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 72px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(232, 226, 212, 0.18);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-grey, #6a6a6a);
+}
+
+.lV1-eof strong {
+  color: var(--bone, #e8e2d4);
+}
