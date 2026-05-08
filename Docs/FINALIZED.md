@@ -1081,3 +1081,87 @@ Wires updated:
 - `Docs/ARCHITECTURE.md` directory tree — not updated to call out the new legal-acceptance flow because the existing tree doesn't enumerate every script, and adding one bullet for this would be inconsistent with the doc's level of detail. The legal-pages callout already at the top of the doc (added on 2026-05-08 a moment before this session) implicitly covers the flow.
 - Marketing pages (index, about, services, projects, contact, codex) — out of scope per the user's "for apps and the demo" follow-up. The age-gate / legal-acceptance flow does NOT fire on those pages and should not — they're public marketing content with no AI-generated material.
 - `dist/` build output — will regenerate on next `npm run build`.
+
+---
+
+## 2026-05-08 — og:image absolute-URL fix on index + add og:image to the 7 redesigned pages that lack it
+
+**Branch:** `feature/og-image-absolute-urls` (off `develop`)
+
+**User verbatim (LAW #0):**
+
+> "one last thing i asked you before about the social image not posting with the url address when the url is shared.. i only get the write up:'Unity AI Lab Unity AI Lab — The Dark Side of AI An independent lab forging AI tools without the apology layer. Open source, hand-written, intentionally unfiltered. Built by four people who'd rather ship something true than something safe.'"
+>
+> "B but make sure it wont mass with our other github pages that build the same domain page like /unity as an example that has its own social image"
+>
+> "the slash unity path to www.unityailab.com is a totally different repo u arnt to worry about its just it has its own socila image and builds out on github pages just like the site does"
+
+### Diagnosis
+
+User reported that when they share a URL from the site, the social card preview showed only the og:title + og:description text — no image. The actual fault was the og:image URL form, NOT the image file or the platform cache:
+
+- `index.html` lines 31 + 42 used a ROOT-RELATIVE path (`/social/og-image.jpg`) for `og:image` and `twitter:image`. The Open Graph spec calls for absolute URLs. Discord and (sometimes) Twitter resolve relative URLs against the page URL, but Facebook, LinkedIn, iMessage, Slack, and several other platforms drop the og:image entirely when it isn't absolute. That mixed behavior is exactly what the user observed: text shows (og:title and og:description are simple strings, work either way), image doesn't.
+- The 7 other redesigned root pages (`ai.html`, `about.html`, `apps.html`, `services.html`, `projects.html`, `contact.html`, `codex.html`) had NO `og:image` meta tag at all — sharing any of those URLs produced no preview image regardless of platform. Adding the tags is purely additive; nothing to break.
+- `terms.html` + `privacy.html` (legal pages shipped earlier today) already use the absolute URL — they served as the correct-pattern reference.
+- The image file itself is fine: `social/og-image.jpg` is a 1200×630 baseline JPEG, 104,307 bytes, served HTTP 200 from Cloudflare with `Content-Type: image/jpeg` and `Access-Control-Allow-Origin: *`.
+
+### What shipped
+
+**1. `index.html` — relative → absolute (2 surgical replacements):**
+- Line 31: `og:image` content `/social/og-image.jpg` → `https://www.unityailab.com/social/og-image.jpg`
+- Line 42: `twitter:image` content `/social/og-image.jpg` → `https://www.unityailab.com/social/og-image.jpg`
+- HTML5 short-tag style preserved (matches index.html's existing `>` convention).
+
+**2. 7 redesigned pages — added complete og:image + twitter:image blocks (1 block-insert per page):**
+
+For each of `ai.html`, `about.html`, `apps.html`, `services.html`, `projects.html`, `contact.html`, `codex.html`:
+- Inserted `og:image` + `og:image:width` (1200) + `og:image:height` (630) + page-specific `og:image:alt` immediately after the existing `og:locale` line
+- Inserted `twitter:image` + page-specific `twitter:image:alt` immediately after the existing `twitter:description` line
+- All URLs absolute: `https://www.unityailab.com/social/og-image.jpg`
+- XHTML self-closing `/>` style preserved (matches each page's existing convention)
+- Each page got a page-specific alt text to give SEO + accessibility hints distinct from the homepage:
+  - `ai.html`: "Unity AI Lab — AI demo and apps. Try Unity Chat unfiltered, free, no signup, no apology layer."
+  - `about.html`: "Unity AI Lab — about the lab. A small team, built on stubbornness. Four people, six disciplines, no apology layer."
+  - `apps.html`: "Unity AI Lab — eight free AI apps. Chatbots, image generators, voice AI, ambient art. No signup, no API key."
+  - `services.html`: "Unity AI Lab — services. Seven unconventional engagements: AI integration, jailbreak research, red and blue team security testing, self-hosted deployments."
+  - `projects.html`: "Unity AI Lab — projects. Six works on the bench: Unity AI Chat, CodeWringer, jailbreak research, personas, control systems, competition wins."
+  - `contact.html`: "Unity AI Lab — contact. One inbox, four engineers, two business days. Email contact@unityailab.com."
+  - `codex.html`: "Unity AI Lab — The Codex of Unity. Canonical writeup of the lab's persona: streams, forms, origin."
+
+### Verification
+
+- **Final audit** — `grep -nE 'og:image"|twitter:image"' index.html ai.html about.html apps.html services.html projects.html contact.html codex.html` returns 16 lines, all using `https://www.unityailab.com/social/og-image.jpg`. No relative URLs remain.
+- **No regression on `terms.html` / `privacy.html`** — already had absolute URLs from the legal-pages session earlier today, untouched here.
+- **Image still 200 OK** — `curl -sI https://www.unityailab.com/social/og-image.jpg` returns HTTP 200, `Content-Type: image/jpeg`, 104307 bytes from Cloudflare. No change to the image file or the path it lives at, so production cache + GitHub Pages serving stay valid.
+- **Out-of-scope safety** — no edits to anything outside this repo. The user's `/unity` path on `www.unityailab.com` is a separate GitHub Pages build from a different repo (own social image, own build pipeline). My changes here cannot reach that repo's HTML files.
+- **LAW #0** — user verbatim quotes preserved in TODO entry, this FINALIZED entry, and the commit message.
+
+### Your test plan
+
+**What to test:** When you share a URL from the site on a platform that previously dropped the og:image (Facebook / LinkedIn / iMessage / Slack), the preview now renders with the social card image included.
+
+**How to test (post-deploy to main):**
+1. Once the change is live on `www.unityailab.com`, force-refresh the platform caches (the cache lifetime is 7 days on Twitter/X, 30 days on Facebook):
+   - Twitter/X Card Validator: <https://cards-dev.twitter.com/validator> — paste `https://www.unityailab.com/` and click Preview Card. Should render with the image. Repeat for `/ai`, `/about`, `/apps`, `/services`, `/projects`, `/contact`, `/codex`.
+   - Facebook Sharing Debugger: <https://developers.facebook.com/tools/debug/> — paste each URL and click "Scrape Again." First scrape after a tag change is what tells Facebook to re-fetch. Should show the image preview.
+   - LinkedIn Post Inspector: <https://www.linkedin.com/post-inspector/> — paste each URL.
+2. Drop a link in a fresh Discord channel / iMessage thread / Slack DM and confirm the preview includes the image.
+3. View the rendered page source on production: `curl -s https://www.unityailab.com/ | grep -E "og:image|twitter:image"` — both lines should show the absolute URL.
+
+**Expected results:**
+- All 8 redesigned pages now produce a rich card with the gothic Unity AI Lab social image when shared on any major platform.
+- No regression on `/terms.html` or `/privacy.html` (already correct before this change).
+- No effect at all on the separate `/unity` repo's pages.
+
+**If a specific platform still doesn't show the image:**
+- Most likely platform-side cache. Use the validator/debugger for that platform to force-refresh.
+- If the validator shows the image but real shares don't, give it 5–15 minutes for the platform's CDN to warm up.
+- If a specific page still fails after force-refresh, `curl -I https://www.unityailab.com/social/og-image.jpg` from that platform's region — should be HTTP 200. If 404, check GitHub Pages deploy status.
+
+### What was NOT touched
+
+- `social/og-image.jpg` — the actual image file is fine; not modified.
+- `terms.html` + `privacy.html` — already had absolute URLs from this morning's legal-pages ship.
+- The `/unity` repo (separate GitHub Pages build at the same domain) — explicitly out of scope per the user's clarification "the slash unity path to www.unityailab.com is a totally different repo u arnt to worry about its just it has its own socila image and builds out on github pages just like the site does."
+- Nested app HTMLs under `/apps/*/` — they don't have site-level marketing meta tags currently and adding them is a separate concern (out of scope here).
+- `dist/` build output — will regenerate on next `npm run build`.
