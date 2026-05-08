@@ -973,3 +973,111 @@ All 5 image network responses HTTP 200 from `websiteunityailab.gfourteen7525.wor
 - `Archived/terms.html` and `Archived/privacy.html` (legacy 19-line joke shells) — left in place under `Archived/` for historical preservation, not deleted.
 - React-rendered `<main id="main-content">` and the `vD-skip` skip-link — kept the existing pattern where the skip link works once the React mount completes; legal pages don't use any pre-React fallback content because the chrome convention doesn't either.
 - `dist/` build output — not modified directly. Will regenerate on next `npm run build`.
+
+---
+
+## 2026-05-08 — Legal-acceptance modal extension to age-verification.js (ToS + Privacy + version-bump re-prompt) for apps and the AI demo
+
+**Branch:** `feature/legal-acceptance-modal` (off `develop`, after the legal-pages merge)
+
+**User verbatim (LAW #0):**
+
+> "we need a modal or whatever like the age 18 gate but i think we need it after the gate 18 chack or beforee or one in the same that propelry handles user accepting our terms of service with links to them in the modal or whatever and privacy and that stuff and properly handles the differnt combinations that might arise"
+>
+> "for apps and the demo"
+
+### What shipped
+
+**1. `apps/age-verification.js` — extended from 490 lines to 798 lines:**
+
+Added a third popup phase (legal acceptance) that runs after the existing age (are-you-18) and birthdate (validate-18+) phases, persisting an explicit acceptance of the current Terms of Service + Privacy Policy. The flow now correctly handles every combination that arises:
+
+| State | Flags in localStorage | What user sees |
+|-------|----------------------|----------------|
+| First-time visitor | none | are-you-18? popup → birthdate popup → legal-acceptance popup → site enabled |
+| Returning user with valid age but no legal flag (everyone who passed the gate before today) | `button18` + `birthdate` + `husdh-f978dyh-sdf` | only the legal-acceptance popup (skips the age popups since they already passed) |
+| Returning user with both valid | all 6 flags + matching `legalAcceptedVersion` | no popup at all |
+| Edge: legal accepted but no age flags | partial | full flow re-runs; the age-verification.js init checks ageOk first |
+| Future ToS/Privacy version bump | `legalAcceptedVersion` ≠ `CURRENT_LEGAL_VERSION` | only the legal-acceptance popup re-fires (ageOk path) |
+
+New constants and storage keys:
+- `KEYS.LEGAL_ACCEPTED = 'legalAccepted'`
+- `KEYS.LEGAL_VERSION = 'legalAcceptedVersion'`
+- `KEYS.LEGAL_DATE = 'legalAcceptedDate'`
+- `CURRENT_LEGAL_VERSION = 'v1.0'` (matches the `effective` + `version` strings hardcoded in `redesign/terms-v1.jsx` and `redesign/privacy-v1.jsx`)
+
+New methods:
+- `getLegalUrls()` — computes the relative path to `/terms.html` and `/privacy.html` based on the current page's directory depth. Same script works whether loaded from `/apps.html` (resolves to `./terms.html`), from a nested app like `/apps/oldSiteProject/index.html` (resolves to `../../terms.html`), or from `/ai/demo/index.html` (resolves to `../../terms.html`).
+- `isLegalAccepted()` — checks all 3 legal flags + version match against `CURRENT_LEGAL_VERSION`.
+- `showLegalPopup()` — renders the legal-acceptance modal: dual-link bar (Terms · Privacy, both `target="_blank" rel="noopener noreferrer"` so the user can read without losing the modal state), checkbox row with the inline-anchor versions of the same links, submit button that stays `disabled` until the checkbox is ticked, decline button that wipes flags and bounces to google.com via the existing `handleNo()`. Footer line shows the version stamp ("Acceptance is recorded locally in your browser only · Version v1.0").
+- `handleLegalAccept()` — sets the 3 legal flags (with ISO-8601 timestamp), tracks the visitor (only NOW that both gates are cleared, not after birthdate alone), removes the popup, enables the site.
+- `resolveDisableTarget()` — looks up `#main-content` first, falls back to `.demo-container`. Lets the same script handle both apps-style HTML (`<main id="main-content">`) and the AI demo's `.demo-container` layout.
+
+Modified methods:
+- `init()` — branches on (ageOk, legalOk): both → enable+track; ageOk only → legal popup only; neither → full flow.
+- `handleBirthdateSubmit()` — instead of immediately enabling the site after age validation passes, persists the age flags then transitions to `showLegalPopup()`. The site only unlocks after legal acceptance.
+- `disableSite()` / `enableSite()` — selector union now covers both `main button|input|select|textarea|a.app-link` AND `.demo-container button|input|select|textarea|a.app-link`. CSS rule broadened from `#main-content.verification-disabled` to `.verification-disabled` (only one element ever gets the class).
+- `clearVerification()` — also wipes the 3 legal flags so a decline anywhere requires a full re-acceptance.
+
+Injected CSS additions for the legal popup (~60 lines): `.legal-popup` modal variant (taller, left-aligned text), `.verification-legal-intro` paragraph styling, `.verification-legal-links` dual-button bar, `.verification-legal-link` styled crimson tab buttons, `.verification-legal-checkbox-row` agreeable-feeling acceptance row with `accent-color: var(--crimson-red)`, `.verification-legal-checkbox-label` body text with `.verification-legal-inline-link` underlined inline anchors, `.verification-legal-meta` footer-stamp microcopy, `.verification-legal-decline` ghost-button decline action, `.verification-btn.submit:disabled` greyed-out style for the disabled-until-checked submit. Mobile media query extended for the new elements.
+
+**2. AI demo wire (`ai/demo/index.html`) switched to canonical script:**
+
+Previously loaded `ai/demo/age-verification.js` (a stale 14380-byte parallel copy without the legal flow). Now loads `../../apps/age-verification.js?v=20260508l` — same canonical universal version every other gate uses. The AI demo's local copy is left in place as a stale orphan (not deleted) for safety; future cleanup can remove it once the canonical wire has been live without regression.
+
+**3. Cache-bust query bumped on all 12 wires:**
+
+`?v=20260506z` (and the AI demo's older `?v=2.1.7`) → `?v=20260508l` (l for "legal," today's date) so existing visitors with the old script cached in their browser fetch the new version that knows about the legal flow.
+
+Wires updated:
+- `apps.html` (apps gallery)
+- `apps/oldSiteProject/index.html` + `apps/oldSiteProject/screensaver.html`
+- `apps/unityDemo/unity.html`
+- `apps/textDemo/text.html`
+- `apps/personaDemo/persona.html`
+- `apps/helperInterfaceDemo/helperInterface.html`
+- `apps/talkingWithUnity/index.html` + `apps/talkingWithUnity/indexAI.html`
+- `apps/screensaverDemo/screensaver.html`
+- `apps/slideshowDemo/slideshow.html`
+- `ai/demo/index.html` (script src changed AND query bumped)
+
+### Verification
+
+- **JS syntax** — `node -c apps/age-verification.js` passes. 798 lines, 32223 bytes served.
+- **Cache-bust audit** — `grep -h "age-verification.js?v=" apps.html ai/demo/index.html apps/*/*.html | sort | uniq -c` shows 12 entries all on `?v=20260508l` (1 apps.html + 10 nested app HTMLs + 1 AI demo). Zero stragglers on the old `20260506z` query.
+- **HTTP smoke** — local `python -m http.server 8765`: apps.html HTTP 200; `apps/age-verification.js?v=20260508l` HTTP 200, 32223 bytes; ai/demo/index.html HTTP 200; `ai/demo → ../../apps/age-verification.js` HTTP 200 (the relative path resolves correctly from the demo).
+- **Method presence** — served JS has 16 hits across `showLegalPopup` / `handleLegalAccept` / `isLegalAccepted` / `getLegalUrls` / `CURRENT_LEGAL_VERSION` (declarations + call sites); the legal flow is present on the wire.
+- **LAW #0** — user verbatim quotes preserved in TODO entry, this FINALIZED entry, and the commit message; the `getLegalUrls()` JSDoc references the user's "for apps and the demo" framing implicitly through the depth-resolution implementation.
+- **Branch hygiene** — work performed on `feature/legal-acceptance-modal` off latest `develop`.
+
+### Your test plan
+
+**What to test:** The legal-acceptance modal fires correctly across all four user states (fresh, age-only, fully-accepted, version-mismatch), and a future ToS/Privacy revision triggers the re-prompt cleanly.
+
+**How to test:**
+1. Spin up local server: `py -m http.server 8000` from repo root.
+2. **Fresh visitor flow.** Open DevTools → Application → Local Storage → clear all keys for `localhost:8000`. Visit `http://localhost:8000/apps.html`. Expect: are-you-18 popup → click Yes → birthdate popup → enter a 1990 birthdate → submit → **legal-acceptance popup appears**. Verify: dual link bar with Terms / Privacy buttons that open in new tabs; checkbox is unchecked initially; submit button is greyed-out / disabled. Click the Terms link — opens `/terms.html` in a new tab. Close that tab. Tick the checkbox — submit button enables. Click Accept & Continue — modal closes, site unlocks. Inspect localStorage: should now have `button18`, `birthdate`, `husdh-f978dyh-sdf`, `legalAccepted=true`, `legalAcceptedVersion=v1.0`, `legalAcceptedDate=<ISO-8601>`.
+3. **Returning fully-accepted flow.** Refresh the page. Expect: no popup, site unlocked immediately.
+4. **Stale-age-flagged-user flow (everyone who passed the gate before today).** Clear ONLY the three legal keys (`legalAccepted`, `legalAcceptedVersion`, `legalAcceptedDate`); leave the age flags. Refresh. Expect: **only the legal-acceptance popup**, no age popups. Tick + submit; site unlocks.
+5. **Version-bump flow.** Manually set `legalAcceptedVersion` to `v0.9` in DevTools (simulating a future ToS revision where we bump `CURRENT_LEGAL_VERSION` to `v1.1` and the user's stored version is now stale). Refresh. Expect: only the legal-acceptance popup re-fires.
+6. **AI demo path resolution.** Visit `http://localhost:8000/ai/demo/index.html`. Expect: same flow, with the `Terms of Service ↗` and `Privacy Policy ↗` link buttons resolving to `../../terms.html` and `../../privacy.html` respectively. Click them — they should open the actual legal pages, not 404.
+7. **Decline flow.** Clear all gate flags. Visit any app. On the legal popup, click "Decline & Leave." Expect: redirect to google.com, all flags wiped from localStorage.
+
+**Expected results:**
+- All four user-state branches behave per the table above.
+- Modal is keyboard-reachable (Tab through links and checkbox).
+- Submit button styling visibly changes between disabled (greyed) and enabled (crimson glow on hover) when checkbox toggles.
+- localStorage state is consistent across all 12 wired pages — accepting on `apps.html` unlocks `apps/oldSiteProject/index.html`, `ai/demo/index.html`, etc.
+
+**If it fails:**
+- Modal renders but submit never enables → checkbox change-event listener didn't bind. Check DevTools console for JS errors.
+- Modal renders but Terms/Privacy links 404 → `getLegalUrls()` depth calculation broke for that page. Check `console.log` for the resolved URLs and verify against the page path.
+- Site stays disabled after Accept → `enableSite()` didn't run, or `resolveDisableTarget()` returned null. Inspect the page for `<main id="main-content">` or `<.demo-container>`.
+- Stale `?v=20260506z` script cached in browser → hard refresh with cache disabled (Ctrl+Shift+R / DevTools → Network → "Disable cache").
+
+### What was NOT touched
+
+- `ai/demo/age-verification.js` (the stale 14380-byte parallel copy) — left in place but no longer wired. Safer than deletion in case any straggler reference still loads it. Future cleanup can remove the file once the canonical wire has been live without regression for a couple weeks.
+- `Docs/ARCHITECTURE.md` directory tree — not updated to call out the new legal-acceptance flow because the existing tree doesn't enumerate every script, and adding one bullet for this would be inconsistent with the doc's level of detail. The legal-pages callout already at the top of the doc (added on 2026-05-08 a moment before this session) implicitly covers the flow.
+- Marketing pages (index, about, services, projects, contact, codex) — out of scope per the user's "for apps and the demo" follow-up. The age-gate / legal-acceptance flow does NOT fire on those pages and should not — they're public marketing content with no AI-generated material.
+- `dist/` build output — will regenerate on next `npm run build`.

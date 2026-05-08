@@ -212,6 +212,33 @@
 
 ## P2 - MEDIUM PRIORITY
 
+### [x] Legal-acceptance modal (ToS + Privacy) — combined with / sequenced around the 18+ age gate
+**Status:** DONE — 2026-05-08 (branch `feature/legal-acceptance-modal` off `develop`; FINALIZED.md entry written verbatim per LAW #0 + FINALIZED-before-DELETE rule; pending atomic commit + merge into develop + main)
+**Branch:** `feature/legal-acceptance-modal`
+**User direction (verbatim, LAW #0):**
+> "we need a modal or whatever like the age 18 gate but i think we need it after the gate 18 chack or beforee or one in the same that propelry handles user accepting our terms of service with links to them in the modal or whatever and privacy and that stuff and properly handles the differnt combinations that might arise"
+>
+> "for apps and the demo"
+
+**Scope:**
+- Extend `apps/age-verification.js` (the universal 18+ gate already wired into `/ai/demo/index.html`, `apps.html`, and all 12 individual app HTMLs) to also capture an explicit acceptance of the Terms of Service AND Privacy Policy
+- Add a checkbox + plain-language acceptance line with anchor links to `/terms` and `/privacy` (open in new tab so the user can read without losing the gate state)
+- Combined-modal form (one in the same): age form + legal-acceptance checkbox in the same modal so a first-time visitor sees one gate that captures both
+- Properly handle the different combinations that might arise:
+  1. First-time visitor: no `button18` flag, no `legalAccepted` flag → show the full combined modal; both age form + legal checkbox required to dismiss
+  2. Returning user who passed the age gate before today (has `button18`/`birthdate`/`husdh-f978dyh-sdf`) but no `legalAccepted` flag yet → show a slim modal with ONLY the legal-acceptance section (skip the age form since they already passed it)
+  3. Returning user with both flags + matching version → no modal
+  4. Edge case: legal accepted but somehow no age flag → show full modal with both sections
+  5. ToS or Privacy version bump down the road → store the accepted version; if it doesn't match the current `LEGAL_VERSION` constant, re-prompt for ToS-only modal so users re-accept the new version
+- Persist universal localStorage flags across all gate paths (same propagation pattern as the age-gate flags `button18`/`birthdate`/`husdh-f978dyh-sdf`):
+  - `legalAccepted = "true"`
+  - `legalAcceptedVersion = "v1.0"` (matches the version stamp in `redesign/terms-v1.jsx` + `redesign/privacy-v1.jsx`)
+  - `legalAcceptedDate = "<ISO-8601 timestamp>"` so we have an audit trail of when consent was captured
+- Cache-bust the script on every wire so existing visitors see the new modal and not the cached pre-ToS version of the script
+- Verify end-to-end via a local headed run on at least one app and the AI demo to confirm: full modal on first visit, slim modal on second-visit-with-stale-flags, no modal on third visit
+- Atomic commit covering the JS extension, all 13 cache-bust HTML edits, TODO + FINALIZED + ARCHITECTURE updates
+- Merge into develop → push develop → merge develop to main → push main (per the now-established release flow)
+
 ### [x] Terms of Service + Privacy Policy pages — full legal write-ups
 **Status:** DONE — 2026-05-08 (branch `feature/legal-tos-privacy` off `develop`; FINALIZED.md entry written verbatim per LAW #0 + FINALIZED-before-DELETE rule; pending atomic commit + PR back into `develop`)
 **Branch:** `feature/legal-tos-privacy`

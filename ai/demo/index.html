@@ -439,8 +439,10 @@
     <!-- Visitor Tracking System -->
     <script src="../../visitor-tracking.js"></script>
 
-    <!-- Age Verification System (must load before demo modules) -->
-    <script src="age-verification.js?v=2.1.7"></script>
+    <!-- Age Verification + Legal Acceptance System (canonical universal version
+         from /apps/age-verification.js — handles 18+ gate AND ToS/Privacy
+         acceptance with version-bump re-prompt). Must load before demo modules. -->
+    <script src="../../apps/age-verification.js?v=20260508l" defer></script>
 
     <!-- Demo page functionality (ES6 modules) -->
     <script type="module" src="js/main.js?v=2.1.7"></script>
