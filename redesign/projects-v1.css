@@ -150,6 +150,248 @@
   border-color: var(--white); letter-spacing: 6px;
 }
 
+/* clickable cards */
+.pV1-card { cursor: pointer; overflow: hidden; }
+.pV1-card:focus-visible {
+  outline: 2px solid var(--crimson-red);
+  outline-offset: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   "WIP" stamp — only on in-dev cards & modal.
+   Diagonal stroke-outlined letters, low alpha, behind content.
+   Pseudo-element so no markup changes needed.
+   ───────────────────────────────────────────────────────────── */
+
+.pV1-card.pV1-status-in-dev > * { position: relative; z-index: 1; }
+.pV1-card.pV1-status-in-dev::after {
+  content: 'WIP';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  font-family: var(--font-display);
+  font-size: 180px;
+  font-weight: 900;
+  letter-spacing: 18px;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 3px rgba(220, 20, 60, 0.22);
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.pV1-modal.pV1-status-in-dev > * { position: relative; z-index: 1; }
+.pV1-modal.pV1-status-in-dev::after {
+  content: 'WIP';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  font-family: var(--font-display);
+  font-size: 320px;
+  font-weight: 900;
+  letter-spacing: 28px;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 4px rgba(220, 20, 60, 0.13);
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+@media (max-width: 700px) {
+  .pV1-card.pV1-status-in-dev::after { font-size: 140px; letter-spacing: 14px; -webkit-text-stroke-width: 2px; }
+  .pV1-modal.pV1-status-in-dev::after { font-size: 180px; letter-spacing: 16px; -webkit-text-stroke-width: 3px; }
+}
+
+.pV1-card-detail-hint {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+  opacity: 0.7;
+  transition: color .2s, opacity .2s;
+}
+.pV1-card:hover .pV1-card-detail-hint {
+  color: var(--crimson-red);
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EXPANDED FOLIO — modal
+   ───────────────────────────────────────────────────────────── */
+
+.pV1-modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(3, 0, 1, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 60px 24px;
+  overflow-y: auto;
+  animation: pV1-modal-fadein .2s ease-out;
+}
+@keyframes pV1-modal-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.pV1-modal {
+  position: relative;
+  max-width: 880px; width: 100%;
+  background:
+    linear-gradient(180deg, rgba(220,20,60,0.06) 0%, rgba(220,20,60,0.02) 100%),
+    rgba(8, 2, 3, 0.98);
+  border: 1px solid var(--crimson-red);
+  padding: 44px 44px 32px;
+  display: flex; flex-direction: column; gap: 28px;
+  box-shadow:
+    0 0 60px rgba(220,20,60,0.25),
+    0 0 120px rgba(0,0,0,0.85);
+  animation: pV1-modal-slidein .3s ease-out;
+}
+@keyframes pV1-modal-slidein {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pV1-modal::before {
+  content: ''; position: absolute; inset: 10px;
+  border: 1px solid rgba(220,20,60,0.15);
+  pointer-events: none;
+}
+
+.pV1-modal-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 36px; height: 36px;
+  background: transparent;
+  border: 1px solid rgba(220,20,60,0.5);
+  color: var(--crimson-red);
+  font-family: var(--font-display); font-size: 22px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  transition: background .15s, color .15s, border-color .15s;
+  z-index: 2;
+}
+.pV1-modal-close:hover {
+  background: var(--crimson-red);
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.pV1-modal-mast {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(220,20,60,0.3);
+  flex-wrap: wrap;
+}
+
+.pV1-modal-head {
+  display: grid; grid-template-columns: 72px 1fr; gap: 24px;
+  align-items: start;
+}
+.pV1-modal-iconcol {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: var(--crimson-red);
+  filter: drop-shadow(0 0 14px rgba(220,20,60,0.5));
+}
+.pV1-modal-num {
+  font-family: var(--font-display); font-size: 14px; letter-spacing: 6px;
+  color: var(--crimson-red); font-weight: 700;
+}
+.pV1-modal-titlecol {
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 0;
+}
+.pV1-modal-titlecol h2 {
+  font-family: var(--font-display); font-size: 36px;
+  color: var(--white); font-weight: 700; letter-spacing: 1px;
+  margin: 0; line-height: 1.15;
+}
+.pV1-modal-tag {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+}
+
+.pV1-modal-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px 28px;
+  margin: 0;
+  padding: 18px 4px;
+  border-top: 1px solid rgba(220,20,60,0.18);
+  border-bottom: 1px solid rgba(220,20,60,0.18);
+}
+.pV1-modal-meta > div { display: flex; flex-direction: column; gap: 4px; }
+.pV1-modal-meta dt {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+  margin: 0;
+}
+.pV1-modal-meta dd {
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--bone); margin: 0;
+}
+
+.pV1-modal-section h3 {
+  font-family: var(--font-display); font-size: 13px; letter-spacing: 5px;
+  color: var(--crimson-red); font-weight: 700; text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.pV1-modal-section p {
+  font-family: 'Cormorant Garamond', serif; font-size: 19px; line-height: 1.55;
+  color: var(--bone); font-style: italic; margin: 0;
+}
+
+.pV1-modal-features {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pV1-modal-features li {
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--font-body); font-size: 14px; line-height: 1.55;
+  color: var(--light-grey);
+}
+
+.pV1-modal-stack {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.pV1-modal-foot {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(220,20,60,0.3);
+}
+.pV1-modal-link {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-display); font-size: 11px; letter-spacing: 4px;
+  font-weight: 700; text-transform: uppercase;
+  padding: 12px 22px;
+  border: 1px solid var(--crimson-red);
+  background: rgba(220,20,60,0.08);
+  color: var(--crimson-red);
+  text-decoration: none;
+  transition: background .2s, color .2s, letter-spacing .2s;
+}
+.pV1-modal-link:hover {
+  background: var(--crimson-red);
+  color: var(--white);
+  letter-spacing: 5px;
+}
+
+.pV1-modal-eof {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 3px;
+  color: var(--muted-grey); text-transform: uppercase;
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid rgba(220,20,60,0.18);
+}
+
 /* responsive */
 @media (max-width: 1100px) {
   .pV1-grid { grid-template-columns: 1fr; }
@@ -159,4 +401,12 @@
   .pV1-card-head { grid-template-columns: 48px 1fr; gap: 16px; }
   .pV1-card h3 { font-size: 22px; }
   .pV1-cta-button { font-size: 11px; letter-spacing: 4px; padding: 14px 24px; }
+  .pV1-card-detail-hint { display: none; }
+
+  .pV1-modal-overlay { padding: 24px 14px; }
+  .pV1-modal { padding: 36px 22px 22px; gap: 22px; }
+  .pV1-modal-head { grid-template-columns: 56px 1fr; gap: 16px; }
+  .pV1-modal-titlecol h2 { font-size: 26px; }
+  .pV1-modal-section p { font-size: 17px; }
+  .pV1-modal-section h3 { font-size: 12px; letter-spacing: 4px; }
 }
