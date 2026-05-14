@@ -89,12 +89,18 @@ const PAGE_CONFIG = [
     url: '/downloads/',
     priority: '0.5',
     changefreq: 'weekly',
-    comment: 'Downloads — accessible by direct URL, navbar dropped link',
+    comment: 'Downloads — accessible by direct URL, navbar link restored 2026-05-13',
     image: {
       loc: 'https://www.unityailab.com/downloads/moana/image.png',
       title: 'Moana Miner — AI-Optimized Mining Software',
       caption: 'Moana cryptocurrency mining application by Unity AI Lab',
     },
+  },
+  {
+    url: '/downloads/weird/',
+    priority: '0.4',
+    changefreq: 'monthly',
+    comment: 'The Weird Project (SEX SLAVE DUNGEON) — adult game deep download page',
   },
   {
     url: '/terms.html',
