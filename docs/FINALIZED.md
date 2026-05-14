@@ -1426,3 +1426,60 @@ User confirmed: **"its good to go"**.
 - Other site pages (`/about`, `/contact`, `/services`, `/projects`, `/codex`, `/terms`, `/privacy`) — public marketing/legal content, gate intentionally does NOT fire on them per the established design ("for apps and the demo" original scope, now extended to downloads only)
 - Modal styling — no CSS changes; the script's self-contained `injectStyles()` handles all popup/backdrop/button/form styling at z-index `2147483647`
 - `dist/` build output — will regenerate on next `npm run build`
+
+---
+
+## 2026-05-13 — Nuke the .claude Code Workflow download from the downloads section (broken + pointed at private proprietary repo)
+
+**Branch:** `feature/nuke-claude-download` (off `main` tip `d9b536a`)
+
+**User direction (verbatim, LAW #0):**
+
+> "lets totally nuke the .claude code download of the download section.. it is incorrectly linking to a differnt .claude repo that is the propietary .claude of Unity AI lab that is private.. and its a stupid download that doesnt work, so lets nuke the .zip the file for it and the refrences and pages for it. so the download section no longer shows or has the .claude project and all its information pages and lionks, we are nuking it all"
+
+### What was wrong
+
+The "Claude Code Workflow" project was the 4th card on the `/downloads/` index, with a deep page at `/downloads/claude/` and a 44 KB `.zip` at `downloads/files/.claude.zip`. The card's GitHub button (added earlier today during the `feature/downlaods` branch's "GitHub links on all 4 cards" scope) pointed at `https://github.com/Unity-Lab-AI/UAL-ClaudeWorkflow` — which the user clarified is a **private proprietary repo** for Unity AI Lab's internal workflow, NOT something that should be publicly distributable. Additionally per the user the download itself was broken — "a stupid download that doesnt work". Full removal scoped: nuke the .zip, nuke the deep page + screenshots, nuke the card, nuke all references and links so the downloads section forgets it ever existed.
+
+### What shipped
+
+**1. `git rm` the 6 tracked Claude assets** (~1.2 MB total source-tree footprint removed):
+- `downloads/files/.claude.zip` (44,726 bytes)
+- `downloads/claude/index.html` (40,842 bytes — the deep details page including the new age-gate script wire from this morning's `feature/downloads-age-gate` branch)
+- `downloads/claude/image.png` (188,125 bytes)
+- `downloads/claude/image2.png` (206,757 bytes)
+- `downloads/claude/image3.png` (299,308 bytes)
+- `downloads/claude/image4.png` (395,960 bytes)
+
+**2. Removed the "Claude Code Workflow Download Card" block from `downloads/index.html`** — 67 lines deleted (lines 563-629 inclusive in the pre-edit file): card column wrapper, download-card div, all internal markup (icon `fa-terminal`, h3 title, version badge ".claude System", 4 tags, description paragraph, 6 feature bullets, 3 meta items, the GitHub button → `Unity-Lab-AI/UAL-ClaudeWorkflow`, the View Details button → `claude/`, the Download button → `files/.claude.zip`, and the requirements card with 4 bullets). Second-row container now holds only "The Weird Project" card. JSON-LD structured data at the top of the file was already Moana-only (Claude was never in the schema.org SoftwareApplication itemList) so no JSON-LD edit needed.
+
+**3. Updated `Docs/ARCHITECTURE.md` "📦 Downloads section (May 2026)" callout:**
+- "hosting four free projects" → "hosting three free projects"
+- Removed the "**Claude Code Workflow** (.claude/ template — `downloads/claude/` + `.claude.zip` → `Unity-Lab-AI/UAL-ClaudeWorkflow`)" entry from the inline list of projects
+- Added a historical note: "The fourth-project 'Claude Code Workflow' / `.claude.zip` slot was nuked on 2026-05-13 — it pointed at a private proprietary `Unity-Lab-AI/UAL-ClaudeWorkflow` repo and the download itself didn't work."
+- Updated the age-gate wire list from "all 5 downloads pages (`downloads/index.html`, `downloads/moana/`, `downloads/Local Unity/`, `downloads/claude/`, `downloads/weird/`)" → "the surviving 4 downloads pages (`downloads/index.html`, `downloads/moana/`, `downloads/Local Unity/`, `downloads/weird/`)"
+
+**4. Full-repo orphan-reference sweep** via `grep -rn` for `claude/`, `.claude.zip`, `UAL-ClaudeWorkflow` across HTML / JS / JSX / XML / MD source. Results were clean:
+- Only live source-tree references after the deletions are the historical mentions in this archive + `Docs/FINALIZED-redesign-archive.md` (historical-archive references from prior sessions, appropriate to preserve)
+- `Docs/redesign/TASKS-P1.md` reference to `.claude/CONSTRAINTS.md` is the local development workflow folder, not the download — unrelated, untouched
+- `Docs/ARCHITECTURE.md` line 213 reference to `.claude/` in the repo's directory-tree diagram is the local dev workflow folder, not the download — unrelated, untouched
+- `dist/downloads/claude/` build-output references will be flushed on next `npm run build` (the `dist/` folder is gitignored, so GitHub Pages CI regenerates it fresh on every deploy from the now-Claude-free source tree)
+
+### Verification
+
+**Static checks (post-deletion):**
+- `git ls-files downloads/files/.claude.zip downloads/claude/` returns nothing — all 6 files unstaged from the index
+- `grep -nE "Claude Code Workflow|UAL-ClaudeWorkflow|fa-terminal" downloads/index.html` returns nothing — card markup is gone
+- `Docs/ARCHITECTURE.md` callout reads "three free projects" with no Claude entry in the inline list
+- Age-gate wire count drops from 5 → 4 in the architecture doc's gate-list paragraph
+
+**No headed verification required** — this is a pure deletion + reference scrub, no new functionality to test. The surviving 3 cards (Moana / Local Unity / Weird) and their GitHub buttons + age gate are all unchanged from their post-`feature/downloads-age-gate` state.
+
+**Branch hygiene:** Branched off `main` tip `d9b536a` (post-downloads-age-gate merge). Case-fold pair for `Docs/TODO.md` + `docs/TODO.md` re-aligned via `git update-index --add --cacheinfo` after the TODO clear (back to clean template state). Case-fold pair for `Docs/FINALIZED.md` + `docs/FINALIZED.md` re-aligned with the new appended-entry blob.
+
+### What was NOT touched
+
+- The `Unity-Lab-AI/UAL-ClaudeWorkflow` GitHub repo itself — that's a separate private repo on github.com; we only nuked the website's wires/references/files pointing at it, not the upstream repo
+- The local development `.claude/` folder at repo root — that's the actual Claude Code workflow for THIS site's development (where Unity persona, agents, hooks, commands live). Unrelated to the downloadable .claude.zip we just nuked, and it stays in place to keep the workflow running
+- `apps/age-verification.js` — universal gate script unchanged; the `?v=20260513a` cache-bust query on the surviving 4 downloads pages stays at the same version since the script bytes didn't change
+- The 2026-05-08 + 2026-05-13 GitHub repo enumeration data (the `gh repo list Unity-Lab-AI` output we used to find repo URLs earlier today) — out of scope, no need to delete enumeration receipts
