@@ -1,12 +1,12 @@
-// SEX SLAVE DUNGEON — IndexedDB abstraction.
+// DUNGEON MASTER: THE HUNT — IndexedDB abstraction.
 // Primary persistence for player economy, roster, dungeon, rooms, episodes, market, per-girl state.
 // Exposes a small promise-based API. No dependencies.
 
 (function () {
   'use strict';
 
-  const { idbName, idbVersion, stores } = window.SSDConfig?.STORAGE || {
-    idbName: 'sex_slave_dungeon', idbVersion: 1,
+  const { idbName, idbVersion, stores } = window.DMTHConfig?.STORAGE || {
+    idbName: 'dungeon_master_the_hunt', idbVersion: 1,
     stores: { save: 'save', girls: 'girls', episodes: 'episodes', cache: 'cache', audio: 'audio' }
   };
 
@@ -94,7 +94,7 @@
       ]);
       result[k] = keys.map((key, i) => ({ key, value: vals[i] }));
     }
-    result.__meta = { exportedAt: new Date().toISOString(), version: window.SSDConfig.GAME.version };
+    result.__meta = { exportedAt: new Date().toISOString(), version: window.DMTHConfig.GAME.version };
     return result;
   }
 
@@ -117,7 +117,7 @@
     return true;
   }
 
-  window.SSDStorage = Object.freeze({
+  window.DMTHStorage = Object.freeze({
     get,
     put,
     del,

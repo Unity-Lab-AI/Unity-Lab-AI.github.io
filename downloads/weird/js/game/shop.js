@@ -1,11 +1,11 @@
-// SEX SLAVE DUNGEON — shop / inventory purchasing.
+// DUNGEON MASTER: THE HUNT — shop / inventory purchasing.
 
 (function () {
   'use strict';
 
   // Items on offer — everything in catalog, priced per entry.
   function listings() {
-    return window.SSDAssets.ITEMS.map(item => ({
+    return window.DMTHAssets.ITEMS.map(item => ({
       id: item.id,
       displayName: item.displayName,
       emoji: item.emoji,
@@ -22,24 +22,24 @@
   }
 
   function buy(itemId, qty = 1) {
-    const item = window.SSDAssets.getById('item', itemId);
+    const item = window.DMTHAssets.getById('item', itemId);
     if (!item) throw new Error(`unknown item: ${itemId}`);
     const total = (item.cost || 0) * qty;
-    const ok = window.SSDGame.state.spendMoney(total, `buy:${itemId}x${qty}`);
+    const ok = window.DMTHGame.state.spendMoney(total, `buy:${itemId}x${qty}`);
     if (!ok) throw new Error('insufficient funds');
-    window.SSDGame.state.addItem(itemId, qty);
+    window.DMTHGame.state.addItem(itemId, qty);
     return { ok: true, itemId, qty, paid: total };
   }
 
   function use(itemId, context) {
-    const item = window.SSDAssets.getById('item', itemId);
+    const item = window.DMTHAssets.getById('item', itemId);
     if (!item) throw new Error(`unknown item: ${itemId}`);
-    const ok = window.SSDGame.state.consumeItem(itemId, 1);
+    const ok = window.DMTHGame.state.consumeItem(itemId, 1);
     if (!ok) throw new Error('not in inventory');
     // Context-specific effect handled by caller (capture / feed / etc.)
     return { ok: true, itemId, context };
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.shop = Object.freeze({ listings, listingsBySubcategory, buy, use });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.shop = Object.freeze({ listings, listingsBySubcategory, buy, use });
 })();

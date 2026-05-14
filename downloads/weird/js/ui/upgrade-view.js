@@ -1,13 +1,13 @@
-// SEX SLAVE DUNGEON — per-hold upgrade + per-dungeon capacity expansion view.
+// DUNGEON MASTER: THE HUNT — per-hold upgrade + per-dungeon capacity expansion view.
 
 (function () {
   'use strict';
 
   function render(el, params) {
     const dungeonId = params.dungeon;
-    const dungeon = window.SSDGame.state.getDungeon(dungeonId);
+    const dungeon = window.DMTHGame.state.getDungeon(dungeonId);
     if (!dungeon) { el.innerHTML = `<p>no such dungeon · <a href="#dungeon">Dungeons</a></p>`; return; }
-    const tpl = window.SSDAssets.getById('dungeon', dungeon.templateId);
+    const tpl = window.DMTHAssets.getById('dungeon', dungeon.templateId);
     const holdIdx = params.hold != null ? parseInt(params.hold, 10) : null;
 
     if (holdIdx == null) return renderDungeonOverview(el, dungeon, tpl);
@@ -15,8 +15,8 @@
   }
 
   function renderDungeonOverview(el, dungeon, tpl) {
-    const next = window.SSDGame.dungeonOps.nextCapacityUpgrade(dungeon);
-    const money = window.SSDGame.state.current.wallet.money;
+    const next = window.DMTHGame.dungeonOps.nextCapacityUpgrade(dungeon);
+    const money = window.DMTHGame.state.current.wallet.money;
 
     el.innerHTML = `
       <div class="panel">
@@ -49,7 +49,7 @@
         <p class="small">Click a hold to open its 10-track upgrade panel.</p>
         <div class="hold-grid">
           ${dungeon.holds.map((h, i) => {
-            const g = h.captiveGirlId ? window.SSDGame.state.getGirl(h.captiveGirlId) : null;
+            const g = h.captiveGirlId ? window.DMTHGame.state.getGirl(h.captiveGirlId) : null;
             const totalTiers = Object.values(h.upgrades || {}).reduce((s, v) => s + v, 0);
             return `<a class="hold-slot ${g ? 'filled' : 'empty'}" href="#upgrade?dungeon=${dungeon.id}&hold=${i}">
               <div><b>Hold ${i+1}</b> · ${h.holdType}</div>
@@ -65,9 +65,9 @@
     if (expandBtn) {
       expandBtn.onclick = () => {
         try {
-          const r = window.SSDGame.dungeonOps.expandCapacity(dungeon.id);
+          const r = window.DMTHGame.dungeonOps.expandCapacity(dungeon.id);
           alert(`Expanded to ${r.newCapacity} holds. "${r.note}"`);
-          window.SSDRouter.handle();
+          window.DMTHRouter.handle();
         } catch (e) { alert(e.message); }
       };
     }
@@ -76,8 +76,8 @@
   function renderHoldUpgrades(el, dungeon, tpl, holdIdx) {
     const hold = dungeon.holds[holdIdx];
     if (!hold) { el.innerHTML = `<p>no such hold · <a href="#upgrade?dungeon=${dungeon.id}">back</a></p>`; return; }
-    const money = window.SSDGame.state.current.wallet.money;
-    const occupant = hold.captiveGirlId ? window.SSDGame.state.getGirl(hold.captiveGirlId) : null;
+    const money = window.DMTHGame.state.current.wallet.money;
+    const occupant = hold.captiveGirlId ? window.DMTHGame.state.getGirl(hold.captiveGirlId) : null;
 
     el.innerHTML = `
       <div class="panel">
@@ -90,8 +90,8 @@
       <div class="panel">
         <h2>Upgrade tracks</h2>
         <div class="upgrade-grid">
-          ${Object.entries(window.SSDGame.dungeonOps.UPGRADE_TRACKS).map(([key, track]) => {
-            const tier = window.SSDGame.dungeonOps.getUpgradeLevel(hold, key);
+          ${Object.entries(window.DMTHGame.dungeonOps.UPGRADE_TRACKS).map(([key, track]) => {
+            const tier = window.DMTHGame.dungeonOps.getUpgradeLevel(hold, key);
             const atMax = tier >= track.maxTier;
             const nextCost = atMax ? 0 : track.tierCosts[tier + 1];
             const canAfford = money >= nextCost;
@@ -114,12 +114,12 @@
     el.querySelectorAll('[data-upgrade]').forEach(b => {
       b.onclick = () => {
         try {
-          const r = window.SSDGame.dungeonOps.upgrade(dungeon.id, holdIdx, b.dataset.upgrade);
-          window.SSDRouter.handle();
+          const r = window.DMTHGame.dungeonOps.upgrade(dungeon.id, holdIdx, b.dataset.upgrade);
+          window.DMTHRouter.handle();
         } catch (e) { alert(e.message); }
       };
     });
   }
 
-  window.SSDRouter.register('upgrade', render);
+  window.DMTHRouter.register('upgrade', render);
 })();

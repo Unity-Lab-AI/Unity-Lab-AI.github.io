@@ -1,87 +1,190 @@
-// SEX SLAVE DUNGEON — Kokoro TTS loader + in-browser synthesis.
-// Uses kokoro-js from CDN. Model weights cached to IndexedDB on first load via the library's own cache.
+// DUNGEON MASTER: THE HUNT — Kokoro TTS loader + speak proxy.
+//
+// Kokoro inference happens in a Web Worker (js/setup/kokoro-worker.js) so the
+// browser's "Page unresponsive" detector never fires during synthesis. The main
+// thread stays free for clicks, scrolls, ticks, and animations while audio is
+// being generated. If worker spawn fails (file:// origin / strict CSP / older
+// browser), falls back to main-thread synthesis transparently.
 
 (function () {
   'use strict';
 
-  const cfg = () => window.SSDConfig;
+  const cfg = () => window.DMTHConfig;
 
-  let state = {
-    tts: null,
-    loading: false,
-    ready: false,
-    error: null,
-    progress: 0
-  };
+  let worker = null;
+  let ready = false;
+  let loading = false;
+  let lastError = null;
+  let progress = 0;
+  let nextReqId = 0;
+  const pending = new Map();   // reqId → { resolve, reject }
+
+  // Main-thread fallback state (only used if Worker spawn fails)
+  let mainTts = null;
+  let mainLoading = false;
 
   const listeners = new Set();
-  function emit() { for (const fn of listeners) { try { fn(state); } catch {} } }
+  function emit() {
+    const snapshot = { ready, loading, error: lastError, progress };
+    for (const fn of listeners) { try { fn(snapshot); } catch {} }
+  }
+
+  function initWorker() {
+    if (worker) return true;
+    try {
+      worker = new Worker('js/setup/kokoro-worker.js', { type: 'module' });
+    } catch (err) {
+      console.warn('[kokoro] worker spawn failed, falling back to main thread:', err);
+      worker = null;
+      return false;
+    }
+    worker.onmessage = (e) => {
+      const m = e.data || {};
+      if (m.type === 'progress') {
+        progress = (m.payload && m.payload.progress) || progress;
+        emit();
+      } else if (m.type === 'ready') {
+        ready = true;
+        loading = false;
+        emit();
+      } else if (m.type === 'error') {
+        lastError = new Error(m.message);
+        loading = false;
+        ready = false;
+        emit();
+      } else if (m.type === 'speakResult') {
+        const p = pending.get(m.id);
+        if (!p) return;
+        pending.delete(m.id);
+        if (m.error) { p.reject(new Error(m.error)); return; }
+        if (m.format === 'blob') {
+          p.resolve(new Blob([m.bytes], { type: m.mime || 'audio/wav' }));
+        } else if (m.format === 'pcm') {
+          p.resolve(pcmToWavBlob(new Float32Array(m.bytes), m.sampleRate));
+        } else {
+          p.reject(new Error('unknown speak result format'));
+        }
+      }
+    };
+    worker.onerror = (e) => {
+      console.warn('[kokoro] worker error:', e);
+      lastError = new Error('worker crashed: ' + (e.message || 'unknown'));
+      ready = false;
+      emit();
+    };
+    return true;
+  }
 
   async function ensureLoaded(onProgress) {
-    if (state.ready) return state.tts;
-    if (state.loading) {
-      // Already loading — wait.
-      return new Promise(res => {
-        const check = () => state.ready ? res(state.tts) : setTimeout(check, 200);
+    if (ready) return;
+    if (loading) {
+      // Already loading — wait until ready or errored.
+      return new Promise((res, rej) => {
+        const check = () => {
+          if (ready) return res();
+          if (lastError) return rej(lastError);
+          setTimeout(check, 200);
+        };
         check();
       });
     }
-    state.loading = true;
-    state.error = null;
+    loading = true;
+    lastError = null;
     emit();
 
+    // Try worker first.
+    if (initWorker()) {
+      // Forward progress to caller too
+      const unsub = onStateChange((s) => { if (onProgress) onProgress({ progress: s.progress }); });
+      worker.postMessage({
+        type: 'init',
+        cdnUrl: cfg().KOKORO.cdnUrl,
+        modelId: cfg().KOKORO.modelId,
+        dtype: cfg().KOKORO.dtype
+      });
+      try {
+        await new Promise((res, rej) => {
+          const check = () => {
+            if (ready) return res();
+            if (lastError) return rej(lastError);
+            setTimeout(check, 200);
+          };
+          check();
+        });
+        return;
+      } finally {
+        unsub();
+      }
+    }
+
+    // Fallback to main-thread load.
+    await loadMainThread(onProgress);
+  }
+
+  async function loadMainThread(onProgress) {
+    if (mainTts) { ready = true; loading = false; emit(); return; }
+    if (mainLoading) {
+      return new Promise((res, rej) => {
+        const check = () => {
+          if (ready) return res();
+          if (lastError) return rej(lastError);
+          setTimeout(check, 200);
+        };
+        check();
+      });
+    }
+    mainLoading = true;
     try {
       const mod = await import(cfg().KOKORO.cdnUrl);
-      const KokoroTTS = mod.KokoroTTS || mod.default?.KokoroTTS;
+      const KokoroTTS = mod.KokoroTTS || (mod.default && mod.default.KokoroTTS);
       if (!KokoroTTS) throw new Error('kokoro-js did not export KokoroTTS');
-
-      // Progress callback — kokoro-js reports progress via a callback during download.
-      const progressCb = (p) => {
-        // p may be { status, file, progress, total }
-        const pct = p.progress ?? 0;
-        state.progress = pct;
-        emit();
-        onProgress?.(p);
-      };
-
-      state.tts = await KokoroTTS.from_pretrained(cfg().KOKORO.modelId, {
+      mainTts = await KokoroTTS.from_pretrained(cfg().KOKORO.modelId, {
         dtype: cfg().KOKORO.dtype,
-        progress_callback: progressCb
+        progress_callback: (p) => {
+          progress = (p && p.progress) || progress;
+          emit();
+          if (onProgress) onProgress(p);
+        }
       });
-      state.ready = true;
-      state.loading = false;
+      ready = true;
+      loading = false;
+      mainLoading = false;
       emit();
-      return state.tts;
     } catch (err) {
-      state.error = err;
-      state.loading = false;
+      lastError = err;
+      loading = false;
+      mainLoading = false;
       emit();
       throw err;
     }
   }
 
   async function speak(text, voiceId, speedOverride) {
-    if (!state.ready) await ensureLoaded();
+    if (!ready) await ensureLoaded();
     const voice = voiceId || cfg().KOKORO.defaultFemaleVoice;
-    const speed = speedOverride ?? cfg().KOKORO.defaultSpeed;
+    const speed = speedOverride != null ? speedOverride : cfg().KOKORO.defaultSpeed;
 
-    // kokoro-js returns audio as Tensor / Blob — use generate() for modern versions.
-    const audio = await state.tts.generate(text, { voice, speed });
+    if (worker && !mainTts) {
+      const id = ++nextReqId;
+      const blob = await new Promise((resolve, reject) => {
+        pending.set(id, { resolve, reject });
+        worker.postMessage({ type: 'speak', id, text, voice, speed });
+      });
+      return URL.createObjectURL(blob);
+    }
 
-    // audio has .save() / .audio / .sampling_rate depending on version.
-    // We normalize to a playable Blob URL.
+    // Main-thread fallback
+    const audio = await mainTts.generate(text, { voice, speed });
     let blob;
     if (audio instanceof Blob) blob = audio;
-    else if (audio.toBlob) blob = audio.toBlob();
-    else if (audio.audio && audio.sampling_rate) {
-      blob = pcmToWavBlob(audio.audio, audio.sampling_rate);
-    } else {
-      throw new Error('unknown kokoro output shape');
-    }
+    else if (audio && typeof audio.toBlob === 'function') blob = audio.toBlob();
+    else if (audio && audio.audio && audio.sampling_rate) blob = pcmToWavBlob(audio.audio, audio.sampling_rate);
+    else throw new Error('unknown kokoro output shape');
     return URL.createObjectURL(blob);
   }
 
-  // Fallback PCM-to-WAV encoder for when kokoro-js returns raw Float32Array + sample rate.
+  // PCM → WAV blob encoder. Used by both the worker-result decoder and the
+  // main-thread fallback when kokoro-js returns raw Float32Array + sample rate.
   function pcmToWavBlob(float32, sampleRate) {
     const len = float32.length;
     const buffer = new ArrayBuffer(44 + len * 2);
@@ -109,13 +212,13 @@
     return new Blob([buffer], { type: 'audio/wav' });
   }
 
-  function isReady() { return state.ready; }
-  function isLoading() { return state.loading; }
-  function getProgress() { return state.progress; }
-  function getError() { return state.error; }
+  function isReady() { return ready; }
+  function isLoading() { return loading; }
+  function getProgress() { return progress; }
+  function getError() { return lastError; }
   function onStateChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 
-  window.SSDKokoro = Object.freeze({
+  window.DMTHKokoro = Object.freeze({
     ensureLoaded,
     speak,
     isReady,

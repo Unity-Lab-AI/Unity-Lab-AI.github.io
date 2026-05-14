@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — mic input via MediaRecorder → Pollinations transcribe.
+// DUNGEON MASTER: THE HUNT — mic input via MediaRecorder → Pollinations transcribe.
 // Captures audio from the user's mic, sends to Pollinations STT, returns transcript.
 
 (function () {
@@ -40,7 +40,7 @@
     mediaRecorder = null;
 
     // Send to Pollinations transcribe endpoint
-    const apiKey = window.SSDConfig.POLLINATIONS.apiKey;
+    const apiKey = window.DMTHConfig.POLLINATIONS.apiKey;
     if (!apiKey) return { ok: false, error: 'no-pollinations-key', durationMs: Date.now() - startedAt };
 
     // Pollinations audio transcription: use the text endpoint with an audio input via multipart.
@@ -75,6 +75,6 @@
     chunks = [];
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.voiceIn = Object.freeze({ isSupported, isRecording, start, stopAndTranscribe, cancel });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.voiceIn = Object.freeze({ isSupported, isRecording, start, stopAndTranscribe, cancel });
 })();

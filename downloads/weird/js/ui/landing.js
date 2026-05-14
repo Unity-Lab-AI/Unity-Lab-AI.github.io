@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — landing page controller.
+// DUNGEON MASTER: THE HUNT — landing page controller.
 // Renders: hero, status dashboard, setup wizard cards, LAUNCH button.
 // No framework — direct DOM.
 
@@ -63,11 +63,11 @@
     const repairBtn = $('#landing-repair-btn');
     if (repairBtn) {
       repairBtn.onclick = async () => {
-        if (!window.SSDOllamaRepairOverlay) {
+        if (!window.DMTHOllamaRepairOverlay) {
           alert('Repair module not loaded — open the page again.');
           return;
         }
-        const result = await window.SSDOllamaRepairOverlay.show({
+        const result = await window.DMTHOllamaRepairOverlay.show({
           diagnosis: healthDiag,
           modelId: s.ollama.activeModel,
           reason: 'manual repair from landing page'
@@ -87,12 +87,12 @@
     const btn = $('#launch-btn');
     btn.disabled = !canLaunch;
     btn.textContent = canLaunch
-      ? '🔒 LAUNCH SEX SLAVE DUNGEON'
+      ? '🔒 LAUNCH DUNGEON MASTER: THE HUNT'
       : (broken ? '🔒 Repair model to launch' : '🔒 Finish setup to launch');
   }
 
   function renderOllamaSetup(s) {
-    const steps = window.SSDInstaller.getInstallSteps(s.os);
+    const steps = window.DMTHInstaller.getInstallSteps(s.os);
     $('#ollama-setup').innerHTML = `
       <h3>1. Install + run Ollama</h3>
       <p class="small">Your OS: <code>${s.os}</code>. Ollama runs on YOUR machine — nothing leaves your box.</p>
@@ -122,7 +122,7 @@
       $('#model-setup').innerHTML = `<p class="small muted">Finish step 1 first (Ollama must be running).</p>`;
       return;
     }
-    const catalog = window.SSDModels.getCatalog();
+    const catalog = window.DMTHModels.getCatalog();
     const installed = new Set(s.ollama.models);
     const active = s.ollama.activeModel;
 
@@ -160,7 +160,7 @@
     });
     $('#model-setup').querySelectorAll('[data-set-active]').forEach(b => {
       b.onclick = () => {
-        localStorage.setItem('ssd_ollama_model', b.dataset.setActive);
+        localStorage.setItem('dmth_ollama_model', b.dataset.setActive);
         refresh();
       };
     });
@@ -186,7 +186,7 @@
         loadBtn.disabled = true;
         loadBtn.textContent = 'Loading…';
         try {
-          await window.SSDKokoro.ensureLoaded(() => refresh());
+          await window.DMTHKokoro.ensureLoaded(() => refresh());
           refresh();
         } catch (err) {
           const p = $('#kokoro-err');
@@ -200,34 +200,68 @@
 
   function renderPollinationsSetup(s) {
     const hasKey = s.pollinations.present;
-    const savedKey = localStorage.getItem('ssd_pollinations_key') || '';
+    // Effective key resolved by config — respects precedence: localStorage > __DEV_ENV (env.local.js from .env) > default.
+    const effectiveKey = (window.DMTHConfig && window.DMTHConfig.POLLINATIONS && window.DMTHConfig.POLLINATIONS.apiKey) || '';
+    const lsKey = localStorage.getItem('dmth_pollinations_key') || '';
+    const sourceLabel = (effectiveKey && !lsKey)
+      ? 'from .env / env.local.js'
+      : (effectiveKey && lsKey)
+        ? 'from Settings panel'
+        : '';
+    // Mask the key as a string of dots matching its length — gives the input the visual
+    // "this is filled in" affordance without leaking the real key into the DOM. Capped at
+    // 48 dots so a long key doesn't overflow the input visually.
+    const maskedDots = hasKey ? '•'.repeat(Math.min(effectiveKey.length, 48)) : '';
+    const prefix = effectiveKey.slice(0, 4);
+    const suffix = effectiveKey.slice(-4);
+
     $('#polly-setup').innerHTML = `
       <h3>4. Pollinations API key (optional — for images)</h3>
       <p class="small">Used for whole-body profile images + on-demand selfies. Skip it — the game plays fully as text+emoji.</p>
-      ${hasKey ? `<p class="small">Current key: <code>${savedKey.slice(0, 4)}…${savedKey.slice(-4)}</code> ✓ saved</p>` : ''}
+      ${hasKey ? `
+        <div style="background:#1a2a1a;border:1px solid #2f5d3a;border-left:4px solid #53d68a;border-radius:6px;padding:10px 12px;margin:10px 0;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:1.15rem;color:#53d68a;font-weight:600;">✓ KEY LOADED</span>
+            <code style="background:#0e1a0e;padding:3px 8px;border-radius:3px;color:#9fefb5;font-size:0.95rem;">${prefix}${'•'.repeat(8)}${suffix}</code>
+            <span class="small muted">(${sourceLabel})</span>
+          </div>
+          <p class="small muted" style="margin:6px 0 0;">Image generation is wired up — selfies will hit Pollinations directly. To change keys, paste a new one below.</p>
+        </div>
+      ` : `
+        <p class="small">No key set — image generation will fall back to the legacy free endpoint (rate-limited, may 403).</p>
+      `}
       <div class="polly-row">
-        <input type="password" id="polly-key" placeholder="${hasKey ? 'Paste new key to change' : 'sk_... or pk_...'}" class="text-input" />
-        <button class="btn-small" id="polly-save">Save</button>
-        ${hasKey ? `<button class="btn-small btn-danger" id="polly-clear">Clear</button>` : ''}
+        <input type="password" id="polly-key" class="text-input"
+          ${hasKey ? `value="${maskedDots}" data-masked="1"` : `placeholder="sk_... or pk_..."`} />
+        <button class="btn-small" id="polly-save">${hasKey ? 'Replace key' : 'Save'}</button>
+        ${lsKey ? `<button class="btn-small btn-danger" id="polly-clear">Clear localStorage key</button>` : ''}
       </div>
     `;
+    // Wipe the dot-mask on first focus/keypress so the user can paste a new key cleanly.
+    const keyInput = $('#polly-key');
+    if (keyInput && keyInput.dataset.masked === '1') {
+      const wipeMask = () => { keyInput.value = ''; delete keyInput.dataset.masked; keyInput.removeEventListener('focus', wipeMask); keyInput.removeEventListener('input', wipeMask); };
+      keyInput.addEventListener('focus', wipeMask);
+      keyInput.addEventListener('input', wipeMask);
+    }
     $('#polly-save').onclick = () => {
-      const v = $('#polly-key').value.trim();
-      if (v) {
-        localStorage.setItem('ssd_pollinations_key', v);
-        $('#polly-key').value = '';
+      const v = keyInput.value.trim();
+      // Guard: if the user clicked Save without editing, the value is still the dot-mask. Don't save it.
+      if (v && v !== maskedDots && !/^•+$/.test(v)) {
+        localStorage.setItem('dmth_pollinations_key', v);
+        keyInput.value = '';
         refresh();
       }
     };
     const clearBtn = $('#polly-clear');
-    if (clearBtn) clearBtn.onclick = () => { localStorage.removeItem('ssd_pollinations_key'); refresh(); };
+    if (clearBtn) clearBtn.onclick = () => { localStorage.removeItem('dmth_pollinations_key'); refresh(); };
   }
 
   async function pullModel(modelId) {
     const progEl = $(`#mp-${cssId(modelId)}`);
     if (progEl) progEl.innerHTML = `<div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>`;
     try {
-      await window.SSDModels.pullModel(modelId, (msg) => {
+      await window.DMTHModels.pullModel(modelId, (msg) => {
         if (progEl) {
           const total = msg.total || 0;
           const done = msg.completed || 0;
@@ -240,8 +274,8 @@
         }
       });
       // After pull, set as active if nothing else is
-      if (!localStorage.getItem('ssd_ollama_model')) {
-        localStorage.setItem('ssd_ollama_model', modelId);
+      if (!localStorage.getItem('dmth_ollama_model')) {
+        localStorage.setItem('dmth_ollama_model', modelId);
       }
       // Pull just landed — health probe matters now, do a deep refresh
       refreshDeep();
@@ -254,7 +288,7 @@
   // Fast refresh — runs every 3s. SKIPS the health probe (which would otherwise
   // fire a real chat request every poll and pound Ollama).
   async function refresh() {
-    currentStatus = await window.SSDDetector.fullStatus({ skipHealthProbe: true });
+    currentStatus = await window.DMTHDetector.fullStatus({ skipHealthProbe: true });
     renderStatus(currentStatus);
     renderOllamaSetup(currentStatus);
     renderModelSetup(currentStatus);
@@ -266,7 +300,7 @@
   // when the user clicks "↻ Re-check". Caches the result so the fast refresh
   // can still display it.
   async function refreshDeep() {
-    currentStatus = await window.SSDDetector.fullStatus({ skipHealthProbe: false });
+    currentStatus = await window.DMTHDetector.fullStatus({ skipHealthProbe: false });
     if (currentStatus?.ollama?.activeModelHealth && currentStatus.ollama.activeModelHealth !== 'skipped') {
       lastHealth = {
         status: currentStatus.ollama.activeModelHealth,
@@ -292,7 +326,7 @@
 
   // ---------- init ----------
   async function init() {
-    const cfg = window.SSDConfig;
+    const cfg = window.DMTHConfig;
     $('#game-title').textContent = cfg.GAME.title;
     $('#game-tagline').textContent = cfg.GAME.tagline;
     $('#game-version').textContent = `v${cfg.GAME.version}`;
@@ -310,7 +344,7 @@
       document.body.classList.toggle('settings-open');
     };
 
-    window.SSDKokoro.onStateChange(() => refresh());
+    window.DMTHKokoro.onStateChange(() => refresh());
     window.addEventListener('storage', () => refresh());
   }
 

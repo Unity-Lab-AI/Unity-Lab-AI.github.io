@@ -1,9 +1,8 @@
-// SEX SLAVE DUNGEON — sentence-aware Kokoro TTS playback queue.
+// DUNGEON MASTER: THE HUNT — sentence-aware Kokoro TTS playback queue.
 //
-// Why this exists: Gee verbatim 2026-05-13:
-//   "the tts playback is being cut off on long paragraphs we need to play
-//    each sentence one at a time in order waiting for first to compleete
-//    before move to next and so on"
+// Why this exists: TTS playback gets cut off on long paragraphs. The queue plays each
+// sentence one at a time in order, waiting for the first to complete before moving to
+// the next.
 //
 // Kokoro-js has a soft length ceiling — long inputs get truncated mid-sentence
 // or generated at degraded quality. Splitting on sentence terminators and
@@ -25,16 +24,27 @@
   let activeToken = 0;
   let activeAudio = null;
 
+  // Threshold under which we pass the whole text to Kokoro as ONE generation. Under
+  // this length, sentence-splitting adds 4-6 extra Kokoro round-trips for no benefit —
+  // the network + render latency stacks up to 20-30 sec instead of ~3-5 sec for the
+  // same audio. Kokoro's soft truncation ceiling sits around 350-400 chars; 280 leaves
+  // safe headroom. Long paragraphs (rare in chat) still get sentence-split.
+  const SINGLE_SHOT_MAX_CHARS = 280;
+
   // Split text into sentence-ish chunks. Matches one of:
   //   - run of non-terminator chars followed by one-or-more terminators
   //   - trailing fragment (no terminator at end)
   // Terminators: . ! ? …
   // Strips empty / whitespace-only chunks.
-  // Edge case: text with no terminators returns the whole text as one chunk.
+  // Edge case: text with no terminators OR text under SINGLE_SHOT_MAX_CHARS returns
+  // the whole text as one chunk for a single fast Kokoro call.
   function splitSentences(text) {
     if (!text || typeof text !== 'string') return [];
-    const raw = text.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/g);
-    if (!raw) return text.trim() ? [text.trim()] : [];
+    const trimmed = text.trim();
+    if (!trimmed) return [];
+    if (trimmed.length <= SINGLE_SHOT_MAX_CHARS) return [trimmed];
+    const raw = trimmed.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/g);
+    if (!raw) return [trimmed];
     const out = [];
     for (const s of raw) {
       const t = s.trim();
@@ -60,7 +70,7 @@
   // sentence finishes OR when cancelled. Safe to call concurrently — a second
   // call cancels the first and takes over.
   async function enqueue(text, voice, speed) {
-    if (!window.SSDKokoro || !window.SSDKokoro.isReady()) {
+    if (!window.DMTHKokoro || !window.DMTHKokoro.isReady()) {
       console.debug('[voice-queue] Kokoro not ready, skipping');
       return;
     }
@@ -119,10 +129,10 @@
   // Wrap Kokoro speak with a try/catch so a single bad sentence doesn't
   // poison the whole pipelined generation chain.
   function safeSpeak(text, voice, speed) {
-    return Promise.resolve().then(() => window.SSDKokoro.speak(text, voice, speed));
+    return Promise.resolve().then(() => window.DMTHKokoro.speak(text, voice, speed));
   }
 
-  window.SSDVoiceQueue = Object.freeze({
+  window.DMTHVoiceQueue = Object.freeze({
     enqueue,
     cancel,
     isActive,

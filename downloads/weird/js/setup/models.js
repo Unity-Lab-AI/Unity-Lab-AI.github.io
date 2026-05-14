@@ -1,10 +1,10 @@
-// SEX SLAVE DUNGEON — Ollama model auto-pull.
+// DUNGEON MASTER: THE HUNT — Ollama model auto-pull.
 // Streams the `POST /api/pull` response so the UI can show download progress.
 
 (function () {
   'use strict';
 
-  const cfg = () => window.SSDConfig;
+  const cfg = () => window.DMTHConfig;
 
   async function pullModel(modelId, onProgress) {
     const endpoint = `${cfg().OLLAMA.endpoint}/api/pull`;
@@ -78,7 +78,7 @@
     return true;
   }
 
-  window.SSDModels = Object.freeze({
+  window.DMTHModels = Object.freeze({
     pullModel,
     listInstalled,
     deleteModel,

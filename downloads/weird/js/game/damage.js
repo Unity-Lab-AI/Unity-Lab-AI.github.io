@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — damage persistence + heal reset.
+// DUNGEON MASTER: THE HUNT — damage persistence + heal reset.
 // /hurtme accumulates bruises; /sexy carries them. User verb "healed" / "100%" resets.
 
 (function () {
@@ -11,7 +11,7 @@
 
   // Full heal — resets body damage + mood to baseline, keeps bond/stats/bond XP.
   function heal(girlId) {
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) return null;
     const newBody = {
       ...girl.body,
@@ -21,12 +21,12 @@
     };
     const newMood = {
       mood: girl.bond.bondLevel >= 5 ? 'devoted' : girl.bond.bondLevel >= 3 ? 'curious' : 'acclimating',
-      moodEmoji: window.SSDGame.delta.emojiForMood(newMood?.mood || 'acclimating'),
+      moodEmoji: window.DMTHGame.delta.emojiForMood(newMood?.mood || 'acclimating'),
       history: [...(girl.mood.history || []), { shift: 'healed', ts: Date.now() }]
     };
     // Rebuild emoji after mood is set
-    newMood.moodEmoji = window.SSDGame.delta.emojiForMood(newMood.mood);
-    window.SSDGame.state.updateGirl(girlId, { body: newBody, mood: newMood });
+    newMood.moodEmoji = window.DMTHGame.delta.emojiForMood(newMood.mood);
+    window.DMTHGame.state.updateGirl(girlId, { body: newBody, mood: newMood });
     return { ok: true };
   }
 
@@ -47,12 +47,12 @@
       if (m) total += m.length;
     }
     if (total === 0) return;
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) return;
     const newBody = { ...girl.body, bruises: Math.min(99, girl.body.bruises + Math.min(total, 3)) };
-    window.SSDGame.state.updateGirl(girlId, { body: newBody });
+    window.DMTHGame.state.updateGirl(girlId, { body: newBody });
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.damage = Object.freeze({ shouldHeal, heal, accumulateFromText, HEAL_PATTERN });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.damage = Object.freeze({ shouldHeal, heal, accumulateFromText, HEAL_PATTERN });
 })();

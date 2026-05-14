@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — procedural girl generator.
+// DUNGEON MASTER: THE HUNT — procedural girl generator.
 // Template + seed → GirlProfile with persistent visualIdentity for Pollinations consistency.
 
 (function () {
@@ -153,13 +153,21 @@
     const drugShuffled = [...pool.drugsPool].sort(() => r() - 0.5);
     for (let i = 0; i < Math.min(drugCount, drugShuffled.length); i++) drugs.push(drugShuffled[i]);
 
-    const voiceId = window.SSDVoices.pickVoiceForArchetype(archetype, seed);
+    const voiceId = window.DMTHVoices.pickVoiceForArchetype(archetype, seed);
+
+    // Roll captiveAffect from per-archetype weighted distribution. Third persona overlay
+    // describing RESPONSE TO CAPTIVITY (mute / cusser / fighter / submissive / agreeable /
+    // bargainer / catatonic). Orthogonal to archetype.
+    const captiveAffect = (window.DMTHTemplates?.rollCaptiveAffect)
+      ? window.DMTHTemplates.rollCaptiveAffect(archetype, r)
+      : 'agreeable';
 
     return {
       id,
       name,
       age,
       archetypeTemplate: archetype,
+      captiveAffect,
       voiceId,
       personaSpeechTokens: pool.speechTokens.slice(),
       kinks,
@@ -167,7 +175,12 @@
       backstoryFragment: generateBackstory(archetype, name, r),
 
       // state
-      body: { arousal: 14, wetness: 8, cumLoad: 0, bruises: 0, high: 0, activeDrugs: [], pose: 'seated, knees together', outfitState: 'intact' },
+      // Stamina 70 default (slightly fatigued from capture). Health 100 default (intact).
+      // Both 0-100. action-effects.js tables per-action deltas; tick.js drains/regenerates.
+      // lastFedAt + lastWateredAt are seeded to the current game-clock timestamp so the
+      // grace-period model in tickStaminaHealth starts the 5-day/3-day countdown from
+      // capture time, not from epoch.
+      body: { arousal: 14, wetness: 8, cumLoad: 0, bruises: 0, high: 0, stamina: 70, health: 100, activeDrugs: [], pose: 'seated, knees together', outfitState: 'intact', lastFedAt: window.DMTHGame?.gameClock?.now() ?? 0, lastWateredAt: window.DMTHGame?.gameClock?.now() ?? 0 },
       mood: { mood: 'terrified', moodEmoji: '😱', history: [] },
       stats,
       bond: { bondLevel: 0, bondXP: 0, bondDebt: 0, milestones: [] },
@@ -189,18 +202,30 @@
         additionalImages: []
       },
 
-      // wardrobe — every girl starts with her default outfit + the built-in 'nude' option
-      // so the player can derobe at any time without buying anything.
+      // wardrobe — every girl starts with her captured-at outfit + built-in 'nude'
+      // (NUDE_PSEUDO) + built-in 'none' (NO_WARDROBE_PSEUDO) so the player can derobe /
+      // strip everything at any time without buying anything.
+      //
+      // The 'default' entry's `description` is the outfit she was wearing AT CAPTURE
+      // (resolved from her archetype's outfitTokens pool), and
+      // `source: 'captured-with'` marks provenance. She keeps this captured-at outfit
+      // until manually changed via wardrobe UI to another outfit, derobed (nude), or
+      // stripped of everything. Re-dress fallback restores this entry specifically.
       wardrobe: [
-        { id: 'default', displayName: 'her default outfit', description: outfit, source: 'born-with' },
-        { id: 'nude', displayName: 'Nude (fully naked)', description: '', source: 'built-in', nude: 'full', multiplier: 1.4 }
+        { id: 'default', displayName: '👗 Captured outfit', description: outfit, source: 'captured-with' },
+        { id: 'nude', displayName: 'Nude (fully naked)', description: '', source: 'built-in', nude: 'full', multiplier: 1.4 },
+        { id: 'none', displayName: 'No wardrobe (stripped of everything)', description: '', source: 'built-in', nude: 'stripped', multiplier: 1.5 }
       ],
       currentOutfit: 'default',
 
-      // consumables (per-girl ongoing)
+      // consumables (per-girl ongoing). Stocks of 25/35 mean fresh captives last
+      // ~25 ticks (12 min) before food empty
+      // and ~35 ticks (17 min) before water empty. Combined with softened
+      // starve/dehydrate rates this gives the player room to find the feed/water
+      // actions before vital crashes.
       consumables: {
-        food:  { tier: 0, stock: 7,  decayPerTick: 1 },
-        water: { tier: 0, stock: 10, decayPerTick: 1 },
+        food:  { tier: 0, stock: 25, decayPerTick: 1 },
+        water: { tier: 0, stock: 35, decayPerTick: 1 },
         light: { tier: 0, hoursPerDay: 12 }
       }
     };
@@ -220,8 +245,8 @@
     return pick(pool, r);
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.girlGen = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.girlGen = Object.freeze({
     generate,
     ARCHETYPE_POOLS
   });

@@ -1,13 +1,13 @@
-// SEX SLAVE DUNGEON — Ollama repair overlay.
+// DUNGEON MASTER: THE HUNT — Ollama repair overlay.
 //
-// Fullscreen modal that appears when SSDOllamaRepair classifies an error as
+// Fullscreen modal that appears when DMTHOllamaRepair classifies an error as
 // 'corrupt' or 'missing'. Shows the diagnosis, lets the user kick off an
 // in-game re-pull with a live progress bar, and resolves a promise on success
 // so the original chat call can be retried.
 //
 // Usage:
-//   const result = await window.SSDOllamaRepairOverlay.show({
-//     diagnosis,        // from SSDOllamaRepair.classifyError or probeModelHealth
+//   const result = await window.DMTHOllamaRepairOverlay.show({
+//     diagnosis,        // from DMTHOllamaRepair.classifyError or probeModelHealth
 //     modelId,          // optional override; falls back to diagnosis.modelId
 //     reason            // human-readable hint for why this opened
 //   });
@@ -118,7 +118,7 @@
     ensureStyles();
     const overlay = document.createElement('div');
     overlay.className = 'ssd-repair-overlay';
-    const m = modelId || (diagnosis && diagnosis.modelId) || window.SSDConfig?.OLLAMA?.activeModel || '';
+    const m = modelId || (diagnosis && diagnosis.modelId) || window.DMTHConfig?.OLLAMA?.activeModel || '';
     const codeBadge = diagnosis?.code ? `[${diagnosis.code}]` : '';
     // Hard repair (delete-then-pull) is the default for corruption-class errors —
     // a soft pull alone can short-circuit when Ollama sees the stale manifest as
@@ -184,8 +184,8 @@
     let lastPct = 0;
     try {
       const op = mode === 'hard'
-        ? window.SSDOllamaRepair.hardRepairModel
-        : window.SSDOllamaRepair.repairModel;
+        ? window.DMTHOllamaRepair.hardRepairModel
+        : window.DMTHOllamaRepair.repairModel;
       await op(modelId, (msg) => {
         // Phase-aware progress: the synthetic 'delete' / 'pulled-cleared' phases
         // from hardRepairModel don't carry total/completed, so we hold the bar
@@ -217,11 +217,11 @@
 
       // Verify with a health probe before declaring victory
       status.textContent = 'verifying weights…';
-      const probe = await window.SSDOllamaRepair.probeModelHealth(modelId);
+      const probe = await window.DMTHOllamaRepair.probeModelHealth(modelId);
       if (probe.status === 'ok') {
         status.textContent = '✓ weights verified — closing in 1.5s';
-        if (window.SSDNotify) {
-          window.SSDNotify.show(`🔧 ${modelId} repaired — chat is live again`, { type: 'success', durationMs: 4000 });
+        if (window.DMTHNotify) {
+          window.DMTHNotify.show(`🔧 ${modelId} repaired — chat is live again`, { type: 'success', durationMs: 4000 });
         }
         setTimeout(() => finish({ repaired: true, modelId, cancelled: false }), 1500);
       } else {
@@ -281,10 +281,10 @@
   // overlay if it's broken. Returns the probe result. Safe to call from
   // anywhere (router, settings panel, manual button).
   async function autoCheck() {
-    if (!window.SSDOllamaRepair) return { status: 'unknown' };
-    const modelId = window.SSDConfig?.OLLAMA?.activeModel;
+    if (!window.DMTHOllamaRepair) return { status: 'unknown' };
+    const modelId = window.DMTHConfig?.OLLAMA?.activeModel;
     if (!modelId) return { status: 'unknown' };
-    const probe = await window.SSDOllamaRepair.probeModelHealth(modelId);
+    const probe = await window.DMTHOllamaRepair.probeModelHealth(modelId);
     if (probe.status === 'corrupt' || probe.status === 'missing') {
       await show({
         diagnosis: probe.diagnosis,
@@ -295,5 +295,5 @@
     return probe;
   }
 
-  window.SSDOllamaRepairOverlay = Object.freeze({ show, autoCheck, close });
+  window.DMTHOllamaRepairOverlay = Object.freeze({ show, autoCheck, close });
 })();

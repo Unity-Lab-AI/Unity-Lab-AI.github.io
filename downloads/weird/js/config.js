@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — central config
+// DUNGEON MASTER: THE HUNT — central config
 // All presets live here: Ollama models, Kokoro voices, emotion states, Pollinations defaults,
 // endpoint URLs, UI constants. Read at runtime from window.__DEV_ENV (dev) / localStorage (user)
 // / defaults (fallback).
@@ -19,11 +19,11 @@
 
   // --- Ollama ----------------------------------------------------------------
   const OLLAMA = {
-    endpoint: pick('ssd_ollama_endpoint', 'OLLAMA_ENDPOINT', 'http://localhost:11434'),
+    endpoint: pick('dmth_ollama_endpoint', 'OLLAMA_ENDPOINT', 'http://localhost:11434'),
     // Default model — Dolphin family. Dolphin is the classic community-proven choice for
     // uncensored + scripted-template work: low refusal rate, strong system-prompt adherence,
     // reliable structured-output (our <delta>{}</delta> suffix), wide availability.
-    activeModel: pick('ssd_ollama_model', 'OLLAMA_MODEL', 'dolphin-mistral:7b'),
+    activeModel: pick('dmth_ollama_model', 'OLLAMA_MODEL', 'dolphin-mistral:7b'),
 
     // Preset model catalog — Dolphin variants prioritized, with a couple of alternative
     // uncensored/abliterated options at the end. Each entry: id (ollama pull name),
@@ -86,7 +86,7 @@
 
   // --- Kokoro TTS ------------------------------------------------------------
   const KOKORO = {
-    modelId: pick('ssd_kokoro_model', 'KOKORO_MODEL', 'onnx-community/Kokoro-82M-v1.0-ONNX'),
+    modelId: pick('dmth_kokoro_model', 'KOKORO_MODEL', 'onnx-community/Kokoro-82M-v1.0-ONNX'),
     // kokoro-js is loaded from a CDN; version pinned for stability.
     cdnUrl: 'https://cdn.jsdelivr.net/npm/kokoro-js@1.2.0/dist/kokoro.web.js',
     dtype: 'q8',                 // q8 ~80MB, fp32 ~330MB — q8 plenty for game TTS
@@ -99,15 +99,19 @@
   // Auth via ?key= query param. sk_ = secret key (server side / no rate limit). pk_ = publishable key (client / rate-limited).
   // If you get 403 errors from a browser with sk_ key, try swapping to a pk_ key from enter.pollinations.ai.
   const POLLINATIONS = {
-    apiKey: pick('ssd_pollinations_key', 'POLLINATIONS_API_KEY', ''),
+    apiKey: pick('dmth_pollinations_key', 'POLLINATIONS_API_KEY', ''),
     imageEndpoint: 'https://image.pollinations.ai/prompt/',   // legacy free — used as fallback
     imageEndpointAuth: 'https://gen.pollinations.ai/image/',  // current authed endpoint
     textEndpoint: 'https://text.pollinations.ai/',
     // Preferred image model for strict visuals. Current gen.pollinations.ai catalog includes:
     // zimage / flux / gptimage / gptimage-large / seedream / seedream-pro / kontext / nanobanana variants / grok-imagine / klein / qwen-image / wan-image / nova-canvas
     imageModel: 'flux',
+    // Default to portrait tall for character images — full body needs vertical room
+    // so the model doesn't compose a portrait/mugshot crop. Per Gee 2026-05-14:
+    // "we need the images to do more fullbody style not mugshots and portrate images".
+    // Environment renders (town/dungeon) override to 1792×1024 landscape in renderEnvironment().
     width: 1024,
-    height: 1024,
+    height: 1792,
     nologo: true,
     // Meta — use Ollama to write each image prompt from the scene context (vs purely hardcoded).
     useOllamaPromptWriter: true
@@ -115,7 +119,7 @@
 
   // --- Storage ---------------------------------------------------------------
   const STORAGE = {
-    idbName: 'sex_slave_dungeon',
+    idbName: 'dungeon_master_the_hunt',
     idbVersion: 1,
     stores: {
       save:      'save',         // main game save
@@ -128,7 +132,7 @@
 
   // --- Game meta -------------------------------------------------------------
   const GAME = {
-    title: 'SEX SLAVE DUNGEON',
+    title: 'DUNGEON MASTER: THE HUNT',
     tagline: 'persistent city-builder — dungeon harem evil taboo — hunt your prey',
     version: '0.0.1',
     defaultDungeonTemplate: 'hole-in-the-desert',
@@ -142,8 +146,8 @@
     logLevel: DEV_ENV.DEV_MODE ? 'debug' : 'info'
   };
 
-  // Expose globally — non-module scripts can read window.SSDConfig.
-  window.SSDConfig = Object.freeze({
+  // Expose globally — non-module scripts can read window.DMTHConfig.
+  window.DMTHConfig = Object.freeze({
     OLLAMA,
     KOKORO,
     POLLINATIONS,
@@ -153,6 +157,6 @@
   });
 
   if (DEV.mode) {
-    console.log('[config] loaded', window.SSDConfig);
+    console.log('[config] loaded', window.DMTHConfig);
   }
 })();

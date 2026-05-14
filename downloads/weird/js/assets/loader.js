@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — asset image loader with auto-discovery.
+// DUNGEON MASTER: THE HUNT — asset image loader with auto-discovery.
 // For each asset, tries a fallback chain of filenames under its folder.
 // If no image is found, the game shows the emoji fallback from the catalog.
 // Works on static hosts (GitHub Pages, any CDN) — uses standard img onerror chain.
@@ -33,11 +33,11 @@
 
   // Global kill-switch — once first probe fails for any asset, check if a manifest exists.
   // If no manifest AND no first-probe hits, disable ALL subsequent asset probes for this session.
-  // User can opt back in by setting localStorage.ssd_asset_probes_enabled = 'true'.
+  // User can opt back in by setting localStorage.dmth_asset_probes_enabled = 'true'.
   let _probesDisabled = null;
   async function probesAreDisabled() {
     if (_probesDisabled !== null) return _probesDisabled;
-    if (localStorage.getItem('ssd_asset_probes_enabled') === 'true') { _probesDisabled = false; return false; }
+    if (localStorage.getItem('dmth_asset_probes_enabled') === 'true') { _probesDisabled = false; return false; }
     // Check for a manifest — if present, honor it (assets definitely exist somewhere)
     try {
       const res = await fetch('assets/manifest.json', { method: 'HEAD', cache: 'force-cache' });
@@ -49,7 +49,7 @@
       if (canary.ok) { _probesDisabled = false; return false; }
     } catch {}
     _probesDisabled = true;
-    console.debug('[asset-loader] no local assets/ files detected — disabling probes for this session (emoji fallback only). Drop a file + set localStorage.ssd_asset_probes_enabled=true to re-enable.');
+    console.debug('[asset-loader] no local assets/ files detected — disabling probes for this session (emoji fallback only). Drop a file + set localStorage.dmth_asset_probes_enabled=true to re-enable.');
     return true;
   }
 
@@ -64,7 +64,7 @@
       resolved.set(key, 'MISSING');
       return null;
     }
-    const folder = window.SSDAssets.assetFolderPath(category, id);
+    const folder = window.DMTHAssets.assetFolderPath(category, id);
     for (const fname of CANDIDATES) {
       const url = folder + fname;
       // eslint-disable-next-line no-await-in-loop
@@ -85,7 +85,7 @@
   // Render an asset as either an <img> (if resolved) or an emoji placeholder.
   // Returns an HTMLElement ready to insert into the DOM.
   async function renderAsset(category, id, opts = {}) {
-    const entry = window.SSDAssets.getById(category, id);
+    const entry = window.DMTHAssets.getById(category, id);
     if (!entry) {
       const span = document.createElement('span');
       span.textContent = '❓';
@@ -119,7 +119,7 @@
 
   // Utility — get the copy-paste prompt for an asset (for users feeding it into an image generator).
   function getPromptText(category, id) {
-    return window.SSDAssets.getPrompt(category, id);
+    return window.DMTHAssets.getPrompt(category, id);
   }
 
   // Utility — enumerate every asset in the catalog with its folder path + prompt.
@@ -127,13 +127,13 @@
   function allAssetsWithPaths() {
     const out = [];
     for (const category of ['location', 'item', 'dungeon', 'room', 'facility']) {
-      for (const entry of window.SSDAssets.getAll(category)) {
+      for (const entry of window.DMTHAssets.getAll(category)) {
         out.push({
           category,
           id: entry.id,
           displayName: entry.displayName,
           emoji: entry.emoji,
-          folder: window.SSDAssets.assetFolderPath(category, entry.id),
+          folder: window.DMTHAssets.assetFolderPath(category, entry.id),
           prompt: entry.prompt
         });
       }
@@ -141,7 +141,7 @@
     return out;
   }
 
-  window.SSDAssetLoader = Object.freeze({
+  window.DMTHAssetLoader = Object.freeze({
     resolveImageUrl,
     renderAsset,
     getPromptText,

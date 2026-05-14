@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — achievements tracker. Logs milestones across all systems.
+// DUNGEON MASTER: THE HUNT — achievements tracker. Logs milestones across all systems.
 
 (function () {
   'use strict';
@@ -16,7 +16,7 @@
     { id: 'bond-l9',               emoji: '💖', title: 'Fully Bonded',              description: 'Raised a captive to bond level 9', check: s => (s.roster || []).some(g => g.bond?.bondLevel >= 9) },
     { id: 'ten-films',             emoji: '🎞️', title: 'Prolific',                  description: 'Sold 10 films', check: s => (s.films || []).filter(f => f.status === 'sold').length >= 10 },
     { id: 'hundred-k',             emoji: '💎', title: 'Six Figures',               description: 'Amassed $100,000 total', check: s => s.wallet?.money >= 100000 },
-    { id: 'full-town',             emoji: '🏙️', title: 'Town Baron',               description: 'Owned every location in the outside world', check: s => (s.properties || []).filter(p => p.owned).length >= window.SSDAssets.LOCATIONS.length },
+    { id: 'full-town',             emoji: '🏙️', title: 'Town Baron',               description: 'Owned every location in the outside world', check: s => (s.properties || []).filter(p => p.owned).length >= window.DMTHAssets.LOCATIONS.length },
     { id: 'estate-hideout',        emoji: '🏛️', title: 'Kingdom Move',              description: 'Owned the underground-complex endgame hideout', check: s => (s.dungeons || []).some(d => d.templateId === 'underground-complex') },
     { id: 'five-captives',         emoji: '⛓️', title: 'Full Stable',               description: 'Held 5 captives simultaneously', check: s => (s.roster || []).filter(g => g.encounterState === 'captive').length >= 5 },
     { id: 'ten-captives',          emoji: '⛓️⛓️', title: 'Harem Master',             description: 'Held 10 captives simultaneously', check: s => (s.roster || []).filter(g => g.encounterState === 'captive').length >= 10 },
@@ -30,7 +30,7 @@
   ];
 
   function check() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     if (!s) return [];
     if (!s.achievements) s.achievements = {};
     const unlocks = [];
@@ -44,23 +44,23 @@
       } catch {}
     }
     if (unlocks.length) {
-      window.SSDGame.state.save();
+      window.DMTHGame.state.save();
     }
     return unlocks;
   }
 
   function unlocked() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     return DEFINITIONS.filter(d => s?.achievements?.[d.id]);
   }
 
   function locked() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     return DEFINITIONS.filter(d => !s?.achievements?.[d.id]);
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.achievements = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.achievements = Object.freeze({
     DEFINITIONS, check, unlocked, locked
   });
 })();

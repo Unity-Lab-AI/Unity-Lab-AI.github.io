@@ -1,10 +1,10 @@
-// SEX SLAVE DUNGEON — named save slots.
+// DUNGEON MASTER: THE HUNT — named save slots.
 
 (function () {
   'use strict';
 
   const SLOT_KEYS = ['slot_a', 'slot_b', 'slot_c'];
-  const ACTIVE_SLOT_LS = 'ssd_active_slot';
+  const ACTIVE_SLOT_LS = 'dmth_active_slot';
 
   function activeSlot() {
     return localStorage.getItem(ACTIVE_SLOT_LS) || 'main';
@@ -17,7 +17,7 @@
   async function listSlots() {
     const slots = [];
     for (const slotId of ['main', ...SLOT_KEYS]) {
-      const data = await window.SSDStorage.save.get(slotId);
+      const data = await window.DMTHStorage.save.get(slotId);
       slots.push({
         id: slotId,
         exists: !!(data && data.createdAt),
@@ -33,34 +33,34 @@
   }
 
   async function saveTo(slotId) {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     if (!s) throw new Error('no game state');
-    await window.SSDStorage.save.put(slotId, s);
+    await window.DMTHStorage.save.put(slotId, s);
     return { ok: true };
   }
 
   async function loadFrom(slotId) {
-    const data = await window.SSDStorage.save.get(slotId);
+    const data = await window.DMTHStorage.save.get(slotId);
     if (!data || !data.createdAt) throw new Error('empty slot');
-    await window.SSDStorage.save.put('main', data);   // copy to main for runtime
+    await window.DMTHStorage.save.put('main', data);   // copy to main for runtime
     setActiveSlot(slotId);
     // Force a reload to re-boot from the restored state
     return { ok: true };
   }
 
   async function copySlot(fromId, toId) {
-    const data = await window.SSDStorage.save.get(fromId);
+    const data = await window.DMTHStorage.save.get(fromId);
     if (!data) throw new Error('source slot empty');
-    await window.SSDStorage.save.put(toId, data);
+    await window.DMTHStorage.save.put(toId, data);
     return { ok: true };
   }
 
   async function wipeSlot(slotId) {
-    await window.SSDStorage.save.put(slotId, null);
+    await window.DMTHStorage.save.put(slotId, null);
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.saveSlots = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.saveSlots = Object.freeze({
     SLOT_KEYS, activeSlot, setActiveSlot, listSlots, saveTo, loadFrom, copySlot, wipeSlot
   });
 })();

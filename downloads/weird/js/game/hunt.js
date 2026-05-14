@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — hunting mechanic. Location roll → encounter → approach → capture attempt.
+// DUNGEON MASTER: THE HUNT — hunting mechanic. Location roll → encounter → approach → capture attempt.
 
 (function () {
   'use strict';
@@ -33,7 +33,7 @@
     for (let i = 0; i < count; i++) {
       const arche = weightedPick(spawns);
       const seed = Math.floor(Math.random() * 0x7FFFFFFF);
-      const girl = window.SSDGame.girlGen.generate(arche, seed);
+      const girl = window.DMTHGame.girlGen.generate(arche, seed);
       girl.encounterState = 'encountered';
       girl.encounteredAt = { locationId, ts: Date.now() };
       girls.push(girl);
@@ -114,6 +114,27 @@
     'underground-complex':   'the security door seals behind her with a professional hiss, recessed lighting, polished concrete reflecting'
   };
 
+  // --- Archetype capture-stage resistance ---
+  // Per-archetype per-stage resistance weights (0-50) for the 4-stage capture mechanic
+  // (Approach → Engage → Subdue → Secure). Read by `js/game/capture.js` via
+  // `window.DMTHGame.hunt.ARCHETYPE_CAPTURE_RESISTANCE`. Library/barista = low across the
+  // board (easy captures). Street/gym = high subdue (fights dirty / physical strength).
+  // Sorority = high engage (alerts others). Club/model = high approach (crowded + public).
+  // Higher number = harder stage for that archetype.
+  const ARCHETYPE_CAPTURE_RESISTANCE = {
+    library:  { approach: 10, engage: 10, subdue: 15, secure: 15 },
+    club:     { approach: 35, engage: 30, subdue: 20, secure: 20 },
+    street:   { approach: 25, engage: 25, subdue: 40, secure: 30 },
+    sorority: { approach: 25, engage: 40, subdue: 25, secure: 20 },
+    gym:      { approach: 30, engage: 30, subdue: 50, secure: 35 },
+    barista:  { approach: 15, engage: 15, subdue: 15, secure: 15 },
+    office:   { approach: 20, engage: 25, subdue: 20, secure: 20 },
+    waitress: { approach: 25, engage: 25, subdue: 30, secure: 25 },
+    nurse:    { approach: 25, engage: 30, subdue: 25, secure: 25 },
+    model:    { approach: 35, engage: 35, subdue: 30, secure: 25 },
+    unity_seed: { approach: 5, engage: 5, subdue: 5, secure: 5 }
+  };
+
   // --- Archetype difficulty (WOMAN TYPE factor) — 0=easy, 1=very hard ---
   const ARCHETYPE_DIFFICULTY = {
     barista: 0.25,
@@ -160,10 +181,15 @@
     const archDiff = ARCHETYPE_DIFFICULTY[girl.archetypeTemplate] ?? 0.50;
     const defiance = girl.stats?.defiance || 50;
     const intelligence = girl.stats?.intelligence || 50;
-    const notoriety = window.SSDGame.state.current?.wallet?.notoriety || 0;
-    const suspicion = (window.SSDGame.state.current.wallet.suspicionByLocation[locationId] || 0);
+    const notoriety = window.DMTHGame.state.current?.wallet?.notoriety || 0;
+    const suspicion = (window.DMTHGame.state.current.wallet.suspicionByLocation[locationId] || 0);
     const suspicionPenalty = Math.min(0.45, suspicion * 0.08);
     const exposure = LOCATION_EXPOSURE[locationId] || 0;
+
+    // Player satisfaction hunting bonus — fuck enough captives, the next catch is easier.
+    // Center at 50 → 0 swing; full 100 → +0.20; floor 0 → -0.10.
+    const playerSat = window.DMTHGame.state.current?.wallet?.playerSatisfaction ?? 50;
+    const satisfactionBonus = ((playerSat - 50) / 50) * (playerSat >= 50 ? 0.20 : 0.10);
 
     const breakdown = {
       baseline:            0.40,
@@ -173,7 +199,8 @@
       intelligence:        -(intelligence / 100) * 0.12,
       notorietyBonus:      +Math.min(0.12, notoriety * 0.004),
       suspicionPenalty:    -suspicionPenalty,
-      exposurePenalty:     -exposure
+      exposurePenalty:     -exposure,
+      satisfactionBonus:   +satisfactionBonus
     };
     const sumRaw =
       breakdown.baseline +
@@ -183,7 +210,8 @@
       breakdown.intelligence +
       breakdown.notorietyBonus +
       breakdown.suspicionPenalty +
-      breakdown.exposurePenalty;
+      breakdown.exposurePenalty +
+      breakdown.satisfactionBonus;
 
     const successP = Math.max(0.05, Math.min(0.95, sumRaw));
 
@@ -201,21 +229,25 @@
     };
   }
 
-  // Resolve a capture attempt.
+  // Resolve a single-tool capture attempt.
+  // SUPERSEDED by `window.DMTHGame.capture.runAttempt()` — the 4-stage progress-bar
+  // mechanic. This function is retained for backward compatibility
+  // (external callers / debug utilities) but the hunt UI no longer calls it. New game code
+  // should use `DMTHGame.capture.runAttempt({girl, toolPerStage, locationId})` instead.
   // Returns { outcome: 'success'|'partial-fail'|'fail'|'critical-fail', ... }
   function attemptCapture({ girl, toolId, locationId }) {
-    const tool = window.SSDAssets.getById('item', toolId);
+    const tool = window.DMTHAssets.getById('item', toolId);
     if (!tool) return { outcome: 'fail', reason: 'unknown-tool' };
-    const inv = window.SSDGame.state.current.inventory;
+    const inv = window.DMTHGame.state.current.inventory;
     if (!inv[toolId] || inv[toolId] < 1) return { outcome: 'fail', reason: 'no-tool' };
 
     // Consume the tool
-    window.SSDGame.state.consumeItem(toolId, 1);
+    window.DMTHGame.state.consumeItem(toolId, 1);
 
     const { successP } = previewCaptureOdds({ girl, toolId, locationId });
 
     const roll = Math.random();
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const suspicion = s.wallet.suspicionByLocation[locationId] || 0;
     if (roll < successP) {
       return { outcome: 'success', successP, toolUsed: toolId };
@@ -225,18 +257,18 @@
       return { outcome: 'partial-fail', successP, toolUsed: toolId, suspicionDelta: 1 };
     } else if (roll < successP + 0.35) {
       s.wallet.suspicionByLocation[locationId] = suspicion + 2;
-      window.SSDGame.state.addNotoriety(1);
+      window.DMTHGame.state.addNotoriety(1);
       return { outcome: 'fail', successP, toolUsed: toolId, suspicionDelta: 2 };
     } else {
       s.wallet.suspicionByLocation[locationId] = suspicion + 4;
-      window.SSDGame.state.addNotoriety(3);
+      window.DMTHGame.state.addNotoriety(3);
       return { outcome: 'critical-fail', successP, toolUsed: toolId, suspicionDelta: 4, notorietyDelta: 3 };
     }
   }
 
   // Escort a captured girl to an open hold in the active dungeon.
   function escortToHold(girl, dungeonId) {
-    const dungeon = window.SSDGame.state.getDungeon(dungeonId || window.SSDGame.state.current.settings.activeDungeonId);
+    const dungeon = window.DMTHGame.state.getDungeon(dungeonId || window.DMTHGame.state.current.settings.activeDungeonId);
     if (!dungeon) throw new Error('no dungeon to escort to');
     const openIdx = dungeon.holds.findIndex(h => !h.captiveGirlId);
     if (openIdx < 0) throw new Error('no open holds in dungeon');
@@ -246,14 +278,14 @@
     girl.captureDate = Date.now();
     girl.mood.mood = 'terrified';
     girl.mood.moodEmoji = '😱';
-    window.SSDGame.state.addGirl(girl);
+    window.DMTHGame.state.addGirl(girl);
     const newHolds = dungeon.holds.slice();
     newHolds[openIdx] = { ...newHolds[openIdx], captiveGirlId: girl.id };
-    window.SSDGame.state.updateDungeon(dungeon.id, { holds: newHolds });
+    window.DMTHGame.state.updateDungeon(dungeon.id, { holds: newHolds });
     // Fire-and-forget capture memorial + profile image — Pollinations overlay, silent if unavailable.
-    if (window.SSDGame.imaging && window.SSDGame.imaging.isAvailable()) {
-      window.SSDGame.imaging.generateFor(girl.id, { situation: 'capture' }).catch(() => {});
-      window.SSDGame.imaging.profileImageFor(girl.id).catch(() => {});
+    if (window.DMTHGame.imaging && window.DMTHGame.imaging.isAvailable()) {
+      window.DMTHGame.imaging.generateFor(girl.id, { situation: 'capture' }).catch(() => {});
+      window.DMTHGame.imaging.profileImageFor(girl.id).catch(() => {});
     }
     return { dungeonId: dungeon.id, holdIdx: openIdx };
   }
@@ -261,9 +293,9 @@
   // --- Compose scene-vars for a capture beat based on tool × woman × location × hideout ---
   function composeSceneVars({ girl, toolId, locationId, dungeonId, beat }) {
     const tool = TOOL_FLAVOR[toolId] || { verb: toolId, action: 'uses the tool on her', aftermath: 'she goes down' };
-    const loc  = window.SSDAssets.getById('location', locationId);
-    const dungeon = dungeonId ? window.SSDGame.state.getDungeon(dungeonId) : null;
-    const dungeonTpl = dungeon ? window.SSDAssets.getById('dungeon', dungeon.templateId) : null;
+    const loc  = window.DMTHAssets.getById('location', locationId);
+    const dungeon = dungeonId ? window.DMTHGame.state.getDungeon(dungeonId) : null;
+    const dungeonTpl = dungeon ? window.DMTHAssets.getById('dungeon', dungeon.templateId) : null;
     return {
       GIRL_NAME:      girl.name,
       GIRL_ARCHETYPE: girl.archetypeTemplate,
@@ -279,8 +311,8 @@
     };
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.hunt = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.hunt = Object.freeze({
     rollEncounters,
     attemptCapture,
     previewCaptureOdds,
@@ -291,6 +323,7 @@
     TOOL_FLAVOR,
     ARCHETYPE_DIFFICULTY,
     ARCHETYPE_REACTION,
+    ARCHETYPE_CAPTURE_RESISTANCE,
     LOCATION_EXPOSURE,
     LOCATION_FLAVOR,
     HIDEOUT_ARRIVAL

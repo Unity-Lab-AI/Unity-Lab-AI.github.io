@@ -1,15 +1,15 @@
-// SEX SLAVE DUNGEON — per-dungeon interior plot-grid page.
+// DUNGEON MASTER: THE HUNT — per-dungeon interior plot-grid page.
 
 (function () {
   'use strict';
 
   function render(el, params) {
     const dungeonId = params.dungeon;
-    const dungeon = window.SSDGame.state.getDungeon(dungeonId);
+    const dungeon = window.DMTHGame.state.getDungeon(dungeonId);
     if (!dungeon) { el.innerHTML = `<p>no such dungeon · <a href="#dungeon">Dungeons</a></p>`; return; }
-    const tpl = window.SSDAssets.getById('dungeon', dungeon.templateId);
-    const grid = window.SSDGame.dungeonPlot.buildGrid(dungeon);
-    const money = window.SSDGame.state.current.wallet.money;
+    const tpl = window.DMTHAssets.getById('dungeon', dungeon.templateId);
+    const grid = window.DMTHGame.dungeonPlot.buildGrid(dungeon);
+    const money = window.DMTHGame.state.current.wallet.money;
 
     el.innerHTML = `
       <div class="panel">
@@ -30,7 +30,7 @@
       <div class="panel">
         <h2>Add facility</h2>
         <div class="girl-grid">
-          ${window.SSDGame.dungeonPlot.INTERIOR_ITEMS.filter(i => i.category === 'facility').map(f => `
+          ${window.DMTHGame.dungeonPlot.INTERIOR_ITEMS.filter(i => i.category === 'facility').map(f => `
             <div class="model-card">
               <div class="model-name">${f.emoji} ${f.displayName}</div>
               <div class="model-notes small">${f.promptTokens}</div>
@@ -47,8 +47,8 @@
 
       <div class="panel">
         <h2>Render dungeon interior</h2>
-        <button id="render-btn" class="btn-small ${window.SSDGame.imaging.isAvailable() ? 'btn-primary' : ''}" ${window.SSDGame.imaging.isAvailable() ? '' : 'disabled'}>
-          ${window.SSDGame.imaging.isAvailable() ? 'Render interior →' : 'Set Pollinations key first'}
+        <button id="render-btn" class="btn-small ${window.DMTHGame.imaging.isAvailable() ? 'btn-primary' : ''}" ${window.DMTHGame.imaging.isAvailable() ? '' : 'disabled'}>
+          ${window.DMTHGame.imaging.isAvailable() ? 'Render interior →' : 'Set Pollinations key first'}
         </button>
         <div id="dungeon-render-slot"></div>
       </div>
@@ -67,17 +67,17 @@
         if (!preparedFacility) { alert('Pick a facility below first'); return; }
         const [x, y] = slotBtn.dataset.emptySlot.split(',').map(Number);
         try {
-          window.SSDGame.dungeonPlot.placeFacility(dungeonId, x, y, preparedFacility);
+          window.DMTHGame.dungeonPlot.placeFacility(dungeonId, x, y, preparedFacility);
           preparedFacility = null;
-          window.SSDRouter.handle();
+          window.DMTHRouter.handle();
         } catch (e) { alert(e.message); }
       };
     });
     el.querySelectorAll('[data-remove-facility]').forEach(b => {
       b.onclick = () => {
         const [x, y] = b.dataset.removeFacility.split(',').map(Number);
-        window.SSDGame.dungeonPlot.removeFacility(dungeonId, x, y);
-        window.SSDRouter.handle();
+        window.DMTHGame.dungeonPlot.removeFacility(dungeonId, x, y);
+        window.DMTHRouter.handle();
       };
     });
 
@@ -85,9 +85,9 @@
     if (renderBtn) renderBtn.onclick = async () => {
       const slot = el.querySelector('#dungeon-render-slot');
       slot.innerHTML = `<p class="small muted">Generating interior image…</p>`;
-      const prompt = window.SSDGame.dungeonPlot.renderPrompt(dungeon, grid);
-      const hash = window.SSDGame.dungeonPlot.hashGrid(grid);
-      const r = await window.SSDGame.imaging.renderEnvironment({ kind: `dungeon-${dungeonId}`, prompt, hash });
+      const prompt = window.DMTHGame.dungeonPlot.renderPrompt(dungeon, grid);
+      const hash = window.DMTHGame.dungeonPlot.hashGrid(grid);
+      const r = await window.DMTHGame.imaging.renderEnvironment({ kind: `dungeon-${dungeonId}`, prompt, hash });
       if (r.url) slot.innerHTML = `<img src="${r.url}" alt="interior" class="gen-img" />${r.cached ? '<p class="small muted">cached</p>' : ''}`;
       else      slot.innerHTML = `<p class="small danger">render failed: ${r.error}</p>`;
     };
@@ -112,5 +112,5 @@
     </div>`;
   }
 
-  window.SSDRouter.register('dungeon-plot', render);
+  window.DMTHRouter.register('dungeon-plot', render);
 })();

@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — hash-based SPA router for the game page.
+// DUNGEON MASTER: THE HUNT — hash-based SPA router for the game page.
 
 (function () {
   'use strict';
@@ -35,5 +35,5 @@
   window.addEventListener('hashchange', handle);
   document.addEventListener('DOMContentLoaded', () => { if (mountEl) handle(); });
 
-  window.SSDRouter = Object.freeze({ register, mount, go, handle });
+  window.DMTHRouter = Object.freeze({ register, mount, go, handle });
 })();
