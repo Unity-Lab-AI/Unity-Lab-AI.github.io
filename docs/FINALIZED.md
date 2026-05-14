@@ -1350,3 +1350,79 @@ Per user direction "oh wait make sure u finalize the todo entreis and re templet
 > "fix the sitemap generator on a new branch"
 **Problem:** `scripts/generate-sitemap.js` produced a regressed `sitemap.xml` that overwrote the hand-curated post-redesign canonical from P1-07 on every `npm run build` — dropped `.html` extension canonical URLs for the 7 redesign pages, dropped `/apps/` URL entirely, dropped `/downloads/` URL with the Moana `<image:image>` block, dropped `<?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>` declaration, dropped `xmlns:xsi` + `xmlns:image` namespace declarations + `xsi:schemaLocation`, dropped the explanatory comment block + per-URL inline comments.
 **Scope:** Patch `scripts/generate-sitemap.js` to emit the canonical 9-URL post-redesign structure (matching `sitemap.xml` byte-for-byte modulo `<lastmod>` dates); re-emit the XML stylesheet declaration, multi-namespace `<urlset>`, top-level rationale comment, per-URL inline comments, and the `/downloads/` `<image:image>` block; verify output via `node scripts/generate-sitemap.js && git diff sitemap.xml` — diff should show ONLY `<lastmod>` date deltas; atomic commit: generator patch + regenerated sitemap.xml + docs in one; open PR back into `dev-re-design`.
+
+---
+
+## 2026-05-13 — Add the universal 18+ age gate + ToS/Privacy acceptance modal to the downloads pages
+
+**Branch:** `feature/downloads-age-gate` (off `main` tip `31c3abf`)
+
+**User direction (verbatim, LAW #0):**
+
+> "also we need the age gate check and the terms of service agreement check when visiting the downlaods pages(but remembr if they do it once aon demo, apps, or downlaods, they dont need to do it again) it saves to loacal sotrorage right>>> so make sure the downlaod page properly gates the 18 check and the terms of service and provacy policay gate that we already have for apps and demo we just need to add it to the download section also"
+
+**Follow-up user verbatim during verification:**
+
+> "iot appears u just didnt set ur age tro get throughthe modsal gate"
+
+> "omy god , just open it and let me test it u didnt program the playwrite to ghet through the modal"
+
+> "its good to go"
+
+> "merger to develop>merger to main"
+
+> "yes finalization first"
+
+### What was missing
+
+The universal 18+ age gate + ToS/Privacy acceptance modal — shipped on 2026-05-08 via `apps/age-verification.js` (798 lines) — was wired into `/ai/demo/index.html`, `/apps.html`, and all 12 individual app HTMLs, but NOT into any of the 5 downloads pages. Users navigating directly to `/downloads/` (or any deep download page) could browse and download adult-content projects (including the new SEX SLAVE DUNGEON / Weird Project shipped today) without ever passing the age gate or accepting ToS/Privacy.
+
+### What shipped
+
+**1. Wired `apps/age-verification.js` into 5 downloads HTML pages** at cache-bust `?v=20260513a`:
+- `downloads/index.html` — script src `../apps/age-verification.js?v=20260513a` (1 level deep)
+- `downloads/moana/index.html` — script src `../../apps/age-verification.js?v=20260513a` (2 levels deep)
+- `downloads/Local Unity/index.html` — script src `../../apps/age-verification.js?v=20260513a`
+- `downloads/claude/index.html` — script src `../../apps/age-verification.js?v=20260513a`
+- `downloads/weird/index.html` — script src `../../apps/age-verification.js?v=20260513a`
+
+Each `<script>` tag added with `defer` attribute and a `<!-- Universal 18+ age gate + ToS/Privacy acceptance modal (shared with /ai/demo/ and /apps/) -->` comment, placed immediately after the existing `<script src="...page-init.js">` line near the bottom of `<body>`.
+
+**2. No changes needed to `apps/age-verification.js` itself.** The script already supports arbitrary depth via `getLegalUrls()` (counts directory segments in `window.location.pathname` and builds `../`.repeat(depth) prefix) and `resolveDisableTarget()` (looks up `#main-content` first, falls back to `.demo-container`). All 5 downloads pages have `<main id="main-content">` so the disable/enable hooks bind correctly with zero script modifications.
+
+**3. Universal localStorage flag propagation preserved.** Per the original gate design, all 6 flags persist across sections:
+- `button18 = "true"`
+- `birthdate = "YYYY-MM-DD"`
+- `husdh-f978dyh-sdf = "true"` (randomized site-flag marker)
+- `legalAccepted = "true"`
+- `legalAcceptedVersion = "v1.0"` (matches `redesign/terms-v1.jsx` + `redesign/privacy-v1.jsx`)
+- `legalAcceptedDate = "<ISO-8601 timestamp>"`
+
+Passing once on `/ai/demo/`, `/apps/`, OR any new downloads path unlocks every other gated path (verbatim user requirement: "if they do it once aon demo, apps, or downlaods, they dont need to do it again"). Version-bump re-prompt mechanic preserved: if `legalAcceptedVersion ≠ CURRENT_LEGAL_VERSION` ("v1.0" today), only the legal-acceptance popup re-fires (skipping age form since the user already passed it). Universal across all 5 downloads pages + 1 AI demo page + 1 apps gallery page + 12 individual app HTMLs = **18 total gated entry points** sharing the same flag set.
+
+**4. Architecture doc updated.** `Docs/ARCHITECTURE.md` "📦 Downloads section (May 2026)" callout extended with a sentence describing the universal age gate now covering the downloads section in addition to demo + apps.
+
+### Verification
+
+**Headed Playwright run** per user's earlier "none headless" preference. First attempt used wrong CSS selectors (`#age-verification-popup` instead of the script's actual `.verification-popup` class) and reported false-negative "BUG" rows on the modal-visible checks — user caught this with "iot appears u just didnt set ur age tro get throughthe modsal gate". Second attempt with corrected selectors confirmed modal visibility on fresh visits BUT my programmatic-localStorage-set logic was running in-page after init() had already mounted the modal (modal stays up until reload). User cut through the over-engineering with "omy god , just open it and let me test it u didnt program the playwrite to ghet through the modal" and the actual verification was performed manually via a Playwright-launched headed Chromium window with a one-line setup (clear localStorage at `/downloads/`, reload), then the user walked through the modal UI by hand:
+- Fresh `/downloads/` visit → age modal appears (Yes/No buttons)
+- Clicked Yes → birthdate form appears
+- Entered birthdate ≥ 18 years ago + Submit → legal-acceptance popup appears
+- Ticked ToS/Privacy checkbox + clicked Accept → site unlocked, modal dismissed
+- Navigated to `/downloads/weird/` → NO modal (cross-path universal flag)
+- Navigated to `/ai/demo/` → NO modal (cross-section universal flag)
+- Navigated to `/apps.html` → NO modal (cross-section universal flag)
+
+User confirmed: **"its good to go"**.
+
+**Static checks (grep):** All 5 downloads HTMLs have exactly 1 `<script src="...age-verification.js?v=20260513a" defer>` line each (`grep -c "age-verification.js?v=20260513a"` returns `1` for all 5 paths). The script `apps/age-verification.js` is unchanged from its 2026-05-08 ship at `?v=20260508l` — the new `?v=20260513a` query string only signals "newly-wired pages should fetch fresh in case any visitor has a stale CDN-cached version of the script bytes".
+
+**Branch hygiene:** Branched off `main` tip `31c3abf` (post-case-fold-cleanup merge). No conflicts. Working tree was clean before edits.
+
+### What was NOT touched
+
+- `apps/age-verification.js` itself — already handles arbitrary depth + supports the downloads pages' `#main-content` target without modification
+- Existing wirings on `/ai/demo/`, `/apps.html`, and the 12 app HTMLs — they continue to load the script at the original `?v=20260508l` cache-bust query; no need to bump since the script bytes are identical
+- Other site pages (`/about`, `/contact`, `/services`, `/projects`, `/codex`, `/terms`, `/privacy`) — public marketing/legal content, gate intentionally does NOT fire on them per the established design ("for apps and the demo" original scope, now extended to downloads only)
+- Modal styling — no CSS changes; the script's self-contained `injectStyles()` handles all popup/backdrop/button/form styling at z-index `2147483647`
+- `dist/` build output — will regenerate on next `npm run build`
