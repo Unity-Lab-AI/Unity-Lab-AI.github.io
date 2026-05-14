@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEX SLAVE DUNGEON — game</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="css/landing.css" />
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+<body>
+
+  <!-- Env injection (local dev only; no error if absent) -->
+  <script src="js/env.local.js" onerror="console.debug('[env] no env.local.js — normal for deploy')"></script>
+
+  <!-- Core config + libs -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/voices/catalog.js"></script>
+  <script src="js/templates/ollama-templates.js"></script>
+  <script src="js/assets/catalog.js"></script>
+  <script src="js/assets/loader.js"></script>
+  <script src="js/setup/detector.js"></script>
+  <script src="js/setup/models.js"></script>
+  <script src="js/setup/ollama-repair.js"></script>
+  <script src="js/setup/kokoro.js"></script>
+
+  <!-- Game engine -->
+  <script src="js/game/state.js"></script>
+  <script src="js/game/girl-gen.js"></script>
+  <script src="js/game/bootstrap.js"></script>
+  <script src="js/game/ollama.js"></script>
+  <script src="js/game/delta.js"></script>
+  <script src="js/game/imaging.js"></script>
+  <script src="js/game/damage.js"></script>
+  <script src="js/game/drug-scheduler.js"></script>
+  <script src="js/game/wardrobe.js"></script>
+  <script src="js/game/dungeon-ops.js"></script>
+  <script src="js/game/town-plot.js"></script>
+  <script src="js/game/dungeon-plot.js"></script>
+  <script src="js/game/voice-in.js"></script>
+  <script src="js/game/balancing.js"></script>
+  <script src="js/game/memory-embed.js"></script>
+  <script src="js/game/achievements.js"></script>
+  <script src="js/game/escape-recovery.js"></script>
+  <script src="js/game/save-slots.js"></script>
+  <script src="js/game/lifespan.js"></script>
+  <script src="js/game/film.js"></script>
+  <script src="js/game/market.js"></script>
+  <script src="js/game/shop.js"></script>
+  <script src="js/game/hunt.js"></script>
+  <script src="js/game/propositioner.js"></script>
+  <script src="js/game/disposal.js"></script>
+  <script src="js/game/slave-market.js"></script>
+  <script src="js/game/tick.js"></script>
+
+  <!-- UI layer -->
+  <script src="js/ui/router.js"></script>
+  <script src="js/ui/newgame.js"></script>
+  <script src="js/ui/dashboard.js"></script>
+  <script src="js/ui/room.js"></script>
+  <script src="js/ui/roster.js"></script>
+  <script src="js/ui/dungeon-view.js"></script>
+  <script src="js/ui/hunt-view.js"></script>
+  <script src="js/ui/shop-view.js"></script>
+  <script src="js/ui/market-view.js"></script>
+  <script src="js/ui/propositioner-view.js"></script>
+  <script src="js/ui/dispose-view.js"></script>
+  <script src="js/ui/slave-market-view.js"></script>
+  <script src="js/ui/upgrade-view.js"></script>
+  <script src="js/ui/wardrobe-view.js"></script>
+  <script src="js/ui/quick-actions.js"></script>
+  <script src="js/ui/town-view.js"></script>
+  <script src="js/ui/dungeon-plot-view.js"></script>
+  <script src="js/ui/asset-img.js"></script>
+  <script src="js/ui/notify.js"></script>
+  <script src="js/ui/voice-queue.js"></script>
+  <script src="js/ui/timeline-view.js"></script>
+  <script src="js/ui/achievements-view.js"></script>
+  <script src="js/ui/escape-recovery-view.js"></script>
+  <script src="js/ui/in-game-settings.js"></script>
+  <script src="js/ui/ollama-repair-overlay.js"></script>
+
+  <header class="app-chrome">
+    <div class="chrome-brand">SEX SLAVE DUNGEON</div>
+    <nav class="chrome-nav">
+      <a href="#dashboard" data-route="dashboard">🏠 Dashboard</a>
+      <a href="#roster" data-route="roster">📋 Roster</a>
+      <a href="#dungeon" data-route="dungeon">🏚️ Dungeons</a>
+      <a href="#town" data-route="town">🌆 Town</a>
+      <a href="#hunt" data-route="hunt">🎯 Hunt</a>
+      <a href="#shop" data-route="shop">🛒 Shop</a>
+      <a href="#market" data-route="market">🎬 Films</a>
+      <a href="#propositioners" data-route="propositioners">📬 Inbox</a>
+      <a href="#slave-market" data-route="slave-market">⛓️ Slave Market</a>
+      <a href="#achievements" data-route="achievements">🏆</a>
+    </nav>
+    <div class="chrome-money" id="chrome-money">$0</div>
+    <button class="btn-small" id="chrome-voice" title="Toggle voice (Kokoro TTS)">🔊</button>
+    <button class="btn-small btn-danger" id="chrome-new-game" title="Start a new game (wipes current save)">🔄 New Game</button>
+    <a href="#settings" class="btn-small" title="In-game settings">⚙</a>
+    <a href="./index.html" class="btn-small" title="Back to landing">🏠</a>
+  </header>
+
+  <main class="app-main" id="app"></main>
+
+  <script>
+  (async function boot() {
+    // Mount router
+    window.SSDRouter.mount(document.getElementById('app'));
+
+    // Load saved state
+    const loaded = await window.SSDGame.state.load();
+    if (!loaded || !loaded.createdAt) {
+      location.hash = '#newgame';
+    } else if (!location.hash) {
+      location.hash = '#dashboard';
+    }
+
+    // Chrome money sync
+    function syncChrome() {
+      const s = window.SSDGame.state.current;
+      document.getElementById('chrome-money').textContent = s ? `$${s.wallet.money.toLocaleString()}` : '$0';
+    }
+    syncChrome();
+    window.SSDGame.state.onChange(syncChrome);
+
+    // Chrome "New Game" button — wipes save + routes to new-game setup
+    document.getElementById('chrome-new-game').onclick = async () => {
+      if (!confirm('Start a new game? This WIPES your current save. Use Settings → Save Slots first if you want to keep a copy.')) return;
+      await window.SSDStorage.wipeAll();
+      for (const k of Object.keys(localStorage)) if (k.startsWith('ssd_') && k !== 'ssd_pollinations_key' && k !== 'ssd_ollama_endpoint' && k !== 'ssd_ollama_model' && k !== 'ssd_kokoro_voice') localStorage.removeItem(k);
+      location.hash = '#newgame';
+      location.reload();
+    };
+
+    // First route handle
+    window.SSDRouter.handle();
+
+    // Balancing tweak after load
+    if (window.SSDGame.balancing) window.SSDGame.balancing.applyBalancing();
+
+    // Start the tick engine
+    window.SSDGame.tick.start();
+
+    // === Voice (Kokoro TTS) ===
+    // Voice toggle — persists in localStorage. Default: on.
+    const VOICE_KEY = 'ssd_voice_on';
+    function voiceOn() { return localStorage.getItem(VOICE_KEY) !== 'off'; }
+    function setVoice(on) {
+      localStorage.setItem(VOICE_KEY, on ? 'on' : 'off');
+      const btn = document.getElementById('chrome-voice');
+      btn.textContent = on ? '🔊' : '🔇';
+      btn.title = on ? 'Voice ON — click to mute' : 'Voice OFF — click to enable';
+      // Going OFF mid-response should stop whatever's playing immediately,
+      // not let the queue finish + then stop.
+      if (!on && window.SSDVoiceQueue) window.SSDVoiceQueue.cancel();
+    }
+    setVoice(voiceOn());
+    document.getElementById('chrome-voice').onclick = () => setVoice(!voiceOn());
+    window.SSDIsVoiceOn = voiceOn;   // global so room.js can check before speaking
+
+    // Auto-check Ollama health on game boot — if the active model's weights
+    // were nuked since landing (Storage Sense, manual cleanup, partial pull),
+    // surface the repair overlay immediately instead of waiting for the first
+    // chat call to fail with a cryptic error.  Non-blocking — fires alongside
+    // Kokoro load.  Silent when everything is healthy.
+    (async () => {
+      try {
+        if (window.SSDOllamaRepairOverlay) {
+          // Small delay so the boot UI renders first
+          await new Promise(r => setTimeout(r, 800));
+          await window.SSDOllamaRepairOverlay.autoCheck();
+        }
+      } catch (err) {
+        console.debug('[ollama-autocheck] failed silently:', err);
+      }
+    })();
+
+    // Auto-load Kokoro in the background on game boot.  Model weights are cached
+    // in browser IDB after the first landing-page load — re-instantiation here is
+    // fast.  Non-blocking — game keeps loading.
+    (async () => {
+      const btn = document.getElementById('chrome-voice');
+      if (!window.SSDKokoro) return;
+      if (window.SSDKokoro.isReady()) return;
+      if (!voiceOn()) return;
+      btn.textContent = '⏳';
+      btn.title = 'Loading Kokoro voice model…';
+      try {
+        await window.SSDKokoro.ensureLoaded((p) => {
+          const pct = Math.round((p?.progress || 0) * 100);
+          btn.title = `Loading voice ${pct}%…`;
+        });
+        setVoice(true);
+        if (window.SSDNotify) window.SSDNotify.show('🔊 Kokoro voice ready', { type: 'success', durationMs: 2000 });
+      } catch (err) {
+        btn.textContent = '🔇';
+        btn.title = 'Kokoro failed to load: ' + err.message;
+        if (window.SSDNotify) window.SSDNotify.show('🔇 Voice unavailable: ' + err.message, { type: 'error' });
+      }
+    })();
+  })();
+  </script>
+</body>
+</html>

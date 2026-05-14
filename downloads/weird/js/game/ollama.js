@@ -1,0 +1,188 @@
+// SEX SLAVE DUNGEON — Ollama HTTP client with streaming + prompt assembly.
+
+(function () {
+  'use strict';
+
+  function cfg() { return window.SSDConfig.OLLAMA; }
+
+  // Build the system prompt from persona scaffolding + girl overlay + mode + scene.
+  function buildSystemPrompt(girl, mode, sceneKey, sceneVars) {
+    return window.SSDTemplates.buildSystemPrompt(girl, mode, sceneKey, sceneVars);
+  }
+
+  function buildContextBlock(girl, girlState, room, recentTurns, memory) {
+    return window.SSDTemplates.buildContextBlock(girl, girlState, room, recentTurns, memory);
+  }
+
+  function baseOptions() {
+    return {
+      temperature: cfg().temperature,
+      top_p: cfg().topP,
+      repeat_penalty: cfg().repeatPenalty,
+      num_predict: cfg().maxTokens,
+      stop: cfg().stopSequences || []
+    };
+  }
+
+  // Truncate long responses client-side to max N sentences / M words.
+  // Defaults are deliberately TIGHT — one spoken sentence + one action is the target shape.
+  function truncateResponse(text, { maxSentences = 2, maxWords = 40 } = {}) {
+    if (!text) return text;
+    // Always preserve the <delta>...</delta> block at the end
+    const deltaMatch = text.match(/<delta>[\s\S]*?<\/delta>/);
+    const deltaBlock = deltaMatch ? deltaMatch[0] : '';
+    const body = deltaMatch ? text.replace(deltaMatch[0], '').trim() : text.trim();
+
+    // Sentence split — keep asterisk actions together
+    const sentences = body.match(/\*[^*]+\*|[^.!?…]+[.!?…]+|[^.!?…]+$/g) || [body];
+    let kept = [];
+    let wordCount = 0;
+    for (const s of sentences) {
+      const words = s.trim().split(/\s+/).filter(Boolean);
+      if (kept.length >= maxSentences || wordCount + words.length > maxWords) break;
+      kept.push(s.trim());
+      wordCount += words.length;
+    }
+    let truncated = kept.join(' ').trim();
+    if (truncated !== body) {
+      if (!/[.!?…*]$/.test(truncated)) truncated += '…';
+    }
+    return deltaBlock ? `${truncated}\n${deltaBlock}` : truncated;
+  }
+
+  // Build a classified Error from a failed fetch Response. Reads the body once
+  // and attaches classification metadata so callers (room.js etc.) can route to
+  // the repair overlay when the failure is corruption-shaped.
+  async function buildOllamaError(res, modelId) {
+    let bodyText = '';
+    try { bodyText = await res.text(); } catch {}
+    const repair = window.SSDOllamaRepair;
+    const errMsg = repair ? repair.parseErrorBody(bodyText) : bodyText;
+    const classification = repair
+      ? repair.classifyError(res.status, errMsg, modelId)
+      : null;
+    const labelPart = classification ? `${classification.label}: ` : '';
+    const detailPart = errMsg ? errMsg.slice(0, 240) : `HTTP ${res.status}`;
+    const err = new Error(`Ollama ${labelPart}${detailPart}`);
+    err.httpStatus = res.status;
+    err.bodyText = bodyText;
+    err.classification = classification;
+    err.modelId = modelId;
+    return err;
+  }
+
+  // Non-streaming chat — returns {raw, parsed: {cleanText, delta}}.
+  async function chat({ system, messages }) {
+    const modelId = cfg().activeModel;
+    const res = await fetch(`${cfg().endpoint}/api/chat`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: modelId,
+        messages: [
+          { role: 'system', content: system },
+          ...messages
+        ],
+        stream: false,
+        options: baseOptions()
+      })
+    });
+    if (!res.ok) throw await buildOllamaError(res, modelId);
+    const data = await res.json();
+    // Non-stream path trusts num_predict + stop sequences; no post-truncation.
+    const raw = data.message?.content || '';
+    const parsed = window.SSDTemplates.extractDelta(raw);
+    return { raw, parsed };
+  }
+
+  // Streaming chat — yields text chunks via onChunk, then returns final {raw, parsed}.
+  async function chatStream({ system, messages, onChunk }) {
+    const modelId = cfg().activeModel;
+    const res = await fetch(`${cfg().endpoint}/api/chat`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: modelId,
+        messages: [
+          { role: 'system', content: system },
+          ...messages
+        ],
+        stream: true,
+        options: baseOptions()
+      })
+    });
+    if (!res.ok) throw await buildOllamaError(res, modelId);
+    if (!res.body) throw new Error('No stream body');
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    let raw = '';
+    let done = false;
+    while (!done) {
+      const { value, done: d } = await reader.read();
+      done = d;
+      if (!value) continue;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() || '';
+      for (const line of lines) {
+        const s = line.trim();
+        if (!s) continue;
+        try {
+          const msg = JSON.parse(s);
+          const chunk = msg.message?.content || '';
+          if (chunk) { raw += chunk; if (onChunk) onChunk(chunk, raw); }
+        } catch {}
+      }
+    }
+    if (buf.trim()) {
+      try {
+        const msg = JSON.parse(buf.trim());
+        const chunk = msg.message?.content || '';
+        if (chunk) { raw += chunk; if (onChunk) onChunk(chunk, raw); }
+      } catch {}
+    }
+    // DO NOT truncate the streamed response — user already watched it arrive.
+    // num_predict in baseOptions() caps length at the model level. Trust the stream.
+    const parsed = window.SSDTemplates.extractDelta(raw);
+    return { raw, parsed };
+  }
+
+  // High-level: run a turn for a girl — assembles full prompt, streams, returns parsed.
+  async function runTurn({ girl, mode, sceneKey, sceneVars, userText, room, onChunk }) {
+    const system = buildSystemPrompt(girl, mode, sceneKey, sceneVars);
+    const girlState = { body: girl.body, mood: girl.mood, bond: girl.bond, stats: girl.stats };
+    const recentTurns = window.SSDGame.state.getTurns(girl.id, 6).map(t => ({ role: t.role, text: t.text }));
+
+    // Retrieve top-K relevant past memories via embedding (fire-and-forget, best-effort)
+    let memory = [];
+    try {
+      if (window.SSDGame.memoryEmbed) {
+        const relevant = await window.SSDGame.memoryEmbed.retrieveRelevant(girl.id, userText, 5);
+        memory = relevant.map(r => `[${r.role}, ${new Date(r.ts).toLocaleDateString()}] ${r.text}`);
+      }
+    } catch {}
+
+    const context = buildContextBlock(girl, girlState, room, recentTurns, memory);
+    const messages = [
+      { role: 'user', content: `${context}\n\n---\n\nMaster: ${userText}` }
+    ];
+    const result = await chatStream({ system, messages, onChunk });
+
+    // Record this turn + response for future retrieval (fire-and-forget)
+    if (window.SSDGame.memoryEmbed && userText) {
+      window.SSDGame.memoryEmbed.recordTurn(girl.id, 'user', userText).catch(() => {});
+    }
+    const clean = (result.parsed.cleanText || result.raw).trim();
+    if (window.SSDGame.memoryEmbed && clean) {
+      window.SSDGame.memoryEmbed.recordTurn(girl.id, 'assistant', clean).catch(() => {});
+    }
+    return result;
+  }
+
+  window.SSDGame = window.SSDGame || {};
+  window.SSDGame.ollama = Object.freeze({ chat, chatStream, runTurn, buildSystemPrompt, buildContextBlock, truncateResponse });
+})();
