@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — Kokoro voice catalog + emotion-state profiles.
+// DUNGEON MASTER: THE HUNT — Kokoro voice catalog + emotion-state profiles.
 // Kokoro's built-in female voices with archetype-fit tags and emotion modulation helpers.
 // Emotions modulate Kokoro speed + text pre-processing (no direct pitch/emo control in Kokoro v1).
 
@@ -35,55 +35,153 @@
   // Emotion profiles — modulate speed + text preprocessing.
   // Kokoro v1 doesn't expose pitch/prosody params directly, so we shape emotion through:
   //   - speed (0.5 - 2.0)
-  //   - text tweaks (ellipses for hesitation, exclamations for intensity, vocalizations woven in,
-  //     repeated letters for slur effects)
+  //   - text tweaks: ALLCAPS for loudness/emphasis, repeated "!" for intensity, vowel
+  //     elongation for screams/moans, ellipses for hesitation, repeated letters for slur.
+  //
+  // Loudness-by-design: low-Stockholm captives are PANICKED — fast, loud, screaming-scared
+  // — NOT slow whispers. High-Stockholm captives are EXCITED EAGER — fast, loud, demanding,
+  // begging for harder treatment. The arc is timid/depressed → excited/wanting violence.
   const EMOTIONS = {
     neutral: {
       speed: 1.0,
       preprocess: t => t
     },
-    scared: {
-      speed: 0.9,
+
+    // L0-1 raw terror — fast panicked screaming, not slow trembling whispers. ALLCAPS the
+    // scared words so Kokoro hits them with prosodic emphasis. Double-exclamations boost
+    // pitch + perceived volume.
+    panicked: {
+      speed: 1.08,
       preprocess: t => t
-        .replace(/\bI\b/g, 'I...')
-        .replace(/\.\s/g, '. ... ')
+        .replace(/\bno\b/gi, 'NO')
+        .replace(/\bstop\b/gi, 'STOP')
+        .replace(/\bplease\b/gi, 'PLEASE')
+        .replace(/\bdon't\b/gi, "DON'T")
+        .replace(/\bhelp\b/gi, 'HELP')
+        .replace(/!+/g, '!!')
+        .replace(/\.\s/g, '! ')
+        .replace(/\bah\b/gi, 'AAH')
+        .replace(/\boh\b/gi, 'OH')
+    },
+
+    // L0 alt — terrified (very loud, vocal panic + sob breaks). Speed up, not down.
+    terrified: {
+      speed: 1.05,
+      preprocess: t => t
+        .replace(/\bno\b/gi, 'NO')
+        .replace(/\bplease\b/gi, 'PLEASE')
+        .replace(/\bstop\b/gi, 'STOP')
+        .replace(/!+/g, '!!')
+        .replace(/\.\s/g, '! ')
+        .replace(/\bah\b/gi, 'AAH')
+    },
+
+    // L1-2 — still scared, less hysterical, voice loud and trembling
+    scared: {
+      speed: 1.02,
+      preprocess: t => t
+        .replace(/\bplease\b/gi, 'please!')
+        .replace(/\bno\b/gi, 'no!')
+        .replace(/!+/g, '!!')
+        .replace(/\bI\b/g, 'I-')
+    },
+
+    // L2-3 — shaken transition, mid-volume, fearful but starting to comply
+    shaken: {
+      speed: 0.98,
+      preprocess: t => t
+        .replace(/\bI\b/g, 'I-')
         .replace(/\bplease\b/gi, 'p-please')
     },
-    defiant: {
-      speed: 1.1,
-      preprocess: t => t
-        .replace(/!/g, '!!')
-        .replace(/fuck/gi, 'FUCK')
+
+    // L3-4 — curious / probing, even tone with rising questions
+    curious: {
+      speed: 1.02,
+      preprocess: t => t.replace(/\?/g, '?')
     },
-    aroused: {
-      speed: 1.0,
-      preprocess: t => t
-        .replace(/oh /gi, 'mmm oh ')
-        .replace(/yes/gi, 'yes... yes')
-        .replace(/\byour\b/gi, 'yourrr')
-    },
+
+    // Catatonic / depressed / mute floor — flat slow voice. Use ONLY when mood explicitly
+    // calls for it, NOT as a default for low-bond captives.
     broken: {
-      speed: 0.85,
+      speed: 0.9,
       preprocess: t => t
         .replace(/,/g, '...')
-        .replace(/\.\s/g, '... ... ')
+        .replace(/\.\s/g, '... ')
     },
+
+    // L4-5 ambivalent → aroused; voice up, moans woven in
+    aroused: {
+      speed: 1.05,
+      preprocess: t => t
+        .replace(/\boh\b/gi, 'mmm oh')
+        .replace(/\byes\b/gi, 'yes... yes')
+        .replace(/\bfuck\b/gi, 'fuck')
+        .replace(/\byour\b/gi, 'yourrr')
+    },
+
+    // L6-7 eager — loud lustful, asking for more
+    eager: {
+      speed: 1.08,
+      preprocess: t => t
+        .replace(/\byes\b/gi, 'YES')
+        .replace(/\bfuck\b/gi, 'fuck')
+        .replace(/\bharder\b/gi, 'HARDER')
+        .replace(/\bmore\b/gi, 'MORE')
+        .replace(/\bplease\b/gi, 'please please')
+    },
+
+    // L7-8 excited devoted — high stockholm, LOUD, eager, asking for it harder
+    excited_devoted: {
+      speed: 1.1,
+      preprocess: t => t
+        .replace(/\byes\b/gi, 'YES')
+        .replace(/\bmaster\b/gi, 'MASTER')
+        .replace(/\bharder\b/gi, 'HARDER')
+        .replace(/\bplease\b/gi, 'PLEASE')
+        .replace(/\bfuck\b/gi, 'fuck fuck')
+        .replace(/!+/g, '!!')
+    },
+
+    // L9 feral devoted — demanding violent treatment, screaming for it
+    feral_devoted: {
+      speed: 1.12,
+      preprocess: t => t
+        .replace(/\bharder\b/gi, 'HARDER')
+        .replace(/\bbreak\b/gi, 'BREAK')
+        .replace(/\brape\b/gi, 'RAPE')
+        .replace(/\bmore\b/gi, 'MORE')
+        .replace(/\byes\b/gi, 'YES')
+        .replace(/\bmaster\b/gi, 'MASTER')
+        .replace(/\bfuck\b/gi, 'FUCK')
+        .replace(/!+/g, '!!')
+        .replace(/\.\s/g, '! ')
+    },
+
+    // HURT ME mode — defiant raging
+    defiant: {
+      speed: 1.12,
+      preprocess: t => t
+        .replace(/!/g, '!!')
+        .replace(/\bfuck\b/gi, 'FUCK')
+        .replace(/\bdie\b/gi, 'DIE')
+        .replace(/\bkill\b/gi, 'KILL')
+    },
+
+    // Playful — light banter, giggles
     playful: {
       speed: 1.08,
       preprocess: t => t
         .replace(/\bha\b/gi, 'haha')
         .replace(/\b(lol|haha)\b/gi, '*giggles*')
     },
-    devoted: {
-      speed: 0.95,
-      preprocess: t => t
-        .replace(/\bMaster\b/g, 'Master...')
-    },
+
+    // --- Drug states (override low-bond emotions; HIGH bond keeps its lust profile) ---
     high_coke: {
       speed: 1.25,
       preprocess: t => t
-        .replace(/\b(I|me|my)\b/g, '$1,')      // rapid-fire comma bursts
+        .replace(/\b(I|me|my)\b/g, '$1,')
         .replace(/\band\b/g, 'and, and')
+        .replace(/\bfuck\b/gi, 'fuck fuck')
     },
     high_weed: {
       speed: 0.95,
@@ -92,40 +190,29 @@
         .replace(/\blike\b/gi, 'like, like')
     },
     drunk: {
-      speed: 0.88,
-      // slur: repeat vowels selectively
+      speed: 0.92,
       preprocess: t => t
         .replace(/\b([A-Za-z])o\b/g, '$1ooo')
         .replace(/\bi\b/gi, 'ii')
-        .replace(/\.\s/g, '...* ')
-    },
-    terrified: {
-      speed: 0.92,
-      preprocess: t => t
-        .replace(/\b/g, '')                     // no-op placeholder
-        .replace(/no/gi, 'n-no')
-        .replace(/please/gi, 'p-please')
-        .replace(/,/g, ',,,')
-    },
-    curious: {
-      speed: 1.02,
-      preprocess: t => t.replace(/\?/g, '?...')
+        .replace(/\.\s/g, '... ')
     }
   };
 
-  // Map StockholmBond level (0-9) → default emotion.
-  // This is a floor; specific states (coke high, hurt mode, etc.) override.
+  // Map StockholmBond level (0-9) → default emotion. The arc: timid/scared → ambivalent →
+  // aroused → eager → excited devoted → feral devoted wanting violence. LOUD at both ends,
+  // never whispered. Mood overrides can pull "broken" or "playful" mid-curve when state
+  // explicitly demands it.
   const BOND_TO_EMOTION = [
-    'terrified',  // L0
-    'scared',     // L1
-    'scared',     // L2
-    'curious',    // L3
-    'neutral',    // L4
-    'aroused',    // L5
-    'aroused',    // L6
-    'devoted',    // L7
-    'devoted',    // L8
-    'devoted'     // L9
+    'panicked',           // L0
+    'panicked',           // L1
+    'scared',             // L2
+    'shaken',             // L3
+    'aroused',            // L4
+    'aroused',            // L5
+    'eager',              // L6
+    'excited_devoted',    // L7
+    'excited_devoted',    // L8
+    'feral_devoted'       // L9
   ];
 
   // Pick a default voice for a newly generated girl of a given archetype.
@@ -138,15 +225,27 @@
   }
 
   // Resolve the active emotion for a girl's current state.
+  //
+  // Priority order:
+  //   1. mode === 'hurtme' → defiant (top — violence overlay always wins)
+  //   2. bondLevel >= 7 → high-Stockholm lust profile (overrides drug calm — at this
+  //      tier lust drives speech, drugs only color it). Pulls excited_devoted or
+  //      feral_devoted from BOND_TO_EMOTION.
+  //   3. activeDrugs (only for bond < 7) → drunk / high_coke / high_weed.
+  //   4. bondLevel → BOND_TO_EMOTION default for low/mid tiers.
   function pickEmotion(girlState) {
     if (!girlState) return 'neutral';
-    if (girlState.mode === 'hurtme')            return 'defiant';
+    if (girlState.mode === 'hurtme') return 'defiant';
+    const bond = typeof girlState.bondLevel === 'number'
+      ? Math.max(0, Math.min(9, girlState.bondLevel))
+      : null;
+    if (bond !== null && bond >= 7) {
+      return BOND_TO_EMOTION[bond];
+    }
     if (girlState.activeDrugs?.includes('whiskey')) return 'drunk';
     if (girlState.activeDrugs?.includes('coke'))    return 'high_coke';
     if (girlState.activeDrugs?.includes('weed'))    return 'high_weed';
-    if (girlState.bondLevel != null) {
-      return BOND_TO_EMOTION[Math.max(0, Math.min(9, girlState.bondLevel))];
-    }
+    if (bond !== null) return BOND_TO_EMOTION[bond];
     return 'neutral';
   }
 
@@ -163,7 +262,7 @@
     };
   }
 
-  window.SSDVoices = Object.freeze({
+  window.DMTHVoices = Object.freeze({
     VOICES,
     EMOTIONS: Object.keys(EMOTIONS),
     BOND_TO_EMOTION,

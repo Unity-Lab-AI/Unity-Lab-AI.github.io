@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — film recording + quality scoring.
+// DUNGEON MASTER: THE HUNT — film recording + quality scoring.
 
 (function () {
   'use strict';
@@ -9,14 +9,14 @@
   function activeSession() { return active; }
 
   function startRecording(girlId, tags = []) {
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl || girl.encounterState !== 'captive') {
       throw new Error('Can only record captive girls');
     }
     active = {
       girlId,
       startedAt: Date.now(),
-      startTurnIdx: (window.SSDGame.state.current.turns[girlId] || []).length,
+      startTurnIdx: (window.DMTHGame.state.current.turns[girlId] || []).length,
       tags: tags.slice()
     };
     return active;
@@ -32,13 +32,13 @@
     const session = active;
     active = null;
 
-    const girl = window.SSDGame.state.getGirl(session.girlId);
-    const endTurnIdx = (window.SSDGame.state.current.turns[session.girlId] || []).length;
-    const turns = (window.SSDGame.state.current.turns[session.girlId] || [])
+    const girl = window.DMTHGame.state.getGirl(session.girlId);
+    const endTurnIdx = (window.DMTHGame.state.current.turns[session.girlId] || []).length;
+    const turns = (window.DMTHGame.state.current.turns[session.girlId] || [])
       .slice(session.startTurnIdx, endTurnIdx);
 
-    const dungeon = window.SSDGame.state.getDungeon(girl.assignedDungeonId);
-    const dungeonTpl = dungeon && window.SSDAssets.getById('dungeon', dungeon.templateId);
+    const dungeon = window.DMTHGame.state.getDungeon(girl.assignedDungeonId);
+    const dungeonTpl = dungeon && window.DMTHAssets.getById('dungeon', dungeon.templateId);
 
     const qualityMarkers = {
       bondLevelAtRecording: girl.bond.bondLevel,
@@ -75,7 +75,7 @@
       status: 'listed'
     };
     // Multi-session series stitch — if the girl has prior films with same `seriesId` pattern, link this one.
-    const existingSeries = window.SSDGame.state.current.films.filter(f => f.girlId === girl.id && f.seriesId).slice(-1)[0];
+    const existingSeries = window.DMTHGame.state.current.films.filter(f => f.girlId === girl.id && f.seriesId).slice(-1)[0];
     if (existingSeries && (Date.now() - existingSeries.endedAt < 24*60*60*1000)) {
       film.seriesId = existingSeries.seriesId;
       film.seriesEpisodeNumber = (existingSeries.seriesEpisodeNumber || 1) + 1;
@@ -86,21 +86,53 @@
       film.seriesEpisodeNumber = 1;
     }
 
-    window.SSDGame.state.addFilm(film);
+    window.DMTHGame.state.addFilm(film);
     // Apply wardrobe multiplier if she was wearing a non-default outfit
-    if (window.SSDGame.wardrobe) {
-      const m = window.SSDGame.wardrobe.currentMultiplier(girl);
+    if (window.DMTHGame.wardrobe) {
+      const m = window.DMTHGame.wardrobe.currentMultiplier(girl);
       if (m !== 1.0) {
-        window.SSDGame.state.updateFilm(film.id, {
+        window.DMTHGame.state.updateFilm(film.id, {
           currentListPrice: Math.round(film.currentListPrice * m),
           outfitMultiplier: m,
           outfitWorn: girl.currentOutfit
         });
       }
     }
+    // Stress-state bonus multiplier. Stacks with wardrobe.
+    // Awarded by action-effects.js when body.health stays in the 25-55 band long
+    // enough (5 days = tier 1 = 1.15×, 15 days = tier 2 = 1.35×).
+    const stressMul = girl.bonuses?.stressFilmMultiplier || 1.0;
+    if (stressMul !== 1.0) {
+      const current = window.DMTHGame.state.current.films.find(f => f.id === film.id);
+      const newPrice = Math.round((current?.currentListPrice || film.currentListPrice) * stressMul);
+      window.DMTHGame.state.updateFilm(film.id, {
+        currentListPrice: newPrice,
+        stressMultiplier: stressMul,
+        stressBonusTier: girl.bonuses?.stressBonusTier || 0
+      });
+    }
+    // Cum-load bonus — recording while she's heavily used pays out a premium. Visible
+    // signs of recent use are a selling point in the content market. Tiered:
+    //   cumLoad ≥ 2.0  → "used"      × 1.10
+    //   cumLoad ≥ 3.5  → "well-used" × 1.20
+    //   cumLoad ≥ 5.0  → "ruined"    × 1.35  (saturation tier)
+    // Stacks multiplicatively with wardrobe + stress bonuses.
+    const cl = girl.body?.cumLoad || 0;
+    const cumMul = cl >= 5.0 ? 1.35 : cl >= 3.5 ? 1.20 : cl >= 2.0 ? 1.10 : 1.0;
+    if (cumMul !== 1.0) {
+      const current = window.DMTHGame.state.current.films.find(f => f.id === film.id);
+      const newPrice = Math.round((current?.currentListPrice || film.currentListPrice) * cumMul);
+      const cumTier = cl >= 5.0 ? 'ruined' : cl >= 3.5 ? 'well-used' : 'used';
+      window.DMTHGame.state.updateFilm(film.id, {
+        currentListPrice: newPrice,
+        cumLoadMultiplier: cumMul,
+        cumLoadTier: cumTier,
+        cumLoadAtRecording: cl
+      });
+    }
     // Auto-generate cover image IF Pollinations is configured — otherwise text+emoji film lives fine without it.
-    if (window.SSDGame.imaging && window.SSDGame.imaging.isAvailable()) {
-      window.SSDGame.imaging.filmCover(film.id).catch(() => {});
+    if (window.DMTHGame.imaging && window.DMTHGame.imaging.isAvailable()) {
+      window.DMTHGame.imaging.filmCover(film.id).catch(() => {});
     }
     return film;
   }
@@ -154,6 +186,6 @@
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.film = Object.freeze({ isRecording, activeSession, startRecording, tagActive, stopRecording });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.film = Object.freeze({ isRecording, activeSession, startRecording, tagActive, stopRecording });
 })();

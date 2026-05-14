@@ -1,4 +1,4 @@
-/* SEX SLAVE DUNGEON — landing page styles.
+/* DUNGEON MASTER: THE HUNT — landing page styles.
    Dark dungeon aesthetic. Black + deep red + neon pink accents. Text+emoji first. */
 
 :root {
@@ -264,3 +264,250 @@ footer {
 }
 
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ─────────────────────────────────────────────────────────────────
+   Expanded landing-page presentation (home section beauty pass).
+   ───────────────────────────────────────────────────────────────── */
+
+/* Stats counter row */
+.pitch-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 28px 0 14px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(255,60,134,0.08), rgba(120,30,90,0.06));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.pitch-item {
+  display: flex; flex-direction: column; gap: 4px;
+  text-align: center;
+}
+.pitch-item b {
+  font-family: var(--mono);
+  font-size: 1.8rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 12px rgba(255,60,134,0.4);
+}
+.pitch-item span {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.35;
+}
+
+/* Section heading bar */
+.section-h {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  margin: 36px 0 14px;
+  padding: 8px 0 8px 14px;
+  color: var(--accent);
+  border-left: 4px solid var(--accent);
+  background: linear-gradient(90deg, rgba(255,60,134,0.08), transparent);
+}
+.section-sub {
+  margin: -8px 0 14px;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* The Loop — game-loop visual */
+.loop-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 14px 0 28px;
+}
+.loop-step {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 22px 18px 18px;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.loop-step:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(255,60,134,0.18);
+}
+.loop-step .num {
+  position: absolute; top: -16px; left: 16px;
+  width: 32px; height: 32px;
+  background: var(--accent);
+  color: #18001a;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(255,60,134,0.5);
+}
+.loop-step h3 { margin: 6px 0 8px; font-size: 1.05rem; color: #ffd8e8; }
+.loop-step p { margin: 0; font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+/* Wider, richer feature cards */
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 14px 0 28px;
+}
+.home-feature {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.home-feature:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(255,60,134,0.15);
+}
+.home-feature h3 {
+  margin: 0 0 8px;
+  font-size: 1.02rem;
+  color: #ffd8e8;
+  letter-spacing: 0.01em;
+}
+.home-feature p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* Tier variant — premium / danger / setup accents on cards */
+.home-feature.tier-premium { border-top: 3px solid #ffd166; }
+.home-feature.tier-danger  { border-top: 3px solid var(--danger); }
+.home-feature.tier-tech    { border-top: 3px solid #6ad1ff; }
+.home-feature.tier-econ    { border-top: 3px solid var(--ok); }
+.home-feature.tier-meta    { border-top: 3px solid #b48bff; }
+
+/* In-game state-bar visual mockup for "Inside Her Room" */
+.room-mock {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 14px 0 28px;
+}
+@media (max-width: 720px) { .room-mock { grid-template-columns: 1fr; } }
+.room-mock .room-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.room-mock h3 { margin: 0 0 12px; color: var(--accent); font-size: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.bar-row .lbl { min-width: 90px; font-size: 0.82rem; color: var(--text-dim); }
+.bar-row .bar { flex: 1; height: 8px; background: #000; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.bar-row .bar .fill { height: 100%; }
+.fill.bond     { background: linear-gradient(90deg, var(--accent), #ff80b4); width: 65%; }
+.fill.mood     { background: linear-gradient(90deg, var(--ok), #9fefb5); width: 45%; }
+.fill.stamina  { background: linear-gradient(90deg, var(--warn), #ffd166); width: 72%; }
+.fill.health   { background: linear-gradient(90deg, #6ad1ff, #aae8ff); width: 88%; }
+.fill.arousal  { background: linear-gradient(90deg, #ff3c86, #ff80b4); width: 30%; }
+.fill.coke     { background: linear-gradient(90deg, #b48bff, #d4b8ff); width: 55%; }
+.bar-row .val { font-family: var(--mono); font-size: 0.78rem; color: var(--text); min-width: 38px; text-align: right; }
+
+/* Privacy strip — special muted callout */
+.privacy-strip {
+  margin: 28px 0 14px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(83,214,138,0.06), rgba(40,80,55,0.04));
+  border: 1px solid #2f5d3a;
+  border-left: 4px solid var(--ok);
+  border-radius: var(--radius);
+}
+.privacy-strip h3 { margin: 0 0 8px; color: var(--ok); font-size: 1.02rem; }
+.privacy-strip p { margin: 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.55; }
+.privacy-strip a { color: var(--ok); border-bottom: 1px dashed currentColor; }
+
+/* Quick start */
+.quickstart {
+  counter-reset: qs;
+  padding-left: 0;
+  list-style: none;
+  margin: 14px 0 28px;
+}
+.quickstart li {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 18px 14px 56px;
+  margin: 10px 0;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.5;
+  counter-increment: qs;
+}
+.quickstart li::before {
+  content: counter(qs);
+  position: absolute;
+  left: 14px; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px;
+  background: var(--accent);
+  color: #18001a;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 700; font-size: 0.95rem;
+}
+
+/* Closing line */
+.closing {
+  text-align: center;
+  padding: 24px 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+  font-size: 0.88rem;
+}
+
+/* Hero polish */
+.home-hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(255,60,134,0.4);
+  margin: 0 0 14px;
+}
+.home-hero p.tag {
+  font-style: italic;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: var(--text-dim);
+  max-width: 740px;
+  margin: 0 auto 20px;
+  line-height: 1.55;
+}
+.home-cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 22px 0 8px; }
+.home-cta-row button { font-size: 1.05rem; padding: 14px 28px; cursor: pointer; }
+.home-cta-primary {
+  background: linear-gradient(135deg, var(--accent), #ff5a9a);
+  color: #1a0010;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-weight: 700;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 16px rgba(255,60,134,0.4);
+}
+.home-cta-primary:hover:not(:disabled) { background: linear-gradient(135deg, #ff5a9a, #ffa0c8); }
+.home-cta-secondary {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+.home-cta-secondary:hover:not(:disabled) { background: var(--accent-dim); border-color: var(--accent); }
+.home-cta-secondary:disabled { opacity: 0.4; cursor: not-allowed; }

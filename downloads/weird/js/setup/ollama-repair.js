@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — Ollama error classifier + in-game repair flow.
+// DUNGEON MASTER: THE HUNT — Ollama error classifier + in-game repair flow.
 //
 // Why this exists: Ollama's /api/tags endpoint reads the manifest dir to list
 // "installed" models, but a model whose weights blob has been deleted (Windows
@@ -12,7 +12,7 @@
 //   1. classifyError(httpStatus, bodyText) — returns a structured diagnosis
 //   2. parseErrorBody(res)                 — best-effort body→message extract
 //   3. probeModelHealth(modelId)           — sends a 1-token ping, classifies
-//   4. repairModel(modelId, onProgress)    — wraps SSDModels.pullModel for the
+//   4. repairModel(modelId, onProgress)    — wraps DMTHModels.pullModel for the
 //                                            in-game repair path
 //
 // Detection signatures live in CORRUPT_SIGNATURES — keep this list in sync with
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const cfg = () => window.SSDConfig;
+  const cfg = () => window.DMTHConfig;
 
   // Body fragments that mean "the on-disk blob this manifest points to is gone."
   // Case-insensitive substring match.
@@ -148,21 +148,21 @@
   // Re-pull a model using the existing streaming pull flow.
   // onProgress(msg) gets every Ollama pull-status JSON message in real time.
   async function repairModel(modelId, onProgress) {
-    if (!window.SSDModels || !window.SSDModels.pullModel) {
-      throw new Error('SSDModels not available — js/setup/models.js must be loaded before repair.');
+    if (!window.DMTHModels || !window.DMTHModels.pullModel) {
+      throw new Error('DMTHModels not available — js/setup/models.js must be loaded before repair.');
     }
     if (!modelId) throw new Error('No modelId given to repair.');
-    return await window.SSDModels.pullModel(modelId, onProgress);
+    return await window.DMTHModels.pullModel(modelId, onProgress);
   }
 
   // HARD repair — delete the stale manifest entry FIRST, then pull fresh.
   // Use this when a soft `repairModel` (pull only) would short-circuit because
   // Ollama sees the manifest as "already installed" and refuses to re-download
   // the missing weight blob.  This is the path the user asked for after
-  // diagnosing that `ollama pull` was lying about completion:
-  //   *"it not correctly downloading the model on set up it thinks its there
-  //   but its not we need to clear the ollam log that shows its installed or
-  //   something"*  (Gee verbatim 2026-05-13)
+  // diagnosing that `ollama pull` was lying about completion — the user reported the
+  // model wasn't actually downloading correctly on setup: Ollama thought the model was
+  // installed but it wasn't, so we need to clear the manifest entry that shows it
+  // installed before re-pulling fresh.
   //
   // Flow:
   //   1. DELETE /api/delete  — clears the manifest entry + orphan blobs
@@ -175,8 +175,8 @@
   //   { status: 'clearing stale manifest', phase: 'delete' }
   //   { status: 'manifest cleared, starting fresh pull', phase: 'pulled-cleared' }
   async function hardRepairModel(modelId, onProgress) {
-    if (!window.SSDModels || !window.SSDModels.pullModel || !window.SSDModels.deleteModel) {
-      throw new Error('SSDModels not available — js/setup/models.js must be loaded before hard repair.');
+    if (!window.DMTHModels || !window.DMTHModels.pullModel || !window.DMTHModels.deleteModel) {
+      throw new Error('DMTHModels not available — js/setup/models.js must be loaded before hard repair.');
     }
     if (!modelId) throw new Error('No modelId given to hard repair.');
 
@@ -184,7 +184,7 @@
     // Delete may 404 if the manifest is already gone (already-clean state).
     // Either way we proceed to pull — that's the whole point.
     try {
-      await window.SSDModels.deleteModel(modelId);
+      await window.DMTHModels.deleteModel(modelId);
     } catch (err) {
       const msg = String(err?.message || err);
       // 404 = manifest already gone = fine.  Anything else we surface as a
@@ -195,10 +195,10 @@
     }
     if (onProgress) onProgress({ status: 'manifest cleared, starting fresh pull', phase: 'pulled-cleared' });
 
-    return await window.SSDModels.pullModel(modelId, onProgress);
+    return await window.DMTHModels.pullModel(modelId, onProgress);
   }
 
-  window.SSDOllamaRepair = Object.freeze({
+  window.DMTHOllamaRepair = Object.freeze({
     classifyError,
     parseErrorBody,
     readBodyOnce,

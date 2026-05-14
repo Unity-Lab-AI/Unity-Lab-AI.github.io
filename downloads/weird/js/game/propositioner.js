@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — propositioner rent-out business sim.
+// DUNGEON MASTER: THE HUNT — propositioner rent-out business sim.
 
 (function () {
   'use strict';
@@ -17,7 +17,7 @@
 
   function rollPropositioner() {
     const archetype = CLIENT_ARCHETYPES[Math.floor(Math.random() * CLIENT_ARCHETYPES.length)];
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const notorietyMult = 1 + (s.wallet.notoriety / 50);
     const budget = Math.round(archetype.budgetBase * notorietyMult * (0.8 + Math.random() * 0.4));
     const duration = [30, 60, 120, 240, 480][Math.floor(Math.random() * 5)];
@@ -62,9 +62,9 @@
 
   // Accept a prop with a selected girl + terms
   function acceptWithGirl(propId, girlId, terms) {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const prop = s.propositioners.inbox.find(p => p.id === propId);
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!prop || !girl) throw new Error('invalid prop or girl');
     const finalTerms = {
       price: terms?.price ?? prop.budget,
@@ -73,16 +73,16 @@
       restrictedToys: terms?.restrictedToys || [],
       walkIfOver: terms?.walkIfOver ?? null
     };
-    window.SSDGame.state.acceptPropositioner(propId, girlId, finalTerms);
+    window.DMTHGame.state.acceptPropositioner(propId, girlId, finalTerms);
     return finalTerms;
   }
 
   // Resolve an active engagement.
   function resolveEngagement(propId) {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const prop = s.propositioners.active.find(p => p.id === propId);
     if (!prop) throw new Error('no active engagement with that id');
-    const girl = window.SSDGame.state.getGirl(prop.girlId);
+    const girl = window.DMTHGame.state.getGirl(prop.girlId);
     if (!girl) throw new Error('girl missing');
 
     const match = matchScore(girl, prop);
@@ -115,19 +115,19 @@
     newBody.wetness = Math.max(0, Math.min(100, newBody.wetness + bodyDelta.wetness));
     newBody.cumLoad = newBody.cumLoad + bodyDelta.cumLoad;
 
-    const newMood = { mood: moodShift, moodEmoji: window.SSDGame.delta.emojiForMood(moodShift), history: [...(girl.mood.history || []), { shift: `proposition-${moodShift}`, ts: Date.now() }] };
+    const newMood = { mood: moodShift, moodEmoji: window.DMTHGame.delta.emojiForMood(moodShift), history: [...(girl.mood.history || []), { shift: `proposition-${moodShift}`, ts: Date.now() }] };
     const newBond = { ...girl.bond, bondXP: Math.max(0, girl.bond.bondXP + bondXPDelta), bondDebt: girl.bond.bondDebt + (bondXPDelta < 0 ? Math.abs(bondXPDelta) : 0) };
-    window.SSDGame.state.updateGirl(girl.id, { body: newBody, mood: newMood, bond: newBond });
+    window.DMTHGame.state.updateGirl(girl.id, { body: newBody, mood: newMood, bond: newBond });
 
-    window.SSDGame.state.addMoney(revenue, `prop:${prop.clientName}`);
+    window.DMTHGame.state.addMoney(revenue, `prop:${prop.clientName}`);
 
     // Notoriety bump
-    window.SSDGame.state.addNotoriety(1);
+    window.DMTHGame.state.addNotoriety(1);
 
     // Risk: bad actor might trigger escape or dungeon exposure
     const riskTrigger = (dangerFactor > 0 && Math.random() < 0.15);
     if (riskTrigger) {
-      window.SSDGame.state.addNotoriety(3);
+      window.DMTHGame.state.addNotoriety(3);
     }
 
     const outcome = {
@@ -135,21 +135,21 @@
       notes: riskTrigger ? 'CLIENT WAS BAD ACTOR — notoriety spiked' : (satisfaction > 0.7 ? 'client overjoyed' : satisfaction < 0.3 ? 'client displeased' : 'client satisfied'),
       completedAt: Date.now()
     };
-    window.SSDGame.state.completePropositioner(propId, outcome);
+    window.DMTHGame.state.completePropositioner(propId, outcome);
     return outcome;
   }
 
   // Should a new prop arrive this tick?
   function shouldArriveThisTick() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     if (!s) return false;
     if (s.propositioners.inbox.length >= 5) return false; // cap inbox
     const baseChance = 0.15 + (s.wallet.notoriety / 200);
     return Math.random() < Math.min(0.8, baseChance);
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.propositioner = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.propositioner = Object.freeze({
     rollPropositioner, matchScore, acceptWithGirl, resolveEngagement, shouldArriveThisTick, CLIENT_ARCHETYPES
   });
 })();

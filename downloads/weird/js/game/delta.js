@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — state delta applier.
+// DUNGEON MASTER: THE HUNT — state delta applier.
 // Parses the trailing <delta>{}</delta> from Ollama responses and applies it to a girl.
 
 (function () {
@@ -6,10 +6,15 @@
 
   function applyDelta(girlId, delta) {
     if (!delta) return;
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) return;
 
-    // Pre-clamp the delta itself to safe per-turn ranges — defensive against bad model output
+    // Pre-clamp the delta itself to safe per-turn ranges — defensive against bad model
+    // output. Stamina + health keys are intentionally absent: the model would hallucinate
+    // `"health": -20` into the delta JSON on violent scenes and tank HP in a few turns,
+    // bypassing the grace-period model entirely. Vitals are sole-source-of-truth to
+    // action-effects (applyAction + tickStaminaHealth). The model gets a vote on
+    // arousal, wetness, cum, bruises, high, bond, mood, tags — NOT the survival bar.
     const safeDelta = {
       arousal:  clamp(delta.arousal  || 0, -30, 30),
       wetness:  clamp(delta.wetness  || 0, -30, 30),
@@ -42,8 +47,8 @@
     if (typeof delta.bondDebt === 'number') bond.bondDebt = Math.max(0, bond.bondDebt + delta.bondDebt);
 
     // Level up if XP crosses threshold — balancing curve lookup (50/100/150/200/250/340/450/600/800)
-    const nextLevelXP = window.SSDGame.balancing
-      ? window.SSDGame.balancing.xpForLevel(bond.bondLevel + 1)
+    const nextLevelXP = window.DMTHGame.balancing
+      ? window.DMTHGame.balancing.xpForLevel(bond.bondLevel + 1)
       : (bond.bondLevel + 1) * 50;
     const prevLevel = bond.bondLevel;
     if (bond.bondXP >= nextLevelXP && bond.bondLevel < 9) {
@@ -51,8 +56,8 @@
       bond.milestones = [...(bond.milestones || []), `bond-up-L${bond.bondLevel}-${new Date().toISOString()}`];
     }
     // Fire memorial image on level-up (fire-and-forget, optional overlay)
-    if (bond.bondLevel > prevLevel && window.SSDGame.imaging && window.SSDGame.imaging.isAvailable()) {
-      window.SSDGame.imaging.bondMilestone(girlId, bond.bondLevel).catch(() => {});
+    if (bond.bondLevel > prevLevel && window.DMTHGame.imaging && window.DMTHGame.imaging.isAvailable()) {
+      window.DMTHGame.imaging.bondMilestone(girlId, bond.bondLevel).catch(() => {});
     }
 
     // Escape risk recompute from factors
@@ -66,11 +71,44 @@
       0, 1
     );
 
-    window.SSDGame.state.updateGirl(girlId, {
+    window.DMTHGame.state.updateGirl(girlId, {
       body, mood, bond, escape,
       _lastTags: Array.isArray(delta.tags) ? delta.tags : []
     });
+
+    // Conception can only fire on a chance roll when semen lands in the vagina.
+    // Hook fires ONLY when
+    // BOTH conditions hit on this turn: (a) cumLoad delta >= 1.0 (semen delivery proxy)
+    // AND (b) delta.tags contains at least one VAGINAL_CUM_TAG marker (so BJ / anal /
+    // facial / body-shot don't fire conception). Inner gates (bond < 9, no condom, status
+    // not already pregnant) live inside pregnancy.attemptConception() — defense in depth.
+    if (window.DMTHGame.pregnancy && delta.cumLoad >= 1.0) {
+      const tags = Array.isArray(delta.tags) ? delta.tags.map(t => String(t).toLowerCase()) : [];
+      const isVaginalCum = tags.some(t => VAGINAL_CUM_TAGS.has(t));
+      if (isVaginalCum) {
+        try {
+          window.DMTHGame.pregnancy.attemptConception(girlId, { conceptionSource: 'organic' });
+        } catch (err) {
+          console.debug('[pregnancy] conception hook error:', err);
+        }
+      }
+    }
   }
+
+  // Tags that signal vaginal cum delivery in the delta block. The model is taught these
+  // via BASE_SLUT delta-block doc — when the act was vaginal penetration ending inside,
+  // it MUST emit one of these tags. Other cum deliveries (oral / anal / facial / body /
+  // pulled-out) MUST NOT include any of these tags, so conception roll skips silently.
+  const VAGINAL_CUM_TAGS = new Set([
+    'creampie',
+    'cum-in-pussy',
+    'cum-inside',
+    'cuminside',
+    'vaginal-cum',
+    'breeding',
+    'inside-pussy',
+    'inside-her'
+  ]);
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
@@ -87,6 +125,6 @@
     return '😶';
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.delta = Object.freeze({ applyDelta, emojiForMood });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.delta = Object.freeze({ applyDelta, emojiForMood });
 })();

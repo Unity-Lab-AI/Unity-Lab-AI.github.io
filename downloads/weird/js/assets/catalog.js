@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — asset catalog.
+// DUNGEON MASTER: THE HUNT — asset catalog.
 // Authoritative data for every asset in the game: locations, items, dungeons, rooms, facilities.
 // Each entry has:
 //   id           — stable ID (also the folder name under assets/<category>/<id>/)
@@ -9,9 +9,9 @@
 //   prompt       — the PG-beat-around-the-bush template prompt for an image generator.
 //                  NOTE: every prompt is deliberately euphemistic, artistic, documentary-style —
 //                  we dance around explicit content and describe atmospheres / props / framings
-//                  that imply the intent without triggering image-gen content filters. Gee runs
-//                  these through his image generator of choice and drops the output into the
-//                  matching assets/<category>/<id>/ folder. The loader auto-discovers it.
+//                  that imply the intent without triggering image-gen content filters. The
+//                  operator runs these through an image generator and drops the output into
+//                  the matching assets/<category>/<id>/ folder. The loader auto-discovers it.
 //   cost         — in-game price for items / locations / upgrades
 //   unlock       — unlock conditions
 //   gridPlacement — (locations only) default button position in the town plot grid (x, y)
@@ -26,11 +26,21 @@
   // LOCATIONS — outside world hunt locations. Each also doubles as a slot-item
   // the player plots into the town grid.
   // =========================================================================
+  // Each location carries TWO env strings:
+  //   `prompt`          — standalone town-overhead / establishing shot (used by the Town
+  //                       Plot view's full-res render). No person in frame.
+  //   `personEnvPrompt` — environment description for when a girl is rendered AT this
+  //                       location (hunt encounter thumbs, hunt previews, propositioner
+  //                       venue-at-location). Phrased as "in/at/on the X, with Y around
+  //                       her" so the image-gen places the captive INSIDE the scene
+  //                       instead of treating the location as a separate establishing
+  //                       shot — location data is dynamically inserted into the meta prompts.
   const LOCATIONS = [
     {
       id: 'street', displayName: 'Main Street', emoji: '🏙️',
       category: 'location', subcategory: 'easy',
       prompt: 'wide documentary photograph of a downtown main street at dusk, neon signs reflecting on damp pavement, pedestrians passing blurred, brick facades, mood of a city that keeps its own business, 35mm film look, muted color grade',
+      personEnvPrompt: 'on a downtown main-street sidewalk at dusk, neon signs reflecting on damp pavement behind her, brick storefronts lining the block, an alley mouth to one side, distant pedestrian silhouettes passing in the background, sodium-lamp orange light mixing with neon, urban-street documentary atmosphere',
       cost: 0, unlock: { default: true },
       gridPlacement: { x: 0, y: 0 },
       notes: 'Starter location. Low-difficulty hunts. Public setting — tough for capture attempts.'
@@ -39,6 +49,7 @@
       id: 'club', displayName: 'Pink Room Club', emoji: '🍸',
       category: 'location', subcategory: 'medium',
       prompt: 'exterior establishing shot of a trendy urban nightclub, pink and purple neon signage, bouncer silhouette at velvet rope, wet city street reflecting the lights, moody nightlife photography, cinematic color grade',
+      personEnvPrompt: 'inside the pink-and-purple-lit nightclub, standing or leaning at the bar rail, pink neon glow on her skin, glassware reflecting the lights, dark silhouettes of dancing patrons in the background, low ceiling with hanging fixtures, wet-look bar surface, moody nightclub interior, faint smoke haze',
       cost: 500, unlock: { minNotoriety: 0 },
       gridPlacement: { x: 1, y: 0 },
       notes: 'Medium-difficulty. Drug-forward spawns. Loud, crowded.'
@@ -47,6 +58,7 @@
       id: 'library', displayName: 'Old Library', emoji: '📚',
       category: 'location', subcategory: 'medium',
       prompt: 'interior photograph of a vintage public library reading room, tall wooden shelves, warm reading lamps, late-afternoon light through arched windows, quiet studious atmosphere, shallow depth of field',
+      personEnvPrompt: 'inside a vintage public-library reading room, tall dark-wood shelves rising behind her, a long oak study table with green-shaded reading lamps casting warm pools of light, late-afternoon sun slanting through tall arched windows, dust motes hanging in the air, hush of stacked books, quiet studious atmosphere',
       cost: 400, unlock: { minNotoriety: 0 },
       gridPlacement: { x: 3, y: 0 },
       notes: 'Medium-difficulty. Shy bookish spawns. Quiet setting good for discreet approach.'
@@ -55,6 +67,7 @@
       id: 'park', displayName: 'Westwood Park', emoji: '🌳',
       category: 'location', subcategory: 'easy',
       prompt: 'golden hour photograph of an urban park, tree-lined paths, joggers and dog-walkers in background, sunlight through leaves, peaceful open setting, lifestyle photography',
+      personEnvPrompt: 'in an urban park during golden hour, tree-lined gravel path stretching behind her, dappled sunlight through tall oak leaves, distant joggers and dog-walkers as soft silhouettes, lifestyle-photography mood, late-afternoon warm color cast, peaceful open setting',
       cost: 200, unlock: { default: true },
       gridPlacement: { x: 4, y: 0 },
       notes: 'Easy. Mixed spawns. Very public — difficult for capture attempts.'
@@ -63,6 +76,7 @@
       id: 'gym', displayName: 'Iron Gym', emoji: '🏋️',
       category: 'location', subcategory: 'medium',
       prompt: 'interior of a modern fitness center, rack of weights, athletic-apparel silhouettes mid-workout, fluorescent lighting, active energy, commercial gym aesthetic, wide angle',
+      personEnvPrompt: 'inside a modern fitness center, weight rack and dumbbell display visible behind her, mirrored wall reflecting the floor, fluorescent overhead lighting, rubberized matting underfoot, distant silhouettes mid-workout, commercial-gym aesthetic, active energetic atmosphere',
       cost: 500, unlock: { minNotoriety: 1 },
       gridPlacement: { x: 1, y: 1 },
       notes: 'Medium. Athletic spawns. Members come and go — moderate foot traffic.'
@@ -71,6 +85,7 @@
       id: 'mall', displayName: 'Downtown Mall', emoji: '🏬',
       category: 'location', subcategory: 'medium',
       prompt: 'bright modern shopping mall concourse, skylights, window displays of boutique stores, reflective tile floor, shoppers crossing frame, commercial photography style',
+      personEnvPrompt: 'inside a bright modern shopping-mall concourse, skylights overhead, polished tile floor reflecting boutique storefronts behind her, soft-lit window displays in the background, distant shoppers crossing frame as silhouettes, indoor commercial atmosphere, daylight from above',
       cost: 600, unlock: { minNotoriety: 1 },
       gridPlacement: { x: 2, y: 1 },
       notes: 'Medium. Mixed spawns. Very public, lots of cameras.'
@@ -79,6 +94,7 @@
       id: 'coffee-shop', displayName: 'Cup & Saucer', emoji: '☕',
       category: 'location', subcategory: 'easy',
       prompt: 'warm interior of an independent coffee shop, exposed brick, hanging pendant lights, barista behind bar, plants on the counter, cozy third-wave-coffee aesthetic, natural lighting',
+      personEnvPrompt: 'inside a warm independent coffee shop, exposed brick wall behind her, hanging pendant lights casting amber pools, espresso bar with brass fittings to one side, hanging trailing plants near the window, chalkboard menu in the background, cozy third-wave-coffee aesthetic, natural daylight from a streetfront window',
       cost: 300, unlock: { default: true },
       gridPlacement: { x: 4, y: 1 },
       notes: 'Easy. Barista / student / writer spawns. Intimate setting.'
@@ -87,6 +103,7 @@
       id: 'sorority', displayName: 'Greek Row', emoji: '🏛️',
       category: 'location', subcategory: 'hard',
       prompt: 'afternoon shot of a stately Greek-letter house on a tree-lined college street, white-columned porch, landscaped lawn, banner with Greek letters, collegiate atmosphere, editorial photography',
+      personEnvPrompt: 'on the white-columned porch of a stately Greek-letter sorority house, hanging Greek-letter banner visible behind her, tree-lined college street and landscaped front lawn out of frame, afternoon sun warming the columns, ivy on the brick, collegiate editorial atmosphere, neighbors\' houses faintly visible down the row',
       cost: 1500, unlock: { minNotoriety: 3 },
       gridPlacement: { x: 0, y: 2 },
       notes: 'Hard. Vibrant, polished spawns. Alumni connections increase suspicion.'
@@ -95,6 +112,7 @@
       id: 'remote', displayName: 'Backroads', emoji: '🛣️',
       category: 'location', subcategory: 'hard',
       prompt: 'dusk landscape photograph of a two-lane backroad winding through scrubland, single car headlights approaching, power lines following the road, wide horizon, isolated-highway photography',
+      personEnvPrompt: 'on a two-lane backroad at dusk, scrubland and low brush stretching to a wide horizon behind her, power lines following the road into the distance, asphalt with painted yellow centerline visible at her feet, distant single car headlights approaching, isolated-highway atmosphere, deep-orange sunset color cast, nobody else in sight',
       cost: 800, unlock: { minNotoriety: 4 },
       gridPlacement: { x: 3, y: 2 },
       notes: 'Hard+. Rare hitchhiker-type spawns. Remote = excellent capture conditions.'
@@ -103,6 +121,7 @@
       id: 'hotel-lobby', displayName: 'Grand Hotel Lobby', emoji: '🏨',
       category: 'location', subcategory: 'hard',
       prompt: 'interior of an upscale hotel lobby, marble floor, modernist chandelier, concierge desk, leather seating areas, well-dressed guests crossing frame, luxury hospitality photography',
+      personEnvPrompt: 'inside an upscale hotel lobby, polished marble floor reflecting an enormous modernist crystal chandelier overhead, dark-wood concierge desk to one side, leather lobby seating areas in the background, brass elevator doors visible behind her, distant well-dressed guests crossing frame, luxury hospitality atmosphere, warm directional lighting',
       cost: 2000, unlock: { minNotoriety: 5 },
       gridPlacement: { x: 4, y: 2 },
       notes: 'Hard. High-end spawns. Heavy surveillance.'
@@ -111,6 +130,7 @@
       id: 'private-party', displayName: 'Private Party', emoji: '🎉',
       category: 'location', subcategory: 'hard',
       prompt: 'interior of an upscale house party, string lights, people mingling with drinks, record player in background, hardwood floors, warm ambient lighting, lifestyle-editorial photography',
+      personEnvPrompt: 'inside an upscale private house party, warm string lights crossing the ceiling above her, hardwood floors underfoot, vinyl record player on a side table playing, mid-century-modern furniture pushed back to a wall, partygoers mingling with drinks visible as soft-focus silhouettes behind her, lifestyle-editorial atmosphere, warm tungsten-tone lighting',
       cost: 1200, unlock: { minNotoriety: 6, requiredItems: ['fake-id'] },
       gridPlacement: { x: 0, y: 3 },
       notes: 'Hard. Invitation-only. Insider spawns. Risk of being recognized.'
@@ -119,6 +139,7 @@
       id: 'school-campus', displayName: 'Campus Quad', emoji: '🎓',
       category: 'location', subcategory: 'medium',
       prompt: 'wide shot of a university campus quad, ivy-covered brick buildings, students crossing with backpacks, autumn trees, cathedral-like clock tower in background, collegiate editorial photography',
+      personEnvPrompt: 'on a university campus quad, ivy-covered brick academic buildings rising behind her, autumn-leafed trees lining a flagstone path, distant students crossing with backpacks, cathedral-like clock tower visible in the background, autumn afternoon light, collegiate editorial atmosphere',
       cost: 700, unlock: { minNotoriety: 2 },
       gridPlacement: { x: 1, y: 3 },
       notes: 'Medium-hard. Young-adult spawns. Campus security.'
@@ -136,28 +157,89 @@
       category: 'item', subcategory: 'sedation',
       prompt: 'product photograph on plain background of a single small glass medical vial of clear liquid, rubber-stopper top, pharmacy-grade labeling slightly blurred, professional commerce photography',
       cost: 180, tier: 2,
-      notes: 'Capture tool. +0.35 capture bonus.'
+      captureStages: { approach: 0, engage: 30, subdue: 15, secure: 0 },
+      notes: 'Capture tool. Engage 30 + slow Subdue 15. Single-use per stage. Drop it in her drink before she clocks it.'
     },
     {
       id: 'chloroform', displayName: 'Clear Solvent Bottle', emoji: '⚗️',
       category: 'item', subcategory: 'sedation',
       prompt: 'studio product shot of a small amber glass laboratory bottle with ground-glass stopper, clear liquid inside, plain white backdrop, science-supplies catalog style',
       cost: 220, tier: 2,
-      notes: 'Capture tool. +0.40 capture bonus. Smells obvious if wasted.'
+      captureStages: { approach: 0, engage: 25, subdue: 35, secure: 0 },
+      notes: 'Capture tool. Engage 25 + heavy Subdue 35. Single-use. Smells obvious if wasted.'
     },
     {
       id: 'ether', displayName: 'Anesthetic Solution', emoji: '🧪',
       category: 'item', subcategory: 'sedation',
       prompt: 'clinical product photograph of a small brown-glass bottle marked with a simple label, stoppered, placed on a white lab bench, professional medical-supply catalog composition',
       cost: 300, tier: 3,
-      notes: 'Capture tool. +0.50 capture bonus. Fast-acting.'
+      captureStages: { approach: 0, engage: 40, subdue: 30, secure: 0 },
+      notes: 'Capture tool. Strong Engage 40 + Subdue 30. Single-use. Fast-acting.'
     },
     {
       id: 'ketamine', displayName: 'Veterinary Bottle', emoji: '🐴',
       category: 'item', subcategory: 'sedation',
       prompt: 'product shot of a small amber veterinary medicine bottle with clinical label partially obscured, placed next to a small bag of white crystalline powder on a dark surface, muted documentary photography',
       cost: 450, tier: 4,
-      notes: 'Capture tool. +0.60. Requires contacts to acquire.'
+      captureStages: { approach: 0, engage: 0, subdue: 50, secure: 0 },
+      notes: 'Capture tool. Heavy Subdue 50. Single-use. Requires contacts to acquire.'
+    },
+    {
+      // Tranquilizer drug — makes the captive limp and unconscious with a 4-minute timer.
+      // 4-minute wearOffMs in
+      // drug-scheduler.js. Both a capture-stage Subdue 50 tool AND an in-dungeon administered
+      // drug that creates a temporary unconscious window. Distinct from ketamine: ketamine =
+      // dissociation, tranquilizer = full knockout (eyes closed, body limp, deeply sedated).
+      id: 'tranquilizer', displayName: 'Tranquilizer Dart', emoji: '🎯',
+      category: 'item', subcategory: 'sedation',
+      prompt: 'studio product photograph of an unmarked tranquilizer dart with feathered tail and capped needle, lying on a plain dark surface beside a small clear vial of amber liquid, clinical-supply catalog composition, muted lighting',
+      cost: 200, tier: 3,
+      captureStages: { approach: 0, engage: 0, subdue: 50, secure: 0 },
+      notes: 'Capture tool AND in-dungeon administered drug. Heavy Subdue 50. Single-use. 4-minute unconscious window — she goes limp, eyes close, slack jaw, deeply sedated. Distinct from ketamine (which is dissociation, not knockout).'
+    },
+
+    // --- REPRODUCTIVE / CONTRACEPTION ---
+    // Pregnancy + abortion-method shop items. Outcomes branch on which method (or no method)
+    // is used.
+    // Items consumed by pregnancy.js applyAbortion() per gestation-window rules.
+    {
+      id: 'condom', displayName: 'Condom (3-pack)', emoji: '🎈',
+      category: 'item', subcategory: 'contraception',
+      prompt: 'product photograph of three plain unmarked square foil condom packets fanned out on a plain backdrop, generic pharmacy commerce style, muted lighting',
+      cost: 6, tier: 1,
+      notes: 'Preventive — when equipped/used during a turn, blocks conception roll. Stacks of 3. (Wardrobe-equip wiring deferred — for now, owning ≥1 is the gate.)'
+    },
+    {
+      id: 'plan-b', displayName: 'Plan B Pill', emoji: '💊',
+      category: 'item', subcategory: 'reproductive-medical',
+      prompt: 'product photograph of a small unmarked white tablet next to its foil blister-pack on a plain backdrop, pharmacy commerce style',
+      cost: 25, tier: 1,
+      pregnancyAbort: { window: [0, 3], complications: 0.05, notoriety: 0 },
+      notes: 'Post-coital emergency contraceptive. Works only in gestation days 0-3. 5% complication chance. Zero notoriety.'
+    },
+    {
+      id: 'abortion-pill-medical', displayName: 'Medical Abortion Pill', emoji: '💊',
+      category: 'item', subcategory: 'reproductive-medical',
+      prompt: 'product photograph of a sealed clinical pharmacy blister-pack with two unmarked pills, beside a folded prescription slip on a plain backdrop, medical-supply catalog composition',
+      cost: 120, tier: 2,
+      pregnancyAbort: { window: [4, 93], complications: 0.10, notoriety: 1 },
+      notes: '1st-trimester abortion (days 4-93). 10% complication chance. Mild notoriety bump.'
+    },
+    {
+      id: 'surgical-kit-back-alley', displayName: 'Back-alley Surgical Kit', emoji: '🔪',
+      category: 'item', subcategory: 'reproductive-medical',
+      prompt: 'product shot of a battered closed leather pouch lying on dark concrete, partial glint of metal instruments visible at the seam, ominous low-key documentary photography',
+      cost: 200, tier: 3,
+      pregnancyAbort: { window: [94, 186], complications: 0.30, notoriety: 3 },
+      notes: '2nd-trimester procedure (days 94-186). 30% complication risk — miscarriage with damage. +3 notoriety. Cheap but dangerous.'
+    },
+    {
+      id: 'obgyn-referral-clean', displayName: 'Clean OB-GYN Referral', emoji: '🏥',
+      category: 'item', subcategory: 'reproductive-medical',
+      prompt: 'product photograph of a sealed white medical envelope with embossed clinic logo, neat appointment card visible at the corner, professional clinical-supply catalog style',
+      cost: 600, tier: 4,
+      pregnancyAbort: { window: [0, 200], complications: 0.03, notoriety: 0 },
+      notes: 'Clean clinical referral — works any time before day 200. 3% complication. Zero notoriety. Expensive but safe.'
     },
 
     // --- BLUNT ---
@@ -166,7 +248,8 @@
       category: 'item', subcategory: 'blunt',
       prompt: 'product photograph of a short length of weathered lead pipe with threaded ends on a plain white background, hardware-salvage catalog style',
       cost: 15, tier: 0,
-      notes: 'Starter blunt-weapon subdue tool. Cheap, quick, messy. Low success rate, high suspicion if witnessed.'
+      captureStages: { approach: 10, engage: 0, subdue: 25, secure: 0 },
+      notes: 'Starter blunt-weapon. Stealth Approach 10 + blunt Subdue 25. Reusable across stages. Cheap, messy, high suspicion if witnessed.'
     },
 
     // --- RESTRAINT-GRADE ---
@@ -175,42 +258,48 @@
       category: 'item', subcategory: 'restraint',
       prompt: 'product photograph of a single roll of heavy-duty silver duct tape on a plain white background, professional commerce photography, commercial grade industrial',
       cost: 5, tier: 1,
-      notes: 'Restraint basic. Crude but effective.'
+      captureStages: { approach: 0, engage: 0, subdue: 0, secure: 30 },
+      notes: 'Restraint basic. Secure 30. Single-use per stage. Crude but effective.'
     },
     {
       id: 'rope', displayName: 'Nylon Rope Coil', emoji: '🪢',
       category: 'item', subcategory: 'restraint',
       prompt: 'product shot of a coiled length of black nylon rope on a plain white backdrop, commercial hardware catalog style',
       cost: 12, tier: 1,
-      notes: 'Restraint basic. Versatile.'
+      captureStages: { approach: 0, engage: 5, subdue: 5, secure: 25 },
+      notes: 'Restraint basic. Secure 25 + slight Engage/Subdue. Single-use per stage. Versatile.'
     },
     {
       id: 'zip-ties', displayName: 'Heavy-Duty Zip Ties', emoji: '🔗',
       category: 'item', subcategory: 'restraint',
       prompt: 'product photograph of a bundle of heavy-duty black plastic zip ties fanned out on a plain white background, commercial hardware catalog style',
       cost: 8, tier: 2,
-      notes: 'Restraint tier-2. Single-use.'
+      captureStages: { approach: 0, engage: 0, subdue: 0, secure: 25 },
+      notes: 'Restraint tier-2. Secure 25. Single-use per stage.'
     },
     {
       id: 'handcuffs', displayName: 'Steel Cuffs', emoji: '🔒',
       category: 'item', subcategory: 'restraint',
       prompt: 'product photograph of a pair of chrome-plated steel handcuffs on a plain white background, commercial security-equipment catalog style',
       cost: 45, tier: 3,
-      notes: 'Restraint tier-3. Reusable, secure.'
+      captureStages: { approach: 0, engage: 0, subdue: 0, secure: 40 },
+      notes: 'Restraint tier-3. Strong Secure 40. Reusable.'
     },
     {
       id: 'shackles', displayName: 'Steel Shackles', emoji: '⛓️',
       category: 'item', subcategory: 'restraint',
       prompt: 'product photograph of heavy steel leg shackles with a short connecting chain on a plain white backdrop, industrial-security catalog style',
       cost: 120, tier: 4,
-      notes: 'Restraint tier-4. Install in room.'
+      captureStages: { approach: 0, engage: 0, subdue: 10, secure: 35 },
+      notes: 'Restraint tier-4. Secure 35 + slight Subdue 10. Reusable. Install in room.'
     },
     {
       id: 'harness', displayName: 'Full Body Harness Rig', emoji: '🧍',
       category: 'item', subcategory: 'restraint',
       prompt: 'product photograph of a complex black leather body harness with metal rings, displayed on a dress form against a plain studio backdrop, tasteful product catalog composition',
       cost: 320, tier: 5,
-      notes: 'Restraint tier-5. Install in deluxe+ rooms.'
+      captureStages: { approach: 0, engage: 5, subdue: 10, secure: 40 },
+      notes: 'Restraint tier-5. Max Secure 40 + slight Engage/Subdue. Reusable. Install in deluxe+ rooms.'
     },
 
     // --- CONTAINMENT ---
@@ -283,6 +372,20 @@
       category: 'item', subcategory: 'food',
       prompt: 'plated overhead photograph of a gourmet restaurant dish with garnish, on a dark matte plate, fine-dining editorial photography',
       cost: 45, tier: 3
+    },
+    {
+      id: 'bottled-water', displayName: 'Bottled Water (24pk)', emoji: '💧',
+      category: 'item', subcategory: 'food',
+      prompt: 'product photograph of a 24-pack flat of plain plastic water bottles in clear plastic shrink-wrap on a plain backdrop, grocery-catalog style',
+      cost: 8, tier: 1,
+      notes: 'Water consumable for captives. Refills girl.consumables.water.stock by 6. Plumbed-toilet holds (toilet >= 2) draw their own water — no need to buy.'
+    },
+    {
+      id: 'filtered-water', displayName: 'Filtered Water (5gal)', emoji: '💦',
+      category: 'item', subcategory: 'food',
+      prompt: 'product photograph of a 5-gallon office water cooler jug on a plain backdrop, commercial-supply catalog style',
+      cost: 18, tier: 2,
+      notes: 'Higher-tier water consumable. Refills stock by 12. Small bond XP bonus over bottled.'
     },
     {
       id: 'wine', displayName: 'Bottle of Red', emoji: '🍷',
@@ -434,8 +537,8 @@
   // =========================================================================
   // DUNGEONS — PREDATOR HIDEOUTS. Isolated, concealed, away from prying eyes and ears.
   //
-  // Gee verbatim 2026-04-21: "locations wherrer one preditor would set up his save dugeon
-  // from prying eyes and ears.. ccaontainer in the woods.. hole in the ground in the desert.
+  // Dungeon templates — locations where a predator would set up his private dungeon
+  // away from prying eyes and ears: container in the woods, hole in the ground in the desert,
   // hidden room in basement, lock tunnel in abandoned sewers, subway service room. ect ect"
   //
   // These are NOT hunting locations. Hunting locations (street/club/library/etc.) are
@@ -756,7 +859,7 @@
       )
   };
 
-  window.SSDAssets = Object.freeze({
+  window.DMTHAssets = Object.freeze({
     LOCATIONS, ITEMS, DUNGEONS, ROOMS, FACILITIES,
     ALL,
     STARTER_TOWN_PLOT,

@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — setup wizard installer.
+// DUNGEON MASTER: THE HUNT — setup wizard installer.
 // Per-OS one-command Ollama install snippets + CORS env note + polling loop until Ollama comes online.
 
 (function () {
@@ -87,7 +87,7 @@
     const started = Date.now();
     const loop = async () => {
       while (!stopped) {
-        const status = await window.SSDDetector.probeOllama();
+        const status = await window.DMTHDetector.probeOllama();
         onTick(status);
         if (status.reachable) return;
         if (Date.now() - started > maxWaitMs) {
@@ -101,7 +101,7 @@
     return () => { stopped = true; };
   }
 
-  window.SSDInstaller = Object.freeze({
+  window.DMTHInstaller = Object.freeze({
     getInstallSteps,
     pollForOllama,
     OLLAMA_INSTALL

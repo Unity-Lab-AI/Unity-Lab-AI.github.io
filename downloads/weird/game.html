@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SEX SLAVE DUNGEON — game</title>
+  <title>DUNGEON MASTER: THE HUNT — game</title>
   <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="css/landing.css" />
   <link rel="stylesheet" href="css/game.css" />
 </head>
@@ -13,10 +17,14 @@
   <!-- Env injection (local dev only; no error if absent) -->
   <script src="js/env.local.js" onerror="console.debug('[env] no env.local.js — normal for deploy')"></script>
 
+  <!-- Age verification + legal acceptance gate — first thing that fires. -->
+  <script src="js/ui/age-gate.js"></script>
+
   <!-- Core config + libs -->
   <script src="js/config.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/voices/catalog.js"></script>
+  <script src="js/templates/john-archetypes.js"></script>
   <script src="js/templates/ollama-templates.js"></script>
   <script src="js/assets/catalog.js"></script>
   <script src="js/assets/loader.js"></script>
@@ -27,6 +35,7 @@
 
   <!-- Game engine -->
   <script src="js/game/state.js"></script>
+  <script src="js/game/game-clock.js"></script>
   <script src="js/game/girl-gen.js"></script>
   <script src="js/game/bootstrap.js"></script>
   <script src="js/game/ollama.js"></script>
@@ -45,10 +54,14 @@
   <script src="js/game/escape-recovery.js"></script>
   <script src="js/game/save-slots.js"></script>
   <script src="js/game/lifespan.js"></script>
+  <script src="js/game/action-effects.js"></script>
+  <script src="js/game/pregnancy.js"></script>
+  <script src="js/game/whore-out.js"></script>
   <script src="js/game/film.js"></script>
   <script src="js/game/market.js"></script>
   <script src="js/game/shop.js"></script>
   <script src="js/game/hunt.js"></script>
+  <script src="js/game/capture.js"></script>
   <script src="js/game/propositioner.js"></script>
   <script src="js/game/disposal.js"></script>
   <script src="js/game/slave-market.js"></script>
@@ -73,33 +86,37 @@
   <script src="js/ui/town-view.js"></script>
   <script src="js/ui/dungeon-plot-view.js"></script>
   <script src="js/ui/asset-img.js"></script>
+  <script src="js/ui/tooltips.js"></script>
   <script src="js/ui/notify.js"></script>
   <script src="js/ui/voice-queue.js"></script>
   <script src="js/ui/timeline-view.js"></script>
+  <script src="js/ui/gallery-view.js"></script>
   <script src="js/ui/achievements-view.js"></script>
   <script src="js/ui/escape-recovery-view.js"></script>
   <script src="js/ui/in-game-settings.js"></script>
   <script src="js/ui/ollama-repair-overlay.js"></script>
 
   <header class="app-chrome">
-    <div class="chrome-brand">SEX SLAVE DUNGEON</div>
+    <div class="chrome-brand">DUNGEON MASTER: THE HUNT</div>
     <nav class="chrome-nav">
-      <a href="#dashboard" data-route="dashboard">🏠 Dashboard</a>
-      <a href="#roster" data-route="roster">📋 Roster</a>
-      <a href="#dungeon" data-route="dungeon">🏚️ Dungeons</a>
-      <a href="#town" data-route="town">🌆 Town</a>
-      <a href="#hunt" data-route="hunt">🎯 Hunt</a>
-      <a href="#shop" data-route="shop">🛒 Shop</a>
-      <a href="#market" data-route="market">🎬 Films</a>
-      <a href="#propositioners" data-route="propositioners">📬 Inbox</a>
-      <a href="#slave-market" data-route="slave-market">⛓️ Slave Market</a>
-      <a href="#achievements" data-route="achievements">🏆</a>
+      <a href="#dashboard" data-route="dashboard" data-tooltip="Treasury + captive count + film market — your operation at a glance.">🏠 Dashboard</a>
+      <a href="#roster" data-route="roster" data-tooltip="Every captive, every escaped girl, every dispatched corpse — the full ledger.">📋 Roster</a>
+      <a href="#dungeon" data-route="dungeon" data-tooltip="Your dungeons + per-hold upgrades. Throw cash at security, restraints, plumbing.">🏚️ Dungeons</a>
+      <a href="#town" data-route="town" data-tooltip="The map. Hunt locations + properties you can buy + own.">🌆 Town</a>
+      <a href="#hunt" data-route="hunt" data-tooltip="Pick a target. Pick your loadout. Run the 4-stage capture attempt.">🎯 Hunt</a>
+      <a href="#shop" data-route="shop" data-tooltip="Buy tools, drugs, restraints, water, food, contraception, abortion supplies.">🛒 Shop</a>
+      <a href="#market" data-route="market" data-tooltip="Films auto-sell on tick. Premium 💣 sell-negatives kills the film for 3.5× payout.">🎬 Films</a>
+      <a href="#propositioners" data-route="propositioners" data-tooltip="John inbox. Accept/reject specific rental gigs from upmarket clientele.">📬 Inbox</a>
+      <a href="#slave-market" data-route="slave-market" data-tooltip="Buy untrained captives cheap. Sell trained ones premium.">⛓️ Slave Market</a>
+      <a href="#achievements" data-route="achievements" data-tooltip="Milestones unlocked through the operation.">🏆</a>
     </nav>
-    <div class="chrome-money" id="chrome-money">$0</div>
-    <button class="btn-small" id="chrome-voice" title="Toggle voice (Kokoro TTS)">🔊</button>
-    <button class="btn-small btn-danger" id="chrome-new-game" title="Start a new game (wipes current save)">🔄 New Game</button>
-    <a href="#settings" class="btn-small" title="In-game settings">⚙</a>
-    <a href="./index.html" class="btn-small" title="Back to landing">🏠</a>
+    <div class="chrome-clock" id="chrome-clock" data-tooltip="In-game day clock. 1 real second = 1 game minute (24 real min = 1 game day). Captives go 3 game days without water and 5 game days without food before health starts dropping.">Day 1, 00:00</div>
+    <div class="chrome-satisfaction" id="chrome-satisfaction" data-tooltip="Player satisfaction (0-100). Sex acts with captives raise it; slow drift down without intimacy. High satisfaction grants a hunting bonus — capture odds get easier the more satisfied you are. Fuck enough and the next catch is much easier.">😐 50</div>
+    <div class="chrome-money" id="chrome-money" data-tooltip="Liquid cash on hand. Spend on upgrades, captures, abortions, slaves.">$0</div>
+    <button class="btn-small" id="chrome-voice" data-tooltip="Toggle Kokoro TTS voice playback on/off.">🔊</button>
+    <button class="btn-small btn-danger" id="chrome-new-game" data-tooltip="WIPES your save and starts fresh. Use Settings → Save Slots to keep a copy first.">🔄 New Game</button>
+    <a href="#settings" class="btn-small" data-tooltip="Ollama / Kokoro / Pollinations / save slots / factory reset.">⚙</a>
+    <a href="./index.html" class="btn-small" data-tooltip="Back to the landing page.">🏠</a>
   </header>
 
   <main class="app-main" id="app"></main>
@@ -107,45 +124,66 @@
   <script>
   (async function boot() {
     // Mount router
-    window.SSDRouter.mount(document.getElementById('app'));
+    window.DMTHRouter.mount(document.getElementById('app'));
 
     // Load saved state
-    const loaded = await window.SSDGame.state.load();
+    const loaded = await window.DMTHGame.state.load();
     if (!loaded || !loaded.createdAt) {
       location.hash = '#newgame';
     } else if (!location.hash) {
       location.hash = '#dashboard';
     }
 
-    // Chrome money sync
+    // Chrome money + satisfaction sync
     function syncChrome() {
-      const s = window.SSDGame.state.current;
+      const s = window.DMTHGame.state.current;
       document.getElementById('chrome-money').textContent = s ? `$${s.wallet.money.toLocaleString()}` : '$0';
+      const satEl = document.getElementById('chrome-satisfaction');
+      if (satEl && s) {
+        const sat = typeof s.wallet.playerSatisfaction === 'number' ? s.wallet.playerSatisfaction : 50;
+        const emoji = sat >= 80 ? '😈' : sat >= 60 ? '😏' : sat >= 40 ? '😐' : sat >= 20 ? '😒' : '🥶';
+        satEl.textContent = `${emoji} ${Math.round(sat)}`;
+      }
     }
     syncChrome();
-    window.SSDGame.state.onChange(syncChrome);
+    window.DMTHGame.state.onChange(syncChrome);
 
-    // Chrome "New Game" button — wipes save + routes to new-game setup
+    // Running game clock display. 1 real second = 1 game minute, so
+    // updating the display once a real second is enough to capture every
+    // game-minute boundary. The gameClock module is the source of truth.
+    const clockEl = document.getElementById('chrome-clock');
+    if (clockEl && window.DMTHGame.gameClock) {
+      const updateClock = () => { clockEl.textContent = window.DMTHGame.gameClock.formatNow(); };
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    // Chrome "New Game" button — wipes save + routes to new-game setup. Stops the tick
+    // and flags state for nuke before wipeAll() so a racing background save() can't
+    // repopulate the save store with old state between the wipe and the reload.
     document.getElementById('chrome-new-game').onclick = async () => {
       if (!confirm('Start a new game? This WIPES your current save. Use Settings → Save Slots first if you want to keep a copy.')) return;
-      await window.SSDStorage.wipeAll();
-      for (const k of Object.keys(localStorage)) if (k.startsWith('ssd_') && k !== 'ssd_pollinations_key' && k !== 'ssd_ollama_endpoint' && k !== 'ssd_ollama_model' && k !== 'ssd_kokoro_voice') localStorage.removeItem(k);
+      try { if (window.DMTHGame.tick) window.DMTHGame.tick.stop(); } catch {}
+      try { if (window.DMTHVoiceQueue) window.DMTHVoiceQueue.cancel(); } catch {}
+      try { window.DMTHGame.state._nuking = true; } catch {}
+      await window.DMTHStorage.wipeAll();
+      for (const k of Object.keys(localStorage)) if (k.startsWith('dmth_') && k !== 'dmth_pollinations_key' && k !== 'dmth_ollama_endpoint' && k !== 'dmth_ollama_model' && k !== 'dmth_kokoro_voice') localStorage.removeItem(k);
       location.hash = '#newgame';
       location.reload();
     };
 
     // First route handle
-    window.SSDRouter.handle();
+    window.DMTHRouter.handle();
 
     // Balancing tweak after load
-    if (window.SSDGame.balancing) window.SSDGame.balancing.applyBalancing();
+    if (window.DMTHGame.balancing) window.DMTHGame.balancing.applyBalancing();
 
     // Start the tick engine
-    window.SSDGame.tick.start();
+    window.DMTHGame.tick.start();
 
     // === Voice (Kokoro TTS) ===
     // Voice toggle — persists in localStorage. Default: on.
-    const VOICE_KEY = 'ssd_voice_on';
+    const VOICE_KEY = 'dmth_voice_on';
     function voiceOn() { return localStorage.getItem(VOICE_KEY) !== 'off'; }
     function setVoice(on) {
       localStorage.setItem(VOICE_KEY, on ? 'on' : 'off');
@@ -154,11 +192,11 @@
       btn.title = on ? 'Voice ON — click to mute' : 'Voice OFF — click to enable';
       // Going OFF mid-response should stop whatever's playing immediately,
       // not let the queue finish + then stop.
-      if (!on && window.SSDVoiceQueue) window.SSDVoiceQueue.cancel();
+      if (!on && window.DMTHVoiceQueue) window.DMTHVoiceQueue.cancel();
     }
     setVoice(voiceOn());
     document.getElementById('chrome-voice').onclick = () => setVoice(!voiceOn());
-    window.SSDIsVoiceOn = voiceOn;   // global so room.js can check before speaking
+    window.DMTHIsVoiceOn = voiceOn;   // global so room.js can check before speaking
 
     // Auto-check Ollama health on game boot — if the active model's weights
     // were nuked since landing (Storage Sense, manual cleanup, partial pull),
@@ -167,10 +205,10 @@
     // Kokoro load.  Silent when everything is healthy.
     (async () => {
       try {
-        if (window.SSDOllamaRepairOverlay) {
+        if (window.DMTHOllamaRepairOverlay) {
           // Small delay so the boot UI renders first
           await new Promise(r => setTimeout(r, 800));
-          await window.SSDOllamaRepairOverlay.autoCheck();
+          await window.DMTHOllamaRepairOverlay.autoCheck();
         }
       } catch (err) {
         console.debug('[ollama-autocheck] failed silently:', err);
@@ -182,22 +220,22 @@
     // fast.  Non-blocking — game keeps loading.
     (async () => {
       const btn = document.getElementById('chrome-voice');
-      if (!window.SSDKokoro) return;
-      if (window.SSDKokoro.isReady()) return;
+      if (!window.DMTHKokoro) return;
+      if (window.DMTHKokoro.isReady()) return;
       if (!voiceOn()) return;
       btn.textContent = '⏳';
       btn.title = 'Loading Kokoro voice model…';
       try {
-        await window.SSDKokoro.ensureLoaded((p) => {
+        await window.DMTHKokoro.ensureLoaded((p) => {
           const pct = Math.round((p?.progress || 0) * 100);
           btn.title = `Loading voice ${pct}%…`;
         });
         setVoice(true);
-        if (window.SSDNotify) window.SSDNotify.show('🔊 Kokoro voice ready', { type: 'success', durationMs: 2000 });
+        if (window.DMTHNotify) window.DMTHNotify.show('🔊 Kokoro voice ready', { type: 'success', durationMs: 2000 });
       } catch (err) {
         btn.textContent = '🔇';
         btn.title = 'Kokoro failed to load: ' + err.message;
-        if (window.SSDNotify) window.SSDNotify.show('🔇 Voice unavailable: ' + err.message, { type: 'error' });
+        if (window.DMTHNotify) window.DMTHNotify.show('🔇 Voice unavailable: ' + err.message, { type: 'error' });
       }
     })();
   })();
