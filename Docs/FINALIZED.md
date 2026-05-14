@@ -1165,3 +1165,188 @@ For each of `ai.html`, `about.html`, `apps.html`, `services.html`, `projects.htm
 - The `/unity` repo (separate GitHub Pages build at the same domain) — explicitly out of scope per the user's clarification "the slash unity path to www.unityailab.com is a totally different repo u arnt to worry about its just it has its own socila image and builds out on github pages just like the site does."
 - Nested app HTMLs under `/apps/*/` — they don't have site-level marketing meta tags currently and adding them is a separate concern (out of scope here).
 - `dist/` build output — will regenerate on next `npm run build`.
+
+---
+
+## 2026-05-13 — Re-add Downloads section to the site (header + new "The Weird Project" / SEX SLAVE DUNGEON from C:\Users\gfour\Desktop\weird) + GitHub links on all 4 download projects + Docs/docs case-fold bifurcation resolved
+
+**Branch:** `feature/downlaods` (off `main` per user direction — user clarified main and develop are content-identical right now since the two intervening merge-commits on main carry no extra tree changes)
+
+**User verbatim (LAW #0) — primary direction:**
+
+> "now start a feature branch called downlaods(we will be putting the download section back into the website so adding it to the header again and adding a project to the download section C:\Users\gfour\Desktop\weird and i have added the new files  and .zip to the downloads files folder, and i want to use some of the main images we have for the weird project in the readme for the downlaod section layout and write up s for each downlaod for the format and layout se already have.,, so make the todo list of everything we need to do"
+
+**User verbatim (LAW #0) — clarifications captured during the work:**
+
+> "no dont branch off develop branch of main,, main and develop are the same right?"
+
+> "clean up the weird file folder to only the application files(so the .claude and all of that needs to be cleaned up and removed so the file folder weird is only the sexslave dugngeon files and applicatrion(absolutlely nothing welse in the files for it) then u need to make a new .zip of this fixed weird file folder(removing all the crud from the file before you make the new .zip making sure to delete the old .zip keeping the names correct for the file folder weird"
+
+> "the github page for the projects in downlaods should be attached and you can look them up on the Unity Lab AI github, if you dont find them then ask for them"
+
+> Public-facing card title selected via prompt: **"The Weird Project"** (over README literal "SEX SLAVE DUNGEON" — URL slug stays `weird/`)
+
+> "we dont need thriteen images for one downlaod project just use a few of the main ones"
+
+> "none headless" (Playwright verification request — visible browser, not headless)
+
+> "make sure playwrite stuff is gitignored"
+
+> "still waiting for you to start it up so i can use and test it"
+
+> "okay looks good! merge to develop then merge develop to main"
+
+> "oh wait make sure u finalize the todo entreis and re templet the todo only after moving all completed items to finalized"
+
+### What was broken / missing
+
+The Downloads section had been dropped from the redesigned site navbar at some point during the redesign migration (per the pre-existing sitemap comment "navbar dropped link") even though the `/downloads/` page itself remained accessible by direct URL. Three existing projects (Moana Miner, Local Unity AI v2.5, Claude Code Workflow) lived on cards with deep per-project pages but **no direct GitHub repo links on the index cards** (and Local Unity + Claude deep pages had only the generic Unity-Lab-AI org footer link, no project-specific repo link). The new SEX SLAVE DUNGEON project (source at `C:\Users\gfour\Desktop\weird\`) needed to be added with a card on the index + a full deep page following the Moana pattern, using the project's README screenshots for the layout.
+
+### What shipped
+
+**1. Cleanup of pre-staged `downloads/weird/` source dump**
+
+User pre-staged the full source project (~26 MB / 788 files including `node_modules/`, `.claude/`, `.git/`, `.env`, etc.) plus the original `downloads/files/weird.zip` (9.3 MB). Per the user's strict "application files only" direction, cleaned the folder down to ONLY runtime application files. REMOVED: `.claude/`, `.env` (security — likely-real Pollinations key), `.git/`, `.gitignore`, `node_modules/` (Playwright dev-only per README), `scripts/screenshots.mjs`. KEPT: `index.html` + `game.html`, `js/`, `css/`, `assets/`, `docs/` (full docs + 13 screenshots), `start.bat`, `start.sh`, `README.md`, `.env.example`. Result: **26 MB → 3.1 MB / 788 files → 174 files** (88% size reduction, 78% file count reduction).
+
+**2. Rebuilt `weird.zip` from cleaned folder**
+- Deleted old `downloads/files/weird.zip` (9,743,941 bytes / 9.3 MB)
+- Generated new `downloads/files/weird.zip` (2,322,977 bytes / 2.3 MB) via PowerShell `Compress-Archive -CompressionLevel Optimal`
+- Same file name kept per user direction; 75% size reduction reflects the source-dump cleanup
+
+**3. Re-added Downloads link to the redesign site header**
+- `redesign/v-d-chrome.jsx` line 9: inserted `{ href: './downloads', label: 'Downloads' }` between Projects and Contact in `NAV_LINKS`
+- Single edit propagates to every redesigned root page (`index`, `ai`, `about`, `apps`, `services`, `projects`, `contact`, `codex`, `terms`, `privacy`) because `GothicNavbar` renders `NAV_LINKS` via React on each
+
+**4. New "The Weird Project" download card on `downloads/index.html`**
+
+Card title "The Weird Project" (user-selected over README literal "SEX SLAVE DUNGEON" — URL slug stays `weird/`), Version v1.0, `fa-skull` icon, tags Ollama/Local LLM/Adult Game/Free/BYOK, description paraphrased from README opening, 7 feature bullets (Ollama inference + archetype overlays, Kokoro TTS queue, self-healing Ollama corruption flow, persistent visual identity per girl, 9 predator hideout templates + town plot-grid, drug scheduler w/ 7 substances, 40+ preset click actions), meta bar Size 2.3 MB / Static + Ollama / Free, 3-button stack (View on GitHub → `Unity-Lab-AI/Weird`, View Details → `weird/`, Download → `files/weird.zip`), requirements card (Ollama installed / Chromium browser / ~80MB Kokoro weights / optional Pollinations key).
+
+**5. GitHub buttons added to all four download cards on `downloads/index.html`** (per user's "All 4 projects" scope decision):
+- Moana Miner → `https://github.com/Unity-Lab-AI/Moana`
+- Local Unity AI → `https://github.com/Unity-Lab-AI/Local-Unity`
+- Claude Code Workflow → `https://github.com/Unity-Lab-AI/UAL-ClaudeWorkflow`
+- The Weird Project → `https://github.com/Unity-Lab-AI/Weird`
+
+Each card now has a 3-button stack: GitHub (gray-bordered transparent, `#6e7681`) → View Details (crimson-bordered transparent, `#dc143c`) → Download (solid crimson gradient).
+
+**6. Project-specific GitHub links added to Local Unity and Claude deep pages**
+- `downloads/Local Unity/index.html` Final CTA section: added `<a href="https://github.com/Unity-Lab-AI/Local-Unity" target="_blank" rel="noopener">View on GitHub</a>` next to the existing Discord link (matches Moana's pattern at `downloads/moana/index.html:1291`)
+- `downloads/claude/index.html` Final CTA section: same pattern for `UAL-ClaudeWorkflow`
+- Moana deep page already had its project-specific link from a prior session — left intact
+
+**7. New `downloads/weird/index.html` deep details page (1328 lines)**
+
+OVERWRITES the cleaned-folder's source `index.html` (which was the game's setup wizard at 4770 bytes — that copy still lives inside `weird.zip` for users to extract and run locally). The deep page follows `downloads/moana/index.html` as structural template — legacy Bootstrap chrome with sections: Hero (fa-skull + title + v1.0 badge + tagline + CTA + meta bar); **Adult Content Notice — 18+ Only callout** (red-bordered danger-box, links to /terms and /privacy); Table of Contents (8 anchors); Overview & Features with hero image `docs/screenshots/11-room-ollama-reply.png` (eager-loaded, NOT lazy per Playwright fix); System Requirements (6 req-cards); Installation Guide (4 numbered step-cards using `01-landing-setup.png` for the wizard step); CORS Setup (Windows PowerShell / macOS launchctl / Linux export); Screenshots Gallery (4 main screenshots `03-dashboard.png`, `05-dungeon.png`, `06-town.png`, `08-shop.png` per user's "we dont need thriteen images for one downlaod project just use a few of the main ones" direction); Deployment (Optional, GitHub Pages) with sensitive-content hosting warning; Privacy & Data verbatim from README; License & Disclaimer (adult-fiction, all characters 18+ hard-locked, taboo by design); Final CTA + "View on GitHub" → `Unity-Lab-AI/Weird` + Discord link; lightbox script for expandable images.
+
+**8. Sitemap updates**
+- `sitemap.xml`: added `<url>` entry for `/downloads/weird/` (priority 0.4, changefreq monthly, lastmod 2026-05-13); updated `/downloads/` comment from "navbar dropped link" to "navbar link restored 2026-05-13" + bumped lastmod to today.
+- `scripts/generate-sitemap.js` `PAGE_CONFIG`: matching entry added so future `npm run build` regenerates the sitemap with the new URL included.
+
+**9. Architecture doc callout**
+- `Docs/ARCHITECTURE.md`: added new "📦 Downloads section (May 2026)" callout block at top (after Auth & API and Legal pages callouts) summarizing the 4 download projects + GitHub repos + the navbar restoration.
+
+**10. `.gitignore` hardening** per user direction "make sure playwrite stuff is gitignored"
+
+Added comprehensive Playwright + ad-hoc test script section to `.gitignore`: `playwright-report/`, `playwright/.cache/`, `.playwright/`, `test-results/`, `*.playwright-trace.zip`, `playwright.config.{js,mjs}`, plus root-level patterns `/demo-test.js`, `/legal-modal-test.js`, `/test-apps.js`, `/*-verify.{js,mjs}`, `/*-test.{js,mjs}`. Retroactively covers the two pre-existing untracked test files at repo root (`demo-test.js`, `legal-modal-test.js`) that were leftover from prior verification sessions — they no longer pollute `git status`.
+
+**11. `Docs/` vs `docs/` Windows case-fold bifurcation resolved (TODO + FINALIZED)**
+
+This branch's atomic commit stages BOTH case-paths (capital-D `Docs/TODO.md` + `Docs/FINALIZED.md` AND lowercase `docs/TODO.md` + `docs/FINALIZED.md`) with identical content for each pair. Prior to this branch the lowercase pair had been created by recent commits as new files with regressed stub content (43-line TODO + 94-line FINALIZED), while the capital-D pair held the actual historical archives (306-line TODO + 1167-line FINALIZED). On Windows the case-fold means both paths point at the same physical bytes; this commit makes the index entries converge, eliminating the "modified" rows that would have shown up in `git status` on every future session.
+
+**12. TODO re-templated to clean state**
+
+Per user direction "oh wait make sure u finalize the todo entreis and re templet the todo only after moving all completed items to finalized" — after FINALIZED-before-DELETE compliance (this entry + the backfill stubs below for any prior [x] items lacking explicit FINALIZED entries), `Docs/TODO.md` was re-templated from its 393-line state (306 historical + this branch's task entry) down to the clean template skeleton: header + P1/P2/P3 section markers + "*No active tasks*" placeholders + footer. The historical task descriptions live on in this FINALIZED archive (verbatim, per LAW #0) and need not duplicate in TODO going forward.
+
+### Verification
+
+**Local HTTP probe via `py -m http.server 8000`** — all 8 URLs returned HTTP 200: `/` (7876 bytes), `/downloads/` (34431 bytes), `/downloads/weird/` (59293 bytes), `/downloads/moana/` (59552 bytes), `/downloads/Local%20Unity/` (43341 bytes), `/downloads/claude/` (39961 bytes), `/downloads/files/weird.zip` (2,322,977 bytes), `/downloads/weird/docs/screenshots/11-room-ollama-reply.png` (443,704 bytes), `/sitemap.xml` (4123 bytes).
+
+**Headed Playwright verification** per user direction "none headless" — visible Chromium window at 1400×900, slowMo 400ms, walked every URL, scrolled top→middle→bottom on each. Final result: **27 strings pass / 1 fail / 6 images loaded / 0 broken (post-scroll)**. The 1 string failure was the stale test expectation "Try the Unity Demo" on the homepage — that copy belongs to a pre-redesign hero version, not a real regression of this branch's work. First run had reported all 6 weird-page images as broken due to `loading="lazy"` + image-check-before-scroll race; fixed by (a) removing `loading="lazy"` from the hero overview image so it eager-loads above the fold, and (b) moving the Playwright image-check to AFTER the scroll-through so lazy-loaded gallery images trigger before measurement. Re-run: 6/6 loaded. User confirmed visually via the headed run and said "okay looks good! merge to develop then merge develop to main".
+
+**Static checks (grep + wc):**
+- `redesign/v-d-chrome.jsx` `NAV_LINKS`: 7 entries (AI / About / Apps / Services / Projects / Downloads / Contact)
+- `downloads/index.html`: 4 `github.com/Unity-Lab-AI/` URLs (one per project)
+- `downloads/weird/index.html`: 1328 lines, 6 screenshot references (hero + setup step + 4 gallery)
+- `downloads/files/weird.zip`: 2,322,977 bytes (down from 9,743,941 — 75% reduction)
+- All 13 screenshots in `downloads/weird/docs/screenshots/` survived the cleanup
+
+**Branch hygiene:** Branched off `main` tip `94f299a` per user's correction — confirmed via `git log --oneline origin/develop..origin/main` that main was only 2 merge-commits ahead with no extra tree changes, so branching off main vs develop gives identical working trees. Git Flow opt-in is ENABLED; merge target sequence is feature/downlaods → develop → main per established release flow.
+
+**LAW #0:** All user verbatim quotes preserved in this FINALIZED entry. FINALIZED-before-DELETE compliance verified prior to the TODO re-template (this entry was written and saved BEFORE TODO was templated).
+
+### What was NOT touched
+
+- The two pre-existing untracked test files at repo root (`demo-test.js`, `legal-modal-test.js`) — leftover from prior verification sessions. Now retroactively gitignored by the `.gitignore` hardening, so they no longer show as untracked in `git status`. Files themselves not deleted (user can clean up manually if she wants).
+- Migration of `downloads/index.html` or any of the deep download pages to the new GothicNavbar chrome — they still use legacy Bootstrap chrome per user's "format and layout we already have" direction.
+- The 13 screenshots in `downloads/weird/docs/screenshots/` — all 13 stay in the folder ("a few main ones" interrupt only affected the website's deep-page gallery, not the docs in the zip).
+- `dist/` build output — will regenerate on next `npm run build`.
+- The many other Unity-Lab-AI org repos surfaced via `gh repo list` — out of scope; only the 4 download projects' repos were linked.
+
+### Your test plan
+
+**What to test (post-deploy to main):**
+1. Visit `https://www.unityailab.com/` — confirm "Downloads" link appears in the GothicNavbar between Projects and Contact
+2. Click Downloads → loads `https://www.unityailab.com/downloads/` — confirm 4 cards (Moana, Local Unity, Claude, **NEW: The Weird Project**), each with a gray-bordered "View on GitHub" button + Download button
+3. Click each "View on GitHub" → opens the correct repo on github.com in a new tab
+4. Click "View Details & Screenshots" on The Weird Project card → loads `https://www.unityailab.com/downloads/weird/` — confirm 18+ disclaimer at top, hero room+Ollama image renders, 4 gallery screenshots render after scrolling, all TOC anchors jump correctly
+5. Click "Download weird.zip" → triggers 2.3 MB zip download
+6. Extract the zip → confirm cleaned application-files-only state (no `.claude/`, no `node_modules/`, etc.)
+7. Visit `/downloads/Local Unity/` and `/downloads/claude/` — confirm new "View on GitHub" link in the Final CTA section
+8. View `https://www.unityailab.com/sitemap.xml` — confirm `/downloads/weird/` entry present
+
+**If a check fails:** Downloads link missing → hard-refresh with cache disabled; new weird card missing → check `/downloads/index.html` source for the markup; hero image not loading → confirm `loading="lazy"` was removed from the hero `<img>`; zip downloads at 9.3 MB (old size) → GitHub Pages CDN cache, wait or hard-refresh.
+
+---
+
+## 2026-05-13 — Backfill: prior [x] TODO entries with no dedicated FINALIZED record (LAW-compliance sweep before TODO re-template)
+
+**Context:** Before re-templating `Docs/TODO.md` to a clean state per the user's direction "only after moving all completed items to finalized", swept the 306-line capital-D Docs/TODO.md for [x] DONE entries that lacked an explicit dedicated FINALIZED entry. Most prior [x] tasks ARE covered — either as direct entries above in this archive or rolled into broader entries that covered multiple TODO items at once (e.g. the Classic Unity migration entry covers F12 visitor cleanup, edit-message surgical truncation, oldSiteProject proxy sweep, age-gate restoration, and chat-core jailbreak port all in one). The following 6 entries were flagged as lacking explicit dedicated FINALIZED records and are recorded here verbatim from the TODO descriptions for archival completeness before TODO re-template.
+
+### 2025-12-19 — Image Loading Failure in Demo Page
+
+**Location:** `ai/demo/js/chat.js`
+**Root cause:** Event handler timing — handlers were attached AFTER the img element entered the DOM, inside a 500ms setTimeout. The browser was firing onerror before handlers existed.
+**Fix applied:** Moved `img.onload` and `img.onerror` handlers to IMMEDIATELY after img element creation; set `img.src` IMMEDIATELY after handlers (before DOM insertion); removed broken setTimeout/fetch blob approach; now matches the working pattern from `_archive/orphans/test-image.html` (archived 2026-05-06).
+**Files modified:** `ai/demo/js/chat.js` — complete rewrite of image handling logic.
+**Note:** Pre-LAW-#0 era; no captured verbatim user direction beyond the bug title.
+
+### 2026-05-06 — Redesign-merge integration pass (PR #44 + PR #45 → dev-re-design)
+
+**Status:** DONE — 2026-05-06 (commits 6e1cb04 P1 + 8891366 P2; verification + INT docs in subsequent integration commit)
+**Branch:** `dev-re-design`
+**User direction (verbatim, LAW #0):**
+> "There are 2 PRs on this repo, #44 & #45, these are for P1 & P2 - These need merging together on the current repo branch. There is also additional iformation on the PRs pull requests; as well as known problems markdown files. I need you to go throught and complete the pull requests going into the branch please maks eure the redisign is upto specifications. I need you to make sure everything is wired up and properly follows the redisign specifications, thank you."
+**Scope:** Merge `feature/redesign-P1` (#44) into `dev-re-design`; merge `feature/redesign-P2` (#45) into `dev-re-design`; verify redesign is up to specifications per `docs/REDESIGN-MIGRATION.md`; verify everything is wired up and properly follows the redesign specifications; read PR bodies + `docs/KNOWN-PROBLEMS.md` + all `/docs/redesign/notes-p[12]-*.md`; smoke test before declaring complete.
+
+### 2026-05-06 — Fix Alfredo→Alfreddo spelling everywhere on live site
+
+**Status:** DONE — 2026-05-06
+**User direction (verbatim, LAW #0):**
+> "Alfredo - is spelt Alfreddo. Please correct the about and anywhere else necisary."
+**Scope fixed:** 7 root HTMLs (index, about, contact, services, projects, ai, apps) — 19 occurrences total; 3 redesign/* live runtime files via `git update-index --cacheinfo` (Windows case-fold workaround): `redesign/v-d-sections.jsx` footer credit (line 585), `redesign/about-data.jsx` about page bio (lines 347, 353), `redesign/gothic-init.js` header comment (line 3).
+**NOT modified (out of scope):** `_archive/exploration-shells/Gothic Landing.html` (historical preservation), `REDESIGN/*` canonical source (slated for INT-04 deletion), `project/*` (explicitly out-of-scope diverged fork).
+
+### 2026-05-06 — Redesign demo page + update apps to follow redesign specifications
+
+**Status:** DONE — 2026-05-06 (commits b41afef P3-00 + 4dfba5a P3-01 + d957b69 P3-02 + a5e6f45 P3-03 + 27dc8a5 P3-04 docs on branch `feature/redesign-P3-demo-and-apps`; PR #46 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/46)
+**Branch:** `feature/redesign-P3-demo-and-apps` (off `dev-re-design`)
+**User direction (verbatim, LAW #0):**
+> "Create a new feature branch, based on the current branch that is focusing directly on redesigning the actual demo page and updating the apps. Based on the files that were recently redesigned (check latest git commit history) the demo and app pages need updating accordingly- following the redesign specifications."
+**Scope:** Create `feature/redesign-P3-demo-and-apps` off `dev-re-design`; redesign `/ai/demo/` (the 8000-line interactive demo) to follow the redesign chrome spec — gothic palette, Trajan Pro / Cormorant Garamond / JetBrains Mono / Inter typography, crimson + bone tokens from `redesign/shared-tokens.css`, drop Bootstrap dep, drop dep on legacy `../../styles.css`; update the 8 app demos (`apps/unityDemo`, `apps/textDemo`, `apps/personaDemo`, `apps/talkingWithUnity`, `apps/helperInterfaceDemo`, `apps/slideshowDemo`, `apps/screensaverDemo`, `apps/oldSiteProject`) to follow redesign specifications via the shared-theme/shared-nav bridge layer; match the GothicNavbar HTML + class names from `redesign/v-d-chrome.jsx` so apps feel like volumes of the same codex; per-app CSS polish; smoke-test, write notes under `/docs/redesign/notes-p3-*.md`, update `docs/REDESIGN-MIGRATION.md` with P3 status, open PR back into `dev-re-design`.
+
+### 2026-05-06 — Eliminate Docs/docs and REDESIGN/redesign Windows case collisions
+
+**Status:** DONE — 2026-05-06
+**User direction (verbatim, LAW #0):**
+> "Due to some noticed issues with the cross-platform work being done (P1 was done initially on linux, while P2 was done on windows), and the fact we are currently working in windows, there are some case sensitive issues with the current branch and PRs that where made, and we need to go through and take what was having conflicts with the case sensitivity / insensitivity in windows, and ensure that we can re-work some things to ensure proper cross-platform (windows + linux) compatability, so we dont get these conflicts with files / folders we where initially getting."
+**Done:** Moved 8 `Docs/*` (capital D) → `docs/*` (lowercase) — pre-redesign project docs (API_COVERAGE.md, CACHE-BUSTING.md, ImHandicapped.txt, N8N_WEBHOOK_INTEGRATION.md, PollinationsDocsRefferences.txt, ROADMAP.md, SEO_IMPLEMENTATION.md, evil.txt); moved 70 `REDESIGN/*` (canonical source) → `_archive/redesign-source/*`; used `git update-index --add --cacheinfo` + `--force-remove` for index manipulation (bypasses Windows case-fold); verified zero case collisions remain via `awk '{print tolower($1)}' | sort | uniq -d` — empty output; live site smoke test still green.
+**Note:** This 2026-05-06 cleanup handled 8 `Docs/*` files but did NOT migrate `Docs/TODO.md` or `Docs/FINALIZED.md` — those re-bifurcated in subsequent commits when new lowercase `docs/TODO.md` and `docs/FINALIZED.md` stubs were created without removing the capital-D archives. The 2026-05-13 downloads branch (above entry) resolved the FINALIZED + TODO bifurcation as a side-effect.
+
+### 2026-05-06 — Fix the sitemap generator on a new branch
+
+**Status:** DONE — 2026-05-06 (commit cca3787 on `feature/fix-sitemap-generator`; PR #48 — https://github.com/Unity-Lab-AI/Unity-Lab-AI.github.io/pull/48)
+**Branch:** `feature/fix-sitemap-generator` (off `dev-re-design`)
+**User direction (verbatim, LAW #0):**
+> "fix the sitemap generator on a new branch"
+**Problem:** `scripts/generate-sitemap.js` produced a regressed `sitemap.xml` that overwrote the hand-curated post-redesign canonical from P1-07 on every `npm run build` — dropped `.html` extension canonical URLs for the 7 redesign pages, dropped `/apps/` URL entirely, dropped `/downloads/` URL with the Moana `<image:image>` block, dropped `<?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>` declaration, dropped `xmlns:xsi` + `xmlns:image` namespace declarations + `xsi:schemaLocation`, dropped the explanatory comment block + per-URL inline comments.
+**Scope:** Patch `scripts/generate-sitemap.js` to emit the canonical 9-URL post-redesign structure (matching `sitemap.xml` byte-for-byte modulo `<lastmod>` dates); re-emit the XML stylesheet declaration, multi-namespace `<urlset>`, top-level rationale comment, per-URL inline comments, and the `/downloads/` `<image:image>` block; verify output via `node scripts/generate-sitemap.js && git diff sitemap.xml` — diff should show ONLY `<lastmod>` date deltas; atomic commit: generator patch + regenerated sitemap.xml + docs in one; open PR back into `dev-re-design`.
