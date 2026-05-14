@@ -82,10 +82,10 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- Downloads — accessible by direct URL, navbar dropped link -->
+  <!-- Downloads — accessible by direct URL, navbar link restored 2026-05-13 -->
   <url>
     <loc>https://www.unityailab.com/downloads/</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -93,6 +93,14 @@
       <image:title>Moana Miner — AI-Optimized Mining Software</image:title>
       <image:caption>Moana cryptocurrency mining application by Unity AI Lab</image:caption>
     </image:image>
+  </url>
+
+  <!-- The Weird Project (SEX SLAVE DUNGEON) — adult game deep download page -->
+  <url>
+    <loc>https://www.unityailab.com/downloads/weird/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 
   <!-- Terms of Service — legal page, footer-linked from every page -->
