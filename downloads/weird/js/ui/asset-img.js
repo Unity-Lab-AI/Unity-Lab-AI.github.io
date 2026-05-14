@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — tiny helper to insert an asset image into the DOM with emoji fallback.
+// DUNGEON MASTER: THE HUNT — tiny helper to insert an asset image into the DOM with emoji fallback.
 // Used by shop / town / dungeon / dispose views to auto-show dropped-in cover.png images.
 
 (function () {
@@ -6,11 +6,11 @@
 
   // Insert an <img> into the given target that tries the asset folder's cover candidates.
   // Falls back to nothing (caller handles the emoji rendering already).
-  // Usage: SSDAssetImg.lazyInto(element, 'item', 'pipe', 80)
+  // Usage: DMTHAssetImg.lazyInto(element, 'item', 'pipe', 80)
   async function lazyInto(target, category, id, sizePx = 80) {
     if (!target) return;
     try {
-      const url = await window.SSDAssetLoader.resolveImageUrl(category, id);
+      const url = await window.DMTHAssetLoader.resolveImageUrl(category, id);
       if (url) {
         const img = document.createElement('img');
         img.src = url;
@@ -36,5 +36,5 @@
     });
   }
 
-  window.SSDAssetImg = Object.freeze({ lazyInto, decorate });
+  window.DMTHAssetImg = Object.freeze({ lazyInto, decorate });
 })();

@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — embedding memory via Ollama nomic-embed-text.
+// DUNGEON MASTER: THE HUNT — embedding memory via Ollama nomic-embed-text.
 // Embeds each turn, persists vectors in IDB, returns top-K most relevant past turns for prompt context.
 
 (function () {
@@ -8,7 +8,7 @@
   const TOP_K = 5;
   const MIN_TURN_LENGTH = 20;   // don't bother embedding very short turns
 
-  function cfg() { return window.SSDConfig.OLLAMA; }
+  function cfg() { return window.DMTHConfig.OLLAMA; }
 
   // One-time availability check, cached.  If the embed model isn't pulled OR the endpoint
   // doesn't exist on this Ollama build, we disable embedding entirely so we don't spam 404s.
@@ -85,7 +85,7 @@
       if (!vector) return null;
       const record = { girlId, role, text, ts: ts || Date.now(), vector };
       const key = `mem:${girlId}:${record.ts}`;
-      await window.SSDStorage.cache.put(key, record);
+      await window.DMTHStorage.cache.put(key, record);
       return key;
     } catch (err) {
       // Silent — embedding is optional enhancement
@@ -105,7 +105,7 @@
     if (!queryVec) return [];
 
     // Load all memory records for this girl
-    const all = await window.SSDStorage.cache.getAll();
+    const all = await window.DMTHStorage.cache.getAll();
     const records = (all || []).filter(r => r && r.girlId === girlId && r.vector);
     if (records.length === 0) return [];
 
@@ -123,8 +123,8 @@
     return await checkAvailability();
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.memoryEmbed = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.memoryEmbed = Object.freeze({
     embedText, cosine, recordTurn, retrieveRelevant, isAvailable, EMBED_MODEL, TOP_K
   });
 })();

@@ -1,15 +1,15 @@
-// SEX SLAVE DUNGEON — town plot-grid layout + slot-array hashing for env renders.
+// DUNGEON MASTER: THE HUNT — town plot-grid layout + slot-array hashing for env renders.
 
 (function () {
   'use strict';
 
-  // The canonical town plot grid — derived from SSDAssets.LOCATIONS gridPlacement.
+  // The canonical town plot grid — derived from DMTHAssets.LOCATIONS gridPlacement.
   function buildGrid() {
     const width = 5, height = 4;
     const slots = [];
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        const loc = window.SSDAssets.LOCATIONS.find(l => l.gridPlacement?.x === x && l.gridPlacement?.y === y);
+        const loc = window.DMTHAssets.LOCATIONS.find(l => l.gridPlacement?.x === x && l.gridPlacement?.y === y);
         if (loc) {
           slots.push({
             x, y,
@@ -49,6 +49,6 @@
     ].join(', ');
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.townPlot = Object.freeze({ buildGrid, hashGrid, renderPrompt });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.townPlot = Object.freeze({ buildGrid, hashGrid, renderPrompt });
 })();

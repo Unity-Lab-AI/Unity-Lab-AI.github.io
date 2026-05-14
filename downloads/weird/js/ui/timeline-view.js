@@ -1,12 +1,12 @@
-// SEX SLAVE DUNGEON — per-girl timeline / history view.
+// DUNGEON MASTER: THE HUNT — per-girl timeline / history view.
 
 (function () {
   'use strict';
 
   function render(el, params) {
-    const girl = window.SSDGame.state.getGirl(params.girl);
+    const girl = window.DMTHGame.state.getGirl(params.girl);
     if (!girl) { el.innerHTML = `<p>no such girl · <a href="#roster">Roster</a></p>`; return; }
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const events = buildEvents(girl, s);
 
     el.innerHTML = `
@@ -76,5 +76,5 @@
     return events;
   }
 
-  window.SSDRouter.register('timeline', render);
+  window.DMTHRouter.register('timeline', render);
 })();

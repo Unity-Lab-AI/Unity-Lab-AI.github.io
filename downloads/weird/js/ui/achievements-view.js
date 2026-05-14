@@ -1,16 +1,16 @@
-// SEX SLAVE DUNGEON — achievements page.
+// DUNGEON MASTER: THE HUNT — achievements page.
 
 (function () {
   'use strict';
 
   function render(el) {
-    const unlocked = window.SSDGame.achievements.unlocked();
-    const locked   = window.SSDGame.achievements.locked();
-    const s = window.SSDGame.state.current;
+    const unlocked = window.DMTHGame.achievements.unlocked();
+    const locked   = window.DMTHGame.achievements.locked();
+    const s = window.DMTHGame.state.current;
 
     el.innerHTML = `
       <div class="panel">
-        <h2>🏆 Achievements · ${unlocked.length}/${window.SSDGame.achievements.DEFINITIONS.length}</h2>
+        <h2>🏆 Achievements · ${unlocked.length}/${window.DMTHGame.achievements.DEFINITIONS.length}</h2>
       </div>
 
       <div class="panel">
@@ -40,5 +40,5 @@
     `;
   }
 
-  window.SSDRouter.register('achievements', render);
+  window.DMTHRouter.register('achievements', render);
 })();

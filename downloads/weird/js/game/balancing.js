@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — balancing. Tuned curves for economy, bond XP, escape, notoriety.
+// DUNGEON MASTER: THE HUNT — balancing. Tuned curves for economy, bond XP, escape, notoriety.
 
 (function () {
   'use strict';
@@ -24,18 +24,18 @@
 
   // Apply once at boot
   function applyBalancing() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     if (!s) return;
     if (s.tickCount < 2 && !s._balancingApplied) {
-      window.SSDGame.state.addMoney(50, 'balancing:starter-bonus');
+      window.DMTHGame.state.addMoney(50, 'balancing:starter-bonus');
       s._balancingApplied = true;
-      window.SSDGame.state.save();
+      window.DMTHGame.state.save();
     }
   }
 
   // Notoriety slow decay — called from tick
   function decayTick() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     if (!s) return;
     if (s.wallet.notoriety > 0) {
       // accumulate a fractional decay, apply when >= 1
@@ -53,6 +53,6 @@
     return CURVES.bondLevelXpRequired[Math.max(0, Math.min(9, level))];
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.balancing = Object.freeze({ applyBalancing, decayTick, xpForLevel, CURVES });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.balancing = Object.freeze({ applyBalancing, decayTick, xpForLevel, CURVES });
 })();

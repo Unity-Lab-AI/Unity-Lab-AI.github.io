@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — per-dungeon interior plot-grid.
+// DUNGEON MASTER: THE HUNT — per-dungeon interior plot-grid.
 
 (function () {
   'use strict';
@@ -44,7 +44,7 @@
       // Skip positions manually overridden by plotPlan
       if (plan[`${slots[i].x},${slots[i].y}`]) continue;
       const hold = dungeon.holds[holdIdx];
-      const assigned = hold.captiveGirlId ? window.SSDGame.state.getGirl(hold.captiveGirlId) : null;
+      const assigned = hold.captiveGirlId ? window.DMTHGame.state.getGirl(hold.captiveGirlId) : null;
       const roomItem = INTERIOR_ITEMS.find(t => t.id === (hold.roomType || 'room-basic'));
       slots[i] = {
         ...slots[i],
@@ -81,7 +81,7 @@
   }
 
   function renderPrompt(dungeon, grid) {
-    const tpl = window.SSDAssets.getById('dungeon', dungeon.templateId);
+    const tpl = window.DMTHAssets.getById('dungeon', dungeon.templateId);
     const filled = grid.slots.filter(s => s.filled);
     const items = filled.map(s => {
       const item = getItem(s.itemId);
@@ -103,25 +103,25 @@
   function placeFacility(dungeonId, x, y, itemId) {
     const item = getItem(itemId);
     if (!item) throw new Error('unknown item');
-    if (!window.SSDGame.state.spendMoney(item.cost, `facility:${itemId}:${dungeonId}`)) {
+    if (!window.DMTHGame.state.spendMoney(item.cost, `facility:${itemId}:${dungeonId}`)) {
       throw new Error('insufficient funds');
     }
-    const dungeon = window.SSDGame.state.getDungeon(dungeonId);
+    const dungeon = window.DMTHGame.state.getDungeon(dungeonId);
     const plan = { ...(dungeon.plotPlan || {}) };
     plan[`${x},${y}`] = itemId;
-    window.SSDGame.state.updateDungeon(dungeonId, { plotPlan: plan });
+    window.DMTHGame.state.updateDungeon(dungeonId, { plotPlan: plan });
     return { ok: true, cost: item.cost, itemId };
   }
 
   function removeFacility(dungeonId, x, y) {
-    const dungeon = window.SSDGame.state.getDungeon(dungeonId);
+    const dungeon = window.DMTHGame.state.getDungeon(dungeonId);
     const plan = { ...(dungeon.plotPlan || {}) };
     delete plan[`${x},${y}`];
-    window.SSDGame.state.updateDungeon(dungeonId, { plotPlan: plan });
+    window.DMTHGame.state.updateDungeon(dungeonId, { plotPlan: plan });
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.dungeonPlot = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.dungeonPlot = Object.freeze({
     INTERIOR_ITEMS, getItem, buildGrid, hashGrid, renderPrompt, placeFacility, removeFacility
   });
 })();

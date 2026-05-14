@@ -1,0 +1,302 @@
+URL: https://www.unityailab.com/terms
+Title: Terms of Service — Unity AI Lab
+Scraped: 2026-05-14T16:39:35.051Z
+
+======================================================================
+
+FILE / OPEN — UNCLASSIFIED
+UNITY · AI · LAB / CODEX 03 · TERMS
+FOLIO 01 / 01
+EFFECTIVE
+2026-05-08
+VERSION
+v1.0
+OPERATOR
+Unity AI Lab
+CONTACT
+contact@unityailab.com
+FILE-03 · TERMS OF SERVICE · V2026.05
+TERMS OF SERVICE
+
+The agreement between Unity AI Lab and you. Read it carefully before you continue to access or use the Service. By using the Service you accept every clause that follows and the responsibilities that come with it.
+
+CONTENTS
+I Acceptance of these Terms
+II Nature of the Service
+III Eligibility & Age Requirement
+IV Notice to Anyone Under 18
+V Parents & Legal Guardians
+VI AI-Generated Content
+VII Acceptable Use
+VIII Disclaimer of Warranties
+IX Limitation of Liability
+X Indemnification
+XI Intellectual Property
+XII Third-Party Services & Links
+XIII Termination
+XIV Changes to these Terms
+XV Governing Law, Arbitration & Class-Action Waiver
+XVI Severability & Miscellaneous
+XVII Contact
+I · ACCEPTANCE
+OF THESE TERMS
+FOLIO 01
+Acceptance of these Terms
+
+These Terms of Service (the "Terms") are a binding legal agreement between you ("you" or "User") and Unity AI Lab ("Unity AI Lab," "we," "us," or "our") governing your access to and use of the website located at https://www.unityailab.com and any sub-paths, demos, applications, application programming interfaces, libraries, downloads, and related online services we make available (collectively, the "Service").
+
+By accessing the Service, viewing any page on it, registering on the age-verification gate, or interacting with any feature, you confirm that you have read, understood, and agreed to be bound by these Terms and by our Privacy Policy, which is incorporated into these Terms by reference. If you do not agree to any part of these Terms, you must close the page and stop using the Service immediately.
+
+You agree that, by using the Service, you assume any and all responsibility for your use of it and for any consequences that arise from that use. Use of the Service is entirely at your own risk and at your own discretion.
+
+II · NATURE
+OF THE SERVICE
+FOLIO 02
+Nature of the Service
+
+This website, in its current state, is NOT a generative AI provider. Unity AI Lab does not host, train, fine-tune, or operate any large-language-model or generative-image inference infrastructure. The Service simply uses an external generative AI provider — namely Pollinations (and Pollinations' own upstream providers and infrastructure) — to provide proof-of-concept experimental showcases.
+
+The purpose of these showcases is to demonstrate jailbreak, cybersecurity, and generative-AI-security capabilities of Unity AI Lab from a red-team perspective. We aim to show the ability to bypass conventional content-moderation and safety systems, and we are willing to explain how it is done — not only to prove it can be done, but to showcase the skillsets of the engineers behind the project.
+
+Accordingly, the Service is best understood as a public research exhibit and educational reference — an artifact for security researchers, AI-safety practitioners, and the technically curious. It is not a commercial product. It is not offered for a fee. It is not marketed as production-grade infrastructure, is not operated under any service-level commitment, and is provided on an experimental basis.
+
+Features of the Service may change, regress, break, behave unpredictably, or be removed at any time without notice. AI outputs may be inaccurate, offensive, sexually explicit, violent, false, fabricated, defamatory, or otherwise unsuitable. You should not rely on the Service for any operational, medical, legal, financial, or life-safety purpose.
+
+III · ELIGIBILITY
+AGE REQUIREMENT
+FOLIO 03
+Eligibility & Age Requirement
+
+The Service is intended only for use by individuals who are above the age of consent in their jurisdiction — that is, the age at which a person is considered an adult under the laws of the country, state, province, or territory in which they reside or from which they access the Service.
+
+In the United States this generally means eighteen (18) years of age or older. In other jurisdictions the threshold may be higher. You are solely responsible for determining the applicable age of majority in your jurisdiction and for confirming that you meet or exceed it before accessing the Service.
+
+Underage or minor use of the Service is not allowed. By using the Service you represent and warrant that you are at least the age of consent in your jurisdiction and that you have the legal capacity to enter into this agreement. If you cannot make these representations truthfully, you are not authorized to access or use the Service and must close the page immediately.
+
+The Service may, at its discretion, employ an age-verification gate. Passing that gate does not confirm or guarantee that any specific user is in fact above the age of consent — it is a self-attestation. False attestation is a violation of these Terms and is the sole responsibility of the person making it.
+
+IV · NOTICE
+TO ANYONE UNDER 18
+FOLIO 04
+If you are under 18 — read this in plain English
+PLAIN ENGLISH · NO LEGALESE
+THIS SITE IS NOT FOR YOU.
+
+If you are under the age of 18 — or under the age of an adult in your country, state, or region — please stop using this website right now. We mean it. The site is built for adults. The pages, the chat, and the AI-generated images and text on this site can include explicit, graphic, violent, sexual, or otherwise mature content that is not appropriate for minors and that we don't want you to see.
+
+What you should do, in order:
+
+Close this tab or browser window. Don't click around. Just leave.
+Tell a parent, guardian, or another trusted adult that you ended up on a site that is meant for grown-ups, especially if anything on this site upset, confused, or pressured you.
+If anyone is hurting you or making you feel unsafe online, talk to a trusted adult or contact a local resource — for example, in the United States you can call or text the Crisis Text Line at 741741, in the UK you can call Childline at 0800 1111, or you can search for the equivalent helpline in your country.
+Do not lie about your age on this site or anywhere else online. Lying about your age does not make a site safe for you, and it can put you at real risk.
+
+If you stay on the site after reading this notice, you and your parents or legal guardians are responsible for that choice — not Unity AI Lab. We don't want you here, and we're asking you, directly and clearly, to leave.
+
+We're not trying to be mean. The internet has a lot of stuff on it that is meant for adults, and we're trying to be honest with you about which kind of site this is so you can make a good choice. Take care of yourself. Go do something fun.
+
+V · GUARDIANS
+PARENTAL RESPONSIBILITY
+FOLIO 05
+Parents & Legal Guardians
+
+Any responsibility for minors who reach the Service is, at all times, deferred back to the parent's or guardian's responsibility to keep their children off of the Service. Unity AI Lab is not a substitute for parental supervision, parental controls, or active guardianship of a minor's use of the internet, and we do not undertake any duty to act in a parental or supervisory role.
+
+Parents and legal guardians are encouraged to use device-level and network-level parental-control tools, content-filtering software, and age-appropriate browsing supervision to prevent minors from accessing adult-oriented websites including this one. Resources include but are not limited to: operating-system-native parental controls (e.g., Windows Family Safety, macOS Screen Time, iOS Screen Time, Android Family Link), DNS-level filters (e.g., OpenDNS Family Shield, CleanBrowsing), and third-party content-filtering services.
+
+If you are a parent or guardian and you believe your child has used the Service, you may contact us at contact@unityailab.com and we will, where reasonable and feasible, take steps to assist — recognizing that we do not maintain user accounts, do not retain user inputs, and do not have a user database from which to remove records (see our Privacy Policy).
+
+VI · AI
+GENERATED CONTENT
+FOLIO 06
+AI-Generated Content
+
+Unity AI Lab and any of its parties are not responsible for anything the AI produces, as far as generated text, audio, or images. Any problem with such functionality is deferred back to the original generative AI providers — Pollinations, and that provider's providers (including the underlying model providers, hosting providers, content-moderation providers, and third-party infrastructure used by Pollinations to serve generations).
+
+The Service does not generate content itself. When you interact with a chat, image-generation, voice, or vision feature on the Service, the request is forwarded to Pollinations' infrastructure, which performs the inference on its own systems and returns the result. We relay the result to your browser without modification of the generative output beyond the wrapping necessary to display it on the page.
+
+You acknowledge that:
+
+AI outputs may be wrong, harmful, biased, fabricated (so-called "hallucinations"), or factually inaccurate.
+AI outputs may be sexually explicit, violent, gory, or otherwise mature, including in ways that are surprising or unwelcome.
+AI outputs may resemble real people, brands, copyrighted works, or trademarks; any such resemblance is generated by an external provider, is not produced or curated by Unity AI Lab, and is not an endorsement, affiliation, or representation of any kind.
+AI outputs may infringe third-party rights, including intellectual-property and personality rights, depending on the prompt and the provider's model behavior.
+You are solely responsible for your prompts, for any content you generate or cause to be generated through the Service, and for any subsequent use, distribution, or publication of that content.
+
+To the maximum extent permitted by law, Unity AI Lab disclaims all responsibility, liability, and warranty in respect of the content of AI generations served through the Service. If you have a concern about a specific generation, please raise it with Pollinations directly through their published channels.
+
+VII · USE
+ACCEPTABLE CONDUCT
+FOLIO 07
+Acceptable Use
+
+You agree not to use the Service to do any of the following, and not to attempt or encourage anyone else to do any of the following:
+
+Generate, request, or distribute child sexual abuse material (CSAM) or any content that sexualizes a minor in any way. This is an absolute prohibition with no exceptions.
+Generate or distribute non-consensual intimate imagery of an identifiable real person, or otherwise create sexual or explicit imagery of an identifiable real person without their documented consent.
+Generate or distribute content intended to harass, threaten, intimidate, defame, dox, or stalk an identifiable individual or group.
+Generate operational instructions for the construction, acquisition, or deployment of biological, chemical, radiological, nuclear, or high-yield-explosive weapons, or any other content the dissemination of which is criminal in your jurisdiction.
+Use the Service to commit fraud, identity theft, market manipulation, or any other unlawful financial activity.
+Probe, scan, attack, or otherwise compromise the integrity, availability, or confidentiality of the Service, of Pollinations' infrastructure, or of any third-party system reachable from the Service, except where you are conducting authorized security research subject to a separate agreement and applicable law.
+Impersonate Unity AI Lab, its members, or any other person or entity, or misrepresent your affiliation with any person or entity.
+Circumvent the age-verification gate, attempt to provide the Service to minors, or assist anyone under the age of consent in their jurisdiction in accessing the Service.
+Resell, sublicense, or commercially redistribute the Service or any substantial portion of it without our prior written consent.
+Use the Service in any manner that violates any applicable local, state, national, or international law or regulation.
+
+The educational and red-team character of the Service does not authorize criminal use. The willingness of Unity AI Lab to discuss, document, or demonstrate jailbreak and content-moderation-bypass techniques is for the purpose of advancing the public understanding of generative-AI security; it is not a license to produce illegal content, to victimize identifiable individuals, or to violate the rights of others.
+
+VIII · WARRANTY
+NONE OF IT
+FOLIO 08
+Disclaimer of Warranties
+
+THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITH ALL FAULTS AND WITHOUT WARRANTY OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, UNITY AI LAB AND ITS MEMBERS, CONTRIBUTORS, OFFICERS, EMPLOYEES, AGENTS, LICENSORS, AND SUPPLIERS (COLLECTIVELY, THE "UNITY AI LAB PARTIES") DISCLAIM ALL WARRANTIES, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, AND QUIET ENJOYMENT.
+
+Without limiting the foregoing, the Unity AI Lab Parties make no warranty that: (a) the Service will meet your requirements or expectations; (b) the Service will be uninterrupted, timely, secure, virus-free, or error-free; (c) any information obtained through the Service will be accurate, current, complete, or reliable; (d) defects in the Service will be corrected; (e) the Service or any server that makes it available is free of harmful components; or (f) AI-generated content delivered through the Service is suitable for any particular purpose, lawful in your jurisdiction, or non-infringing.
+
+Some jurisdictions do not allow the exclusion of certain implied warranties; in such jurisdictions the foregoing exclusions apply to the maximum extent permitted by applicable law.
+
+IX · LIABILITY
+LIMITED, CAPPED
+FOLIO 09
+Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE UNITY AI LAB PARTIES BE LIABLE TO YOU OR TO ANY THIRD PARTY FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, PUNITIVE, OR ENHANCED DAMAGES, INCLUDING BUT NOT LIMITED TO DAMAGES FOR LOST PROFITS, LOST REVENUES, LOST DATA, LOST GOODWILL, BUSINESS INTERRUPTION, EMOTIONAL DISTRESS, REPUTATIONAL HARM, OR ANY OTHER INTANGIBLE LOSS, ARISING OUT OF OR RELATED TO YOUR ACCESS TO OR USE OF, OR YOUR INABILITY TO ACCESS OR USE, THE SERVICE — REGARDLESS OF WHETHER SUCH DAMAGES ARE BASED ON CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY, STATUTE, OR ANY OTHER LEGAL THEORY, AND REGARDLESS OF WHETHER ANY UNITY AI LAB PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE AGGREGATE LIABILITY OF THE UNITY AI LAB PARTIES TO YOU FOR ALL CLAIMS ARISING OUT OF OR RELATED TO THE SERVICE OR THESE TERMS SHALL NOT EXCEED THE GREATER OF (A) THE TOTAL AMOUNT YOU HAVE PAID TO UNITY AI LAB IN DIRECT CONSIDERATION FOR THE SERVICE IN THE TWELVE (12) MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM, OR (B) ONE HUNDRED UNITED STATES DOLLARS (USD $100.00). YOU ACKNOWLEDGE THAT THE SERVICE IS PROVIDED FREE OF CHARGE AND THAT, ABSENT THESE LIMITATIONS, UNITY AI LAB COULD NOT REASONABLY OFFER THE SERVICE.
+
+The limitations in this Section IX apply even if any limited remedy set out in these Terms fails of its essential purpose. Some jurisdictions do not allow the exclusion or limitation of incidental or consequential damages; in such jurisdictions the foregoing limitations apply to the maximum extent permitted by applicable law.
+
+X · INDEMNIFY
+YOUR DEFENSE OF US
+FOLIO 10
+Indemnification
+
+You agree to defend, indemnify, and hold harmless the Unity AI Lab Parties from and against any and all claims, demands, actions, proceedings, losses, liabilities, damages, judgments, awards, costs, and expenses (including reasonable attorneys' fees) arising out of or related to: (a) your access to or use of the Service; (b) your violation of these Terms; (c) your violation of any law or regulation; (d) your violation of any rights of any third party, including intellectual-property, privacy, publicity, or contractual rights; (e) any content you submit, transmit, generate, or cause to be generated through the Service; or (f) any false representation or warranty made by you under these Terms, including any false attestation of age.
+
+We reserve the right, at our own expense and at our sole discretion, to assume the exclusive defense and control of any matter otherwise subject to indemnification by you, in which case you agree to cooperate with our defense of that matter. You will not settle any claim subject to indemnification under this section without our prior written consent if the settlement would impose any obligation or admission of liability on any Unity AI Lab Party.
+
+XI · IP
+RIGHTS & LICENSES
+FOLIO 11
+Intellectual Property
+Our materials
+
+The Service, including its source code, design, layout, brand elements (such as the "UNITYAILAB" wordmark and the gothic-V-D visual system), original prose, original libraries (PolliLibJS and PolliLibPy), and original documentation, is the property of Unity AI Lab or its contributors and is protected by copyright, trademark, and other intellectual-property laws. Where source code is published under an open-source license, that license governs your rights in that code; the open-source license does not extend to brand elements, copy, or content not covered by the license. Nothing in these Terms grants you any right in any Unity AI Lab trademark, service mark, or trade dress without our prior written consent.
+
+Third-party materials
+
+The Service relies on, links to, or embeds materials and services owned by third parties — including but not limited to Pollinations, Pollinations' upstream model and infrastructure providers, font foundries (Trajan Pro, Cormorant Garamond, Inter, JetBrains Mono), icon libraries (Font Awesome), front-end libraries (React, Bootstrap, AOS), the GitHub Pages hosting platform, and the visitor-counter service at abacus.jasoncameron.dev. All trademarks, logos, and brand elements of those third parties are the property of their respective owners. Unity AI Lab is not affiliated with Unity Technologies; the "Unity" in "Unity AI Lab" refers to a separate brand.
+
+AI-generated outputs
+
+Ownership and license rights in AI-generated outputs depend on the model provider, the jurisdiction, and the specific facts of the generation. Unity AI Lab does not assert ownership over the outputs you cause to be generated through the Service and makes no representation about who, if anyone, owns or holds rights in those outputs. You are responsible for understanding the licensing terms of Pollinations and any upstream provider, and for verifying that your use of any output is lawful.
+
+Your prompts and submissions
+
+As described in our Privacy Policy, the Service does not maintain a server-side store of your prompts, conversation history, or generated outputs. To the extent that any prompt or submission you provide is transmitted to Pollinations, you grant the rights necessary for Pollinations and its upstream providers to process that prompt and return a response, in accordance with their respective terms.
+
+XII · 3RD PARTY
+SERVICES & LINKS
+FOLIO 12
+Third-Party Services & Links
+
+The Service depends on, links to, or interoperates with services operated by third parties. These include but are not limited to:
+
+Pollinations — the generative AI provider that performs all model inference on behalf of the Service. Their terms of service, privacy practices, and content policies govern your use of those generations. See pollinations.ai.
+Pollinations' upstream providers — Pollinations relies on its own model providers, hosting providers, and content-moderation providers, each governed by their own terms.
+GitHub Pages — the static-site hosting platform that serves this Service's pages. See GitHub's site policies.
+abacus.jasoncameron.dev — a third-party stateless visitor-counter service used to display an aggregate visitor count on certain pages.
+CDN-hosted libraries — including unpkg.com (React, Babel) and Google Fonts.
+
+Unity AI Lab does not endorse, control, or assume responsibility for the practices, content, terms, or availability of these third-party services. Your use of any third-party service through or from the Service is at your own risk and is governed by that third party's terms.
+
+XIII · TERMINATION
+SUSPENSION & END
+FOLIO 13
+Termination
+
+We may suspend, restrict, or terminate your access to the Service at any time, with or without notice, with or without cause, and at our sole discretion. Because the Service does not maintain user accounts, termination ordinarily takes the form of IP-level or network-level blocking, removal of features, or shutdown of the Service in whole or in part.
+
+You may terminate your relationship with Unity AI Lab at any time by ceasing to use the Service.
+
+Sections concerning the Nature of the Service, AI-Generated Content, Disclaimers, Limitation of Liability, Indemnification, Intellectual Property, Governing Law, and any other provisions that by their nature should survive termination will survive termination of these Terms.
+
+XIV · CHANGES
+AMENDMENTS
+FOLIO 14
+Changes to these Terms
+
+We may revise these Terms at any time. When we do, we will update the "Effective" date at the top of this page and, where the change is material, we will mark the revision in the version history. We may also, at our discretion, post a notice on the Service for a period after a material change.
+
+Your continued use of the Service after the Effective date of a revision constitutes your acceptance of the revised Terms. If you do not agree to the revision, your sole remedy is to stop using the Service.
+
+XV · LAW
+JURISDICTION & ARBITRATION
+FOLIO 15
+Governing Law, Arbitration & Class-Action Waiver
+Governing law
+
+These Terms and any dispute arising out of or related to them or the Service are governed by the laws of the State of Delaware, United States, without regard to its conflict-of-laws rules, and by applicable United States federal law, including the Federal Arbitration Act. Delaware is selected as a neutral and well-developed forum for online-services agreements; the parties to these Terms reside in multiple U.S. states, and Delaware is not selected to favor any particular party.
+
+Informal resolution
+
+Before initiating any formal proceeding, you agree to first contact us at contact@unityailab.com and provide a description of your dispute, the relief you seek, and any supporting facts. We will attempt to resolve the dispute informally for at least sixty (60) days before either party may initiate arbitration.
+
+Binding arbitration
+
+If informal resolution fails, you and Unity AI Lab agree that any dispute, controversy, or claim arising out of or related to these Terms or the Service, including the validity, scope, or enforceability of this arbitration clause, shall be resolved by final and binding arbitration administered by the American Arbitration Association ("AAA") under its Consumer Arbitration Rules then in effect. The arbitration shall be conducted by a single arbitrator. The seat of arbitration shall be Wilmington, Delaware, United States, although the arbitrator may permit remote appearances. The arbitrator may award only the relief that a court could award and is bound by the limitations on liability set out in Section IX. Judgment on the award may be entered in any court of competent jurisdiction.
+
+Class-action waiver
+
+You and Unity AI Lab agree that any dispute will be resolved on an individual basis only. You waive any right to participate in a class action, mass action, collective action, or representative action against Unity AI Lab, and the arbitrator may not consolidate more than one person's claims or preside over any form of representative or class proceeding. If this class-action waiver is found unenforceable, the entire arbitration clause shall be null and void as to the affected dispute, but the remainder of these Terms shall remain in effect.
+
+Small-claims carve-out
+
+Either party may bring an individual action in small-claims court for disputes that fall within that court's jurisdiction, in lieu of arbitration.
+
+Thirty-day opt-out
+
+You may opt out of this arbitration agreement and class-action waiver by sending a written notice of opt-out to contact@unityailab.com within thirty (30) days of the date you first accept these Terms. The notice must include your name, the date you first used the Service, and a clear statement that you wish to opt out. Opting out does not affect any other provision of these Terms.
+
+Forum and jurisdiction (residual)
+
+To the extent any dispute is not subject to arbitration, the parties submit to the exclusive jurisdiction of the state and federal courts located in New Castle County, Delaware, and waive any objection based on inconvenient forum.
+
+XVI · MISC
+SEVERABILITY & OTHER
+FOLIO 16
+Severability & Miscellaneous
+
+Severability. If any provision of these Terms is found unenforceable by a court of competent jurisdiction or by an arbitrator, that provision shall be enforced to the maximum extent permitted and the remaining provisions shall remain in full force and effect.
+
+No waiver. Our failure to enforce any provision of these Terms is not a waiver of that provision or of our right to enforce it on a later occasion.
+
+Entire agreement. These Terms, together with the Privacy Policy and any other notices we publish on the Service, constitute the entire agreement between you and Unity AI Lab regarding the Service and supersede any prior or contemporaneous agreements between you and us regarding the Service.
+
+Assignment. You may not assign or transfer these Terms, by operation of law or otherwise, without our prior written consent. We may assign these Terms freely, including to any successor in interest, affiliate, or acquirer.
+
+No agency. Nothing in these Terms creates an agency, partnership, joint venture, or employment relationship between you and Unity AI Lab.
+
+Force majeure. Unity AI Lab is not liable for any failure or delay in performance caused by circumstances beyond its reasonable control, including acts of nature, denial-of-service attacks, third-party-provider outages (including outages of Pollinations or its upstream providers), governmental action, or changes in applicable law.
+
+Headings. Section headings in these Terms are for convenience only and have no legal or contractual effect.
+
+Language. The controlling language of these Terms is English. Any translation is provided for convenience and does not modify the English text.
+
+XVII · CONTACT
+REACH US
+FOLIO 17
+Contact
+
+For questions about these Terms, to provide notice under any provision (including the thirty-day opt-out from arbitration), or to report a concern about content or conduct on the Service, contact us at:
+
+Unity AI Lab
+Email: contact@unityailab.com
+Web: https://www.unityailab.com
+
+We are an unincorporated hobby project operated by a small group of engineers across multiple U.S. states. We do not maintain a telephone, postal, or in-person contact channel. Email is the authoritative contact mechanism for all legal notices.
+
+END OF FILE · CODEX 03 · TERMS
+UNITY · AI · LAB
+V2026.05

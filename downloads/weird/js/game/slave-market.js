@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — slave-market buy/sell (player + NPC buyers).
+// DUNGEON MASTER: THE HUNT — slave-market buy/sell (player + NPC buyers).
 
 (function () {
   'use strict';
@@ -14,28 +14,28 @@
   }
 
   function listForSale(girlId, price) {
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) throw new Error('no such girl');
     const finalPrice = price || computeSellPrice(girl);
-    window.SSDGame.state.listGirlForSale(girl.id, finalPrice);
+    window.DMTHGame.state.listGirlForSale(girl.id, finalPrice);
     return { ok: true, listed: girl.id, price: finalPrice };
   }
 
   function unlistForSale(girlId) {
-    window.SSDGame.state.unlistGirl(girlId);
+    window.DMTHGame.state.unlistGirl(girlId);
     return { ok: true };
   }
 
   // Roll NPC market listings.
   function refreshAvailable() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const count = 3 + Math.floor(Math.random() * 3);
     const archetypes = ['library','club','street','sorority','gym','barista'];
     const available = [];
     for (let i = 0; i < count; i++) {
       const arche = archetypes[Math.floor(Math.random() * archetypes.length)];
       const seed = Math.floor(Math.random() * 0x7FFFFFFF);
-      const girl = window.SSDGame.girlGen.generate(arche, seed);
+      const girl = window.DMTHGame.girlGen.generate(arche, seed);
       girl.bond.bondLevel = Math.floor(Math.random() * 6);     // random prior training
       girl.bond.bondXP = girl.bond.bondLevel * 50;
       girl.encounterState = 'market-available';
@@ -46,13 +46,13 @@
   }
 
   function buyFromNpc(listingIdx) {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const listing = s.slaveMarket.available[listingIdx];
     if (!listing) throw new Error('no such listing');
-    const ok = window.SSDGame.state.spendMoney(listing.price, `buy-girl:${listing.girl.id}`);
+    const ok = window.DMTHGame.state.spendMoney(listing.price, `buy-girl:${listing.girl.id}`);
     if (!ok) throw new Error('insufficient funds');
     // Escort to open hold in active dungeon
-    const result = window.SSDGame.hunt.escortToHold(listing.girl, s.settings.activeDungeonId);
+    const result = window.DMTHGame.hunt.escortToHold(listing.girl, s.settings.activeDungeonId);
     s.slaveMarket.available.splice(listingIdx, 1);
     s.slaveMarket.recentSales.push({ direction: 'bought', girlId: listing.girl.id, price: listing.price, at: Date.now() });
     return { ok: true, dungeonId: result.dungeonId, holdIdx: result.holdIdx };
@@ -60,22 +60,22 @@
 
   // Tick — does anyone buy one of the player's listings?
   function runBuyerTick() {
-    const s = window.SSDGame.state.current;
+    const s = window.DMTHGame.state.current;
     const sold = [];
     for (const listing of s.slaveMarket.listed.slice()) {
       if (Math.random() < 0.18) {
         const finalPrice = Math.round(listing.price * (0.85 + Math.random() * 0.25));
-        const girl = window.SSDGame.state.getGirl(listing.girlId);
+        const girl = window.DMTHGame.state.getGirl(listing.girlId);
         if (!girl) continue;
         // Free her hold
-        const dungeon = window.SSDGame.state.getDungeon(girl.assignedDungeonId);
+        const dungeon = window.DMTHGame.state.getDungeon(girl.assignedDungeonId);
         if (dungeon) {
           const newHolds = dungeon.holds.map(h => h.captiveGirlId === girl.id ? { ...h, captiveGirlId: null } : h);
-          window.SSDGame.state.updateDungeon(dungeon.id, { holds: newHolds });
+          window.DMTHGame.state.updateDungeon(dungeon.id, { holds: newHolds });
         }
-        window.SSDGame.state.removeGirl(girl.id);
-        window.SSDGame.state.unlistGirl(girl.id);
-        window.SSDGame.state.addMoney(finalPrice, `sold-girl:${girl.id}`);
+        window.DMTHGame.state.removeGirl(girl.id);
+        window.DMTHGame.state.unlistGirl(girl.id);
+        window.DMTHGame.state.addMoney(finalPrice, `sold-girl:${girl.id}`);
         s.slaveMarket.recentSales.push({ direction: 'sold', girlId: girl.id, girlName: girl.name, price: finalPrice, at: Date.now() });
         sold.push({ girlId: girl.id, price: finalPrice });
       }
@@ -83,8 +83,8 @@
     return sold;
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.slaveMarket = Object.freeze({
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.slaveMarket = Object.freeze({
     computeSellPrice, listForSale, unlistForSale, refreshAvailable, buyFromNpc, runBuyerTick
   });
 })();

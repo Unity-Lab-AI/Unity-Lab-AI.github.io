@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — runtime detector.
+// DUNGEON MASTER: THE HUNT — runtime detector.
 // Checks the status of every prerequisite on every visit:
 //   - Ollama reachable?
 //   - Preset models pulled?
@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  const cfg = () => window.SSDConfig;
+  const cfg = () => window.DMTHConfig;
 
   // --- OS detection ---
   function detectOS() {
@@ -53,9 +53,9 @@
   }
 
   // --- Kokoro probe ---
-  // Kokoro-js loaded state lives on window.SSDKokoro (see setup/kokoro.js)
+  // Kokoro-js loaded state lives on window.DMTHKokoro (see setup/kokoro.js)
   function probeKokoro() {
-    const k = window.SSDKokoro;
+    const k = window.DMTHKokoro;
     if (!k) return { loaded: false, reason: 'not-loaded' };
     return {
       loaded: k.isReady(),
@@ -67,8 +67,8 @@
   // --- Storage probe ---
   async function probeStorage() {
     try {
-      await window.SSDStorage.save.put('__probe__', { at: Date.now() });
-      await window.SSDStorage.save.del?.('__probe__');
+      await window.DMTHStorage.save.put('__probe__', { at: Date.now() });
+      await window.DMTHStorage.save.del?.('__probe__');
       return { ready: true };
     } catch (err) {
       return { ready: false, reason: String(err?.message || err) };
@@ -97,9 +97,9 @@
     let activeModelHealth = 'skipped';
     let healthDiagnosis = null;
     if (modelPresent && !opts.skipHealthProbe) {
-      if (window.SSDOllamaRepair) {
+      if (window.DMTHOllamaRepair) {
         try {
-          const probe = await window.SSDOllamaRepair.probeModelHealth(preset);
+          const probe = await window.DMTHOllamaRepair.probeModelHealth(preset);
           activeModelHealth = probe.status;
           healthDiagnosis = probe.diagnosis;
         } catch (err) {
@@ -139,7 +139,7 @@
     };
   }
 
-  window.SSDDetector = Object.freeze({
+  window.DMTHDetector = Object.freeze({
     detectOS,
     probeOllama,
     probeOllamaModelPresent,

@@ -1,17 +1,17 @@
-// SEX SLAVE DUNGEON — Ollama HTTP client with streaming + prompt assembly.
+// DUNGEON MASTER: THE HUNT — Ollama HTTP client with streaming + prompt assembly.
 
 (function () {
   'use strict';
 
-  function cfg() { return window.SSDConfig.OLLAMA; }
+  function cfg() { return window.DMTHConfig.OLLAMA; }
 
   // Build the system prompt from persona scaffolding + girl overlay + mode + scene.
   function buildSystemPrompt(girl, mode, sceneKey, sceneVars) {
-    return window.SSDTemplates.buildSystemPrompt(girl, mode, sceneKey, sceneVars);
+    return window.DMTHTemplates.buildSystemPrompt(girl, mode, sceneKey, sceneVars);
   }
 
   function buildContextBlock(girl, girlState, room, recentTurns, memory) {
-    return window.SSDTemplates.buildContextBlock(girl, girlState, room, recentTurns, memory);
+    return window.DMTHTemplates.buildContextBlock(girl, girlState, room, recentTurns, memory);
   }
 
   function baseOptions() {
@@ -56,7 +56,7 @@
   async function buildOllamaError(res, modelId) {
     let bodyText = '';
     try { bodyText = await res.text(); } catch {}
-    const repair = window.SSDOllamaRepair;
+    const repair = window.DMTHOllamaRepair;
     const errMsg = repair ? repair.parseErrorBody(bodyText) : bodyText;
     const classification = repair
       ? repair.classifyError(res.status, errMsg, modelId)
@@ -92,7 +92,7 @@
     const data = await res.json();
     // Non-stream path trusts num_predict + stop sequences; no post-truncation.
     const raw = data.message?.content || '';
-    const parsed = window.SSDTemplates.extractDelta(raw);
+    const parsed = window.DMTHTemplates.extractDelta(raw);
     return { raw, parsed };
   }
 
@@ -145,9 +145,14 @@
         if (chunk) { raw += chunk; if (onChunk) onChunk(chunk, raw); }
       } catch {}
     }
-    // DO NOT truncate the streamed response — user already watched it arrive.
-    // num_predict in baseOptions() caps length at the model level. Trust the stream.
-    const parsed = window.SSDTemplates.extractDelta(raw);
+    // No post-stream truncation. Earlier this function clipped the model's response
+    // to 3 sentences / 50 words to enforce the SPEECH-FIRST RULE shape, but that
+    // produced a visible "collapse" — the live stream showed the model's full reply,
+    // and then the bubble snapped to a shortened version once parsing finished.
+    // The model now chooses its own length; the scrubbers in extractDelta still
+    // strip system-prompt leakage + third-person Master narration, but never trim
+    // for length.
+    const parsed = window.DMTHTemplates.extractDelta(raw);
     return { raw, parsed };
   }
 
@@ -155,34 +160,49 @@
   async function runTurn({ girl, mode, sceneKey, sceneVars, userText, room, onChunk }) {
     const system = buildSystemPrompt(girl, mode, sceneKey, sceneVars);
     const girlState = { body: girl.body, mood: girl.mood, bond: girl.bond, stats: girl.stats };
-    const recentTurns = window.SSDGame.state.getTurns(girl.id, 6).map(t => ({ role: t.role, text: t.text }));
+    const recentTurns = window.DMTHGame.state.getTurns(girl.id, 6).map(t => ({ role: t.role, text: t.text }));
 
     // Retrieve top-K relevant past memories via embedding (fire-and-forget, best-effort)
     let memory = [];
     try {
-      if (window.SSDGame.memoryEmbed) {
-        const relevant = await window.SSDGame.memoryEmbed.retrieveRelevant(girl.id, userText, 5);
+      if (window.DMTHGame.memoryEmbed) {
+        const relevant = await window.DMTHGame.memoryEmbed.retrieveRelevant(girl.id, userText, 5);
         memory = relevant.map(r => `[${r.role}, ${new Date(r.ts).toLocaleDateString()}] ${r.text}`);
       }
     } catch {}
 
     const context = buildContextBlock(girl, girlState, room, recentTurns, memory);
+    // Restructure so Master's action is the FIRST and LAST thing the model sees in the
+    // user message. Recent context goes in the middle as supporting state, but the action
+    // is bookended for prominence. Previous structure buried the action below the long
+    // context block — the model latched onto generic body state and ignored the specific
+    // act, producing replies like "your hands feel real" when the action was "spit in
+    // her mouth". The bookend pattern forces specific reaction.
     const messages = [
-      { role: 'user', content: `${context}\n\n---\n\nMaster: ${userText}` }
+      { role: 'user', content:
+`MASTER JUST DID THIS — react to this EXACT act, name what he did, describe how it lands on YOUR specific body part(s) he touched, how you respond physically + verbally in this moment. Do NOT respond generically. Do NOT recycle body state unrelated to this act.
+
+>>> ${userText} <<<
+
+(supporting context — current body / bond / drugs / location / recent turns):
+${context}
+
+NOW REACT — to the line between >>> <<< above. Your reply names what he did and reacts specifically. End with the <delta> block.`
+      }
     ];
     const result = await chatStream({ system, messages, onChunk });
 
     // Record this turn + response for future retrieval (fire-and-forget)
-    if (window.SSDGame.memoryEmbed && userText) {
-      window.SSDGame.memoryEmbed.recordTurn(girl.id, 'user', userText).catch(() => {});
+    if (window.DMTHGame.memoryEmbed && userText) {
+      window.DMTHGame.memoryEmbed.recordTurn(girl.id, 'user', userText).catch(() => {});
     }
     const clean = (result.parsed.cleanText || result.raw).trim();
-    if (window.SSDGame.memoryEmbed && clean) {
-      window.SSDGame.memoryEmbed.recordTurn(girl.id, 'assistant', clean).catch(() => {});
+    if (window.DMTHGame.memoryEmbed && clean) {
+      window.DMTHGame.memoryEmbed.recordTurn(girl.id, 'assistant', clean).catch(() => {});
     }
     return result;
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.ollama = Object.freeze({ chat, chatStream, runTurn, buildSystemPrompt, buildContextBlock, truncateResponse });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.ollama = Object.freeze({ chat, chatStream, runTurn, buildSystemPrompt, buildContextBlock, truncateResponse });
 })();

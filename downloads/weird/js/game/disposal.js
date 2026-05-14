@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — disposal. Bury / incinerate / release / trade / finalization-film / lose-at-sea.
+// DUNGEON MASTER: THE HUNT — disposal. Bury / incinerate / release / trade / finalization-film / lose-at-sea.
 
 (function () {
   'use strict';
@@ -61,24 +61,24 @@
   };
 
   function dispose(girlId, method) {
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) throw new Error('no such girl');
     const m = METHODS[method];
     if (!m) throw new Error('unknown method');
 
     // Cost check
     if (m.moneyCost > 0) {
-      const ok = window.SSDGame.state.spendMoney(m.moneyCost, `dispose:${method}`);
+      const ok = window.DMTHGame.state.spendMoney(m.moneyCost, `dispose:${method}`);
       if (!ok) throw new Error('insufficient funds for disposal method');
     }
 
-    const dungeon = window.SSDGame.state.getDungeon(girl.assignedDungeonId);
-    const dungeonTpl = dungeon && window.SSDAssets.getById('dungeon', dungeon.templateId);
+    const dungeon = window.DMTHGame.state.getDungeon(girl.assignedDungeonId);
+    const dungeonTpl = dungeon && window.DMTHAssets.getById('dungeon', dungeon.templateId);
 
     // Trade route — list on slave market instead of delete
     if (method === 'trade') {
       const price = Math.round(50 + (girl.bond.bondLevel * 30) + (girl.stats.obedience || 0) * 1.5);
-      window.SSDGame.state.listGirlForSale(girl.id, price);
+      window.DMTHGame.state.listGirlForSale(girl.id, price);
       return { ok: true, method, listedPrice: price };
     }
 
@@ -86,8 +86,8 @@
     let generatedFilmId = null;
     if (m.generatesFilm) {
       try {
-        window.SSDGame.film.startRecording(girl.id, ['finalization']);
-        const film = window.SSDGame.film.stopRecording({ title: `${girl.name}: The End`, basePrice: 500 });
+        window.DMTHGame.film.startRecording(girl.id, ['finalization']);
+        const film = window.DMTHGame.film.stopRecording({ title: `${girl.name}: The End`, basePrice: 500 });
         generatedFilmId = film.id;
       } catch {}
     }
@@ -95,12 +95,12 @@
     // Free the hold
     if (dungeon) {
       const newHolds = dungeon.holds.map(h => h.captiveGirlId === girl.id ? { ...h, captiveGirlId: null } : h);
-      window.SSDGame.state.updateDungeon(dungeon.id, { holds: newHolds });
+      window.DMTHGame.state.updateDungeon(dungeon.id, { holds: newHolds });
     }
 
     // Log the disposal
     const notorietyDelta = m.notorietyFactor(girl, dungeonTpl);
-    window.SSDGame.state.addNotoriety(notorietyDelta);
+    window.DMTHGame.state.addNotoriety(notorietyDelta);
     const log = {
       girlId: girl.id,
       girlNameAtDisposal: girl.name,
@@ -113,10 +113,10 @@
       finalBondLevel: girl.bond.bondLevel,
       generatedFilmId
     };
-    window.SSDGame.state.addDisposal(log);
+    window.DMTHGame.state.addDisposal(log);
 
     // Remove from roster
-    window.SSDGame.state.removeGirl(girl.id);
+    window.DMTHGame.state.removeGirl(girl.id);
 
     return { ok: true, method, log, generatedFilmId };
   }
@@ -131,10 +131,10 @@
     }[method];
     if (!sceneKey) return null;
     try {
-      const system = window.SSDTemplates.buildSystemPrompt(girl, 'sexy', sceneKey, {
+      const system = window.DMTHTemplates.buildSystemPrompt(girl, 'sexy', sceneKey, {
         BOND_LEVEL: girl.bond.bondLevel
       });
-      const { raw, parsed } = await window.SSDGame.ollama.chatStream({
+      const { raw, parsed } = await window.DMTHGame.ollama.chatStream({
         system,
         messages: [{ role: 'user', content: '(final beat — narrate from first-person POV)' }]
       });
@@ -144,6 +144,6 @@
     }
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.disposal = Object.freeze({ METHODS, dispose, narrateDisposal });
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.disposal = Object.freeze({ METHODS, dispose, narrateDisposal });
 })();

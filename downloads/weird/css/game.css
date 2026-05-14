@@ -1,4 +1,4 @@
-/* SEX SLAVE DUNGEON — game page styles. Layered on top of landing.css. */
+/* DUNGEON MASTER: THE HUNT — game page styles. Layered on top of landing.css. */
 
 .app-chrome {
   position: sticky; top: 0; z-index: 50;
@@ -7,7 +7,9 @@
   display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
 }
 .chrome-brand { font-family: var(--mono); letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
-.chrome-money { font-family: var(--mono); color: var(--ok); margin-left: auto; }
+.chrome-money { font-family: var(--mono); color: var(--ok); }
+.chrome-satisfaction { font-family: var(--mono); padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: rgba(255,122,168,0.08); font-size: 0.88rem; letter-spacing: 0.04em; }
+.chrome-clock { font-family: var(--mono); color: var(--warn); margin-left: auto; padding: 4px 12px; border: 1px solid var(--border); border-radius: 6px; background: rgba(255,184,74,0.08); font-size: 0.88rem; letter-spacing: 0.04em; }
 .chrome-nav   { display: flex; gap: 8px; flex-wrap: wrap; }
 .chrome-nav a {
   padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px;
@@ -41,7 +43,103 @@
 .bar      { height: 10px; background: #000; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
 .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff80b4); transition: width 0.3s; }
 .bar-fill.danger    { background: linear-gradient(90deg, #c72c2c, #e14b3f); }
+.bar-fill.warn      { background: linear-gradient(90deg, #d4a849, #c9762a); }
 .bar-fill.highgreen { background: linear-gradient(90deg, #1f9d55, #53d68a); }
+
+/* Gallery view + lightbox */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+.gallery-thumb {
+  margin: 0;
+  cursor: pointer;
+  background: #181410;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 6px;
+  transition: border-color 100ms, transform 100ms;
+}
+.gallery-thumb:hover { border-color: var(--accent, #ffc8a0); transform: translateY(-2px); }
+.gallery-thumb img {
+  width: 100%; height: 180px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+.gallery-thumb figcaption {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: #a89888;
+  line-height: 1.3;
+}
+
+.gallery-lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 99999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.gallery-lightbox .gallery-main {
+  max-width: 95vw; max-height: 95vh;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.gallery-lightbox #lightbox-img {
+  max-width: 95vw; max-height: 80vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+}
+.gallery-lightbox .gallery-meta {
+  background: rgba(20, 16, 12, 0.85);
+  color: #ffc8a0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  max-width: 70vw;
+  text-align: center;
+}
+.gallery-lightbox .gallery-actions {
+  display: flex; gap: 12px;
+}
+.gallery-lightbox .gallery-actions a {
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  border: 1px solid #4a3828;
+  background: #2a2018;
+  color: #c8b8a0;
+  cursor: pointer;
+}
+.gallery-lightbox .gallery-actions .btn-primary {
+  background: #6b2840;
+  border-color: #8a3450;
+  color: #fff;
+}
+.gallery-lightbox .gallery-close,
+.gallery-lightbox .gallery-nav {
+  position: absolute;
+  background: rgba(20, 16, 12, 0.85);
+  color: #ffc8a0;
+  border: 1px solid #4a3828;
+  font-size: 1.8rem;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.gallery-lightbox .gallery-close { top: 20px; right: 20px; }
+.gallery-lightbox .gallery-nav.prev { left: 20px; top: 50%; transform: translateY(-50%); }
+.gallery-lightbox .gallery-nav.next { right: 20px; top: 50%; transform: translateY(-50%); }
+.gallery-lightbox .gallery-close:hover,
+.gallery-lightbox .gallery-nav:hover {
+  background: #6b2840;
+  border-color: #8a3450;
+}
 
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
 .stat-pill { display: flex; justify-content: space-between; padding: 3px 8px; background: var(--bg-elev); border-radius: 4px; font-size: 0.8rem; }
@@ -54,8 +152,10 @@
 .girl-meta  { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.78rem; color: var(--text-dim); margin: 4px 0; }
 .approach-card { cursor: default; }
 
-.log { background: #000; border: 1px solid var(--border); border-radius: 6px; padding: 10px; height: 380px; overflow-y: auto; font-size: 0.9rem; }
-.log-entry { margin: 6px 0; padding: 6px 8px; border-radius: 4px; }
+/* Explicit user-select on chat log so the player can highlight + copy responses. Protects
+   against any future parent style that would disable selection. */
+.log { background: #000; border: 1px solid var(--border); border-radius: 6px; padding: 10px; height: 380px; overflow-y: auto; font-size: 0.9rem; user-select: text; -webkit-user-select: text; }
+.log-entry { margin: 6px 0; padding: 6px 8px; border-radius: 4px; user-select: text; -webkit-user-select: text; }
 .log-entry.user      { background: #1a1622; border-left: 2px solid var(--accent-dim); }
 .log-entry.assistant { background: #150f1f; border-left: 2px solid var(--accent);  color: #f5d7e5; }
 .log-entry.streaming { opacity: 0.85; font-style: italic; }
@@ -162,3 +262,27 @@ button, .btn-small, .btn-primary { min-height: 38px; padding-left: 14px; padding
   from { opacity: 0; transform: translateX(40px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+
+/* Capture-as-progress-bar mechanic UI */
+.capture-stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.capture-stage-row { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+.capture-stage-head { margin-bottom: 6px; }
+.capture-stage-body { margin-bottom: 4px; }
+.capture-stage-foot { font-size: 0.78rem; }
+.capture-progress-grid { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.capture-progress-row { display: grid; grid-template-columns: 180px 1fr; gap: 12px; align-items: center; padding: 4px 0; }
+.capture-progress-label { font-size: 0.88rem; }
+.capture-tool-badge { font-size: 1.1rem; }
+.capture-progress-bar-wrap { position: relative; height: 22px; background: #000; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.capture-progress-bar { height: 100%; background: linear-gradient(90deg, #c72c2c, #ff8c00); transition: width 0.15s linear; }
+.capture-progress-row.cleared .capture-progress-bar { background: linear-gradient(90deg, #1f9d55, #53d68a); }
+.capture-progress-row.failed  .capture-progress-bar { background: linear-gradient(90deg, #444, #777); }
+.capture-progress-pct { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: var(--mono); font-size: 0.78rem; color: #fff; text-shadow: 0 0 3px #000; }
+.capture-stage-summary { padding: 4px 0; }
+.capture-mech-summary  { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+
+/* Disposal final-image */
+.dispose-final-image-slot { margin: 16px 0 8px; min-height: 40px; }
+.dispose-final-image      { margin: 0; padding: 0; display: block; }
+.dispose-final-img        { width: 100%; max-height: 480px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+.dispose-final-image figcaption { margin-top: 4px; text-align: center; }

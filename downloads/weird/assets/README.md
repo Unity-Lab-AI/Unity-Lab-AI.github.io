@@ -1,6 +1,6 @@
 # assets/
 
-Every asset in SEX SLAVE DUNGEON (locations, items, dungeons, rooms, facilities) has its own folder here.
+Every asset in DUNGEON MASTER: THE HUNT (locations, items, dungeons, rooms, facilities) has its own folder here.
 
 ## Folder structure
 
@@ -57,4 +57,4 @@ The game logic itself uses the asset's `id` + `emoji` + `displayName` from the c
 
 ## Bulk prompt export
 
-Call `window.SSDAssetLoader.allAssetsWithPaths()` in the browser console to dump every asset's folder path and prompt — useful for batch-generating images.
+Call `window.DMTHAssetLoader.allAssetsWithPaths()` in the browser console to dump every asset's folder path and prompt — useful for batch-generating images.

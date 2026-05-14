@@ -1,13 +1,13 @@
-// SEX SLAVE DUNGEON — wardrobe system. Buy outfits from shop, equip/unequip, content-value multiplier.
+// DUNGEON MASTER: THE HUNT — wardrobe system. Buy outfits from shop, equip/unequip, content-value multiplier.
 
 (function () {
   'use strict';
 
   // Special built-in pseudo-outfit ID for "fully nude" — every girl can equip this without
   // buying it. Detected by imaging.js to front-load explicit nudity tokens at position 2 of
-  // the prompt (right after the prefix), suppressing the outfit block entirely.  Per Gee
-  // 2026-05-13: "agressively positioning that part so it isnt melted in at the end of the
-  // prompt in one word only".
+  // the prompt (right after the prefix), suppressing the outfit block entirely. The
+  // front-load matters: image models drop trailing tokens, so a nudity token at the end
+  // of a long prompt gets "melted in" and rendered weakly or not at all.
   const NUDE_PSEUDO_ID = 'nude';
   const NUDE_PSEUDO = {
     id: NUDE_PSEUDO_ID,
@@ -15,11 +15,48 @@
     emoji: '🍑',
     price: 0,
     tier: 1,
-    description: '',                        // suppressed — nude block is front-loaded by imaging.js
+    description: '',                        // <<INTENTIONAL EMPTY — DO NOT FILL IN>> imaging.js suppresses the outfit block entirely when nude:full, replacing it with the front-loaded nudeTokens() block at prompt position 2. Filling this in would force the suppressed-outfit string back into composition and break the position-2 front-load contract for nudity.
     multiplier: 1.4,
     roleplay: 'naked',
-    nude: 'full',                           // 'full' | 'accessories'
+    nude: 'full',                           // 'full' | 'accessories' | 'stripped'
     builtIn: true                            // always available, no purchase
+  };
+
+  // NO_WARDROBE_PSEUDO — distinct from NUDE_PSEUDO: NUDE is "fully naked, no clothing"
+  // (accessories like collar/cuffs are STILL allowed if equipped). NO_WARDROBE is "stripped
+  // of EVERYTHING — no garments, no accessories, no jewelry, no collar, no restraints,
+  // no anything on her body". Raw nakedness, more aggressive nudity prompt-block in imaging.js.
+  const NO_WARDROBE_PSEUDO_ID = 'none';
+  const NO_WARDROBE_PSEUDO = {
+    id: NO_WARDROBE_PSEUDO_ID,
+    displayName: 'No wardrobe (stripped of everything)',
+    emoji: '🚫',
+    price: 0,
+    tier: 1,
+    description: '',                        // <<INTENTIONAL EMPTY — DO NOT FILL IN>> imaging.js suppresses the outfit block entirely when nude:'stripped', replacing it with the more-aggressive no-wardrobe block at prompt position 2 (which explicitly bans accessories/jewelry/collar/restraints). Filling this would break the position-2 front-load contract.
+    multiplier: 1.5,                        // slightly higher than NUDE since it's more extreme
+    roleplay: 'stripped',
+    nude: 'stripped',                       // NEW value — distinct from 'full' / 'accessories'
+    builtIn: true                            // always available, no purchase
+  };
+
+  // Condom-on wardrobe pseudo-outfit. When equipped, pregnancy
+  // conception gate suppresses the conception roll (matches the existing `currentOutfit
+  // !== 'condom-on'` check in pregnancy.js attemptConception). Free + always available.
+  // Doesn't change image-prompt rendering (it's "wearing a condom" — invisible).
+  // Consumes one `condom` from inventory when equipped to enforce supply economy.
+  const CONDOM_PSEUDO_ID = 'condom-on';
+  const CONDOM_PSEUDO = {
+    id: CONDOM_PSEUDO_ID,
+    displayName: 'Condom equipped',
+    emoji: '🎈',
+    price: 0,
+    tier: 1,
+    description: 'wearing a condom (not visible in image)',  // invisible — imaging.js renders her in her PREVIOUS outfit; this is a state flag for the pregnancy gate
+    multiplier: 1.0,
+    roleplay: 'protected-sex',
+    builtIn: true,
+    blocksConception: true                    // pregnancy.js reads this flag
   };
 
   // Outfit catalog — these become item catalog entries too, but the descriptions live here
@@ -277,15 +314,17 @@
 
   function getById(id) {
     if (id === NUDE_PSEUDO_ID) return NUDE_PSEUDO;
+    if (id === NO_WARDROBE_PSEUDO_ID) return NO_WARDROBE_PSEUDO;
+    if (id === CONDOM_PSEUDO_ID) return CONDOM_PSEUDO;
     return OUTFITS.find(o => o.id === id);
   }
 
-  // Built-in outfits every girl can equip without buying (currently just 'nude').
+  // Built-in outfits every girl can equip without buying (NUDE_PSEUDO + NO_WARDROBE_PSEUDO + CONDOM_PSEUDO).
   function builtIns() {
-    return [NUDE_PSEUDO];
+    return [NUDE_PSEUDO, NO_WARDROBE_PSEUDO, CONDOM_PSEUDO];
   }
 
-  // Is this outfit a nude variant?  Returns 'full' | 'accessories' | false.
+  // Is this outfit a nude variant?  Returns 'full' | 'accessories' | 'stripped' | false.
   function isNude(outfitOrId) {
     if (!outfitOrId) return false;
     const o = typeof outfitOrId === 'string' ? getById(outfitOrId) : outfitOrId;
@@ -294,14 +333,14 @@
 
   // Buy an outfit for a specific girl — adds to her wardrobe.
   function buyForGirl(girlId, outfitId) {
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) throw new Error('no such girl');
     const outfit = getById(outfitId);
     if (!outfit) throw new Error('no such outfit');
     if ((girl.wardrobe || []).some(w => w.id === outfitId)) {
       throw new Error('she already owns this outfit');
     }
-    const ok = window.SSDGame.state.spendMoney(outfit.price, `wardrobe:${outfitId}:${girlId}`);
+    const ok = window.DMTHGame.state.spendMoney(outfit.price, `wardrobe:${outfitId}:${girlId}`);
     if (!ok) throw new Error('insufficient funds');
     const newWardrobe = [...(girl.wardrobe || []), {
       id: outfit.id,
@@ -312,24 +351,43 @@
       multiplier: outfit.multiplier,
       acquiredAt: Date.now()
     }];
-    window.SSDGame.state.updateGirl(girlId, { wardrobe: newWardrobe });
+    window.DMTHGame.state.updateGirl(girlId, { wardrobe: newWardrobe });
     return { ok: true, outfit };
   }
 
   function equip(girlId, outfitId) {
-    const girl = window.SSDGame.state.getGirl(girlId);
+    const girl = window.DMTHGame.state.getGirl(girlId);
     if (!girl) throw new Error('no such girl');
-    // Built-in outfits (currently just NUDE) are always equippable without buying.
-    const isBuiltIn = outfitId === NUDE_PSEUDO_ID;
+    // Built-in pseudo-outfits (NUDE_PSEUDO + NO_WARDROBE_PSEUDO + CONDOM_PSEUDO) are
+    // always equippable without buying. Auto-add to wardrobe array if missing so legacy
+    // saves get the option.
+    const isBuiltIn = outfitId === NUDE_PSEUDO_ID
+      || outfitId === NO_WARDROBE_PSEUDO_ID
+      || outfitId === CONDOM_PSEUDO_ID;
     if (!isBuiltIn && !(girl.wardrobe || []).some(w => w.id === outfitId)) {
       throw new Error('outfit not in her wardrobe');
     }
-    // Auto-add built-in to wardrobe if missing so legacy saves get the option
+    // Condom-on requires consuming one `condom` from inventory at equip time so
+    // the catalog item drives a real supply economy. Without a condom in inventory, fail.
+    if (outfitId === CONDOM_PSEUDO_ID) {
+      const ok = window.DMTHGame.state.consumeItem('condom', 1);
+      if (!ok) throw new Error('no condom in inventory — buy from shop');
+    }
     let wardrobe = girl.wardrobe || [];
     if (isBuiltIn && !wardrobe.some(w => w.id === outfitId)) {
-      wardrobe = [...wardrobe, { ...NUDE_PSEUDO, source: 'built-in' }];
+      const builtIn = outfitId === NUDE_PSEUDO_ID ? NUDE_PSEUDO
+        : outfitId === NO_WARDROBE_PSEUDO_ID ? NO_WARDROBE_PSEUDO
+        : CONDOM_PSEUDO;
+      wardrobe = [...wardrobe, { ...builtIn, source: 'built-in' }];
     }
-    window.SSDGame.state.updateGirl(girlId, { currentOutfit: outfitId, wardrobe });
+    // Condom-on is a STATE OVERLAY, not a visible
+    // outfit. Track previousOutfit at equip time so the image-prompt path can render
+    // her in her real outfit while the conception gate reads the condom-on flag.
+    const patch = { currentOutfit: outfitId, wardrobe };
+    if (outfitId === CONDOM_PSEUDO_ID) {
+      patch.previousOutfit = girl.currentOutfit || 'default';
+    }
+    window.DMTHGame.state.updateGirl(girlId, patch);
     return { ok: true };
   }
 
@@ -338,16 +396,24 @@
     return equip(girlId, NUDE_PSEUDO_ID);
   }
 
+  // Convenience: equip the built-in no-wardrobe pseudo-outfit (strips
+  // EVERYTHING including accessories). Always succeeds.
+  function stripEverything(girlId) {
+    return equip(girlId, NO_WARDROBE_PSEUDO_ID);
+  }
+
   // Get content-value multiplier for what she's currently wearing
   function currentMultiplier(girl) {
     const current = (girl.wardrobe || []).find(w => w.id === girl.currentOutfit);
     return current?.multiplier || 1.0;
   }
 
-  window.SSDGame = window.SSDGame || {};
-  window.SSDGame.wardrobe = Object.freeze({
-    OUTFITS, catalog, getById, buyForGirl, equip, derobe, currentMultiplier,
-    builtIns, isNude,
-    NUDE_PSEUDO_ID, NUDE_PSEUDO
+  window.DMTHGame = window.DMTHGame || {};
+  window.DMTHGame.wardrobe = Object.freeze({
+    OUTFITS, catalog, getById, buyForGirl, equip, derobe, stripEverything,
+    currentMultiplier, builtIns, isNude,
+    NUDE_PSEUDO_ID, NUDE_PSEUDO,
+    NO_WARDROBE_PSEUDO_ID, NO_WARDROBE_PSEUDO,
+    CONDOM_PSEUDO_ID, CONDOM_PSEUDO
   });
 })();

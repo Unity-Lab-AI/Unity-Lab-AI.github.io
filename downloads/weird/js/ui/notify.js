@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — toast notifications.
+// DUNGEON MASTER: THE HUNT — toast notifications.
 
 (function () {
   'use strict';
@@ -39,5 +39,5 @@
     }, durationMs);
   }
 
-  window.SSDNotify = Object.freeze({ show });
+  window.DMTHNotify = Object.freeze({ show });
 })();

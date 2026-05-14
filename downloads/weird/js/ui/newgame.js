@@ -1,4 +1,4 @@
-// SEX SLAVE DUNGEON — new game setup page.
+// DUNGEON MASTER: THE HUNT — new game setup page.
 
 (function () {
   'use strict';
@@ -30,11 +30,11 @@
       </div>
     `;
 
-    const existing = window.SSDGame.state.current;
+    const existing = window.DMTHGame.state.current;
     if (existing && existing.createdAt) {
       el.querySelector('#warn').innerHTML = `⚠️ A save exists from ${new Date(existing.createdAt).toLocaleString()}. Starting a new game will OVERWRITE it. <button id="export-first" class="btn-small">Export current save first</button>`;
       el.querySelector('#export-first').onclick = async () => {
-        const data = await window.SSDStorage.exportAll();
+        const data = await window.DMTHStorage.exportAll();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -48,11 +48,11 @@
     el.querySelector('#start').onclick = async () => {
       const mode = el.querySelector('#mode').value;
       const includeUnity = el.querySelector('#unity').checked;
-      await window.SSDGame.state.load();  // ensure state is initialized
-      await window.SSDGame.bootstrap.newGame({ mode, includeUnity });
-      window.SSDRouter.go('dashboard');
+      await window.DMTHGame.state.load();  // ensure state is initialized
+      await window.DMTHGame.bootstrap.newGame({ mode, includeUnity });
+      window.DMTHRouter.go('dashboard');
     };
   }
 
-  window.SSDRouter.register('newgame', render);
+  window.DMTHRouter.register('newgame', render);
 })();
