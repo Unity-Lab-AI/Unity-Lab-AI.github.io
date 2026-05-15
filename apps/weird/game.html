@@ -112,6 +112,7 @@
     </nav>
     <div class="chrome-clock" id="chrome-clock" data-tooltip="In-game day clock. 1 real second = 1 game minute (24 real min = 1 game day). Captives go 3 game days without water and 5 game days without food before health starts dropping.">Day 1, 00:00</div>
     <div class="chrome-satisfaction" id="chrome-satisfaction" data-tooltip="Player satisfaction (0-100). Sex acts with captives raise it; slow drift down without intimacy. High satisfaction grants a hunting bonus — capture odds get easier the more satisfied you are. Fuck enough and the next catch is much easier.">😐 50</div>
+    <div class="chrome-buzz" id="chrome-buzz" data-tooltip="BUZZ (0-100) — underground word-of-mouth about your dungeons. Bumped by film sales, successful johns, high-bond captives, stress-band streaks. Drains over time between income events. Higher BUZZ = more johns visit your whored-out captives more often. BUZZ 100 = 2× john arrival rate.">🐝 0</div>
     <div class="chrome-money" id="chrome-money" data-tooltip="Liquid cash on hand. Spend on upgrades, captures, abortions, slaves.">$0</div>
     <button class="btn-small" id="chrome-voice" data-tooltip="Toggle Kokoro TTS voice playback on/off.">🔊</button>
     <button class="btn-small btn-danger" id="chrome-new-game" data-tooltip="WIPES your save and starts fresh. Use Settings → Save Slots to keep a copy first.">🔄 New Game</button>
@@ -143,6 +144,11 @@
         const sat = typeof s.wallet.playerSatisfaction === 'number' ? s.wallet.playerSatisfaction : 50;
         const emoji = sat >= 80 ? '😈' : sat >= 60 ? '😏' : sat >= 40 ? '😐' : sat >= 20 ? '😒' : '🥶';
         satEl.textContent = `${emoji} ${Math.round(sat)}`;
+      }
+      const buzzEl = document.getElementById('chrome-buzz');
+      if (buzzEl && s) {
+        const buzz = typeof s.wallet.buzz === 'number' ? s.wallet.buzz : 0;
+        buzzEl.textContent = `🐝 ${Math.round(buzz)}`;
       }
     }
     syncChrome();

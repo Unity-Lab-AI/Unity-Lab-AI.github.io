@@ -71,6 +71,13 @@
     if (totalEarnings > 0) {
       const notorietyTick = Math.max(1, Math.round(perFilm.length * 0.3));
       window.DMTHGame.state.addNotoriety(notorietyTick);
+      // BUZZ feed — content moving in the market raises underground word-of-mouth about
+      // the operator's dungeons. Bump scales with how many films earned this tick, capped
+      // at +3/tick so a backlog explosion doesn't max BUZZ in one pass.
+      if (window.DMTHGame.state.addBuzz) {
+        const buzzBump = Math.min(3, perFilm.length * 0.5);
+        window.DMTHGame.state.addBuzz(buzzBump, `film-sales-tick: ${perFilm.length} films earned`);
+      }
     }
 
     // Demand drift — too many tracks for sale softens the market; quieter markets recover.

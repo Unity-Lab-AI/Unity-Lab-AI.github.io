@@ -70,10 +70,19 @@
       console.warn('[kokoro] worker error:', e);
       lastError = new Error('worker crashed: ' + (e.message || 'unknown'));
       ready = false;
+      // Reset loading flag — without this the "already loading" wait path traps the next
+      // retry attempt indefinitely. The button "Load Kokoro" → "Loading…" → never recovers.
+      loading = false;
       emit();
     };
     return true;
   }
+
+  // Worker init must produce a 'ready' or 'error' message within this window or we
+  // abandon the worker and fall back to main-thread synthesis. Silent worker failures
+  // (CDN import hung, WASM blocked, HuggingFace model fetch stuck) were leaving the UI
+  // in a "0% progress, no button" state with no way to recover.
+  const WORKER_INIT_TIMEOUT_MS = 60_000;
 
   async function ensureLoaded(onProgress) {
     if (ready) return;
@@ -92,33 +101,65 @@
     lastError = null;
     emit();
 
-    // Try worker first.
-    if (initWorker()) {
-      // Forward progress to caller too
-      const unsub = onStateChange((s) => { if (onProgress) onProgress({ progress: s.progress }); });
-      worker.postMessage({
-        type: 'init',
-        cdnUrl: cfg().KOKORO.cdnUrl,
-        modelId: cfg().KOKORO.modelId,
-        dtype: cfg().KOKORO.dtype
-      });
-      try {
-        await new Promise((res, rej) => {
-          const check = () => {
-            if (ready) return res();
-            if (lastError) return rej(lastError);
-            setTimeout(check, 200);
-          };
-          check();
+    // Wrap the whole load in try/finally so loading is ALWAYS reset on any exit path.
+    // Without this, a thrown error left `loading=true` forever — the render loop saw
+    // "loading=true" + replaced the button with a 0% progress bar that never advanced,
+    // and the user had no way to retry.
+    try {
+      // Try worker first.
+      if (initWorker()) {
+        const unsub = onStateChange((s) => { if (onProgress) onProgress({ progress: s.progress }); });
+        worker.postMessage({
+          type: 'init',
+          cdnUrl: cfg().KOKORO.cdnUrl,
+          modelId: cfg().KOKORO.modelId,
+          dtype: cfg().KOKORO.dtype
         });
-        return;
-      } finally {
-        unsub();
-      }
-    }
+        let timedOut = false;
+        const timeoutId = setTimeout(() => {
+          timedOut = true;
+          lastError = new Error(`worker init timed out after ${Math.round(WORKER_INIT_TIMEOUT_MS / 1000)}s — falling back to main-thread Kokoro load`);
+          emit();
+        }, WORKER_INIT_TIMEOUT_MS);
 
-    // Fallback to main-thread load.
-    await loadMainThread(onProgress);
+        try {
+          await new Promise((res, rej) => {
+            const check = () => {
+              if (ready) return res();
+              if (lastError) return rej(lastError);
+              setTimeout(check, 200);
+            };
+            check();
+          });
+          clearTimeout(timeoutId);
+          return;
+        } catch (err) {
+          clearTimeout(timeoutId);
+          unsub();
+          // Tear down the failed worker so a fresh attempt isn't blocked.
+          try { worker?.terminate(); } catch {}
+          worker = null;
+          if (timedOut) {
+            // Reset error so the main-thread fallback can try fresh.
+            console.warn('[kokoro] worker init timed out — falling back to main-thread load');
+            lastError = null;
+            await loadMainThread(onProgress);
+            return;
+          }
+          throw err;
+        } finally {
+          unsub();
+        }
+      }
+
+      // Worker spawn failed at construction — straight to main-thread load.
+      await loadMainThread(onProgress);
+    } finally {
+      // Whether we resolved, rejected, or threw, clear the loading flag so the UI
+      // can present a Retry button on failure or a Ready pill on success.
+      loading = false;
+      emit();
+    }
   }
 
   async function loadMainThread(onProgress) {
