@@ -145,6 +145,35 @@
     return 'HEAVILY BONDAGED, ropes and restraints visible, forcibly bound and immobilized';
   }
 
+  // Postmortem markers — front-loaded high-priority block for deceased captives.
+  // Scales by decay days since death (game time): fresh body (< 1 day) is "sleeping-cold",
+  // 1-3 day body adds pallor + livor mortis, 3-7 day body adds cool gray tones + slack
+  // jaw + sunken features. Beyond the POSTMORTEM_DECAY_LIMIT the description gets
+  // explicitly advanced-decay (the game forces disposal at that point anyway). Pose
+  // override in composePrompt swaps to a "sleeping" pose family when no userStaging.
+  function postmortemTokens(girl) {
+    if (!girl || girl.encounterState !== 'dead') return '';
+    const decayMin = girl.body?.decayedMinutes || 0;
+    const decayDays = decayMin / 1440;
+    // Common base — applies at every stage.
+    const base = 'DECEASED adult body, lifeless, eyes closed, slack jaw with lips parted, no muscle tension, no facial expression, no breath, no movement, body entirely inert';
+    if (decayDays < 1) {
+      // Fresh — could pass for deep sleep. Cool pallor only, no advanced markers.
+      return `${base}, fresh-postmortem appearance, pale skin with cooled flesh tone, peaceful sleeping-cold pose, head turned to one side, limbs slack and arranged where they fell, hair fanned across the surface beneath the head, no flush, no goosebumps, no involuntary twitch`;
+    }
+    if (decayDays < 3) {
+      // Early decay — pallor + livor mortis settling in.
+      return `${base}, early-postmortem appearance, marked pallor across the face and torso, gray-cool undertone to the skin, faint livor-mortis darkening at the lowest points of the body where blood has pooled, lips and fingertips slightly bluish, hair limp and unkempt, eyes sunken faintly, jaw slack with mouth fallen partly open, body cold to touch`;
+    }
+    if (decayDays < 7) {
+      // Mid decay — visible gray tones, sunken features, stiffness present then released.
+      return `${base}, advanced-postmortem appearance, cool gray-blue skin tone across face and limbs, lips darkened bluish-purple, fingertips and toes mottled, sunken cheekbones and eye sockets, jaw slack and locked open, body limp again after rigor passed, hair flat and lifeless across the surface, no muscle tone whatsoever, skin appears waxy and dulled`;
+    }
+    // Past forced-disposal threshold — extreme decay (this shouldn't normally render; game
+    // surfaces a forced-disposal nudge well before this point).
+    return `${base}, late-postmortem appearance, deeply gray-mottled skin with marked discoloration, dramatically sunken features, eyes deeply hollow, jaw locked open at unnatural angle, lips drawn back, hair brittle and detached in places, body in advanced visible decay`;
+  }
+
   // Per-trimester visible pregnancy markers, front-loaded near nudity/face
   // slot so the model doesn't bury the pregnancy in tail tokens. Three tiers map to
   // pregnancy.trimester (1/2/3) plus a separate full-term band at day >= 250 for the
@@ -405,11 +434,21 @@
 
     const nudeStrength = nudeStateOf(girl);
 
-    const stateTokens = bodyStateTokens(girl.body);
-    const drugTokens  = drugStateTokens(girl.body);
-    const pregTokens  = pregnancyTokens(girl.pregnancy);
+    // Postmortem state suppresses live-body marker emissions — no arousal flush, no drug-
+    // glow, no pregnancy bump emphasis, no involuntary signs of life. The postmortem
+    // block carries everything the model needs about the body's state.
+    const isPostmortem = girl.encounterState === 'dead';
+    const stateTokens = isPostmortem ? '' : bodyStateTokens(girl.body);
+    const drugTokens  = isPostmortem ? '' : drugStateTokens(girl.body);
+    const pregTokens  = isPostmortem ? '' : pregnancyTokens(girl.pregnancy);
     const bondTokens  = bondageTokens(girl.body);
-    const pose = effectivePose || POSE_LIBRARY[situation] || POSE_LIBRARY.profile;
+    const postmortem  = postmortemTokens(girl);
+    // Pose: explicit user staging > situation-default > sleeping/corpse pose when dead.
+    // The "sleeping" pose family family puts the body lying flat with limbs in resting
+    // positions so the postmortem token block lands consistently.
+    const defaultPose = POSE_LIBRARY[situation] || POSE_LIBRARY.profile;
+    const corpsePose = 'lying flat on the back on a hard surface, head turned to one side, eyes closed, arms slack at sides with palms up, legs straight and slightly parted, body completely still, hair fanned across the surface beneath the head';
+    const pose = effectivePose || (isPostmortem ? corpsePose : defaultPose);
     const env = envTokens({
       situation,
       dungeonId: girl.assignedDungeonId,
@@ -428,7 +467,15 @@
     // Face / outfit / body-state / pose / location / drugs blocks downstream all add their
     // own context and don't fight this.
     const sexLock = 'female adult woman, female subject, female body, feminine frame';
-    const prefix = `editorial photograph, 35mm film aesthetic, ${sexLock}, ${ageStr}, full body shot, head to toe in frame, complete figure visible from hair to feet, wide framing, no portrait cropping, no mugshot framing, no headshot, no bust shot`;
+    // Positive-only framing tokens. Previously the prefix carried negation phrases
+    // ("no portrait cropping, no mugshot framing, no headshot, no bust shot") to prevent
+    // tight crops. enforceFullBody() down the pipeline does naive find-replace on
+    // portrait/mugshot/headshot/bust → full body shot, which transformed those
+    // negations into garbage like "no full body shot cropping, no full body framing,
+    // no full body shot, no full body shot". The affirmative framing tokens already
+    // present (full body shot / head to toe / complete figure / wide framing) carry
+    // the intent without leaking words that downstream replace passes will mangle.
+    const prefix = `editorial photograph, 35mm film aesthetic, ${sexLock}, ${ageStr}, full body shot, head to toe in frame, complete figure visible from hair to feet, wide framing`;
     const suffix = 'shallow depth of field, cinematic lighting, color-graded, high-detail, no text, no watermark';
 
     let parts;
@@ -439,6 +486,7 @@
         prefix,               // 1
         nudeBlock,            // 2 — aggressive nudity front-load (replaces face slot)
         bondTokens,           // 2.3 — bondage transforms posture, front-loaded
+        postmortem,           // 2.4 — postmortem markers (suppresses live-body markers below)
         pregTokens,           // 2.5 — pregnancy markers front-loaded so the bump isn't buried at tail
         env,                  // 3 — hold-specific environment, promoted from old pos 7
         faceBlock,            // 4 — face moves to 4 when nude (nude is at 2)
@@ -456,7 +504,13 @@
       // Heuristic: any outfit description containing fit-hugging keywords gets the
       // reconciler appended. Past trimester 2 (day 94+), the bump is too pronounced to
       // be plausibly contained — the reconciler explicitly mentions strain.
-      const isPregnant = pregTokens && pregTokens.length > 0;
+      // Real pregnancy check — must read girl.pregnancy.status, NOT pregTokens.length
+      // (the token function returns positive "flat belly" markers when she's NOT
+      // pregnant, so its length is always > 0 — making the outfit reconciler fire
+      // for every captive regardless of state). Result: every Unity render included
+      // "outfit slightly snug over the early-pregnancy belly" even though she wasn't
+      // pregnant.
+      const isPregnant = girl.pregnancy?.status === 'pregnant';
       if (isPregnant) {
         const fitHugging = /tight|latex|catsuit|fishnet|skin-tight|bodycon|cling|harness|leather (mini|bodysuit)/i.test(outfitBlock);
         if (fitHugging) {
@@ -471,6 +525,7 @@
         prefix,                                                                   // 1
         faceBlock,                                                                // 2
         bondTokens,                                                               // 2.3 — bondage transforms posture, front-loaded
+        postmortem,                                                               // 2.4 — postmortem markers (suppresses live-body markers below)
         pregTokens,                                                               // 2.5 — pregnancy markers front-loaded so the bump isn't buried at tail
         env,                                                                      // 3 — hold-specific environment, promoted from old pos 7
         outfitBlock + (outfitState ? ', ' + outfitState : ''),                    // 4
@@ -519,9 +574,26 @@
     console.warn('[imaging] clampSeed called without seed AND without fallbackKey — using fresh random; facial persistence will not hold');
     return Math.floor(Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF;
   }
+  // Safely truncate a URL-encoded prompt so the cut never lands inside a percent-escape
+  // sequence. Previous `encodeURIComponent(prompt).slice(0, 1800)` could leave a trailing
+  // `%` or `%X` (incomplete percent-escape) — Cloudflare's URL parser rejects those with
+  // 400 Bad Request, which broke image gen entirely when the prompt was long enough.
+  function safeEncodedPrompt(prompt, maxLen) {
+    let enc = encodeURIComponent(prompt);
+    if (enc.length <= maxLen) return enc;
+    enc = enc.slice(0, maxLen);
+    // Rewind past any partial %XX at the tail. % is escape opener; if it's in the last
+    // 2 chars, the cut split a percent-escape — drop everything from that % onward.
+    const tail = enc.lastIndexOf('%');
+    if (tail >= 0 && tail >= enc.length - 2) {
+      enc = enc.slice(0, tail);
+    }
+    return enc;
+  }
+
   function buildUrl(prompt, seed, opts = {}) {
     const p = cfg();
-    const encoded = encodeURIComponent(prompt).slice(0, 1800);
+    const encoded = safeEncodedPrompt(prompt, 1800);
     const baseParams = {
       model: opts.model || p.imageModel,
       width: String(opts.width  || p.width),
@@ -529,8 +601,15 @@
       nologo: String(p.nologo),
       seed: String(clampSeed(seed)),
       safe: 'false',
-      referrer: 'sex-slave-dungeon'
+      referrer: 'dungeon-master-the-hunt'
     };
+    // Unity AI Lab Worker route — uniform with the rest of the website2.0 apps.
+    // When active, the Worker injects the operator's sk_ token server-side; the browser
+    // sends NO key. Detection is in config.js detectUnityLabWorker() (hostname-based).
+    if (p.useUnityLabWorker && p.imageEndpointWorker) {
+      const params = new URLSearchParams(baseParams);
+      return `${p.imageEndpointWorker}${encoded}?${params.toString()}`;
+    }
     if (hasKey()) {
       const params = new URLSearchParams({ ...baseParams, key: p.apiKey });
       return `${p.imageEndpointAuth}${encoded}?${params.toString()}`;

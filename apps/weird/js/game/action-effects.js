@@ -235,6 +235,13 @@
     'john-degrader': {
       stamina: -10, health: -2, mood: -15, cumLoad: +0.8, bondDebt: +8,
       notes: 'Degrader john — mood and bond destruction.'
+    },
+    // Postmortem-john — no body shifts apply meaningfully to a corpse (stamina/health/
+    // mood are already terminal). cumLoad still accrues so recordings still get the
+    // "ruined" multiplier; satisfaction registers for the player.
+    'john-postmortem': {
+      stamina: 0, health: 0, mood: 0, cumLoad: +1.0, bondDebt: 0, satisfaction: +1,
+      notes: 'Postmortem use — body inert. cumLoad accrues; no other vital shifts apply on a corpse.'
     }
   });
 
@@ -331,19 +338,37 @@
     return { ok: true, action, strain: !!opts.strain };
   }
 
-  // Lookup the cost summary for tooltip rendering. Returns a short string like
-  // "stamina -8 · health 0 · bond +2" suitable for inline tooltips.
+  // Lookup the compact cost summary for tooltip rendering. Returns a short tight
+  // string suitable for hover tooltips:
+  //   "ST-8 · MD+3 · AR+12 · WT+15 · CL+0.6 · BX+2 · SAT+3"
+  // Codes:
+  //   ST=stamina, HP=health, MD=mood, AR=arousal, WT=wetness, BR=bruises, CL=cumLoad,
+  //   BX=bondXP, BD=bondDebt, NT=notoriety, SAT=satisfaction
+  const COST_CODES = {
+    stamina: 'ST', health: 'HP', mood: 'MD', arousal: 'AR', wetness: 'WT',
+    bruises: 'BR', cumLoad: 'CL', bondXP: 'BX', bondDebt: 'BD',
+    notoriety: 'NT', satisfaction: 'SAT'
+  };
   function previewCost(actionId) {
     const a = ACTIONS[actionId];
     if (!a) return '';
     const parts = [];
-    for (const k of ['stamina', 'health', 'mood', 'arousal', 'wetness', 'bruises', 'cumLoad', 'bondXP', 'bondDebt']) {
+    for (const k of Object.keys(COST_CODES)) {
       if (a[k] != null && a[k] !== 0) {
         const sign = a[k] > 0 ? '+' : '';
-        parts.push(`${k} ${sign}${a[k]}`);
+        parts.push(`${COST_CODES[k]}${sign}${a[k]}`);
       }
     }
     return parts.join(' · ');
+  }
+
+  // Build a complete tooltip line combining a human-readable label + the cost preview.
+  // Used by every UI surface that needs "what does this button do + what stats it shifts"
+  // hover info. Returns just the label when the action isn't in the ACTIONS catalog.
+  function tooltipForAction(actionId, label) {
+    const cost = previewCost(actionId);
+    if (!label) return cost ? `📊 ${cost}` : '';
+    return cost ? `${label}\n📊 ${cost}` : label;
   }
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
@@ -579,8 +604,10 @@
   window.DMTHGame.actionEffects = Object.freeze({
     ACTIONS,
     STAMINA_THRESHOLD_FOR_STRAIN,
+    COST_CODES,
     applyAction,
     previewCost,
+    tooltipForAction,
     tickStaminaHealth,
     johnHappinessForGirl
   });

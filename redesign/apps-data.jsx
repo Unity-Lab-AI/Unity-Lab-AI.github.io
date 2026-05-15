@@ -4,7 +4,7 @@
 const APPS_DATA = {
   meta: [
     { dt: 'CODEX', dd: '04 / APPS' },
-    { dt: 'COUNT', dd: '8 applications' },
+    { dt: 'COUNT', dd: '9 applications' },
     { dt: 'COST', dd: 'free \u2014 no signup' },
     { dt: 'POWERED BY', dd: 'Pollinations' },
   ],
@@ -12,7 +12,7 @@ const APPS_DATA = {
   header: {
     kicker: 'COLLECTION \u00b7 OPEN ACCESS',
     title: 'Free AI\nApps.',
-    lede: 'Eight experimental applications \u2014 chatbots, generators, voice, screensavers. All free, no registration, no API key. Launch any of them in a click.',
+    lede: 'Nine experimental applications \u2014 chatbots, generators, voice, screensavers, persistent games. All free, no registration, no API key. Launch any of them in a click.',
   },
 
   // Apps grid. Icon = Sigil name (existing) or null to use a Font Awesome class.
@@ -97,6 +97,16 @@ const APPS_DATA = {
       lede: 'The previous version of the Unity AI Lab interface. Full-featured chat with sessions, themes, and advanced settings. Kept around for the long-time users.',
       tags: ['Archive', 'Legacy'],
       cta: { label: 'Launch app', href: './apps/oldSiteProject/index.html' },
+    },
+    {
+      slug: 'dungeon-master-the-hunt',
+      num: 'IX',
+      icon: 'Wringer',
+      title: 'DUNGEON MASTER: THE HUNT',
+      tag: 'persistent game · 18+',
+      lede: 'A persistent city-builder-like dungeon game. Hunt prey across the outside world with purchased tools, build out your dungeon, form Stockholm bonds with captives, record films, run a content empire. Local Ollama LLM + in-browser Kokoro TTS + Pollinations imaging. Auto-setup wizard installs everything needed. Adults 18+.',
+      tags: ['Game', 'Adult', 'Persistent', 'Local LLM'],
+      cta: { label: 'Launch game', href: './apps/weird/index.html' },
     },
   ],
 

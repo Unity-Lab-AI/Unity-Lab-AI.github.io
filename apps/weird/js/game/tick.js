@@ -85,6 +85,14 @@
       const w = window.DMTHGame.state.current.wallet;
       const cur = typeof w.playerSatisfaction === 'number' ? w.playerSatisfaction : 50;
       if (cur > 0) w.playerSatisfaction = Math.max(0, cur - 0.5);
+
+      // BUZZ decay — passive drift down between income events. -0.3/tick = full decay
+      // (100 → 0) over ~333 ticks (~167 real minutes / ~3 game days at the tick rate).
+      // Film sales (market.js) + successful john completions (whore-out.js) bump it back
+      // up. Balance is tuned so the player must keep income flowing to keep the john
+      // multiplier high; idle dungeons quietly lose word-of-mouth.
+      const curBuzz = typeof w.buzz === 'number' ? w.buzz : 0;
+      if (curBuzz > 0) w.buzz = Math.max(0, curBuzz - 0.3);
     }
 
     // 14. Whore-out john arrivals. Per-rate arrival rolls per

@@ -220,12 +220,20 @@
         ${tabKeys.map(k => `<button class="qa-tab ${k === currentTab ? 'active' : ''}" data-qa-tab-key="${k}">${TABS[k].label}</button>`).join('')}
       </div>
       <div class="qa-grid">
-        ${TABS[currentTab].actions.map((a, i) => `
-          <button class="qa-btn" data-qa-idx="${i}" title="${escapeHtml(a.text)}">
+        ${TABS[currentTab].actions.map((a, i) => {
+          // Build the tooltip: action text + compact stat-delta preview from action-effects
+          // for any action that routes through applyAction. Switched from native title to
+          // data-tooltip so the DMTHTooltips engine renders styled hover bubbles with
+          // multi-line layout (\\n → soft wrap). Stat codes: ST/HP/MD/AR/WT/BR/CL/BX/BD/SAT.
+          const cost = a.applyId && window.DMTHGame?.actionEffects?.previewCost
+            ? window.DMTHGame.actionEffects.previewCost(a.applyId)
+            : '';
+          const tip = cost ? `${a.text}\n📊 ${cost}` : a.text;
+          return `<button class="qa-btn" data-qa-idx="${i}" data-tooltip="${escapeHtml(tip)}">
             <span class="qa-emoji">${a.emoji}</span>
             <span class="qa-label">${escapeHtml(a.label)}</span>
-          </button>
-        `).join('')}
+          </button>`;
+        }).join('')}
       </div>
     `;
 

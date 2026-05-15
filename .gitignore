@@ -39,3 +39,4 @@ playwright.config.mjs
 /*-verify.mjs
 /*-test.js
 /*-test.mjs
+apps/weird/js/env.local.js
