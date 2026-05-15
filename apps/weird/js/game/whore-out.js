@@ -31,12 +31,57 @@
 (function () {
   'use strict';
 
+  // Cadence-based arrival params. Replaces the prior % per-tick rate enum so the player
+  // can SEE when the next john is coming. Each tick (= 30 game minutes) advances a
+  // per-girl `pendingArrivals` accumulator by `30 / cadenceMinutes * buzzMul`. Whole-
+  // number portion fires that many arrivals; fractional carries forward.
+  //
+  //   rapid    — 1 john / 10 game min  (every tick fires ~3, ~6 at BUZZ 100)
+  //   steady   — 1 john / 30 game min  (every tick fires 1, 2 at BUZZ 100)
+  //   casual   — 1 john / 60 game min  (every 2 ticks fires 1)
+  //   trickle  — 1 john / 120 game min (every 4 ticks fires 1)
+  //   off      — no arrivals
+  //
+  // Legacy `rate` values (low/standard/premium/all-comers) map onto the new cadence so
+  // old saves keep working without a migration pass.
   const RATE_PARAMS = {
-    low:         { arrivalChance: 0.10, perTickCap: 1 },
-    standard:    { arrivalChance: 0.25, perTickCap: 2 },
-    premium:     { arrivalChance: 0.40, perTickCap: 3 },
-    'all-comers':{ arrivalChance: 0.60, perTickCap: 4 }
+    off:         { cadenceMinutes: Infinity, displayName: 'off' },
+    trickle:     { cadenceMinutes: 120,      displayName: '1 john / 120 game min' },
+    casual:      { cadenceMinutes: 60,       displayName: '1 john / 60 game min' },
+    steady:      { cadenceMinutes: 30,       displayName: '1 john / 30 game min' },
+    rapid:       { cadenceMinutes: 10,       displayName: '1 john / 10 game min' },
+    // Legacy alias map — old saves with these values fall through to the closest cadence
+    low:         { cadenceMinutes: 120, displayName: '1 john / 120 game min (legacy)', alias: 'trickle' },
+    standard:    { cadenceMinutes: 30,  displayName: '1 john / 30 game min (legacy)',  alias: 'steady' },
+    premium:     { cadenceMinutes: 20,  displayName: '1 john / 20 game min (legacy)',  alias: 'steady' },
+    'all-comers':{ cadenceMinutes: 10,  displayName: '1 john / 10 game min (legacy)',  alias: 'rapid' }
   };
+  // BUZZ multiplier on the cadence — BUZZ 100 doubles the arrival rate.
+  function buzzMultiplier() {
+    const buzz = window.DMTHGame.state?.getBuzz ? window.DMTHGame.state.getBuzz() : 0;
+    return 1 + (buzz / 100);
+  }
+  // Expected fractional arrivals per tick (30 game minutes) at the current cadence + BUZZ.
+  // For UI countdown + per-tick accumulator.
+  function expectedArrivalsPerTick(rateId) {
+    const r = RATE_PARAMS[rateId] || RATE_PARAMS.steady;
+    if (!Number.isFinite(r.cadenceMinutes)) return 0;
+    return (30 / r.cadenceMinutes) * buzzMultiplier();
+  }
+  // Game-minutes until next arrival from the per-girl `pendingArrivals` accumulator.
+  // Used for the visible "next john in 8m 24s" countdown in the whore-out panel.
+  function gameMinutesToNextArrival(girl) {
+    const wo = getWhoreOut(girl);
+    if (!wo.enabled) return null;
+    const r = RATE_PARAMS[wo.rate] || RATE_PARAMS.steady;
+    if (!Number.isFinite(r.cadenceMinutes)) return null;
+    const pending = wo.pendingArrivals || 0;
+    const buzzMul = buzzMultiplier();
+    if (buzzMul <= 0) return null;
+    // Minutes to climb from pending → 1.0 at the current effective arrival rate.
+    const remaining = Math.max(0, 1 - pending);
+    return remaining * r.cadenceMinutes / buzzMul;
+  }
 
   // Acts that count as vaginal-cum delivery for pregnancy conception (matches the
   // VAGINAL_CUM_TAGS set in delta.js).
@@ -52,18 +97,31 @@
     return {
       enabled: false,
       enabledAt: null,
-      rate: 'standard',
+      rate: 'steady',
       condomRequired: false,
       permittedActs: [],
       blockedJohnTypes: [],
       johnLedger: [],
       sessionTotals: { encounters: 0, gross: 0, tips: 0, bruisesAdded: 0, cumLoadAdded: 0 },
-      unclaimedEarnings: 0
+      unclaimedEarnings: 0,
+      // Cadence accumulator — each tick advances by `expectedArrivalsPerTick`. Whole-number
+      // portion fires that many arrivals; fractional carries forward so cadence is
+      // deterministic across ticks rather than dice-rolled per tick.
+      pendingArrivals: 0,
+      // Game-minutes timestamp of the most recent john arrival. Used for ledger context
+      // and for the countdown display in the room UI.
+      lastJohnArrivalAt: null
     };
   }
 
   function getWhoreOut(girl) {
-    return (girl && girl.whoreOut) || defaultWhoreOut();
+    const wo = (girl && girl.whoreOut) || defaultWhoreOut();
+    // Legacy rate normalization — old saves persisted low/standard/premium/all-comers.
+    // Resolve via alias so the UI dropdown selects a valid canonical option and the
+    // cadence math hits a single canonical row instead of the legacy aliases.
+    const r = RATE_PARAMS[wo.rate];
+    if (r && r.alias) return { ...wo, rate: r.alias };
+    return wo;
   }
 
   function toggle(girlId, on) {
@@ -88,21 +146,27 @@
   // Per-tick john arrivals
   // -----------------------------------------------------------------------
 
-  // Roll a single john encounter for one whored-out girl. Returns null when no john
-  // arrives this tick OR when arrival is blocked (stamina floor, fully-bonded contraception
-  // gate, blocked archetype, etc.). Otherwise returns the resolved JohnEncounter.
+  // Fire a single john encounter for one whored-out girl. Caller has already decided that
+  // an arrival is due (per the cadence accumulator). Returns null when arrival is blocked
+  // (stamina floor, bond-debt overflow, blocked archetype with no fallback) — otherwise
+  // returns the resolved JohnEncounter.
+  //
+  // Postmortem branch: when girl.encounterState === 'dead', skip the alive-only gates
+  // (stamina/bond-debt are irrelevant) and force the postmortem-john archetype.
   function tryArrival(girl) {
     const wo = getWhoreOut(girl);
     if (!wo.enabled) return null;
+
+    // Postmortem branch — body is dead but whore-out continues. Always uses postmortem-john.
+    if (girl.encounterState === 'dead') {
+      return resolveEncounter(girl, 'postmortem-john');
+    }
 
     const stamina = girl.body?.stamina ?? 70;
     if (stamina <= STAMINA_FLOOR_JOHN_GATE) return null;  // she's too tired
 
     // Bond-debt overflow — girl protests, no more johns until debt clears
     if ((girl.bond?.bondDebt || 0) > BONDDEBT_EXCESS) return null;
-
-    const rate = RATE_PARAMS[wo.rate] || RATE_PARAMS.standard;
-    if (Math.random() > rate.arrivalChance) return null;
 
     const isPregnant = girl.pregnancy?.status === 'pregnant';
     let archetypeId = window.DMTHJohnArchetypes.rollJohnArchetype(Math.random, { isPregnant });
@@ -220,7 +284,7 @@
       pregnancyHookFired
     };
 
-    // Persist to ledger + session totals + unclaimed earnings
+    // Persist to ledger + session totals + unclaimed earnings + cadence timestamp
     const newWo = { ...getWhoreOut(refreshed || girl) };
     newWo.johnLedger = [...(newWo.johnLedger || []), encounter].slice(-200);
     newWo.sessionTotals = {
@@ -231,10 +295,22 @@
       cumLoadAdded: (newWo.sessionTotals?.cumLoadAdded || 0) + encounter.cumLoadAdded
     };
     newWo.unclaimedEarnings = (newWo.unclaimedEarnings || 0) + totalPaid;
+    // Stamp the arrival time in game-minutes for the room UI countdown display.
+    if (window.DMTHGame.gameClock) {
+      newWo.lastJohnArrivalAt = window.DMTHGame.gameClock.now();
+    }
 
     // Notoriety bump per encounter — 1 per 4 encounters
     if (window.DMTHGame.state.addNotoriety && (newWo.johnLedger.length % 4 === 0)) {
       window.DMTHGame.state.addNotoriety(1);
+    }
+
+    // BUZZ feed — every successful john bumps the operator's underground reputation. Word
+    // spreads; more johns find their way to the dungeon over time. Postmortem encounters
+    // bump LESS (niche clientele doesn't broadcast as widely) — half the alive rate.
+    if (window.DMTHGame.state.addBuzz) {
+      const buzzGain = archetypeId === 'postmortem-john' ? 0.25 : 0.5;
+      window.DMTHGame.state.addBuzz(buzzGain, `john-completed: ${archetypeId}`);
     }
 
     window.DMTHGame.state.updateGirl(girl.id, { whoreOut: newWo });
@@ -245,19 +321,39 @@
   // Tick wiring
   // -----------------------------------------------------------------------
 
+  // Cadence-based tick. Each enabled whored-out girl accumulates `expectedArrivalsPerTick`
+  // into her `pendingArrivals` field; whole-number portion fires that many arrivals this
+  // tick, fractional carries forward to the next tick. BUZZ multiplier folded into the
+  // accumulator, so higher BUZZ literally adds more pending arrivals per tick.
+  //
+  // Dead girls (encounterState === 'dead') keep accumulating arrivals as long as their
+  // whoreOut.enabled is true and decay hasn't passed the forced-disposal threshold — but
+  // only fire postmortem-john arrivals (handled in tryArrival).
   function runJohnTick() {
     const s = window.DMTHGame.state.current;
     if (!s) return;
     for (const girl of s.roster) {
-      if (girl.encounterState !== 'captive') continue;
+      // Captive (alive) OR dead-but-not-yet-disposed
+      const eligible = girl.encounterState === 'captive' || girl.encounterState === 'dead';
+      if (!eligible) continue;
       const wo = getWhoreOut(girl);
       if (!wo.enabled) continue;
-      const rate = RATE_PARAMS[wo.rate] || RATE_PARAMS.standard;
 
-      // Multiple rolls per tick up to perTickCap — each is an independent arrival roll
+      // Accumulate fractional arrivals for this tick. BUZZ folded in.
+      const perTick = expectedArrivalsPerTick(wo.rate);
+      let pending = (wo.pendingArrivals || 0) + perTick;
+      const toFire = Math.floor(pending);
+      pending -= toFire;
+
+      // Persist accumulator update before firing any arrivals — every encounter re-reads
+      // girl from state, so we update the carrier first so subsequent reads see fresh.
+      window.DMTHGame.state.updateGirl(girl.id, {
+        whoreOut: { ...wo, pendingArrivals: pending }
+      });
+
       let arrivals = 0;
-      for (let i = 0; i < rate.perTickCap; i++) {
-        const enc = tryArrival(window.DMTHGame.state.getGirl(girl.id));  // re-read between rolls
+      for (let i = 0; i < toFire; i++) {
+        const enc = tryArrival(window.DMTHGame.state.getGirl(girl.id));
         if (enc) arrivals++;
       }
       if (arrivals > 0 && window.DMTHNotify && arrivals >= 2) {
@@ -325,6 +421,9 @@
     runJohnTick,
     cashout,
     summarizeLedger,
-    contextBlockText
+    contextBlockText,
+    buzzMultiplier,
+    expectedArrivalsPerTick,
+    gameMinutesToNextArrival
   });
 })();

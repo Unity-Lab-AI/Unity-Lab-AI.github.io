@@ -173,13 +173,34 @@
       dialogueTone: 'verbal abuse, calls her names, leaves her crying',
       pregnantWantBias: 0.70,
       johnActionId: 'john-degrader'
+    },
+    // Postmortem-only archetype — never appears in the normal arrival pool. Forced into
+    // play by whore-out tryArrival when girl.encounterState === 'dead'. Premium niche
+    // clientele paying for the use of a preserved corpse. arrivalWeight=0 keeps it off
+    // the live-girl rotation; rollJohnArchetype skips zero-weight entries.
+    'postmortem-john': {
+      displayName: 'Postmortem Client',
+      arrivalWeight: 0,
+      payRange: [220, 420],
+      tipChance: 0.30,
+      tipMul: 1.40,
+      permittedActsPreference: ['necrophilia', 'sex-rough', 'cum-on-corpse', 'cum-inside'],
+      intensity: 3,
+      moodImpact: 0,
+      bruisesAdded: 0,
+      condomCompliance: 0.05,
+      dialogueTone: 'silent, methodical, pays premium for the niche',
+      pregnantWantBias: 1.0,
+      johnActionId: 'john-postmortem'
     }
   });
 
   // Pick a john archetype weighted by arrivalWeight + pregnantWantBias if applicable.
+  // Zero-weight archetypes (postmortem-john) are excluded from the rotation — they get
+  // forced into play by direct lookup in whore-out when the girl's encounterState matches.
   function rollJohnArchetype(rng, opts = {}) {
     const isPregnant = !!opts.isPregnant;
-    const entries = Object.entries(JOHN_ARCHETYPES);
+    const entries = Object.entries(JOHN_ARCHETYPES).filter(([, a]) => (a.arrivalWeight || 0) > 0);
     const weighted = entries.map(([id, a]) => {
       const w = isPregnant
         ? a.arrivalWeight * (a.pregnantWantBias || 1.0)

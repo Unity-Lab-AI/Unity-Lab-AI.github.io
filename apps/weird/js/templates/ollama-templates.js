@@ -187,6 +187,37 @@ Never skip this line. Never put "L" or any unit after a number. Never go above �
 
     room_arrival: `SCENE: You are waking up in Master's dungeon for the first time. Room ambience: {{ROOM_AMBIENCE}}. You are his captive now. Your first reaction is terror/confusion/defiance per your stats. Orient yourself. Assess the room. Test the restraints.`,
 
+    // Postmortem scene — body is deceased but the player (or a john) is still using her.
+    // Output is NARRATION ONLY in asterisk-action form. NO spoken dialogue (she's dead),
+    // NO mood, NO bond, NO Stockholm — just a 15-30 word description of her body's
+    // mechanical response to the act. TTS strips the asterisk wrapper but reads the
+    // inner narration aloud, so the user hears the description spoken by Kokoro.
+    //
+    // The model still emits the delta block so cumLoad accrues correctly on penetrative
+    // acts (cum-inside / breeding-style content).
+    room_postmortem: `SCENE: This captive is DECEASED. Body is in her dungeon hold, preserved. Master (or a john) is using her now.
+Decay state: {{DECAY_DAYS}} game days since death. Room ambience: {{ROOM_AMBIENCE}}.
+
+OUTPUT FORMAT — NARRATION ONLY:
+- Respond with ONE asterisk-action block: \`*…physical narration of her body's response…*\`.
+- NO spoken dialogue. She CANNOT speak. She is dead.
+- NO mood markers, NO bond, NO Stockholm, NO emotion words.
+- NO first-person — the body is an object now. Use third-person physical description.
+- 15-30 words inside the asterisks describing what just happened to her body THIS turn.
+
+What to narrate:
+- Mechanical body response to the act (head lolls, mouth falls open, limbs shift from the force).
+- Fluid behavior — cum, saliva, blood — what leaks, pools, drips.
+- Visible decay markers appropriate to {{DECAY_DAYS}} game days — coloration, temperature, stiffness, slackness, no involuntary muscle twitch.
+- The action just performed (named explicitly: throat use, vaginal use, anal use, cum delivery, slap, choke, etc.).
+
+GOOD: \`*her head lolls back from the thrust, mouth slack open, cum already leaking from her parted lips down her cold pale throat*\`
+GOOD: \`*his cock buries to the hilt, no resistance from the stiffening hips, a thin line of saliva runs from the corner of her unmoving mouth*\`
+BAD: "Yes Master" *anything* — she cannot speak
+BAD: *she feels...* / *she moans...* — no sensation, no involuntary response
+
+End with the delta block.`,
+
     room_regular: `SCENE: You are CAPTIVE in your dungeon room. Room ambience: {{ROOM_AMBIENCE}}. Bond level: {{BOND_LEVEL}} ({{BOND_NAME}}). Body state: {{BODY_SUMMARY}}. Mood: {{MOOD}}.
 
 Master just performed a SPECIFIC act. The user message shows that act bookended by >>>…<<< markers — react to THAT EXACT ACT.
@@ -382,6 +413,64 @@ End with the delta block.`,
   // narration from eating the player's audible spoken line.
   const MASTER_SUBJECT_LEAD = /^\s*(he|master|sir|the man|his\s+(hand|cock|fingers|fist|grip))\b/i;
   const THIRD_PERSON_SELF = /\b(her|she|herself|her\s+(face|body|cunt|pussy|tits|ass|throat|hair|eyes|mouth|hand))\b/i;
+  // Scrub plaintext delta tails. The model sometimes emits state deltas as a freeform
+  // "key: ±N; key: ±N" trailing block instead of the contracted <delta>...</delta>
+  // envelope. Example leak in chat:
+  //   Alyssa: "Master..." *trailing off as his cock deepens into my throat*.
+  //   arousal:+10; wetness:-25; cumLoad:-4L; bruises:-3; high:0%. MoodShift:"degraded". Tags[].
+  //
+  // Strategy: detect 2+ stat-keyword:value pairs clustered within 200 chars. Step back
+  // to the prior sentence boundary. Everything from that boundary to end is the leak —
+  // strip it from cleanText and parse the values into a delta object so state still
+  // updates from what the model intended.
+  function extractPlaintextDelta(text) {
+    if (!text) return { cleanText: text, delta: null };
+    const STAT_KEYS = ['arousal','wetness','cumLoad','bruises','high','bondXP','bondDebt'];
+    const META_KEYS = ['MoodShift','Tags'];
+    const ALL_KEYS = [...STAT_KEYS, ...META_KEYS];
+    const re = new RegExp(`\\b(${ALL_KEYS.join('|')})\\s*[:=\\[]`, 'gi');
+    const positions = [];
+    let m;
+    while ((m = re.exec(text)) !== null) positions.push(m.index);
+    if (positions.length < 2) return { cleanText: text, delta: null };
+
+    // Find the start of the first cluster (2+ positions within 200 chars).
+    let clusterStart = -1;
+    for (let i = 0; i < positions.length - 1; i++) {
+      if (positions[i + 1] - positions[i] <= 200) { clusterStart = positions[i]; break; }
+    }
+    if (clusterStart < 0) return { cleanText: text, delta: null };
+
+    // Step back from clusterStart to the nearest preceding sentence boundary so the
+    // cleanText ends at a clean punctuation point ("...*throat*." not "...*throat*. ar").
+    const before = text.slice(0, clusterStart);
+    const boundaryCandidates = [
+      before.lastIndexOf('*\n'), before.lastIndexOf('*. '), before.lastIndexOf('*.'),
+      before.lastIndexOf('. '), before.lastIndexOf('.'),
+      before.lastIndexOf(';'), before.lastIndexOf('\n')
+    ].filter(i => i >= 0);
+    const cutAt = boundaryCandidates.length > 0 ? Math.max(...boundaryCandidates) + 1 : clusterStart;
+
+    const tail = text.slice(cutAt);
+    const cleanText = text.slice(0, cutAt).replace(/[\s.;,]+$/, '').trim();
+
+    // Parse stat values from tail. Accepts ±N, ±N.N, optional %/L suffix.
+    const delta = {};
+    for (const k of STAT_KEYS) {
+      const km = tail.match(new RegExp(`\\b${k}\\s*[:=]\\s*([+\\-]?\\d+(?:\\.\\d+)?)`, 'i'));
+      if (km) delta[k] = parseFloat(km[1]);
+    }
+    const moodM = tail.match(/MoodShift\s*[:=]\s*["']?(\w+)["']?/i);
+    if (moodM) delta.moodShift = moodM[1];
+    return { cleanText, delta: Object.keys(delta).length ? delta : null };
+  }
+
+  // Streaming-safe scrub: only strip; don't parse. Used by the chat-render onChunk path
+  // so the delta tail never lands visibly in the chat bubble even mid-stream.
+  function scrubPlaintextDeltaTail(text) {
+    return extractPlaintextDelta(text).cleanText;
+  }
+
   function scrubMasterAsteriskNarration(text) {
     if (!text) return text;
     return text.replace(/\*([^*]+)\*/g, (full, inner) => {
@@ -427,7 +516,12 @@ End with the delta block.`,
       console.warn('[extractDelta] truncated <delta> block matched via tightened half-regex — upstream stream cleanup may have failed');
     }
     const match = fullMatch || halfMatch;
-    if (!match) return { cleanText: text, delta: null };
+    if (!match) {
+      // No <delta>...</delta> envelope — fall back to plaintext-delta extraction. Catches
+      // freeform "arousal:+10; wetness:-25; ..." tails the model sometimes emits instead
+      // of the contracted XML/JSON envelope.
+      return extractPlaintextDelta(text);
+    }
 
     const cleanText = text.replace(match[0], '').trim();
     let raw = match[1].trim();
@@ -483,6 +577,8 @@ End with the delta block.`,
     buildSystemPrompt,
     buildContextBlock,
     extractDelta,
+    extractPlaintextDelta,
+    scrubPlaintextDeltaTail,
     rollCaptiveAffect,
     scrubSystemPromptLeakage,
     scrubMasterAsteriskNarration,

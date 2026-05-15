@@ -98,10 +98,46 @@
   // Endpoints updated April 2026 — unified gen.pollinations.ai replaces legacy image.pollinations.ai.
   // Auth via ?key= query param. sk_ = secret key (server side / no rate limit). pk_ = publishable key (client / rate-limited).
   // If you get 403 errors from a browser with sk_ key, try swapping to a pk_ key from enter.pollinations.ai.
+  //
+  // Unity AI Lab Worker proxy — when the page is hosted under unityailab.com / unity-lab-ai.github.io
+  // / localhost, image generation routes through the shared Cloudflare Worker at
+  // websiteunityailab.gfourteen7525.workers.dev/image/. The Worker injects the operator's sk_
+  // token server-side, so the browser sends NO key. This is the same path the rest of the
+  // website2.0 apps (Unity Chat, Persona Chat, Text Chat, Slideshow, Screensaver) use —
+  // keeps Pollinations auth uniform across the whole Unity AI Lab site.
+  //
+  // When running standalone (e.g., a local clone of this repo not on the Unity AI Lab site)
+  // the Worker route is OFF and image gen falls back to direct Pollinations + user-supplied
+  // pk_ key from the Settings panel.
+  // Worker-route selection has three tiers, in priority order:
+  //   1. Explicit localStorage flag — user toggle on the Settings panel:
+  //        - 'on'  → force Worker route
+  //        - 'off' → force direct Pollinations + user pk_ key
+  //   2. Hostname auto-detect — when no explicit flag, unityailab.com hosts default
+  //      to Worker route (the Worker's CORS allows that origin).
+  //   3. Default off — everywhere else falls back to direct Pollinations + pk_ key.
+  //
+  // Note on CORS: the production Worker only allows Origin: https://unityailab.com.
+  // If a user flips the toggle ON from localhost or another origin, requests will
+  // be blocked by CORS until the Worker's allowed-origins list includes that host.
+  function detectUnityLabWorker() {
+    if (typeof window === 'undefined' || !window.location) return false;
+    try {
+      const flag = window.localStorage && window.localStorage.getItem('dmth_use_unity_worker');
+      if (flag === 'on')  return true;
+      if (flag === 'off') return false;
+    } catch {}
+    const h = (window.location.hostname || '').toLowerCase();
+    return h === 'unityailab.com' || h === 'www.unityailab.com';
+  }
   const POLLINATIONS = {
     apiKey: pick('dmth_pollinations_key', 'POLLINATIONS_API_KEY', ''),
     imageEndpoint: 'https://image.pollinations.ai/prompt/',   // legacy free — used as fallback
     imageEndpointAuth: 'https://gen.pollinations.ai/image/',  // current authed endpoint
+    // Unity AI Lab Worker proxy URL. When detectUnityLabWorker() returns true, buildUrl
+    // in imaging.js routes here and drops the ?key= param entirely.
+    imageEndpointWorker: 'https://websiteunityailab.gfourteen7525.workers.dev/image/',
+    useUnityLabWorker: detectUnityLabWorker(),
     textEndpoint: 'https://text.pollinations.ai/',
     // Preferred image model for strict visuals. Current gen.pollinations.ai catalog includes:
     // zimage / flux / gptimage / gptimage-large / seedream / seedream-pro / kontext / nanobanana variants / grok-imagine / klein / qwen-image / wan-image / nova-canvas
@@ -147,13 +183,16 @@
   };
 
   // Expose globally — non-module scripts can read window.DMTHConfig.
+  // detectUnityLabWorker is exported so the landing-page Settings toggle can re-evaluate
+  // the resolved value (localStorage flag > hostname auto) after the user flips it.
   window.DMTHConfig = Object.freeze({
     OLLAMA,
     KOKORO,
     POLLINATIONS,
     STORAGE,
     GAME,
-    DEV
+    DEV,
+    detectUnityLabWorker
   });
 
   if (DEV.mode) {

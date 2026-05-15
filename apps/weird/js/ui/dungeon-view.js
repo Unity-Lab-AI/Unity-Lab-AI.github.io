@@ -50,10 +50,25 @@
           <div class="hold-grid">
             ${d.holds.map((h, i) => {
               const g = h.captiveGirlId ? window.DMTHGame.state.getGirl(h.captiveGirlId) : null;
-              return `<div class="hold-slot ${g ? 'filled' : 'empty'}" data-tooltip="${g ? g.name + ' — L' + g.bond.bondLevel + ' Stockholm rating, ' + g.archetypeTemplate + '. Click to enter her hold.' : 'Empty ' + h.holdType + ' hold. Assign a captive on successful hunt.'}">
+              // Defensive reads — old saves may be missing fields the renderer assumes.
+              // displayName recovers from name-as-archetype-id leaks (Unity_seed → Unity).
+              const archetypeIdAsName = g && typeof g.name === 'string' && (
+                g.name === g.archetypeTemplate ||
+                /^[a-z_]+_seed$/i.test(g.name)
+              );
+              const displayName = g
+                ? (archetypeIdAsName
+                    ? (g.archetypeTemplate === 'unity_seed' ? 'Unity' : 'Captive')
+                    : (g.name || 'Captive'))
+                : '';
+              const bondLevel = g?.bond?.bondLevel ?? 0;
+              const moodEmoji = g?.mood?.moodEmoji ?? '🙂';
+              const arch = g?.archetypeTemplate ?? '—';
+              const holdType = h.holdType || 'cell';
+              return `<div class="hold-slot ${g ? 'filled' : 'empty'}" data-tooltip="${g ? displayName + ' — L' + bondLevel + ' Stockholm rating, ' + arch + '. Click to enter her hold.' : 'Empty ' + holdType + ' hold. Assign a captive on successful hunt.'}">
                 ${g
-                  ? `<a href="#room?girl=${g.id}">${g.mood.moodEmoji} ${g.name} <span class="muted small">L${g.bond.bondLevel}</span></a>`
-                  : `<span class="muted small">hold ${i+1} · empty · ${h.holdType}</span>`
+                  ? `<a href="#room?girl=${g.id}">${moodEmoji} ${displayName} <span class="muted small">L${bondLevel}</span></a>`
+                  : `<span class="muted small">hold ${i+1} · empty · ${holdType}</span>`
                 }
               </div>`;
             }).join('')}

@@ -18,7 +18,14 @@
       // Player satisfaction meter (0-100). Sex acts with captives raise it; slow per-tick
       // decay drops it without intimacy. High satisfaction grants a hunting bonus —
       // capture odds get easier the more satisfied the player is.
-      playerSatisfaction: 50
+      playerSatisfaction: 50,
+      // BUZZ meter (0-100). Underground word-of-mouth about the operator's dungeons —
+      // distinct from `notoriety` which is cop-heat. Bumped by film sales, successful
+      // john completions, high-bond captives in the roster, stress-band streaks. Drained
+      // by time-decay between income events, failed encounters, captive deaths. Drives
+      // a buzzMul = 1 + (buzz/100) on whore-out john arrival rate — BUZZ 100 doubles
+      // the johns coming through. Visible as chrome-bar 🐝 BUZZ badge.
+      buzz: 0
     },
 
     inventory: {},                 // { [itemId]: qty }
@@ -65,8 +72,66 @@
     state = stored && stored.version === DEFAULT_STATE.version
       ? Object.assign({}, DEFAULT_STATE, stored)
       : null;
+    if (state) migrateLoadedState(state);
     loaded = true;
     return state;
+  }
+
+  // One-shot migrations on load — repair save shapes that pre-date a schema change.
+  // Each migration is idempotent + null-safe so re-running doesn't double-mutate.
+  function migrateLoadedState(s) {
+    if (!s.roster) return;
+    // Known archetype-id → canonical display name fallbacks for the seeded captives.
+    // Procedural archetypes (library/club/street/sorority/gym/barista/etc.) use their
+    // namePool[0] as a recovery hint when name was wiped or set to the archetype id.
+    const NAME_FALLBACKS = {
+      'unity_seed':  'Unity',
+      'unity':       'Unity'
+    };
+    const ARCHETYPE_NAME_POOL_HEAD = {
+      library: 'Marcy', club: 'Taryn', street: 'Nikki', sorority: 'Ashley',
+      gym: 'Alex', barista: 'Juno', office: 'Alison', waitress: 'Candy',
+      model: 'Sasha', nurse: 'Jennifer'
+    };
+    for (const g of s.roster) {
+      if (!g) continue;
+      // Repair name when it's been persisted as the archetype id (Unity_seed / unity_seed
+      // / similar). Bootstrap.js writes 'Unity' correctly going forward; this migration
+      // catches existing saves where the name slot got the archetype id.
+      const arch = g.archetypeTemplate;
+      const nameLooksLikeArchetype = typeof g.name === 'string' && (
+        g.name === arch ||
+        g.name.toLowerCase() === (arch || '').toLowerCase() ||
+        /^[a-z_]+_seed$/i.test(g.name)
+      );
+      if (nameLooksLikeArchetype) {
+        const fixed = NAME_FALLBACKS[arch] || ARCHETYPE_NAME_POOL_HEAD[arch] || 'Captive';
+        console.info(`[state-migrate] repaired ${g.id} name "${g.name}" → "${fixed}"`);
+        g.name = fixed;
+      }
+      // Backfill body fields the renderer assumes exist on every captive. Old saves
+      // pre-date some of these (cumLoad / stamina / health / lastFedAt / decayedMinutes).
+      // The renderer accesses them as bare numbers (g.body.cumLoad.toFixed(1) etc.) and
+      // throws when they're undefined — the BUGStwo.38a "page won't open" symptom.
+      g.body = g.body || {};
+      const BODY_DEFAULTS = {
+        arousal: 0, wetness: 0, cumLoad: 0, bruises: 0, high: 0,
+        stamina: 70, health: 100,
+        activeDrugs: [], outfitState: 'intact'
+      };
+      for (const [k, v] of Object.entries(BODY_DEFAULTS)) {
+        if (g.body[k] == null) g.body[k] = v;
+      }
+      // bond / mood / escape minimal shape
+      g.bond = g.bond || { bondLevel: 0, bondXP: 0, bondDebt: 0, milestones: [] };
+      if (g.bond.bondLevel == null) g.bond.bondLevel = 0;
+      if (g.bond.bondXP == null) g.bond.bondXP = 0;
+      if (g.bond.bondDebt == null) g.bond.bondDebt = 0;
+      g.mood = g.mood || { mood: 'neutral', moodEmoji: '🙂', history: [] };
+      if (g.mood.mood == null) g.mood.mood = 'neutral';
+      if (g.mood.moodEmoji == null) g.mood.moodEmoji = '🙂';
+      g.escape = g.escape || { currentRisk: 0.1, factors: {}, lastAttempt: null };
+    }
   }
 
   async function save() {
@@ -123,6 +188,14 @@
     });
   }
   function getSatisfaction() { return typeof state?.wallet?.playerSatisfaction === 'number' ? state.wallet.playerSatisfaction : 50; }
+  function addBuzz(delta, reason) {
+    mutate(s => {
+      const cur = typeof s.wallet.buzz === 'number' ? s.wallet.buzz : 0;
+      s.wallet.buzz = Math.max(0, Math.min(100, cur + delta));
+      s.wallet._lastBuzzEvent = { delta, reason, at: Date.now() };
+    });
+  }
+  function getBuzz() { return typeof state?.wallet?.buzz === 'number' ? state.wallet.buzz : 0; }
 
   // inventory
   function addItem(itemId, qty = 1) {
@@ -261,6 +334,7 @@
     load, save, initNew, onChange,
     addMoney, spendMoney, addNotoriety,
     addSatisfaction, getSatisfaction,
+    addBuzz, getBuzz,
     addItem, consumeItem,
     addDungeon, updateDungeon, getDungeon,
     addGirl, updateGirl, getGirl, removeGirl,
